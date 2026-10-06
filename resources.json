@@ -1,0 +1,765 @@
+{
+ "instances": [
+  {
+   "ch": 2,
+   "era": "2028",
+   "label": "Four-nucleon charge correlator, 3^3, complete",
+   "lq": [
+    36,
+    36
+   ],
+   "t": [
+    80302.17636380711,
+    80302.17636380711
+   ],
+   "codesign": false,
+   "src": "app01:2028 complete four-nucleon correlator box",
+   "nucleus": "4N",
+   "t_note": "Leading synthesis estimate; complete circuit, no hardware schedule"
+  },
+  {
+   "ch": 2,
+   "era": "2033",
+   "label": "Mobile triton charge response, 6^3, complete",
+   "lq": [
+    908,
+    908
+   ],
+   "t": [
+    723104774.9960183,
+    723104774.9960183
+   ],
+   "codesign": false,
+   "src": "app01:2033 complete mobile-triton correlator box",
+   "nucleus": "3H",
+   "t_note": "Leading synthesis estimate; complete circuit, no hardware schedule"
+  },
+  {
+   "ch": 2,
+   "era": "codesign",
+   "label": "12C converged-basis evolution scaling (incomplete circuit)",
+   "lq": [
+    800,
+    1000
+   ],
+   "t": [
+    1694252578823.0613,
+    5507408616755.647
+   ],
+   "codesign": true,
+   "src": "app01:longer-term carbon EVOLUTION scaling comparison",
+   "route": "chiral scaling",
+   "nucleus": "12C",
+   "t_note": "Evolution scaling, not complete response; no step-error validation"
+  },
+  {
+   "ch": 3,
+   "era": "2028",
+   "label": "$^4$He dipole Hadamard",
+   "lq": [
+    120,
+    170
+   ],
+   "t": [
+    17020.340034297187,
+    100516.34003429719
+   ],
+   "codesign": false,
+   "src": "app11 2028 box ('~120-170', '1.7e4-1.0e5 T per shot: insertion + complete load with its angle rotations at D = 1e2-600'; M3 ruling 2026-10-04: angle rotations folded in, model 17020.3-100516.3; referee G2 1.6e4-9.9e4 without them; the insertion alone 5.4e3 (R13) was the headline before)",
+   "note": "insertion + complete state load with its angle rotations (D = 1e2-600; 1.005x at D = 600); conditional on D"
+  },
+  {
+   "ch": 3,
+   "era": "2033",
+   "label": "$^{27}$Al $sd$ (prep+insertion)",
+   "lq": [
+    74,
+    174
+   ],
+   "t": [
+    105373917.6283394,
+    440358279.6675963
+   ],
+   "codesign": false,
+   "src": "app11:2033 box lines 208-209 ('<= 250 (24 system + 50-150 ancilla)', '1.1e8-4.4e8 T, prep + insertion'); LQ is the printed component sum, '<= 250' being the envelope. R15: model 1.054e8-4.404e8 with the derived one-query insertion (1.092e8-4.771e8 in R14 with the scaled stated insertion)",
+   "fits": true
+  },
+  {
+   "ch": 3,
+   "era": "2033",
+   "label": "$^{48}$Ca/Ti ($pf$)",
+   "lq": [
+    90,
+    190
+   ],
+   "t": [
+    1753988134.026748,
+    7304979060.237253
+   ],
+   "codesign": false,
+   "src": "app11:2033 box lines 208-209 ('<= 250 (24 system + 50-150 ancilla)', '1.1e8-4.4e8 T, prep + insertion'); LQ is the printed component sum, '<= 250' being the envelope. R15: model 1.054e8-4.404e8 with the derived one-query insertion (1.092e8-4.771e8 in R14 with the scaled stated insertion)",
+   "fits": false,
+   "multiple": [
+    1.753988134026748,
+    7.304979060237253
+   ],
+   "note": "near miss; state prep only"
+  },
+  {
+   "ch": 3,
+   "era": "codesign",
+   "label": "$^{76}$Ge/Se, $^{82}$Se/Kr ($jj44$)",
+   "lq": [
+    94,
+    194
+   ],
+   "t": [
+    2597107279.301216,
+    10811592851.183979
+   ],
+   "codesign": true,
+   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+   "fits": false,
+   "multiple": [
+    2.597107279301216,
+    10.81159285118398
+   ],
+   "multiple_large_gap": [
+    1.2721059062769133,
+    2.597107279301216
+   ],
+   "note": "co-design (top of band past ~10x); state prep only"
+  },
+  {
+   "ch": 3,
+   "era": "codesign",
+   "label": "$^{130}$Te/Xe, $^{136}$Xe/Ba ($jj55$)",
+   "lq": [
+    114,
+    214
+   ],
+   "t": [
+    12137126408.678886,
+    50442669863.25562
+   ],
+   "codesign": true,
+   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+   "fits": false,
+   "multiple": [
+    12.137126408678887,
+    50.442669863255624
+   ],
+   "multiple_large_gap": [
+    5.950177940055688,
+    12.137126408678887
+   ],
+   "note": "co-design; state prep only, generic gap band"
+  },
+  {
+   "ch": 3,
+   "era": "codesign",
+   "label": "$^{100}$Mo/Ru ($jj44\\otimes jj55$)",
+   "lq": [
+    104,
+    204
+   ],
+   "t": [
+    6033703802.486152,
+    25094818616.259045
+   ],
+   "codesign": true,
+   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+   "fits": false,
+   "multiple": [
+    6.033703802486151,
+    25.094818616259044
+   ],
+   "multiple_large_gap": [
+    2.9568516883484235,
+    6.033703802486151
+   ],
+   "note": "reach target; co-design at the generic gap band, near miss at a large gap (x3-6), x25-51 small gap; state prep only, generic gap band"
+  },
+  {
+   "ch": 3,
+   "era": "codesign",
+   "label": "flagship $^{27}$Al ($e_{\\max}$8--10)",
+   "lq": [
+    660,
+    1144
+   ],
+   "t": [
+    85324362665820.72,
+    3330925991891527.5
+   ],
+   "codesign": true,
+   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+   "fits": false,
+   "multiple": [
+    85324.36266582072,
+    3330925.9918915275
+   ],
+   "note": "system qubits only; per state preparation"
+  },
+  {
+   "ch": 4,
+   "era": "2028",
+   "label": "log det W, free staggered V=4^4 (Hadamard test)",
+   "lq": [
+    18,
+    18
+   ],
+   "t": [
+    18978.416050431075,
+    35442.41605043107
+   ],
+   "codesign": false,
+   "src": "app12:2028 box lines 119-122: 'Logical qubits 18: 8 site + 4 column index + 1 block-encoding flag + 1 QET signal + 3 multi-control workspace + 1 Hadamard-test ancilla' (QME upgrade path 34); 'Per-shot 1.9--3.5e4 T-gates, derived here' (ruling SYN-BUDGET 2026-09-29, eps_syn = 0.1 x 1.784e-3, eps_rot = sqrt(eps_syn/N_rot); was 1.8--3.4e4 under R-TOL at eps_syn = 1e-2, Clifford+T-exact R_y(theta_0 = 0) not synthesized; 2.0--4.1e4 at the fixed 1e-4 under 'SHIFT + 1%', d = 84; 2.7--5.4e4 at d = 112 under R7; '~30 LQ, ~3e4 T' at V=2^4 before it). Model 1.898e4-3.544e4: 0.1%, 1.3%",
+   "volume": "4^4",
+   "observable": "Tr log W",
+   "eps_l": 2.8214780803235832e-06,
+   "shots": 314075.14743187855,
+   "lq_qme_route": 34,
+   "degree": 84
+  },
+  {
+   "ch": 4,
+   "era": "2033",
+   "label": "Tr M^-1, SU(3) staggered V=8^3x16, kappa~1e2 (success-probability readout)",
+   "lq": [
+    83,
+    83
+   ],
+   "t": [
+    212992000.0,
+    212992000.0
+   ],
+   "codesign": false,
+   "src": "app12 1000-LQ box: 'Logical qubits 83 (13 site + 4 column index + 4 color + 12 QPE + 50 ancilla)'; 'Per-shot T 2.1e8' = d_inv D V log2 V = 500 x 4.26e5 (ruling R3, 2026-10-02: M has 9 entries per column; was 85 LQ, '~9e8' at D^2 V log2 V). Model 2.130e8 vs 2.1e8: 1.4%",
+   "volume": "8^3x16",
+   "observable": "Tr M^-1",
+   "eps_l": 4.695012019230769e-10,
+   "shots_first": [
+    13877.777777777777,
+    40401.07909876513
+   ],
+   "shots_campaign": [
+    93674.99999999997,
+    272707.28391666454
+   ],
+   "n_cfg_campaign": 3
+  },
+  {
+   "ch": 4,
+   "era": "2033",
+   "label": "Banks-Casher mode number, V=8^3x16, a=0.15 fm (demonstration)",
+   "lq": [
+    83,
+    83
+   ],
+   "t": [
+    183173120.0,
+    272629760.0
+   ],
+   "codesign": false,
+   "src": "app12 1000-LQ box: 'Logical qubits 83 (13 site + 4 column index + 4 color + 12 QPE + 50 ancilla)'; 'Per-shot T 2.1e8' = d_inv D V log2 V = 500 x 4.26e5 (ruling R3, 2026-10-02: M has 9 entries per column; was 85 LQ, '~9e8' at D^2 V log2 V). Model 2.130e8 vs 2.1e8: 1.4%",
+   "volume": "8^3x16",
+   "observable": "nu(Lambda)/V_F",
+   "eps_l": 3.6679781400240385e-10,
+   "shots": [
+    10979.767786035029,
+    17247.09870265998
+   ]
+  },
+  {
+   "ch": 4,
+   "era": "codesign",
+   "label": "Tr M^-1, V=24^3x48, kappa~1e3, d_inv~5e3 (before reduction)",
+   "lq": [
+    90,
+    90
+   ],
+   "t": [
+    256659922982.282,
+    256659922982.282
+   ],
+   "codesign": true,
+   "src": "app12 1e4-LQ paragraph: 'V ~ 24^3x48 ... d_inv ~= 5e3 costs 2.6e11 T by Eq. Ngate_hybrid on a 90-LQ algorithmic register (20 site + 4 column index + 4 color + 12 QPE + ~50 ancilla)' (R3 reprice at D V log2 V, 2026-10-02; was 92 LQ, ~1e12 T). Model 2.567e11: 1.3%",
+   "volume": "24^3x48",
+   "observable": "disconnected HVP",
+   "eps_l": 1e-12
+  },
+  {
+   "ch": 5,
+   "era": "2028",
+   "label": "2+1D SU(2)->2T, 4^2, pure gauge, first result: t = 0 and one step (inside the 1e5-T envelope)",
+   "lq": [
+    177,
+    178
+   ],
+   "t": [
+    94729.45019531979,
+    94729.45019531979
+   ],
+   "codesign": false,
+   "src": "app03:2028 box (r25 apply, 2026-10-02): '178 = 32 links x 5 + 1-2 Hadamard + 16 workspace' (R10); per-shot T 'first result 9.5e4 (one step, inside 1e5); full benchmark 5.9e5 (six steps)', each timeslice at its own depth (R4). Exact 9.473e4 / 5.939e5; tol 0.05 covers the rounding and 177-178.",
+   "group": "2T",
+   "lattice": "4^2",
+   "shots": 2000.0,
+   "tier": "first result"
+  },
+  {
+   "ch": 5,
+   "era": "2028",
+   "label": "2+1D SU(2)->2T, 4^2, pure gauge, full benchmark to t_max=0.15 fm/c (5.9x the 1e5-T envelope)",
+   "lq": [
+    177,
+    178
+   ],
+   "t": [
+    593918.1986490444,
+    593918.1986490444
+   ],
+   "codesign": false,
+   "src": "app03:2028 box (r25 apply, 2026-10-02): '178 = 32 links x 5 + 1-2 Hadamard + 16 workspace' (R10); per-shot T 'first result 9.5e4 (one step, inside 1e5); full benchmark 5.9e5 (six steps)', each timeslice at its own depth (R4). Exact 9.473e4 / 5.939e5; tol 0.05 covers the rounding and 177-178.",
+   "group": "2T",
+   "lattice": "4^2",
+   "shots": 7000.0,
+   "conditional": true,
+   "tier": "full benchmark",
+   "condition": ">=5.9x per-step cut; the named levers give 3-10x (app03 2028 box, gap bullet)"
+  },
+  {
+   "ch": 5,
+   "era": "2033",
+   "label": "Sigma(216x3)+3 stag, H_I, 3^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench ramp + c/T thermalization + Trotter to its own fit time; primitives in preparation, hop a Sigma(72x3) placeholder)",
+   "lq": [
+    1234,
+    1334
+   ],
+   "t": [
+    6254507678.064556,
+    22339635646.163525
+   ],
+   "codesign": false,
+   "src": "app03:2033 box (temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route 2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule 2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: '6.3e9-2.2e10 (5.6e9-2.1e10 quench + 6.9e8-1.2e9 fit evolution)', one circuit per shot, corners (300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (6.255e9, 2.234e10). Was (1.051e10, 3.142e10) at T = 160 MeV. tol 0.05: two figures.",
+   "group": "S216x3",
+   "hamiltonian": "I",
+   "lattice": "3^3",
+   "route": "quench (ETH)",
+   "electric": "Sigma(216x3) FFT (Gustafson_S648_inprep)",
+   "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = 0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) late shot is 3.0e10 (t_deepest_campaign)",
+   "condition": "ETH with dynamical fermions at the chapter's couplings on 3^3 and the relaxation of the momentum density within t_th assumed; T_c^lat measured in situ; shots at the thermal variance; non-freezing H_I trajectory assumed",
+   "exports_note": "R9 exports (t_per_shot, t_depth_per_shot, f_star, floor_wall_s, factories_for_1yr) are the campaign at the (300 MeV, tau = 1/k = 0.0955 fm/c, c = 2) corner only, over both spacings, not a band (floor is the high/low depth schedule); wall_first_result_s and wall_campaign_s are bands"
+  },
+  {
+   "ch": 6,
+   "era": "2028",
+   "label": "readout pipeline, 2+1D $\\mathbb{Z}_3$ $4^2$, 3 stag.",
+   "lq": [
+    230,
+    230
+   ],
+   "t": [
+    132174.8798160826,
+    132174.8798160826
+   ],
+   "codesign": false,
+   "src": "app10:2028 box: '230 (150--250 envelope)' (exact: 64 + 144 + 22; r25 R10: two hop links at once for F* >= 10, was 216 = 64 + 144 + 8 at r22 E26); 'Per-shot T 1.3e5 (1 ramp + 2 evolution steps; derived here), 1.3x the 1e5 limit' (exact 132,174.9; r18: every rotation at the full fit (E20), R-TOL eps = 1.6e-3, the overshoot accepted by ruling 2026-10-01). tol 0.02 covers 132,175 -> 1.3e5",
+   "group": "Z3",
+   "lattice": "4^2",
+   "observable": "computational-basis records vs emulation (species map checked on emulators; r26, J1)",
+   "shots": 1000.0,
+   "over_reference_t": 1.322,
+   "note": "3 steps (1 ramp + 2 evolution), eps = 1.6e-3 (R-TOL: sqrt(1e-2 / 3792)), every rotation at 1.15 log2(1/eps) + 9.2 (E20); Z3 primitives from the dihedral basis with the Z2 dropped, Fourier transform 4 T + 2 rotations (derived here, round E); hop 8 strings x HWP(9) per link (derived here; Z3 has no draft entry); 1.3x the 1e5 reference, an accepted overshoot"
+  },
+  {
+   "ch": 6,
+   "era": "2033",
+   "label": "species ratios / fragmentation, $\\Sigma(72{\\times}3)$ $4{\\times}8$, 3 stag.",
+   "lq": [
+    964,
+    964
+   ],
+   "t": [
+    4901429609.565304,
+    26158908076.972164
+   ],
+   "codesign": false,
+   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.6e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (step rule 2026-10-04: the 4.65 GeV point at 50 a runs 575 steps, exact 4.9014e9 and 2.6159e10; r26 2.5381e10 at 500 steps; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
+   "group": "S72x3",
+   "lattice": "4x8 (cut from 4x16)",
+   "observable": "B/M, kaon rates (sampling; V/PS conditional); D_pi^q(z) (FCC era)",
+   "T_priced_at_V": 32,
+   "shots_first_result": [
+    122,
+    244
+   ],
+   "shots_campaign": [
+    12672,
+    25344
+   ],
+   "shots_fragmentation": [
+    75000.0,
+    1200000.0
+   ],
+   "wall_time_s_first_result": [
+    599064,
+    8889027
+   ],
+   "wall_time_s_campaign": [
+    54227833,
+    814795173
+   ],
+   "wall_time_s_fragmentation": [
+    367607228,
+    43637040878
+   ],
+   "note": "window 30-50 a plus a 1e2-1e3-step ramp and the same ramp backwards for the species readout map (R4; r26 J1); electric term at the Sigma(72x3) fast-transform lower bound, a floor; hop from the authors' unpublished colour-diagonalized gate counts (FermionPrimitives_unpub), colour squish and parity held once per link (E21), 1.1e5 T per link, 72% of the step; walls on one machine with the T-depth correction (F* 7.0-18.5); eps at the two ramp ends from R-TOL; every rotation at the full fit (E20)"
+  },
+  {
+   "ch": 6,
+   "era": "2033",
+   "label": "static dipole $\\mathrm{Im}\\,V(r,T)$, pure-gauge $\\Sigma(216{\\times}3)$ $H_I$ $3^3$",
+   "lq": [
+    995,
+    995
+   ],
+   "t": [
+    5404126081.220993,
+    15091501185.203785
+   ],
+   "codesign": false,
+   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.6e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (step rule 2026-10-04: the 4.65 GeV point at 50 a runs 575 steps, exact 4.9014e9 and 2.6159e10; r26 2.5381e10 at 500 steps; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
+   "group": "S216x3",
+   "hamiltonian": "I",
+   "lattice": "3^3",
+   "observable": "Im V(r = a, T) from singlet survival (kappa as byproduct)",
+   "shots_per_T": [
+    653,
+    653
+   ],
+   "wall_time_s_first_result": [
+    4941008,
+    8442007
+   ],
+   "note": "R7 first-result row; s648: Sigma(216x3) (11 qubits/link, Gustafson_S648_inprep) with H_I as Ch. 5's 2033 box, all primitives compiled in the draft; q1 (ruling B): medium quench-prepared from the electric vacuum (20-step coupling ramp + c/T thermalization, c = 2-2 pi, 90-282 steps) before the sources enter, ETH / typicality assumed; 5.4-15x the 1e9-T limit, stated; step rule on the improved free dispersion (85 / 240 dipole steps); t = 0.5 and 1 fm/c, each shot at its own time; shots binomial on P_s, no estimator penalty; measures P_s, not |W|^2 (J4)"
+  },
+  {
+   "ch": 6,
+   "era": "2033",
+   "label": "light-like dipole $\\hat q$, pure-gauge $2O$ $3{\\times}3{\\times}5$",
+   "lq": [
+    912,
+    912
+   ],
+   "t": [
+    196503863.80861753,
+    550325562.0069797
+   ],
+   "codesign": false,
+   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.6e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (step rule 2026-10-04: the 4.65 GeV point at 50 a runs 575 steps, exact 4.9014e9 and 2.6159e10; r26 2.5381e10 at 500 steps; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
+   "group": "2O",
+   "lattice": "3x3x5",
+   "observable": "q-hat from singlet survival at L = 0.5 and 1 fm",
+   "shots_per_T": [
+    405,
+    405
+   ],
+   "wall_time_s_first_result": [
+    106639,
+    195683
+   ],
+   "note": "R7 first-result row; compiled 2O transform; q1 (ruling B): quench-prepared medium (20-step ramp + c/T, c = 2-2 pi) before the sources enter, ETH / typicality assumed; fits the 1e9-T limit; shots binomial on P_s, no estimator penalty; O(1/N_c^2) colour correction (J4)"
+  },
+  {
+   "ch": 6,
+   "era": "codesign",
+   "label": "3+1D stretch, $\\Sigma(72{\\times}3)$ $4^3$, 3 stag.",
+   "lq": [
+    2404,
+    2404
+   ],
+   "t": [
+    32384029271.754036,
+    32384029271.754036
+   ],
+   "codesign": true,
+   "src": "NOT A BOX. app10:95 plug-in prose: '1728+576+100 ~ 2400 LQ' (exact 2404), '3.2e10 T over 10^3 steps with no ramp priced' (exact 3.238e10; r19 E21, E20 full fit, eps = 3.6e-6). The 3+1D extension reserved for the heavy-ion / q-hat stretch. tol 0.02",
+   "group": "S72x3",
+   "lattice": "4^3",
+   "note": "plug-in prose, not a box; the full-QCD q-hat vehicle, past 2033 (2.4x the register limit; R7); no ramp priced; hop from unpublished gate counts; eps from R-TOL; every rotation at the full fit (E20), gauge tables from the subgroup papers"
+  },
+  {
+   "ch": 7,
+   "era": "2028",
+   "label": "free scalar dS $4^3$",
+   "lq": [
+    222,
+    242
+   ],
+   "t": [
+    94753.39077837099,
+    94753.39077837099
+   ],
+   "codesign": false,
+   "src": "app04:2028 box ('220--240', '9.5e4 T-gates', wall '43 s'); requirements summary. Smaller ruling (b) (2026-10-05), option (c): one macro-step at K = 8 (6.475e4 T) + 3e4 prep = 9.475e4 (was four steps at K = 4, 9.437e4, 160-180 LQ).",
+   "shots": 450,
+   "wall_time_s": 42.68402585026694,
+   "t_evolution": 64753.39077837099,
+   "t_prep": 30000.0
+  },
+  {
+   "ch": 7,
+   "era": "2033",
+   "label": "$\\phi^4$+Wilson preheating $5^3$",
+   "lq": [
+    1030,
+    1050
+   ],
+   "t": [
+    14855018462.655024,
+    14855018462.655024
+   ],
+   "codesign": false,
+   "src": "app04:2033 box ('1050', '1.5e10 T-gates'); requirements summary. Referee U2 (2026-10-04): m_phi dt = 0.05; 2e4 evolution + 500 ramp steps x 7.246e5 + boost + closing block = 1.486e10, 14.9x the 1e9 reference budget (was 1.0e9 at m_phi dt = 1). LQ 1000+30-50 = 1030-1050 (prose, no Hadamard qubits, R6).",
+   "shots": 1500,
+   "wall_time_s": 22282527.843982533,
+   "shots_hi": 6000,
+   "wall_time_s_hi": 89130111.37593013,
+   "shots_first": [
+    17,
+    34
+   ],
+   "wall_first_result_s": [
+    252535.3155651354,
+    505070.6311302708
+   ],
+   "t_evolution_raw": 14492400724.226261,
+   "t_evolution_net": 14492400724.226261,
+   "t_prep": 362310018.10565656,
+   "conditional": false,
+   "t_bound": null
+  },
+  {
+   "ch": 8,
+   "era": "2028",
+   "label": "scalar bubble $6^2$",
+   "lq": [
+    174,
+    174
+   ],
+   "t": [
+    162303.809916798,
+    162303.809916798
+   ],
+   "codesign": false,
+   "src": "app05:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
+   "t_bound": null,
+   "conditional": false,
+   "reconciled": true,
+   "note": "app05:128-130 prints ~1.6e5 = 5.356e5/3.3 (c_T 1239.8 derived here, R12)"
+  },
+  {
+   "ch": 8,
+   "era": "2028",
+   "label": "family $8^2$, $N_\\phi{=}4$",
+   "lq": [
+    158,
+    158
+   ],
+   "t": [
+    58906.78463287797,
+    58906.78463287797
+   ],
+   "codesign": false,
+   "src": "app05:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
+   "t_bound": null,
+   "conditional": false,
+   "reconciled": false,
+   "note": "app05:134 quotes 158 LQ, 5.9e4 T (1.944e5/3.3)"
+  },
+  {
+   "ch": 8,
+   "era": "2028",
+   "label": "family $8^2$, $N_\\phi{=}16$",
+   "lq": [
+    286,
+    286
+   ],
+   "t": [
+    294649.4585081366,
+    294649.4585081366
+   ],
+   "codesign": false,
+   "src": "app05:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
+   "t_bound": null,
+   "conditional": false,
+   "reconciled": false,
+   "note": "app05:134 quotes 286 LQ, 2.9e5 T (9.723e5/3.3)"
+  },
+  {
+   "ch": 8,
+   "era": "2028",
+   "label": "interim scalar+Wilson $4^2$",
+   "lq": [
+    113,
+    113
+   ],
+   "t": [
+    144912.76692923915,
+    144912.76692923915
+   ],
+   "codesign": false,
+   "src": "app05:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
+   "t_bound": null,
+   "conditional": true,
+   "reconciled": false,
+   "note": "app05:176-178 quotes ~115 LQ (96 + 17 = 113), ~1.4e5 T raw (c_T 754.8 x 192 = 1.449e5, R12). 4.4e4 with the banked 3.3x; not run in 2028 because N_phi=4 cannot resolve the biased well"
+  },
+  {
+   "ch": 8,
+   "era": "2033",
+   "label": "wall scattering $15{\\times}8$",
+   "lq": [
+    1000,
+    1000
+   ],
+   "t": [
+    993049073.279399,
+    993049073.279399
+   ],
+   "codesign": false,
+   "src": "app05:2033 box ('1000', 'Deepest circuit >~9.9e8 T at depth 33 (MLAE), dressing ramp unpriced'). Exact 33 x 3.0056e7 + 16 x 7.42e4 = 9.930e8 (G2 2026-10-04; B2 free preparation and reflections priced 2026-10-05, was 9.763e8); base circuit 3.0e7",
+   "t_bound": null,
+   "conditional": true,
+   "reconciled": true,
+   "note": "app05:2033 box: deepest MLAE circuit 33 x 3.0056e7 + 16 x 7.42e4 = 9.93e8 T (G2; B2 free preparation and reflections priced), a lower bound: dressing ramp unpriced (B2/B3)"
+  },
+  {
+   "ch": 9,
+   "era": "2028",
+   "label": "1+1D Z3 domain-wall, L=8, L5=4 (condensate)",
+   "lq": [
+    250,
+    250
+   ],
+   "t": [
+    268994.91760371893,
+    288535.47382854996
+   ],
+   "codesign": false,
+   "src": "app06 2028 box ('Logical qubits & 250 = 192 + 16 + 42', r25 R10: three spatial-hop groups per slot, weight bits in parallel, F* 10.4-13.0; r22-r24 '240 = 192 + 16 + 32'). 'Per-shot T & ~2.8e5 T-gates (2.7-2.9e5)'); lower end unchunked (268,995), upper end chunked to k <= 32 (288,535), the end that fits the 32 ancilla. r22 (E26): 31 phasing ancilla + 1 RUS (was 37 + 2 = 39, 247 LQ); the T count does not move",
+   "group": "Z3",
+   "shots": 1124.9999999999998,
+   "route": "domain-wall",
+   "f_star": [
+    10.418863854828055,
+    12.96522694227462
+   ],
+   "t_box": [
+    270000.0,
+    290000.0
+   ]
+  },
+  {
+   "ch": 9,
+   "era": "2033",
+   "label": "3D 3^3 SU(2)/2O overlap + Higgs, TPQ (Chern-Simons growth, method test)",
+   "lq": [
+    1015,
+    1015
+   ],
+   "t": [
+    18596712071.72244,
+    18596712071.72244
+   ],
+   "codesign": false,
+   "src": "app06 2033 box ('1015 = 216 + 486 + 270 + 43', sphaleron shot at 10a '1.9e10'; verifier 2026-10-04: 17 filter calls in 8 rounds (2k + 1), 1513 applications, 10,063 x t_dov = 1.8597e10; referee C1 (2026-10-04): the thermal filter at beta||H|| = 2Q / (T a) = 864, d_beta 89, 712 applications, 9262 x 1,847,860 = 1.7115e10 '1.7e10'; r25 '1.6e10': Yukawa inside (a second sgn sequence, 417 queries per application, 8790 x 1,847,747.1 = 1.6242e10) and the +5-LQ fan-out (R10). r24 box '1010 = 216 + 486 + 270 + 38', '8.2e9'; r24: kappa = 30, t = 10a, 450 steps x 19 + 240 = 8790 applications x 937,592.7 T = 8.2414e9; the condensate arm row '2.2e8' is the preparation alone). r22-r23 box: '~2.0e11': 65,643 applications x 3,058,805 T, carried exact and rounded once (R4). r22 (E26): the sign function on the single-particle kernel (arxiv_2607_28524; 598 Toffolis + 24 T + 6 rotations per query, 692 queries + lift + Higgs per application), N_Trotter from the state-dependent estimate (5031; range 1186-14,242), 13 applications per step, 38 ancilla. In the prose, not the box: the range 1.1-3.5e11, the worst-case bound 8.3e4 steps / 1.3e12, Ch. 5's fixed step 1.1e11. r21 box was 1005 LQ, ~1.8e13",
+   "group": "2O",
+   "shots": 1111.111111111111,
+   "route": "overlap+QSP",
+   "sgn_architecture": "single_particle_lift",
+   "trotter_rule": "state",
+   "t_representative": 18596712071.72244,
+   "t_condensate_arm": 2790100550.890904,
+   "kappa": 30.0,
+   "t_evol_lattice": 10.0,
+   "t_range_step_count": [
+    13469086943.30602,
+    28708356845.783535
+   ],
+   "t_alternative_fixed_step": 14989419064.208223,
+   "t_alternative_worst_case_bound": 85460613374.48457,
+   "t_record_second_quantized": 18089231750752.113,
+   "t_short_time": 9589662322.046719,
+   "wall_first_result_s": [
+    73378720.57348296,
+    73378720.57348296
+   ],
+   "wall_campaign_s": [
+    84539123.17704657,
+    95699525.78061017
+   ],
+   "f_star": [
+    12.165416665914272,
+    12.266322572497954
+   ],
+   "t_box": [
+    19000000000.0,
+    19000000000.0
+   ]
+  },
+  {
+   "ch": 10,
+   "era": "2028",
+   "label": "2+1D SU(3) $\\mu_B{>}0$",
+   "lq": [
+    176,
+    176
+   ],
+   "t": [
+    399956.82855117304,
+    399956.82855117304
+   ],
+   "codesign": false,
+   "src": "app07:2028 box ('~180' rounds 176; 'Per-shot T >~4.0e5': one Trotter step, a lower bound, 4.0x the cap; gauge 1.0e5 (E20 full fit) + hops 3.0e5 (share='link' + undo, E21) + mass 1.9e2 = 399,957 at the R-TOL eps_rot 9.6e-4, r19); rel_tol 0.10",
+   "note": "one Trotter step (lower bound on the executed ramp), 4.0x the cap; gauge terms compiled (full fit), hops from the unpublished Fermion_Primitives counts with the colour squish held per link and an estimated frame undo (r19)"
+  },
+  {
+   "ch": 10,
+   "era": "2033",
+   "label": "3D SU(3) $\\Sigma(36{\\times}3)$ $2^3$, QSVT/TPQ",
+   "lq": [
+    514,
+    1014
+   ],
+   "t": [
+    2772642998.6754518,
+    5634084702.228161
+   ],
+   "codesign": false,
+   "src": "app07:2033 box ('~500-1000' rounds 514-1014; '2.8e9-5.6e9': the QSVT/TPQ thermal state, author ruling 2026-10-05, Ch. 9's construction: 17 filter calls of degree 30, 2-4 c_step per query, 2.7726e9-5.6340e9; conditional on the reference state; was '8.4e13-4.4e14', the priced Chen-Kastoryano-Gilyen sampler, open item 1(a) 2026-10-04; before F2 '>~5.5e9'); rel_tol 0.10",
+   "conditional": true,
+   "note": "QSVT/TPQ thermal state (author ruling 2026-10-05): 17 filter calls of degree 30, 2-4 Trotter steps per query; conditional on a reference state of filtered amplitude ~0.1 (referee C1). The Gibbs sampler (8.4e13-4.4e14) is a record, not plotted"
+  },
+  {
+   "ch": 10,
+   "era": "codesign",
+   "label": "post-2033 $\\Sigma(72{\\times}3)$ $4^3$",
+   "lq": [
+    2554,
+    3054
+   ],
+   "t": [
+    0.0,
+    0.0
+   ],
+   "codesign": true,
+   "src": "app07:2033 box, post-2033 stretch ('~2600-3100 LQ (1728 + 576 + 250-750)'); T not costed; exact register carried (ruling ch10-stretch-ancilla a), box rounds once",
+   "note": "T not costed",
+   "lq_only": true
+  }
+ ],
+ "generated_by": "python -m estimates --resources"
+}
