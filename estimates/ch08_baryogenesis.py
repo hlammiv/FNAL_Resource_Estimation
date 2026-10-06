@@ -255,31 +255,31 @@ class Assumptions:
     a_mphi: Tagged = Stated(0.5, f"{TEX}:157", "a m_phi = 0.5")
     v_family: Tagged = Stated(64, f"{TEX}:134", "8^2 family rows")
     v_interim: Tagged = Stated(16, f"{TEX}:176", "4^2 interim scalar+Wilson-fermion variant")
-    workspace_interim_prior: Tagged = Stated(30, f"{TEX}:177 (pre-R11b)", "old '~30-qubit amplitude-estimation workspace' "
-                                             "that included a ~13-qubit phase register (R11b ch08-interim-ancilla ii removed it)")
+    workspace_interim_prior: Tagged = Stated(30, f"{TEX}:177", "'~30-qubit amplitude-estimation workspace' of a phase-register estimator, "
+                                             "of which ~13 qubits are the phase register; MLAE needs no phase register")
     workspace_interim: Tagged = Stated(17, f"{TEX}:177", "'~17-qubit amplitude-estimation workspace ... a workspace budget, "
                                        "not an itemized count' = 30 - 13 (MLAE needs no phase register)")
     lq_interim_quoted: Tagged = Stated(115, f"{TEX}:177", "'The total is ~115 LQ'; 96+17=113")
     lq_two_register_quoted: Tagged = Stated(190, f"{TEX}:177", "'two-register protocol ... ~190': 96+96=192")
 
-    # ---- c_T derivation inputs (R12 item 14) ---------------------------------
+    # ---- c_T derivation inputs ---------------------------------
     lattice_dims: Tagged = Stated(2, f"{TEX}:49,156", "2+1D: d = 2 hopping directions")
     links_per_site: Tagged = Assumed(2, "d = 2 links per site, as for periodic boundaries (arxiv_2407_13819 E_D); periodic on the "
                                      "square 2028 lattices; the 2033 15x8 cylinder is open along its 15-site axis, "
-                                     "8 of 240 links fewer (~1% of c_T), so the 2033 count is slightly conservative", DERIVED)
-    wilson_r: Tagged = Assumed(1, "Wilson parameter r = 1: the hopping matrix (r beta - i alpha_j)/2 has rank 1", DERIVED)
-    eps_syn: Tagged = Cited(EPS_SYN, EPS_SYN_SRC, "R-TOL: total synthesis error per circuit 1e-2; eps_rot = sqrt(eps_syn/N_rot)")
-    rot_synthesis: Tagged = Cited("rus", SYNTHESIS_SRC, "R-TOL: 1.15 log2(1/eps_rot) + 9.2 T per rotation")
-    toffoli_convention: Tagged = Cited("textbook", "main-overview:47 (ruling R5)", "7 T per Toffoli everywhere")
+                                     "8 of 240 links fewer (~1% of c_T), so the 2033 count is slightly conservative", "derived here")
+    wilson_r: Tagged = Assumed(1, "Wilson parameter r = 1: the hopping matrix (r beta - i alpha_j)/2 has rank 1", "derived here")
+    eps_syn: Tagged = Cited(EPS_SYN, EPS_SYN_SRC, "report-wide: total synthesis error per circuit 1e-2; eps_rot = sqrt(eps_syn/N_rot)")
+    rot_synthesis: Tagged = Cited("rus", SYNTHESIS_SRC, "report-wide: 1.15 log2(1/eps_rot) + 9.2 T per rotation")
+    toffoli_convention: Tagged = Cited("textbook", "main-overview:47 (report-wide)", "7 T per Toffoli everywhere")
     # printed c_T values (echoes of the derived numbers; checked against the model in the tests)
     c_t_2028_quoted: Tagged = Stated(1.24e3, f"{TEX}:91,129", "'c_T ~ 1.24e3 T/site/step, derived here'")
     c_t_2033_quoted: Tagged = Stated(2.5e3, f"{TEX}:91,165", "'c_T ~ 2.5e3 (1.6e3 scalar, 8.9e2 fermion)' at the deepest circuit's budget")
     c_t_range_quoted: Tagged = Stated((2.5e2, 2.5e3), f"{TEX}:85", "'c_T runs from 2.5e2 to 2.5e3 across the instances below'")
     ct_reduction: Tagged = Assumed((3, 4), "model-internal sanity span for the banked ~3.3x (not printed in the chapter); "
-                                   "assumed development target, not derived or cited (R17 ruling c)", "")
-    ct_reduction_banked: Tagged = Assumed(3.3, "assumed development target, not derived or cited (R17 ruling c): "
+                                   "assumed development target, not derived or cited", "")
+    ct_reduction_banked: Tagged = Assumed(3.3, "assumed development target, not derived or cited: "
                                           "'divided by an assumed ~3.3x reduction that is a development target, not derived "
-                                          "or cited'; carried exactly, printed results rounded once (R4)",
+                                          "or cited'; carried exactly, printed results rounded once",
                                           f"{TEX}:91,126,162,163,179")
     t_2028_box: Tagged = Stated(1.6e5, f"{TEX}:128", "'~1.6e5 T-gates, i.e. ~1.6x the 1e5 cap': 5.356e5/3.3 = 1.623e5")
     t_with_fermions_6x6_raw_quoted: Tagged = Stated(8.5e5, f"{TEX}:91", "'8.5e5 T raw': 1973.0 x 36 x 12 = 8.523e5")
@@ -299,45 +299,45 @@ class Assumptions:
     shots_nucleation_2033: Tagged = Stated(1e4, f"{TEX}:169", "nucleation arm '1e4 shots' per grid point")
     eps_c: Tagged = Stated(1e-3, f"{TEX}:88,160", "reflection asymmetry ~1e-3 at Delta theta_C = 0.1")
     n_bin: Tagged = Stated(100, f"{TEX}:89,168", "'N_bin ~ 1e2 kinematic bins'")
-    mlae_queries_per_bin_quoted: Tagged = Stated(7.0e4, f"{TEX}:83", "'~7.0e4 base-circuit queries per kinematic bin' (C_est = 1, R16; "
-                                                 "x 1/p0^2 flag contrast, B2 2026-10-05; was 3.0e4)")
-    c_est: Tagged = Stated(1.0, f"{TEX}:88", "author-adopted branch prior |A_R| < sin(pi/66) = 0.048 (R16 ruling): "
+    mlae_queries_per_bin_quoted: Tagged = Stated(7.0e4, f"{TEX}:83", "'~7.0e4 base-circuit queries per kinematic bin' (C_est = 1, "
+                                                 "x 1/p0^2 flag contrast)")
+    c_est: Tagged = Stated(1.0, f"{TEX}:88", "author-adopted branch prior |A_R| < sin(pi/66) = 0.048: "
                            "every circuit at m_max, Cramer-Rao constant one (Suzuki Fisher_final)")
-    dn_branch_prior: Tagged = Stated(0.048, f"{TEX}:88", "'We adopt this as a prior on |A_R|': |A_R| < sin(pi/66) (R16 author ruling)")
+    dn_branch_prior: Tagged = Stated(0.048, f"{TEX}:88", "'We adopt this as a prior on |A_R|': |A_R| < sin(pi/66) (author choice)")
     mlae_schedule: Tagged = Cited("single", "arxiv_1904_10246 Manuscript_v2.tex:238",
-                                  "all circuits at m_max (R16); LIS m = 1, 3, ..., m_max (:268, :271) kept as sensitivity")
+                                  "all circuits at m_max; LIS m = 1, 3, ..., m_max (:268, :271) kept as sensitivity")
     dn_estimate: Tagged = Stated(1e-3, f"{TEX}:88", "'|R_p|^2 - |R_pbar|^2 ~ ... ~ 1e-3 at Delta theta_C = 0.1' (an estimate, not a bound)")
     dn_state_independent_bound: Tagged = Assumed(1.0, "no derived bound on |Delta| follows from the chapter's inputs (the 'below Delta theta_C' "
-                                                 "scaling, taken as a bound, gives 0.1 > 0.048); recorded only: since R16 the "
-                                                 "single depth rests on the author prior (c_est), not on a derived bound", "derived here (R15)")
-    m_max_quoted: Tagged = Stated(33, f"{TEX}:88,166", "'m_max = floor(1e9/3.0e7) = 33' (fixed point, R13)")
+                                                 "scaling, taken as a bound, gives 0.1 > 0.048); recorded only: the "
+                                                 "single depth rests on the author prior (c_est), not on a derived bound", "derived here")
+    m_max_quoted: Tagged = Stated(33, f"{TEX}:88,166", "'m_max = floor(1e9/3.0e7) = 33' (fixed point)")
     envelope_2033: Tagged = Cited(1e9, "DOE RFI 2026", f"1e9 hard-op envelope, {TEX}:88,91,166")
     cap_2028: Tagged = Cited(1e5, "DOE RFI 2026", f"1e5 T cap, {TEX}:128,181")
     accuracy: Tagged = Stated(0.2, f"{TEX}:49,160,201", "20% relative accuracy on Gamma/V")
-    fault_budget_per_shot: Tagged = Assumed(0.1, "R3 ruling: 0.1 expected faults per shot, report-wide",
-                                            "TRACKED_CHANGES.md:R3")
+    fault_budget_per_shot: Tagged = Assumed(0.1, "0.1 expected faults per shot, report-wide",
+                                            "main:272 (report-wide)")
     eps_l_2028_quoted: Tagged = Stated(6e-7, f"{TEX}:131", "'Required epsilon_l <~ 6e-7 (0.1 expected faults per 1.6e5-T shot)'")
     eps_l_2033_deepest_quoted: Tagged = Stated(1e-10, f"{TEX}:167", "'<~ 1e-10 for the deepest MLAE circuit (33 x 3.0e7 T)'")
     eps_l_2033_base_quoted: Tagged = Stated(3e-9, f"{TEX}:167", "'<~ 3e-9 for the base circuit'")
 
     # ---- wall time and campaign -------------------------------------------------
-    t_gate_s: Tagged = Stated(1e-6, f"{TEX}:89,91", "'1 us per T-gate' (seconds per T; R9 name)")
-    shot_overhead_s: Tagged = Assumed(1e-4, "per-shot overhead t0 ~ 0.1 ms: register initialization (~1 logical cycle, 10 us), final transversal readout and decode (63 us decoder latency, Google_QEC_below_threshold); R17 g_rate. Replaces the retired 1 s^-1 shot rate", f"{TEX}:130")
+    t_gate_s: Tagged = Stated(1e-6, f"{TEX}:89,91", "'1 us per T-gate' (seconds per T)")
+    shot_overhead_s: Tagged = Assumed(1e-4, "per-shot overhead t0 ~ 0.1 ms: register initialization (~1 logical cycle, 10 us), final transversal readout and decode (63 us decoder latency, Google_QEC_below_threshold); the wall is gate-limited, with no separate shot rate", f"{TEX}:130")
     n_scan_points: Tagged = Stated(100, f"{TEX}:89,151,176", "'~100-point (T, Delta theta_C) scan'")
     n_dn_points: Tagged = Stated(10, f"{TEX}:89", "Delta n arm 'at ~10 representative points'")
-    horizon_yr: Tagged = Stated(5, f"{TEX}:89,151,175", "'5-year campaign horizon', one machine (E27: no machine count anywhere)")
+    horizon_yr: Tagged = Stated(5, f"{TEX}:89,151,175", "'5-year campaign horizon', one machine, serial (no machine count is formed)")
 
-    # ---- R25 tiers (rulings R1, R2; shot audit and factory analysis, 2026-10-02) ----------------
-    slope_times: Tagged = Assumed(2, "R2: Gamma/V is the slope of ln P_FV past the Zeno time, so two times (t/3 and t), "
+    # ---- two-tier schedule (shot audit and factory analysis) ----------------
+    slope_times: Tagged = Assumed(2, "Gamma/V is the slope of ln P_FV past the Zeno time, so two times (t/3 and t), "
                                   "not one", "shot_audit.json ch8 (1)")
     slope_shot_factor: Tagged = Assumed(3, "a 20% slope from t/3 and t needs ~3x the single-time count at each time "
                                         "(binomial var(ln P) ~ delta/((1-delta) N))", "shot_audit.json ch8 (1)")
     slope_early_fraction: Tagged = Assumed(1 / 3, "early time t/3: 4 of 12 steps (2028), 33 of 100 (2033); a long lever "
                                            "arm is ~5x cheaper than t/1.5", "shot_audit.json ch8 lever (5)")
-    detection_sigma: Tagged = Assumed(3, "R1/R2: the 2033 first result is a 3-sigma detection of Delta n", "H. Lamm 2026-10-02")
+    detection_sigma: Tagged = Assumed(3, "the 2033 first result is a 3-sigma detection of Delta n", "H. Lamm 2026-10-02")
     n_points_first: Tagged = Stated(2, f"{TEX}:143", "first result at T = T_c and 0.9 T_c (the box's two temperatures)")
     s_int: Tagged = Assumed(1e-3, "f_eq-weighted integrated asymmetry; NOT computed; taken at the per-k estimate "
-                            "(app05:88); the first-result Delta-n wall scales as (1e-3/S_int)^2", "NEEDS_AUTHOR (r25)")
+                            "(app05:88); the first-result Delta-n wall scales as (1e-3/S_int)^2", "NEEDS_AUTHOR")
     label_register_first: Tagged = Assumed(7, "packet-label register of the f_eq-weighted packet superposition, "
                                            "taken from the 10-qubit workspace", "shot_audit.json ch8 lever (1)")
     t_depth_2028: Tagged = Assumed((5.4e3, 7.0e3), "T-depth per shot, banked: ceil(1980/29) x 21.38 + ... per step "
@@ -349,12 +349,12 @@ class Assumptions:
                                          "label leaves A = 33 (bath borrowed) to A = 3 (workspace only). Scaled from "
                                          "t_depth_2033 by the rotation-layer count per step, ceil(10440/A): "
                                          "7.2e5 x 317/261 = 8.74e5 and 2.87e6 x 3480/1044 = 9.57e6",
-                                         "factory.json ch08 runs 2-5, rescaled (r25 verifier issue 1)")
+                                         "factory.json ch08 runs 2-5, rescaled")
 
-    # ---- referee open items B2 / B5 / G4 (2026-10-05; responses/ch08.md, 'Open items closed') --------------------
+    # ---- state preparation, flag contrast, bath and fault model --------------------
     am_f: Tagged = Assumed(0.5, "fermion Wilson mass a m_f in the symmetric phase: not fixed by the chapter, taken equal to "
                            "a m_phi; flag contrast p0 = 0.57, 0.66, 0.77 at a m_f = 0.25, 0.5, 1 (flag_contrast)",
-                           "NEEDS_AUTHOR (B2 flag)")
+                           "NEEDS_AUTHOR (flag contrast)")
     slater_givens: Tagged = Cited("(N - eta) eta", "arxiv_1711_05395 Eq. n_gates (fhm_arXiv4.tex:346-350)",
                                   "Givens rotations for one Slater determinant of eta particles in N modes")
     fft8_rotation_free: Tagged = Cited(True, "arxiv_1902_10673 main.tex:1102",
@@ -362,12 +362,12 @@ class Assumptions:
                                        "= 2 T, twiddles powers of T (<= 1 T each), derived here")
     beta_mphi: Tagged = Stated(1.0, f"{TEX}:99", "'plasma correlation time ~1/T ~ 1/m_phi' at T ~ T_c: beta = 1/m_phi")
     lr_patch_radius: Tagged = Assumed(2, "Lieb-Robinson radius v_LR beta in sites: beta = 1/m_phi = 2a at a m_phi = 0.5, "
-                                      "v_LR ~ 1 site per unit a; patch (2R+1)^2 = 25 sites", "derived here (B5)")
+                                      "v_LR ~ 1 site per unit a; patch (2R+1)^2 = 25 sites", "derived here")
     gibbs_cost_model: Tagged = Cited("t beta", "arxiv_2311_09207 Thm. L_cost and lattice estimate (main.tex:398-436)",
                                      "Hamiltonian simulation time ~beta per unit Lindblad time on a patch of radius "
                                      "v_LR beta; jumps normalized ||sum_a A^a+ A^a|| <= 1 (main.tex:346), adjoints included")
     idle_cycle_s: Tagged = Assumed(1e-5, "one logical cycle ~10 us (as in shot_overhead_s); idle qubit-cycles = "
-                                      "LQ x circuit time / cycle (G4)", "G4, derived here")
+                                      "LQ x circuit time / cycle", "derived here")
 
     # ---- interim variant (printed echoes) ------------------------------------------
     t_interim_quoted: Tagged = Stated(1.4e5, f"{TEX}:178,181", "'~1.4e5 T raw (c_T ~ 7.5e2: 2.5e2 + 5.0e2, x 16 x 12)'")
@@ -688,17 +688,17 @@ def _model_2028(a: Assumptions) -> Result:
         "wall_campaign_s": slope_wall_s,
     }
     notes = (
-        f"c_T derived here (R12 item 14): 55 R_Z + 64 T per site-step for the N_phi=16 scalar; N_rot = 55 x 432 = "
+        f"c_T derived here: 55 R_Z + 64 T per site-step for the N_phi=16 scalar; N_rot = 55 x 432 = "
         f"{p['n_rot_shot']}; eps_rot = sqrt(1e-2/N_rot) = {p['eps_rot']:.3e}; {p['t_rot']:.3f} T/rotation; "
         f"c_T = {c_t:.1f}; raw {raw:.4g}; / banked 3.3 = {t_point:.4g} printed '~1.6e5'.",
-        "The banked 3.3x is the uncited development target (R4/R11); each primitive's t_each is divided by it.",
-        f"R3: 0.1 expected faults per shot gives epsilon_l = {eps_l:.2e}; the box prints '<~6e-7'.",
+        "The banked 3.3x is the uncited development target; each primitive's t_each is divided by it.",
+        f"0.1 expected faults per shot gives epsilon_l = {eps_l:.2e}; the box prints '<~6e-7'.",
         "State prep (adiabatic ramp) and the basin projector are not priced; carried at 0 T UNSOURCED.",
         "The 2028 run drops the fermion arm for resolution: N_phi=4 cannot resolve the biased well and the fermion "
         "arm enters at N_phi=16 (288 system qubits, c_T 1973, 8.5e5 raw, 2.6e5 with 3.3x), which waits for 2033.",
     )
     notes = notes + (
-        f"R25 slope: P_FV at {n_early} and {n_trot} steps, {shots_per_time:.3g} shots each ({t_early:.4g} and "
+        f"Slope: P_FV at {n_early} and {n_trot} steps, {shots_per_time:.3g} shots each ({t_early:.4g} and "
         f"{t_point:.4g} T); {slope_wall_s / 60:.1f} min per point ({slope_wall_raw_s / 60:.0f} min raw). "
         f"T-depth {a.t_depth_2028.value} (factory.json), F* {dx['f_star'][0]:.1f}-{dx['f_star'][1]:.1f}; if the 3.3x "
         "cut T-count but not depth, F* = 7-9 and the depth floor would be ~1.1-1.4x the quoted wall (not taken).",
@@ -1326,31 +1326,31 @@ def _model_2033(a: Assumptions) -> Result:
         "epsilon_l_quoted_deepest_mlae_circuit": float(a.eps_l_2033_deepest_quoted.lo),
     }
     notes = (
-        f"c_T derived here (R12 item 14): 87 R_Z + 80 T per site-step; N_rot(base) = 87 x 12000 = {p['n_rot_shot']}; "
-        f"R13: synthesized to the deepest MLAE circuit's budget, N_rot = {m_max} x {p['n_rot_shot']} = {p['n_rot_budget']}; "
+        f"c_T derived here: 87 R_Z + 80 T per site-step; N_rot(base) = 87 x 12000 = {p['n_rot_shot']}; "
+        f"synthesized to the deepest MLAE circuit's budget, N_rot = {m_max} x ({p['n_rot_shot']} + {prep['rot_scalar']} + {prep['rot_slater']} + {prep['rot_packet']}) = {p['n_rot_budget']}; "
         f"eps_rot = {p['eps_rot']:.3e}; {p['t_rot']:.3f} T/rotation; c_T = {c_t:.1f} "
-        f"(scalar {p['c_t_scalar']:.1f}, fermion {p['c_t_fermion']:.1f}); raw, no reduction banked (R11 A).",
+        f"(scalar {p['c_t_scalar']:.1f}, fermion {p['c_t_fermion']:.1f}); raw, no reduction banked.",
         f"m_max downward scan from m0 = {sched['m0']} (m: m T_A(m) + (m-1)/2 refl vs 1e9): "
         + "; ".join(f"{mi}: {ci:.5g} {'fits' if ok else 'over'}" for mi, ci, ok in iterations) + ".",
         f"m_max = {m_max}; estimator constant {c_est:.5g} ({'single depth' if single_depth else 'Suzuki LIS 1..' + str(m_top)}; "
-        f"|Delta| < {branch_bound:.4f} needed for a single depth: author-adopted prior, R16; no derived bound, R15; "
+        f"|Delta| < {branch_bound:.4f} needed for a single depth: author-adopted prior; no derived bound; "
         f"LIS sensitivity {c_lis:.5g}); "
         f"{per_bin_mlae:.4g}/bin; {queries:.4g} total; cited to arxiv_1904_10246 and arxiv_2012_03348.",
         "Gibbs prep and the Lindblad dissipator (nucleation circuits) and the Delta-n dressing ramp are not priced; "
-        f"G2 headline = deepest circuit {deepest_t:.4g} T, a lower bound (printed '>~9.9e8').",
-        f"B2: A = U_evo U_pk U_vac; priced free preparation {sched['t_prep']:.3g} T per application (r_free "
+        f"headline = deepest circuit {deepest_t:.4g} T, a lower bound (printed '>~9.9e8').",
+        f"A = U_evo U_pk U_vac; priced free preparation {sched['t_prep']:.3g} T per application (r_free "
         f"{r_free:.4f}: Slater {slater_t:.3g}, scalar {scalar_prep_t:.3g}, FFFT {fft_t:.3g}, packet {pk_t:.3g}); "
         f"reflections {refl_t:.3g} per iterate; flag contrast p0 {p0:.3f} (queries x {1 / p0 ** 2:.3g}); C' residual "
         f"{c_prime:.1e}; at r = 1, m_max {sens_r1['m_max']} (odd {sens_r1['m_top']}), "
         f"{sens_r1['dn_point_yr']:.3g} yr per campaign Delta-n point.",
-        f"B5: filtered jump {jump_t:.3g} T per unit Lindblad time; sweep over {n_jumps_min} jumps {sweep_t:.3g} T "
+        f"Bath: filtered jump {jump_t:.3g} T per unit Lindblad time; sweep over {n_jumps_min} jumps {sweep_t:.3g} T "
         f"({sweep_t / t_nucl_late:.2g} nucleation circuits); {sweeps_in_envelope:.2g} sweeps fit 1e9.",
-        f"G4: p_f {p_fault:.3f}; worst bias {bias_worst:.2g} in A_R; eps_l for bias < first-result sigma "
+        f"Fault model: p_f {p_fault:.3f}; worst bias {bias_worst:.2g} in A_R; eps_l for bias < first-result sigma "
         f"{eps_l_bias_first:.2g} per T; idle qubit-cycles {qubit_cycles:.3g} -> {lam_idle_at_box:.3g} faults at the box "
         f"eps_l; {eps_l_with_idle:.2g} per location for 0.1 faults.",
-        f"R3: epsilon_l = {eps_l_base:.2e} base circuit, {eps_l_deepest:.2e} deepest MLAE circuit "
+        f"epsilon_l = {eps_l_base:.2e} base circuit, {eps_l_deepest:.2e} deepest MLAE circuit "
         f"({deepest_t:.3g} T); printed '<~3e-9' and '<~1e-10'.",
-        f"R25 tiers: first result {first_s / SEC_PER_DAY:.0f} d (2 x 3-sigma Delta n at {first_dn_s / SEC_PER_DAY:.1f} d, "
+        f"Tiers: first result {first_s / SEC_PER_DAY:.0f} d (2 x 3-sigma Delta n at {first_dn_s / SEC_PER_DAY:.1f} d, "
         f"S_int = {s_int:g} taken, not computed; 2 nucleation slopes at {nucl_s / SEC_PER_DAY:.2f} d); campaign "
         f"{campaign_serial_yr:.2f} yr, {campaign_over_horizon:.2f}x the horizon; scan + first result {scan_plus_first_yr:.2f} yr fits.",
         f"T-depth {a.t_depth_2033.value} per base circuit (factory.json), F* {dx['f_star'][0]:.1f}-{dx['f_star'][1]:.1f}: "
