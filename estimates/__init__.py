@@ -1,6 +1,7 @@
 """Reproducible resource estimates for the chapters of the FNAL quantum-utility report.
 
     python -m estimates              # table of every box number, with provenance
+    python -m estimates --chapter ch03   # one chapter: assumptions, resources.json rows, exports
     python -m estimates --resources  # regenerate resources.json (feeds the landscape figure)
     python -m estimates --status     # regenerate CIRCUIT_STATUS.md
     python -m pytest estimates/tests # every model vs its chapter's published numbers

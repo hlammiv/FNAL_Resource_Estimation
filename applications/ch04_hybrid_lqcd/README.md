@@ -1,0 +1,1 @@
+# Chapter 4, hybrid quantum-classical lattice QCD: model `estimates/ch04_hybrid_lqcd.py`. What it estimates, its assumptions with provenance, how the numbers are built and its open items: in preparation.

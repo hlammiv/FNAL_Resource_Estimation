@@ -3,6 +3,9 @@
 Every `chNN_<name>.py` must satisfy `tests/test_common.py::test_model_contract`. Read
 `common.py` and `groups.py` first; do not redefine anything they provide.
 
+This repository's `estimates/` is the source of truth; the paper's `scripts/estimates/` is a copy.
+`sync_paper.sh` pushes it there (rsync, keeping the paper-only files) and runs the paper's suite.
+
 ## Shape
 
 ```python

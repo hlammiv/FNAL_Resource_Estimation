@@ -1,0 +1,1 @@
+# Chapter 9, chiral lattice fermions for real-time gauge dynamics: model `estimates/ch09_chiral_gauge.py`. What it estimates, its assumptions with provenance, how the numbers are built and its open items: in preparation.

@@ -9,11 +9,23 @@ import sys
 from pathlib import Path
 
 from . import CHAPTERS, TEX, available, load
-from .common import ERAS, CircuitStatus, Provenance, Tagged, close, fmt_range
+from .common import DEPTH_EXPORTS, ERAS, CircuitStatus, Provenance, Tagged, close, fmt_range
 from .groups import GROUPS, conflicts
 
 HERE = Path(__file__).resolve().parent
 SCRIPTS = HERE.parent
+# Where the derived files are written. resources.json sits in the package's parent directory in
+# both layouts (the paper's scripts/ or the repository root). CIRCUIT_STATUS.md sits beside the
+# package in the paper tree (scripts/estimates/) and under docs/ in the standalone repository.
+DOCS = SCRIPTS / "docs" if (SCRIPTS / "docs").is_dir() else HERE
+
+
+def _tagged_value(v: Tagged) -> str:
+    """A numeric (lo, hi) prints as a band; anything else (a number, a string, a tuple of
+    strings such as a pair of route names) prints as is."""
+    if v.is_range and len(v.value) == 2 and all(isinstance(x, (int, float)) for x in v.value):
+        return fmt_range((v.lo, v.hi))
+    return str(v.value)
 
 
 def _assumption_rows(a) -> list[tuple[str, str, str, str]]:
@@ -21,8 +33,7 @@ def _assumption_rows(a) -> list[tuple[str, str, str, str]]:
     for f in dataclasses.fields(a):
         v = getattr(a, f.name)
         if isinstance(v, Tagged):
-            rows.append((f.name, fmt_range((v.lo, v.hi)) if v.is_range else str(v.value),
-                         v.prov.value, v.src or v.note))
+            rows.append((f.name, _tagged_value(v), v.prov.value, v.src or v.note))
         else:
             rows.append((f.name, str(v), "-", ""))
     return rows
@@ -119,13 +130,112 @@ def circuit_status_md(chapters: list[int]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _chapter_arg(s: str) -> int:
+    """'ch03', 'CH3' or '3' -> 3."""
+    t = s.strip().lower()
+    if t.startswith("ch"):
+        t = t[2:]
+    try:
+        ch = int(t)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{s!r} is not a chapter; use chNN, e.g. ch03")
+    if ch not in CHAPTERS:
+        raise argparse.ArgumentTypeError(f"no model for chapter {ch}; chapters are {sorted(CHAPTERS)}")
+    return ch
+
+
+def _val(v) -> str:
+    """One number, a (lo, hi) band, a Tagged value or None, as the chapter report prints it."""
+    if v is None:
+        return "-"
+    if isinstance(v, Tagged):
+        return _tagged_value(v)
+    if isinstance(v, (tuple, list)) and len(v) == 2 and all(isinstance(x, (int, float)) for x in v):
+        return fmt_range(tuple(v))
+    if isinstance(v, float):
+        return f"{v:.4g}"
+    return str(v)
+
+
+def chapter_report(ch: int, show_intermediates: bool = False) -> str:
+    """One chapter: its assumptions with provenance, its resources.json rows, and the per-era
+    exports (headline against the box, shots, wall, epsilon_l, the CONTRACT.md rule-12 keys and
+    the primitive breakdown). Read-only: it recomputes the model and writes nothing."""
+    m = load(ch)
+    a = m.Assumptions()
+    results = {era: m.model(a, era) for era in ERAS if era in m.PUBLISHED}
+    rows_fn = getattr(m, "INSTANCE_ROWS", lambda a, era, r: [])
+    out = [f"Ch. {ch}  {CHAPTERS[ch]}  ({TEX[ch]})", ""]
+
+    rows = _assumption_rows(a)
+    counts = {p.value: 0 for p in Provenance}
+    for _, _, prov, _ in rows:
+        if prov in counts:
+            counts[prov] += 1
+    out.append(f"ASSUMPTIONS  ({len(rows)} fields: "
+               + ", ".join(f"{k} {n}" for k, n in counts.items() if n) + ")")
+    for name, val, prov, src in rows:
+        out.append(f"   {name:38s} {val:>18s}  [{prov:18s}] {src}")
+    out.append("")
+
+    out.append("INSTANCES  (the rows this chapter writes to resources.json)")
+    for era, r in results.items():
+        for lbl, lq, t, extra in rows_fn(a, era, r):
+            out.append(f"   {era:9s} {lbl}")
+            line = f"             LQ {fmt_range(tuple(lq))}   hard ops {fmt_range(tuple(t))}"
+            if extra:
+                line += "   " + ", ".join(f"{k}={v}" for k, v in extra.items())
+            out.append(line)
+    out.append("")
+
+    out.append("EXPORTS  (per era: headline against the box, shots, wall, epsilon_l, "
+               "the depth and factory keys of CONTRACT.md rule 12, the primitive breakdown)")
+    for era, r in results.items():
+        p = m.PUBLISHED[era]
+        ok_lq = close(r.lq, p.lq, p.rel_tol)
+        ok_t = p.hard_ops is None or close(r.hard_ops, p.hard_ops, p.rel_tol)
+        flag = "ok" if (ok_lq and ok_t) else "MISMATCH"
+        out.append(f"   {era}  [{flag}]  box: {p.src}  (rel_tol {p.rel_tol})")
+        out.append(f"             lq            {fmt_range(r.lq):>18s}   box {fmt_range(p.lq)}")
+        out.append(f"             hard_ops      {fmt_range(r.hard_ops):>18s}   box {fmt_range(p.hard_ops)}")
+        out.append(f"             shots         {_val(r.shots):>18s}")
+        out.append(f"             wall_time_s   {_val(r.wall_time_s):>18s}")
+        out.append(f"             epsilon_l     {_val(r.epsilon_l):>18s}")
+        for k in DEPTH_EXPORTS:
+            if k in r.intermediates:
+                out.append(f"             {k:13s} {_val(r.intermediates[k]):>18s}")
+        if r.breakdown:
+            out.append(f"             breakdown: {len(r.breakdown)} primitives, sum {r.breakdown_total():.4g} T")
+            for q in r.breakdown:
+                out.append(f"               {q.name:36s} {q.count:>10.4g} x {q.t_each:>8.4g} = {q.t_total:>10.4g}"
+                           f"  {q.status.value}")
+        for n in r.notes:
+            out.append(f"             note: {n}")
+        others = sorted(k for k in r.intermediates if k not in DEPTH_EXPORTS)
+        if show_intermediates:
+            out.append(f"             intermediates ({len(others)} more keys):")
+            for k in others:
+                out.append(f"               {k:50s} {_val(r.intermediates[k])}")
+        else:
+            out.append(f"             intermediates: {len(others)} more keys (--intermediates lists them)")
+        out.append("")
+    return "\n".join(out)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="estimates")
     ap.add_argument("--resources", action="store_true", help="write resources.json")
     ap.add_argument("--status", action="store_true", help="write CIRCUIT_STATUS.md")
     ap.add_argument("--inputs", action="store_true", help="show every assumption with provenance")
     ap.add_argument("--ch", type=int, nargs="*", help="restrict to chapters")
+    ap.add_argument("--chapter", type=_chapter_arg, metavar="chNN",
+                    help="one chapter's assumptions, resources.json rows and exports (e.g. ch03)")
+    ap.add_argument("--intermediates", action="store_true",
+                    help="with --chapter: list every intermediate the model records")
     args = ap.parse_args(argv)
+    if args.chapter is not None:
+        print(chapter_report(args.chapter, args.intermediates))
+        return
     chapters = args.ch or available()
     missing = [c for c in CHAPTERS if c not in chapters]
     if missing and not args.ch:
@@ -136,7 +246,7 @@ def main(argv=None):
         print(f"wrote {p}")
         return
     if args.status:
-        p = HERE / "CIRCUIT_STATUS.md"
+        p = DOCS / "CIRCUIT_STATUS.md"
         p.write_text(circuit_status_md(chapters))
         print(f"wrote {p}")
         return

@@ -1,0 +1,1 @@
+# Chapter 3, Mu2e and neutrinoless double-beta-decay nuclear matrix elements: model `estimates/ch03_mu2e_0nubb.py`. What it estimates, its assumptions with provenance, how the numbers are built and its open items: in preparation.

@@ -1,0 +1,9 @@
+# Runtime: the chapter models import numpy and scipy inside a few functions
+# (ch03_mu2e_0nubb.py he4_dipole and the 27Al/4He oscillator integrals, ch07_curved_space.py
+# step-convergence and reduced-instance checks, ch08_baryogenesis.py Wilson-sea diagonalizations,
+# ch04_hybrid_lqcd.py free-W spectra; several tests use numpy directly). The 2028 Ch. 3 headline
+# calls one of them, so `python -m estimates` needs both.
+numpy
+scipy
+# Test runner.
+pytest

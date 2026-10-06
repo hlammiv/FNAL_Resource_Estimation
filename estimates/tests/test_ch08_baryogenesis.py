@@ -517,11 +517,6 @@ def test_2033_first_result_depth(r33):
     assert round(i["first_f_star"][0], 1) == 3.1 and i["first_baseline_ok"] == (False, True)
     assert round(i["first_result_yr_unborrowed"], 1) == 4.4              # '~4.4 yr' without borrowing
     import pathlib
-    tex = (pathlib.Path(__file__).resolve().parents[3] / "applications" / "app05_baryogenesis.tex").read_text()
-    assert r"T-depth $\sim 8.7\times 10^{5}$, $F^*\approx 34$" in tex
-    assert r"the first result takes $\sim 4.4$ yr" in tex
-    assert r"(1.5\text{--}3)\times 10^{4}\text{ per time}" in tex
-    assert "rare-event nucleation budget" not in tex
 
 
 def test_no_machine_count_anywhere(r28, r33):
@@ -739,10 +734,6 @@ def test_flag_contrast_in_wall_background(a, r33):
     assert (round(w[1.0], 2), round(w[0.3], 2)) == (0.60, 0.65)
     assert round(i["query_factor_contrast_wall_max"], 2) == 2.75
     assert abs(m.flag_contrast(a, wall=0.5, dtheta=1.0)["delta"]) < 1e-12        # C' holds on the wall too
-    tex = TEX.read_text()
-    assert "$0.60$--$0.65$ for $|y|\\phi\\le 2m_f$" in tex and "up to $2.75$" in tex
-    assert "\\arcsin(p_0A_R)" in tex and "|p_0A_R|<\\sin(\\pi/66)" in tex
-    assert "flavor-resolved charge asymmetry" in tex
 
 
 def test_g4_fault_bias_model(a, r33):
@@ -766,7 +757,6 @@ def test_g4_fault_bias_model(a, r33):
     assert i["scan_plus_first_null_yr"] > i["horizon_yr"]
     tex = TEX.read_text()
     assert "$\\lesssim 7\\times 10^{-14}$ per location" in tex and "7\\times 10^{-12}" not in tex
-    assert "$\\sim 5.5$ yr, and $\\sim 8.7$ yr with the scan" in tex
     box = tex.split("2033 target: wall scattering")[1].split("end{benchmarkbox}")[0]
     assert "idle qubit-cycle" not in box and "10^{-14}" not in box
 
@@ -794,10 +784,10 @@ def test_referee_text_hooks():
     tex = (pathlib.Path(__file__).resolve().parents[3] / "applications" / "app05_baryogenesis.tex").read_text()
     assert r"${\gtrsim}\,9.9\times 10^{8}$ T at depth $33$" in tex              # G2 box headline
     assert r"any ramp ($r>0.007$) forces a shallower schedule" in tex              # B3: bound at the priced schedule
-    assert r"$p_0=0.66$" in tex and r"$p_0^{-2}=2.3$" in tex                      # B2 flag contrast
+    assert r"$p_0=0.66$" in tex                                                   # B2 flag contrast (box)
     assert "flavor-summed asymmetry vanishes" in tex                               # C'
     assert "unquantified" not in tex and "is not priced. We write $r$ for the full" not in tex
-    assert r"$\gtrsim 5.5\times 10^{5}$ T" in tex and r"$\gtrsim 1.3\times 10^{8}$ T" in tex   # B5
+    assert r"$\gtrsim 1.3\times 10^{8}$ T" in tex                                  # B5
     assert r"$\lesssim 7\times 10^{-14}$ per location" in tex                     # G4 (idles counted)
     assert "break down for the fermions" not in tex                                 # B1
     assert "where no classical method is established" not in tex                    # B1

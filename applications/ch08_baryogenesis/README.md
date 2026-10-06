@@ -1,0 +1,1 @@
+# Chapter 8, electroweak baryogenesis (wall scattering): model `estimates/ch08_baryogenesis.py`. What it estimates, its assumptions with provenance, how the numbers are built and its open items: in preparation.
