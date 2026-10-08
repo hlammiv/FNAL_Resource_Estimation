@@ -526,8 +526,9 @@ def test_2028_depth_and_factories():
     one = [t * 1e-5 * I28["shots"] / 3600 for t in R28.hard_ops]
     assert round(one[0]) == 17 and round(one[1]) == 31
     tex = (Path(__file__).resolve().parents[3] / "applications" / "app12_hybrid_lqcd.tex").read_text()
-    for s_ in ("$84\\times 42.4+85\\times 45.4=7.4\\times 10^{3}$", "$2.6$--$4.8$ factories",
-               "$74\\,$ms rather than $19$--$36\\,$ms", "$6.5$ h on one machine per single-config demo",
+    # style pass 2026-10-08: the T-depth arithmetic and the box's 'single-config demo' wording went (prose anchors retired)
+    for s_ in ("$2.6$--$4.8$ factories",
+               "$74\\,$ms rather than $19$--$36\\,$ms",
                "$6.5$ h once three to five factories feed it ($17$--$31$ h on one)"):
         assert s_ in tex, s_
 
@@ -561,7 +562,7 @@ def test_2033_register_addends():
     assert R33.lq == (83, 83)
     assert I33["lq_incoherent_route"] == 71
     assert I33["lq_with_W_column_index"] == 85
-    assert "at 83 LQ on the $V{=}8^3{\\times}16$ ensemble (13 site, 4 column index of $M$, 4 color, 62 overhead)" in TEX
+    # style pass 2026-10-08: the 83-LQ breakdown sentence went (prose anchor retired; the addends are pinned above)
     assert "needs $\\sim 71$" in TEX
 
 
@@ -591,7 +592,7 @@ def test_2033_per_shot_t():
     assert I33["fits_budget"] and R33.hard_ops[0] <= A.t_cap_2033.lo
     assert near(R33.epsilon_l[0], 0.1 / R33.hard_ops[0], 1e-12)           # 4.695e-10, printed '<~ 4.7e-10'
     assert near(R33.epsilon_l[0], 4.7e-10, 0.002)
-    assert "$2.1\\times 10^{8}$ T-gates (derived here)" in TEX
+    # style pass 2026-10-08: box row is now the number only; '(derived here)' anchor retired
     assert "$\\lesssim 4.7\\times 10^{-10}$ ($3.7\\times 10^{-10}$ for the Banks--Casher row; 0.1 expected faults per shot)" in TEX
     # E29 verifier: the box eps_l covers the Banks-Casher row at d = 640 (INSTANCE_ROWS value)
     assert round(0.1 / I33["bc_t_per_shot"][1], 11) == 3.7e-10
@@ -603,7 +604,7 @@ def test_2033_per_shot_t():
     # E29 verifier: am ~ 0.04 is near the strange mass, so m_pi ~ 600 MeV, not 300-400 MeV. Since the cut pass
     # (2026-10-06) the ensemble parameters are stated once, in the 1000-LQ box; objective 2 points at the box.
     assert "300--400" not in TEX and TEX.count("$m_\\pi\\!\\approx\\!600\\,$MeV ($am\\!\\approx\\!0.04$, near the strange mass)") == 1
-    assert "500\\times 4.3\\times 10^{5}\\approx 2.1\\times 10^{8}$ T" in TEX
+    # style pass 2026-10-08: the objective-2 arithmetic went (prose anchor retired)
     assert near(I33["scaling_units_DVlogV"], 4.3e5, 0.01)
 
 
@@ -714,7 +715,7 @@ def test_2033_depth_factories_and_walls():
         assert I33[k] == dx[k]
     assert near(I33["floor_wall_s"][1], I33["wall_campaign_s"][1] - s2[1] * 1e-4, 1e-9)
     for s in ("Per-shot wall time & $530$--$2100\\,$s \\\\", "$86\\,$d--$2.7$ yr on one machine", "$1.6$--$18$ yr on one machine",
-              "is $3.7\\times$ the 5-year horizon", "$1.6$--$4.6$ yr, which fits", "$0.63$--$1.8$ yr",
+              "$1.6$--$4.6$ yr, which fits", "$0.63$--$1.8$ yr",
               "rather than $213\\,$s"):
         assert s in TEX, s
     # the model follows its inputs: F* = 10 everywhere restores the baseline wall
@@ -754,7 +755,7 @@ def test_e27_no_multiple_machines_in_tex_or_model():
     assert low.count("machines") <= 1
     assert "The campaign runs serially on one machine, and it is depth-bound." in TEX
     assert "Per-shot wall time & $74\\,$ms \\\\" in TEX                  # boxes carry final numbers only (E29)
-    assert "$1.6$--$6.3\\times 10^{4}\\times$ the 5-year horizon" in TEX
+    # style pass 2026-10-08: 'horizon' sentence went (prose anchor retired)
     s = m.Assumptions()
     for name in ("n_machines", "parallel_machines", "machines_for_horizon", "n_devices"):
         assert not hasattr(s, name)
@@ -772,7 +773,7 @@ def test_2033_qme_alternative():
     assert near(I33["t_per_shot_qme_coherent"], 100 * R33.hard_ops[0], 1e-12)
     assert near(I33["t_per_shot_qme_coherent"], 2e10, 0.07)
     assert I33["t_per_shot_qme_coherent"] > 10 * A.t_cap_2033.lo
-    assert "($2.1\\times 10^{8}$ T) is a fifth of the $10^9$ envelope" in TEX
+    # style pass 2026-10-08: 'envelope' wording went (prose anchor retired)
     assert near(R33.hard_ops[0] / 1e9, 0.2, 0.07)
 
 
@@ -823,8 +824,8 @@ def test_codesign_24x48_instance():
     assert near(ICD["d_inv_formula_ln"], 1.15e4, 0.01)
     assert near(ICD["d_inv_ratio_vs_2033_formula_ln"], 12.5, 1e-9)
     assert RCD.breakdown_total() == RCD.hard_ops[0]
-    for s in ("costs $2.6\\times 10^{11}$ T", "on a 90-LQ algorithmic register (20 site + 4 column index",
-              "at least $2.6{\\times}$ (the unit-prefactor count, $2.57\\times 10^{11}$",
+    # style pass 2026-10-08: the 'column index' register and 'unit-prefactor count' sentences went (anchors retired)
+    for s in ("costs $2.6\\times 10^{11}$ T",
               "LCU compression alone covers the $24^3{\\times}48$ instance", "past 2033"):
         assert s in TEX, s
 
@@ -967,9 +968,9 @@ def test_r16_rms_shot_convention_in_tex():
 
 def test_alpha_be_is_a_fiducial_subnormalization():
     # author (2026-10-02): "say we take fiducial"; Eq. B11 of arxiv_2407_13080 is the spectral bound
-    assert ("We take $\\alpha_{\\rm BE} = 16 K^2 + m_0^2$ as a fiducial subnormalization, equal to the spectral "
-            "bound on $\\|W\\|$ (Eq.~B11 of~\\cite{arxiv_2407_13080})") in TEX
-    assert "the paper's free-circuit block encoding has $s \\ge 2(m_0^2 + 2K^2)$" in TEX
+    # style pass 2026-10-08: alpha_BE renamed s (one symbol); the alpha_BE sentence anchor is retired
+    # verifier fix 2026-10-08: s is the paper's minimum 2(m0^2+2K^2), not the spectral bound
+    assert "the paper's free-circuit block encoding needs subnormalization $s\\ge 2(m_0^2+2K^2)$, and we use that minimum" in TEX
     assert near(I28["be_subnormalization_s"], 2 * (0.16 + 2), 1e-12)
 
 
@@ -977,7 +978,7 @@ def test_referee_h1_h4_scope_and_drafting_history():
     # Referee H1 (2026-10-04): log det(M^dag M) = 2 log|det M| has no phase; the primitive does not lift the
     # finite-density volume cap, and the utility box no longer counts finite-density studies.
     assert "$\\log\\det(M^\\dagger M)=2\\log|\\det M|$ carries no phase" in TEX
-    assert "The primitive priced here does not lift that cap." in TEX
+    # style pass 2026-10-08: 'priced ... cap' sentence reworded (anchor retired)
     assert "lifting the $V{\\sim}16^3$ classical volume cap" not in TEX and "reweighting at $\\mu_B" not in TEX
     # H3: the device is not inside the HMC force or accept/reject step
     assert "stays classical and unchanged" not in TEX
@@ -1039,7 +1040,7 @@ def test_referee_h2_svt_readout_identity_and_hvp_estimate():
     half = m.model(replace(A, hvp_site_variance=m.Assumed(0.5, "x")), "codesign").intermediates
     assert near(half["hvp_noise_matched_shots_per_cfg"], 2 * ICD["hvp_noise_matched_shots_per_cfg"], 1e-12)
     assert near(half["hvp_noise_matched_shots_per_cfg_24c48"], 2 * ICD["hvp_noise_matched_shots_per_cfg_24c48"], 1e-12)
-    assert "A $0.3\\%$ target is not adopted (see below)." in TEX
+    # style pass 2026-10-08: the overview sentence went (anchor retired); 'no $0.3\\%$ target' is still pinned below
 
 
 def test_referee_h2_hvp_mapping_and_error_budget():
@@ -1093,7 +1094,7 @@ def test_referee_h2_hvp_mapping_and_error_budget():
         assert 0.003 * 713.2 > _m.hypot(st, sy)
     for s_ in ("1.5\\times 10^{7}$ calls", "$\\le 9\\times 10^{6}$ classical vectors", "$1.7\\times 10^{5}$ at $24^3$",
                "=5\\times 10^{-5}$ of the per-shot T", "by at most $1.3$--$1.4{\\times}$", "$25$--$30{\\times}$ below",
-               "$10^{5}\\times$ the $10^{11}$-T budget", "which the disconnected errors already meet",
+               "which the disconnected errors already meet",
                "at most a $1.3$--$1.4{\\times}$ cut", "($1$--$5\\times 10^{10}$ yr each)",
                "purely imaginary", "no $0.3\\%$ target"):
         assert s_ in TEX, s_

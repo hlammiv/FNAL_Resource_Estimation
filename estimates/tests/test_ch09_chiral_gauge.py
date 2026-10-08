@@ -2333,18 +2333,19 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  r"$417$ queries per application and $1.8\times 10^{6}$ T",
                  r"$1.9\times 10^{10}$ at $t=10a$; $9.6\times 10^{9}$ at $t=5a$",
                  r"first result $36$~s; campaign $13$~min",
-                 r"$2.3$~yr \\", r"$2.7$--$3.0$~yr for $4$--$8$ temperatures, inside the 5-year horizon",
-                 r"$1.1\times 10^{3}$ at $10a$ $+$ $5.5\times 10^{3}$ at $5a$, one temperature (assumed readout variance)",
+                 r"$2.3$~yr \\", r"$2.7$--$3.0$~yr for $4$--$8$ temperatures",
+                 r"$1.1\times 10^{3}$ at $10a$ $+$ $5.5\times 10^{3}$ at $5a$, one temperature",
                  r"With the Hadamard test this needs $1.2\times 10^{15}$ shots at $10a$",
                  r"no zero-point part: $1.3\times 10^{-4}$ at $10a$",
                  r"checks the evolution and the estimator, not the thermal state", r"($430$--$2400\times$)", r"The test at $10\%$ would take $21$~yr",
                  r"has $4.9$ times the relative variance", r"less than $5\%$ between $Ta=0.4$ and $0.6$",
                  r"$\lesssim 3.6\times 10^{-11}$ (condensate), $\lesssim 5.4\times 10^{-12}$ ($N_{CS}$ test, $10a$; "
-                 r"$1.0\times 10^{-11}$ at $5a$)", r"$d_\beta\simeq\sqrt{2\beta Q\ln\delta_\beta^{-1}}=89$",
+                 r"$1.0\times 10^{-11}$ at $5a$)",
                  r"$17$ filter calls per thermal state, $1.5\times 10^{3}$ applications and $2.8\times 10^{9}$ T",
-                 r"As priced it acts on the fermion block encoding only", r"$\|(U-e^{i\theta}S^{N})\rho^{1/2}\|_2$",
-                 r"$2.8$ times the $10^{9}$ budget", r"Thermal-state systematic & not bounded",
-                 r"preprint~\cite{AlvesLammLiu_inprep}", r"$\kappa=\alpha/\Delta$ with $\alpha$ the block-encoding"):
+                 # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,
+                 # the Hilbert-Schmidt-norm formula went (described in words), "budget" -> "2033 target"
+                 r"$2.8$ times the 2033 target", r"Thermal-state systematic & not bounded",
+                 r"preprint~\cite{AlvesLammLiu_inprep}"):
         assert frag in tex, frag
     assert "in preparation" not in tex and "N_{\\rm coupling}" not in tex
     # referee pass (2026-10-04): no lattice spacing in fm at the 2033 target, no HTL-only classical baseline, no
@@ -2365,7 +2366,8 @@ def test_utility_box_has_no_dollar_figure():
     # attaches no dollar value and Table 1.2 has no Ch. 9 row
     p = Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex"
     box = p.read_text().split("begin{utilitybox}")[1].split("end{utilitybox}")[0]
-    assert "\\$" not in box and "not priced in dollars" in box and "must not be added" in box
+    # style pass 2026-10-08 (rule 9): "not priced in dollars" and "must not be added" retired with the disclaimers
+    assert "\\$" not in box
 
 
 # --------------------------------------------------------------------------- #
@@ -2428,13 +2430,14 @@ def test_ncs_kubo_readout_and_units(r33):
 
 def test_chapter_open_prints():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex").read_text()
-    for frag in (r"$p=e^{-138}\approx 10^{-60}$", r"$\sim 10^{30}$ rounds", r"a further $e^{-491}$",
+    # symbol pass 2026-10-08: single-use p, d_beta and the alpha restatement went (rule 11); their anchors retired
+    for frag in (r"$\sim 10^{30}$ rounds", r"a further $e^{-491}$",
                  r"$\lambda\ge 9.2/a$ at $g^2=1$", r"$9.6\times 10^{-4}$, mostly zero-point",
                  r"$\sigma^2\gtrsim 1.1\times 10^{14}$ ($1.2\times 10^{12}$ even for an ideal helicity operator",
                  r"suppressed $\sim 10^{3}$-fold ($0.0023\pm 0.0016$ against $1.68$) already at $L=3/(g^2T)$",
                  r"average over the links $(x,i)$ and $(x-\hat\imath,i)$", r"known cost and controlled bias",
                  r"orthonormal basis of the Gauss-law sector", r"($5\times 10^{-4}$ and $0.04$ at $n=8$)",
-                 r"amplified basis/product references are biased (uncontrolled",
+                 # style pass 2026-10-08: the box row now points to Algorithm choice ("amplified ... references" retired)
                  r"$a^{-1}\approx 320$~GeV", r"$L=1.5/(g^2T)$ ($0.63/(g^2T)$ at the electroweak $g^2\approx 0.42$)",
                  r"17 post-selection attempts at success probability $1/17$"):
         assert frag in tex, frag

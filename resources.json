@@ -600,25 +600,6 @@
   },
   {
    "ch": 8,
-   "era": "2028",
-   "label": "interim scalar+Wilson $4^2$",
-   "lq": [
-    113,
-    113
-   ],
-   "t": [
-    144912.76692923915,
-    144912.76692923915
-   ],
-   "codesign": false,
-   "src": "app05:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
-   "t_bound": null,
-   "conditional": true,
-   "reconciled": false,
-   "note": "app05:176-178 quotes ~115 LQ (96 + 17 = 113), ~1.4e5 T raw (c_T 754.8 x 192 = 1.449e5, R12). 4.4e4 with the banked 3.3x; not run in 2028 because N_phi=4 cannot resolve the biased well"
-  },
-  {
-   "ch": 8,
    "era": "2033",
    "label": "wall scattering $15{\\times}8$",
    "lq": [

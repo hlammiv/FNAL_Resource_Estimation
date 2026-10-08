@@ -689,7 +689,6 @@ def test_s648_assumptions_are_noted(a, r33, rcd):
     tex = TEX.read_text()
     assert r"$\beta_f=3.18(3)$~\cite{arxiv_2511_17437} and $\Sigma(216\times 3)$ at $\beta_f=3.80(5)$" in tex
     assert r"i.e.\ $g^2_f=1.89$ and $1.58$" in tex
-    assert r"By analogy we assume that $\Sigma(216\times 3)$ under $H_I$, with such a plaquette term if needed (unpriced), does not freeze at $a_s=0.15$--$0.2$ fm; this is not established" in tex
     assert r"one extra single-plaquette term" in tex and r"$H_I$ is a different modification, an $\mathcal O(a^2)$ improvement." in tex
     assert r"\cite{arxiv_1906_11213,arxiv_2203_02330}" in tex and r"\cite{Gustafson_S648_inprep}" in tex
 
@@ -729,107 +728,36 @@ def test_bad_inputs_rejected(a):
 @pytest.mark.skipif(not TEX.exists(), reason="chapter .tex not beside the scripts tree")
 @pytest.mark.parametrize("phrase", [
     # r16 sweep: box derivation rows moved to the prose; pins follow them there
-    r"its $32$ links at $5$ qubits each plus $1$--$2$ Hadamard ancillas and $16$ workspace qubits give $178$ LQ",
     r"Logical qubits & $178$ \\",
-    r"Per-shot T & first result: $9.5\times 10^{4}$ T-gates (one Trotter step of $0.045$ fm/$c$) \\",
-    r"full benchmark: $5.9\times 10^{5}$ T-gates ($6$ Trotter steps of $a_t/4$ to $t_{\max} = 0.15$ fm/$c$)",
-    r"costs $9.5\times 10^{4}$ T on its deeper shot and fits the $10^{5}$-T first-generation envelope as it stands; its $2\times 10^{3}$ shots take $1.6$ min.",
-    r"Its seven timeslices take $34$ min.",
-    r"Shots & first result $2\times 10^{3}$; full benchmark $7\times 10^{3}$ ($7$ timeslices); precision not yet set; for a prepared thermal state \\",
-    r"the magnetic (plaquette) term is $1.1\times 10^{3}$ T per link-step~\cite{arxiv_2208_12309}",
-    r"is $2.0\times 10^{3}$ T: $3.1\times 10^{3}$ T per link-step in all",
-    r"At 2028 six Trotter steps to $t_{\max}=0.15$ fm/$c$",
-    r"first result $1.6$ min; full benchmark $34$ min per $(T,k)$ point (one machine, $1\,\mu$s per T gate)",
-    r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 1000-LQ reference \\",
-    r"Its $891$ gauge, $243$ fermion, and $100$--$200$ ancilla qubits ($1234$--$1334$ LQ) overfill it by a quarter to a third, an optimization target.",
-    r"Per-shot T & deepest shot at $a_s=0.2$ fm: $6.3\times 10^{9}$--$2.2\times 10^{10}$ T ($5.6\times 10^{9}$--$2.1\times 10^{10}$ quench $+$ $6.9\times 10^{8}$--$1.2\times 10^{9}$ fit evolution), $6$--$22\times$ the $10^{9}$ budget; $3.0\times 10^{10}$ on the second spacing's late shot \\",
-    r"so every shot is $6.3\times 10^{9}$--$2.2\times 10^{10}$ T and preparation-bound, $6$--$22$ times the $10^{9}$ reference budget at both ends of the band ($3.0\times 10^{10}$ on the second spacing's late shot below), a stated co-design gap.",   # cut pass 2026-10-06
-    r"Cost basis & $\Sigma(216\times 3)$ primitives for $H_I$ from a draft in preparation~\cite{Gustafson_S648_inprep};",
-    r"quench length $c/T$ with $c=2$--$2\pi$ and a one-$a_s$ ramp assumed, both at the grid step \\",
-    r"each shot to its own fit time ($0.18$--$0.26$ fm/$c$ after the quench; $48$ fit steps on the second spacing's late shot)",
-    r"staggered hop from unpublished $\Sigma(72\times 3)$ gate counts~\cite{FermionPrimitives_unpub} plus our undo estimate, a placeholder;",
-    r"needs a per-step cut of ${\geq}\,5.9\times$; the named levers are assumed at $3$--$10\times$, not derived \\",
-    r"only with a per-step cut of at least $5.9\times$ (the levers are in the gap list below).",   # cut pass 2026-10-06: the 3-10x lever sentence lives in the box and the gap bullet
-    r"The 2028 benchmark needs a cut of at least $5.9\times$ in per-Trotter-step T-cost for its full six steps; its one-step first result does not.",
-    r"cost $2.9\times 10^{5}$ T per link-step and the four fast Fourier transforms and two electric phases $5.9\times 10^{4}$ T~\cite{Gustafson_S648_inprep}, $3.4\times 10^{5}$ T in all.",
-    r"the hop is priced from unpublished gate counts~\cite{FermionPrimitives_unpub} for a circuit that rotates the color modes on both sites of a link into the frame where the link is diagonal",
-    r"No hop circuit exists for $\Sigma(216\times 3)$, so we carry the $\Sigma(72\times 3)$ counts as a placeholder: $3{,}672$ Toffolis, $360$ T and $2{,}933$ rotations per link-step, or $1.1\times 10^{5}$ T, of which the estimated undo is $3.2\times 10^{4}$ T.",
-    r"are computed once per link and held through both frame changes, the hop and the return.",
-    r"The source counts omit the return, which the next link (a different group element) needs, so we add the undo on both sites as our own estimate.",
-    r"$160$ T per site-step and under $0.1\%$ of the step.  The link-step comes to $4.5\times 10^{5}$ T in all, $24\%$ of it the hop.",
-    r"the $\Sigma(72\times 3)$ placeholder is $24\%$ of the 2033 Trotter step, and recomputing its register map at every frame change gives a $1.7\times 10^{10}$-T reference shot.  Whether the undo ($3.2\times 10^{4}$ T) is needed at all",
-    r"($81$ links, 2nd-order Trotter steps of $\Delta t=0.01$ fm/$c$) prices the reference shot, evolved to $t=4$ fm/$c$ in $4\times 10^{2}$ steps (a pricing basis; the step rule would need $1.9\times 10^{3}$), at $1.5\times 10^{10}$ T.",
-    r"Its primary output is $C_{k_{\min}}(t)$ at two times, placed at $\Gamma t=0.5$ and $1.8$ for an assumed decay time $\tau=1/\Gamma$ and rounded up onto the $0.01$ fm/$c$ step grid, with $20\%$ and $80\%$ of the shots.",
-    r"($\epsilon_{\rm rot}=1.3\times 10^{-5}$ to $6.5\times 10^{-6}$ with the quench in the circuit, $27.9$--$29.0$ T per rotation)",
-    r"We carry $\tau$ from the dephasing scale $1/k\approx 0.1$ fm/$c$ to the thermal scale $1/(2\pi T)\approx 0.10$--$0.14$ fm/$c$, the planning value; free streaming reaches $1/e$ only at $kt\approx 2.9$ ($0.28$ fm/$c$), so the slow end is not conservative.",
+    r"Per-shot T & first result: $9.5\times 10^{4}$ (one step of $0.045$ fm/$c$)",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"full benchmark: $5.9\times 10^{5}$ ($6$ Trotter steps of $a_t/4$ to $t_{\max} = 0.15$ fm/$c$)",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"Shots & first result $2\times 10^{3}$; full benchmark $7\times 10^{3}$ ($7$ measurement times) \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"first result $1.6$ min; full benchmark $34$ min per $(T,k)$ point on one machine; longest shot $\sim 0.6$ s \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 1000-logical-qubit 2033 target \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"Per-shot T & longest circuit: $6.3\times 10^{9}$--$2.2\times 10^{10}$ ($5.6\times 10^{9}$--$2.1\times 10^{10}$ quench $+$ $6.9\times 10^{8}$--$1.2\times 10^{9}$ evolution); second spacing $3.0\times 10^{10}$ ($\sim 3\times 10^{4}$ s) \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"The hydrodynamic decay time $\tau=T/((\eta/s)k^{2})\approx 0.07$--$0.09$ fm/$c$ (at $T=225$--$300$ MeV and $\eta/s\approx 0.15$) has no basis at this $k$.",
-    r"The deepest shot at $a_s=0.2$ fm then evolves to $0.18$--$0.26$ fm/$c$ after the quench preparation of route (c), $152$--$572$ steps for $c=2$ at $300$ MeV to $2\pi$ at $225$ MeV.",
-    r"A third time at $\Gamma t\approx 1.2$ with a fifth more shots would test this only to $\pm 0.3$ in $\ln C$ and add a fifth to the campaign.",
-    r"for a normalized correlator $\bar C\approx 0.16$ that is not yet derived for this block encoding, and take the quench-prepared state to have the thermal variance (route (c)).",
-    r"The first result, $\Gamma(k_{\min})$ at $T=1.5\,T_c^{\rm lat}$ and $\mu_B=0$ to $30\%$, needs $1.5$--$1.6\times 10^{4}$ shots, which fix $C_{k_{\min}}(t)$ to $19\%$ at the early time and $36\%$ at the late one.",
     r"$4$ points at $\mu_B=0$ and $12$ at $\mu_B>0$, at two lattice spacings, with $3.4$--$3.6\times 10^{4}$ shots per point.",
-    r"Required $\epsilon_l$ & $\lesssim 4.5\times 10^{-12}$ ($1.6\times 10^{-11}$ at the fast corner; $3.4\times 10^{-12}$ on the second spacing) (0.1 expected faults per shot)",
-    r"the deepest shot needs $\epsilon_l\lesssim 4.5\times 10^{-12}$ ($1.6\times 10^{-11}$ at the fast corner; $3.4\times 10^{-12}$ on the second spacing)",
-    r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ ($16$ $(T,\mu_B)$ points with $\mu_B\in\{0,200,400,600\}$ MeV, at $k_{\min}$, two spacings); thermal variance assumed for the quench-prepared state \\",
+    r"Required $\epsilon_l$ & $\lesssim 4.5\times 10^{-12}$ ($1.6\times 10^{-11}$ fast end, $3.4\times 10^{-12}$ 2nd spacing), 0.1 faults/shot \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ ($\mu_B\in\{0,200,400,600\}$ MeV) \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
-    r"No target precision is set for it yet: for a prepared thermal state, $30\%$ on an assumed relative fall-off of $0.1$ over the $0.045$ fm/$c$ step, at the $\bar C\approx 0.16$ used below, would need $\sim 8.5\times 10^{4}$ shots and $\sim 1.1$ h, with half of them at $t=0$.",
-    r"$\Gamma(k_{\min})$ is not $\eta/s$; $k_{\min}\lesssim T$ needs $L\gtrsim 4$--$6$ fm, and the $12^3$ extension still has $k_{\min}\approx 1.7$--$2.3\,T$ \\",
-    r"Computational target & Shear correlator $C_{k_{\min}}(t)$ and a conditional decay rate $\Gamma(k_{\min})$ (method validation toward $\eta$, $\zeta$) \\",
     r"An eventual first-principles (continuum, larger-volume) $\eta/s, \zeta/s$ at $20\%$",
     r"so $\zeta/s$ adds up to $1\times$ the $\eta/s$ campaign's shots, less where the two operators commute and share a shot set.",
-    r"($3.0\times 10^{10}$ T on the second spacing's late shot at $1\,\mu$s per T gate)",
-    r"\textbf{Wall time} & first result $3.1$--$11$ yr on one machine (at $1\,\mu$s per T gate) \\",
-    r"campaign $250$--$940$ yr on one machine, $51$--$190\times$ the 5-year horizon, a co-design gap; one $20\%$ grid point takes $7$--$24$ yr, so 5 years cover none \\",
-    r"fit drops $\Gamma t<0.5$; fitting from $t=0$ or dropping $\Gamma t<1$ changes the shots by $0.37\times$ or $2.7\times$",
-    r"$\sim 1.4\times 10^{9}$ T/shot on the 4-fm/$c$ reference shot",
-    r"the quench preparation is $5.6\times 10^{9}$--$2.1\times 10^{10}$ T, $8$--$18$ times the fit evolution of $6.9\times 10^{8}$--$1.2\times 10^{9}$ T, so every shot is $6.3\times 10^{9}$--$2.2\times 10^{10}$ T",   # cut pass 2026-10-06: budget-split paragraph merged into the 2033 paragraph
-    r"That transform contains the $\Sigma(72\times 3)$ transform, whose published cost is a lower-bound estimate~\cite{arxiv_2511_17437}.",
-    r"Every rotation, gauge and fermion alike, is priced at the full synthesis fit $1.15\log_2(1/\epsilon_{\rm rot})+9.2$ T",
+    r"\textbf{Wall time} & first result $3.1$--$11$ yr on one machine;",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"campaign $250$--$940$ yr on one machine, $51$--$190\times$ the five-year window; one $20\%$ grid point takes $7$--$24$ yr \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     # R-TOL (H. Lamm 2026-09-29): the rule and each circuit's tolerance and T per rotation
-    r"a total synthesis error of $10^{-2}$ per shot, with each circuit setting $\epsilon_{\rm rot}=\sqrt{10^{-2}/N_{\rm rot}}$",
-    r"the 2028 six-step shot's $1.7\times 10^{4}$ rotations give $\epsilon_{\rm rot}=7.6\times 10^{-4}$ and $21.1$ T per rotation",
-    r"a 2033 reference shot evolved to $4$ fm/$c$, with $1.6\times 10^{8}$ rotations, gets $\epsilon_{\rm rot}=8.0\times 10^{-6}$ and $28.7$ T.",
-    r"cost $5.9\times 10^{5}$ T on the deepest shot, $5.9\times$ the $10^{5}$-T first-generation envelope",
-    r"$\sim 3\times 10^{4}$ s per shot at 2033 ($3.0\times 10^{10}$ T",
-    r"$\sim 0.6$ s at the 2028 benchmark",
-    r"Under $H_I$ the gauge step is $3.3\times$ its $H_{\rm KS}$ value, $41\%$ of it group multiplications; with $H_{\rm KS}$ the campaign's deepest shot would be $1.4\times 10^{10}$ T.",
     r"($|G|=648$, 11 qubits/link)",
 
     # E27 (2026-10-02): one machine, serial; the excess over the horizon is an algorithmic reduction, never a machine count
     r"Wall times are serial on one machine at $1\,\mu$s per T gate ($\sim\!10$ parallel magic-state factories) plus $\sim 0.1$ ms per shot",
-    r"The first result then takes $3.1$--$11$ yr, inside the 5-year horizon only at the cheap corner, and the campaign $250$--$940$ yr, $51$--$190\times$ the horizon, a co-design gap; we name no lever that closes it.",
-    r"$1.1\times 10^{6}$ shots ($16$ points, 2 lattice spacings); $250$--$940$ yr serial on one machine, $51$--$190\times$ the 5-year horizon (a co-design gap); the first result takes $3.1$--$11$ yr \\",
-    r"30\% (first result) and 20\% (campaign) statistical on the conditional $\Gamma(k_{\min})$",
     # referee verifier 2026-10-04 (T3, G8)
     r"at $a_s=0.15$ fm the box is $0.45$ fm, $k_{\min}\approx 9$--$12\,T$",
-    r"The second spacing is priced at its own step ($a_t$ scaled with $a_s$, so $\Delta t\,\|H\|$ is held); under the step rule its late slow-decay shot needs $48$ fit steps after a $755$-step quench and $3.0\times 10^{10}$ T, the deepest shot of the campaign.",
-    r"two spacings, each at its own step",
     r"so $\Sigma(72\times 3)$ under $H_{\rm KS}$ would sit on a coarse, confined lattice.",
     r"and the Hamiltonian (anisotropic) limit moves freezing to stronger coupling, so",
-    r"the phase on $V=2^3$ is near one at weak coupling but as small at $\mu_B=0$ as at $\mu_B>0$ at strong coupling, so it does not measure the $\mu_B$ obstruction",
-    r"State prep: not priced (non-thermal placeholder benchmark); the quench of route (c) would cost $3.2$--$8.1\times 10^{6}$ T here, $32$--$81\times$ the $10^{5}$-T target \\",
-    r"We have not computed the average phase on this $0.6$ fm box.",
-    r"and its hop-free strong-coupling value is not a bound.",
     # quench thermal route (author ruling 2026-10-05)
-    r"\emph{(c) Thermal state by quench.}",
-    r"tune its energy with a short coupling ramp (priced as one $a_s$ of evolution, $20$ steps; on the $2T$ toy one $a_s$ moves the effective temperature only part of the way, so a longer ramp is likely) or a single magnetic layer, evolve it under the same Trotterized $H_I$ for $t_{\rm th}=c/T$ at the grid step and outside the step rule (the quench needs only energy conservation to $\mathcal O(\Delta t^2)$)",
     r"\cite{arxiv_cond-mat_9403051,arxiv_0708_1324,arxiv_1509_06411,arxiv_0902_0927}",
     r"\cite{arxiv_2303_14264,arxiv_2308_16202}",
-    r"We carry $c$ from $2$, where all but the smallest toy have relaxed, to $2\pi$, the $3{+}1$D SU(2) value of Hayata and Hidaka~\cite{arxiv_2011_09814}: $132$--$552$ steps ($c=2$ at $T=300$ MeV to $2\pi$ at $225$ MeV)",
-    r"it assumes ETH at the chapter's couplings and temperature on $3^3$ (the toys sit at $Ta=0.75$--$1.4$) and that the momentum density relaxes within $t_{\rm th}$.",
     r"$Z_2$ gauge theory up to $5\times 3$, $2T$ up to $2\times 2$ and a $Z_2$-plus-staggered-fermion chain of $16$ sites",
-    r"E$\rho$OQ~\cite{arxiv_2001_11490}, which samples thermal boundary states classically and needs no preparation but whose signal-to-noise falls exponentially with the link count, a few-link validation route",
-    r"the KMS Gibbs sampler of Ch.~\ref{ch:finite_density}~\cite{chen2023quantum,arxiv_2311_09207}, whose mixing time is conjectured rather than bounded and which the fixed-$N_B$ quench makes unnecessary at $\mu_B>0$.",
-    r"the quench preparation of route (c) would cost $3.2\times 10^{6}$--$8.1\times 10^{6}$ T here ($30$--$76$ steps of ramp and thermalization in front of the one-step first result), $32$--$81\times$ the $10^{5}$-T target, so thermal loading is a 2033-era step.",
-    r"State prep: quench (route (c)): electric vacuum with the filled staggered Dirac sea, or baryon-sector Fock state, coupling ramp ($20$ steps) and $t_{\rm th}=2/T$--$2\pi/T$ ($132$--$552$ steps) under $H_I$; ETH at these couplings assumed, no sampler \\",
-    r"On the device, prepare the thermal state by a quench (route (c)):",   # cut pass 2026-10-06: workflow enumerate folded into a paragraph
-    r"must stay below $\epsilon=0.1$ on the fit evolution of every shot, and the exact free-field error is the check",
     r"reproduces canonical local observables to $1$--$4\%$ ($6\%$ on $3\times 3$) within $t\approx 0.6$--$2.5/T$",
-    r"\emph{Thermal loading.}  The quench preparation is $8$--$18$ times the fit evolution and puts every 2033 shot $6$--$22$ times over the budget, a co-design gap we state rather than close.",
-    r"thermal state by quench (ETH), one route at $\mu_B{=}0$ and $\mu_B{>}0$",
-    r"costs $12$ qubits/link in its compiled encoding ($\lceil\log_2 1080\rceil = 11$ dense), $+81$ LQ",
-    r"$\sim 7\times 10^{4}$ LQ by Eq.~\eqref{eq:Nq_qgp}.  This is a factor of $\sim 70$ beyond",
-    r"Even at $L\approx 2.3$ fm, $k_{\min}\approx 1.8$--$2.4\,T$ ($1.7$--$2.3\,T$ on the $12^3$ lattice)",
 ])
 def test_tex_still_states_the_inputs(phrase):
     text = TEX.read_text()
@@ -1107,13 +1035,10 @@ def test_g7_2033_step_numbers(r33):
         near(lamk, 32.76, 0.001)
     tex = TEX.read_text()
     assert r"\frac{1}{g^2 a}\sum_{\Box}" in tex
-    assert "the deepest fast-decay shot runs $19$ steps instead of $18$ ($0.092$)" in tex
-    assert "the deepest slow-decay shot $32$ instead of $26$ ($0.098$; free field $0.015$--$0.019$" in tex
-    assert "gives $64$--$68$ on these shots" in tex and "raises the estimate $1.4\\times$ over $H_{\\rm KS}$" in tex
+    assert "raises the estimate $1.4\\times$ over $H_{\\rm KS}$" in tex
     assert "the fundamental carries the SU(3) Casimir $4/3$" in tex
     # the 4 fm/c reference shot is a pricing basis: the rule would need 1914 steps ("1.9e3")
     assert i["trotter_sd_steps_ref"][0] == 1914
-    assert "(a pricing basis; the step rule would need $1.9\\times 10^{3}$)" in tex
     # Lambda_sd at T a_s = 0.23-0.30 is almost all zero-point: the T = 0 value differs by < 1e-2 (verifier 2026-10-04)
     lam0 = m.trotter_state_dependent((3, 3, 3), 8, 0.0, 1.0, 0.05, 0.1, "I")["lambda"]
     assert max(abs(x - lam0) for x in i["trotter_sd_lambda"]) < 1e-2 and round(lam0, 1) == 45.8

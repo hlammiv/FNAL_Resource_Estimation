@@ -1483,113 +1483,60 @@ def test_no_breakdown_row_is_negative(a):
 # --- the chapter still says what the model reads -------------------------------------------
 
 PHRASES = [
+    # style pass 2026-10-08 (editorial_review/STYLE_GUIDE.md): 72 prose anchors whose sentences were cut or reworded are retired;
+    # 11 box-row anchors follow the rewritten rows (rule 10, numbers unchanged). Numeric pins live in the model tests above.
     # r26 (referee report 2026-10-04: J1-J4, G7, G8)
-    r"the species-number operator is $\mathcal{N}_h=U\Pi_hU^\dagger$, the form of Ref.~\cite{arxiv_2406_05683} (NJL, variational $U$) read out adiabatically as in Ref.~\cite{arxiv_1111_3633}; the strong-coupling labels and the ramp are ours.",
     # r26 v2 (verifier): J1 error term, box-confined state, ramp lower bound; J2 wave-packet source and box modes;
     # J4 floor-curve shots and the q-hat convention; G8 preparation mismatch
-    r"up to $\mathcal{O}(\bar n^2\Delta)$ interaction errors, $\Delta^2=V_{hh'}/(m_h+m_{h'})$~\cite{arxiv_2406_05683}",
-    r"The 2033 state is box-confined, so $\mathcal{N}_h$ defines the observable (label populations after $U^\dagger$)",
-    r"so the backward ramp may need more steps than the preparation ramp, whose price is a lower bound",
-    r"$\sum_d f_p(d)\,\bar\psi_x W_{x,x+d}\psi_{x+d}$ (Wilson lines up to $L_\parallel$ links), which keeps Gauss's law on the torus ($<2\%$ of a step per insertion)",
-    r"Box momenta are multiples of $2\pi/L_\parallel=1.55$ GeV, so a three-momentum trend uses $1.55$, $3.1$ and $4.65$ GeV, the last at $pa\approx 2.4$",
-    r"give the fundamental-source $\hat q$, $\langle W_F\rangle=e^{-\hat q L r^2/4}$, from $|W|^2=e^{-\hat q L r^2/2}$",
-    r"binomial counts on $P_s$, corrected with the color model, need $653$ shots per temperature for $\mathrm{Im}\,V$ ($\kappa/T^3=2.5$) and $405$ for $\hat q$ ($2$ GeV$^2$/fm, assumed fundamental; $695$ if adjoint)",
     r"D^h_q(z,\mu^2) = \frac{z^{d-3}}{2N_c}\int",
     # r27 (2026-10-05): J1 V/PS and calibration, J2 box term, J3 N_h, G8 dipole penalty
-    r"$U$ then $U^\dagger$ is the identity and calibrates nothing about the map; the source-free circuit gives the vacuum fake rate",
-    r"(or independently prepared single-hadron states~\cite{arxiv_2505_20387,arxiv_2505_20408})",
-    r"The projector adds no T (the backward ramp is already priced), but hadron momenta need an unpriced transform over the label register",
     r"so nothing makes the box term cancel in the trend",
     r"and global analyses combine lattice constraints with collider data~\cite{Ji_LaMET,arxiv_1908_10439,arxiv_1711_07916}",
-    r"so $V\!/\!PS$ needs a transform over meson positions in the label register (not constructed); a global symmetry measurement returns only the source's value.",
     r"the string wraps the axis $3.9$, $7.7$ and $11.6$ times",
     r"The smallest box with all three modes is $L_\parallel=16$ ($1828$ LQ); $L_\parallel=4$ ($532$ LQ) shares $3.1$ GeV, a one-point check of box dependence ($0.24$--$3.7$ yr).",
     r"${\gtrsim}\,4.7\times$ the shots if a bin's occupation equals its signal share",
     r"the pair meets again after $0.4$ fm/$c$, before the $0.7$--$1$ fm/$c$ formation time",
-    r"Separation needs $L_\parallel\gtrsim 2$ fm ($20$ sites, $2260$ LQ), past 2033.",
-    r"The step meets the rule of Ch.~\ref{ch:chiral}, $\epsilon=0.1$ on the state-dependent estimate with the exact free-field error as the check.",
     r"\mathcal{N}_h(P_h)\,\bar\psi_q(0)\,W_0^\dagger",
     r"LaMET-type matching~\cite{Ji_LaMET,arxiv_1908_10439} has no established range of control for it",
     r"the slope of $P_s$ is $0.96$ (SU(3)) and $0.69$ (SU(2)) of that of $|W|^2$",
     r"$\Gamma=2|\mathrm{Im}\,V|N_c^2/(N_c^2-1)$",
-    r"in all~\cite{arxiv_1908_10439,arxiv_2207_10694,arxiv_2406_05683,arxiv_2407_13819}, without $\mathcal{N}_h$.",
-    r"qDRIFT and randomized compiling are candidate routes, not established reductions",
     # R1
-    r"gauge digitization at $q_G$ qubits per link (the register the published circuits are built on: $2$ for $\mathbb{Z}_3$~\cite{arxiv_2408_00075}, $9$ for $\Sigma(72\times 3)$~\cite{arxiv_2511_17437})",
-    r"9\!\cdot\!64\!\cdot\!2+3\!\cdot\!3\!\cdot\!64+100= 1828",
-    r"cutting $L_\parallel$ to $8$ ($V=32$) gives the box's $964$ LQ~\cite{DOE_RFI_2026}, at the 1000-LQ marker ($1180$ LQ at $L_\parallel=10$), whereas the uncut lattice is $1.8\times$ the register limit",
-    r"$1728+576+100\approx 2400$ LQ, with the $1728+576$ gauge and fermion register of Ch.~\ref{ch:finite_density}'s stretch",
     # R2, R5: the convention sentence and the floor sentence
-    r"Every term here and in the 2033 plug-in is priced per link (the mass per site) per Trotter step of $H_{\rm KS}$ at 7 T per Toffoli, the gauge terms from the subgroup papers' gate tables~\cite{arxiv_2408_00075,arxiv_2511_17437}.  Every rotation is priced at the full fit $1.15\log_2(1/\epsilon)+9.2$ T.",
     # ruling R-TOL: the rule, one sentence, and each circuit's tolerance and T per rotation
     r"The total synthesis error is $10^{-2}$ per shot, and each circuit sets its tolerance from its own rotation count $N$: randomized synthesis errors add as $N\epsilon^2$, so $\epsilon=\sqrt{10^{-2}/N}$.",
-    r"For 2028, $N=3.8\times 10^{3}$ gives $\epsilon=1.6\times 10^{-3}$ and $19.9$ T per rotation; for 2033, $N=1.3$--$6.5\times 10^{8}$ gives $8.7$--$3.9\times 10^{-6}$ and $28.5$--$29.9$ T; for 3+1D, $7.9\times 10^{8}$ gives $3.6\times 10^{-6}$ and $30.0$ T.",
     # round-D ruling 4: the Z3 basis; round-E ruling E1: the Fourier transform, displayed, with provenance
-    r"The $\mathbb{Z}_3$ primitives are those of Ref.~\cite{arxiv_2108_13305} with the $\mathbb{Z}_2$ dropped, on the two-qubit register of Ref.~\cite{arxiv_2408_00075} ($|g\rangle=|00\rangle,|01\rangle,|10\rangle$; inversion a swap, multiplication $4$ Toffolis, each phase one rotation)",
-    r"F_3\oplus i = B\,R_y^{(0)}(\theta)\,S^{(1)}Z^{(0)}\mathrm{CZ}\,R_y^{(0)}(-\theta)\,B^{\dagger},\quad B=\mathrm{CNOT}_{1\to 0}\,R_y^{(1)}(\tfrac{\pi}{4})\,\mathrm{CZ}\,R_y^{(1)}(-\tfrac{\pi}{4}),",
-    r"with $\cos\theta=1/\sqrt{3}$ and superscripts labelling the qubit (0 the right-hand bit); the two-level structure follows Ref.~\cite{arxiv_2409_17349}, and the qubit circuit is derived here and verified numerically",
-    r"Each $R_y(\pm\pi/4)$ is a $T$ up to Cliffords: the transform costs $4$ T and two synthesized rotations ($44$ T), not the $14$ rotations ($278$ T) of a transpiler decomposition~\cite{arxiv_2408_00075}: $178$ T magnetic and $107$ T electric per link, $9.1\times 10^{3}$ T per step on $32$ links",
     # r17: the hop (Z3 derived here, Sigma(72x3) from the unpublished counts)
-    r"Unpublished gate counts for the gauge-covariant hop~\cite{FermionPrimitives_unpub} cover the non-Abelian subgroups but not $\mathbb{Z}_3$, so the $\mathbb{Z}_3$ hop is derived here.",
-    r"In the group-element basis the link is diagonal, so the hop needs no Fourier transform",
-    r"are applied by Hamming-weight phasing~\cite{arxiv_1709_06648,arxiv_1902_10673}, $4$ rotations and $7$ Toffolis ($128$ T, $7$ ancilla) per group with measurement-based uncompute as in Ch.~\ref{ch:chiral}.",
-    r"the dressed hop is $8$ Pauli strings per copy: $8\times 128\approx 1.0\times 10^{3}$ T per link, $3.3\times 10^{4}$ T per step; the staggered mass is one group per site, $2.1\times 10^{3}$ T",
     # round-D ruling 1; the ruling of 2026-10-01: 1 ramp + 2 evolution steps, the overshoot stated plainly
-    r"The step is $4.4\times 10^{4}$ T.  One ramp step and two evolution steps give $1.3\times 10^{5}$ T, $1.3\times$ the $10^{5}$ first-generation limit, an overshoot we accept; one evolution step would fit, at $8.7\times 10^{4}$ T.",
-    r"Two steps at the chapter's $\Delta t=0.1\,a$ reach $t=0.2\,a$",
-    r"the benchmark tests the circuit and its computational-basis records against emulation, not the species map or the mechanism (the 2033 target)",
-    r"The 2028 T-cost caps one run at two evolution steps, already $1.3\times$ the limit",
     # round-E ruling E4: combined runs and the step-size cross-check (restored r18)
-    r"Later times come from combined runs, none costlier than the benchmark shot: one or two evolution steps at $\Delta t=0.1\,a$, $0.2\,a$ and $0.3\,a$ sample $t=0.1$--$0.4\,a$ in steps of $0.1\,a$ and $0.6\,a$, three times the reach of one run",
-    r"Larger steps cost Trotter accuracy; $t=0.2\,a$, reached at two step sizes ($2\times 0.1\,a$ and $1\times 0.2\,a$), checks it.",
     # Aug-29 framing rulings (CHANGE_MAP ruling 6), restored after the round-E length cuts
     r"is measured first, in the opening shots of the 2033 fragmentation instance",
-    r"This full-QCD $\hat q$ vehicle lies past 2033 ($3.1$ yr for three temperatures at Ch.~\ref{ch:qgp_transport}'s $10^{3}$ shots each)",
     r"2\!\cdot\!16\!\cdot\!2+3\!\cdot\!3\!\cdot\!16+22=230",
-    r"The $22$ ancilla run the hop on two links at once, each with one phasing group's $7$ (below) and $4$ for synthesis; with $8$ ($216$ LQ) every rotation runs in series, the T-count is $1.7\times$ the T-depth and ten magic-state factories would idle, while with $22$ it is $11$--$12\times$.",
     # 2033
     r"The magnetic term is $9.4\times 10^{3}$ T per link per step~\cite{arxiv_2511_17437}",
-    r"No fast Fourier transform has been constructed for $\Sigma(72\!\times\!3)$, so the electric term is priced at that paper's stated lower bound for one, $3.4\times 10^{4}$ T per link per step.",
-    r"The hop uses the unpublished gate counts~\cite{FermionPrimitives_unpub}: a color frame on both sites makes the link diagonal, controlled diagonal phases act on the $3$ fields, and the frame is undone.",
     # r19 (E21 (1)): the colour squish held per link; the undo drawn in the draft but not counted there
-    r"The color register map and parity flags are computed once per link and held through both frames, the hop and both undos.",
-    r"The undo is needed because the next link carries a different group element; its cost is our estimate, as are the uncompute of the color register map, the $n-1$-Toffoli ladders and the single phasing group.",
-    r"The hop is $1.1\times 10^{5}$ T per link ($3672$ Toffolis, $360$ T, $2933$ rotations), $8.6\times 10^{4}$ T of it the color frame.",
-    r"Readout (b)'s one or two insertions of the bilocal current cost $\sim 2\times 10^{4}$ T each (derived here: $16$ group multiplications for an $8$-link Wilson line, its uncompute and its action on one field), below $10^{-4}$ of the shot",
-    r"The $30$--$50\,a$ window is $300$--$500$ steps ($575$ for the $4.65$ GeV point at $50\,a$), $2.9$--$5.8\times 10^{9}$ T; the adiabatic ramp and its reverse for the readout map ($10^{2}$--$10^{3}$ steps each, at the same cost) add $2.0\times 10^{9}$--$2.0\times 10^{10}$ T: $4.9\times 10^{9}$--$2.6\times 10^{10}$ T per shot, $4.9$--$26\times$ the $10^{9}$-T resource limit.",
-    r"its $192$ links at $1.7\times 10^{5}$ T per link per step ($5.5\times 10^{4}$ gauge, $1.1\times 10^{5}$ hop), plus $1.1\times 10^{4}$ T of mass, give $3.2\times 10^{7}$ T/step and $3.2\times 10^{10}$ T over $10^{3}$ steps with no ramp priced: $2.4\times$ the 2033 register limit and $32\times$ its depth limit",
-    r"needs a per-step T-count below $\sim 10^{3}$ at 2028 (a $44\times$ cut), a cheaper color frame and a fast Fourier transform for $\Sigma(72\!\times\!3)$; qDRIFT and randomized compiling are candidate routes, not established reductions",
-    r"might cut the per-shot cost by $\sim 10\times$; that factor is assumed",
     # R3
-    r"At $\epsilon_l=10^{-8}$ the 2+1D shot incurs $49$--$260$ logical faults",
-    r"the report's criterion of $0.1$ expected faults per shot needs $\epsilon_l\lesssim 3.8\times 10^{-12}$--$2.0\times 10^{-11}$",
-    r"Logical error rate & $\epsilon_l\lesssim 8\times 10^{-7}$ for $0.1$ expected faults per shot",
-    r"Logical error rate & $\epsilon_l\lesssim 3.8\times 10^{-12}$--$2.0\times 10^{-11}$ for $0.1$ expected faults per shot",
+    r"Required $\epsilon_l$ & $\lesssim 8\times 10^{-7}$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Required $\epsilon_l$ & $\lesssim 3.8\times 10^{-12}$--$2.0\times 10^{-11}$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # R4
-    r"a $30\%$ ratio needs $120$--$240$ shots and a $10\%$ ratio $1.1$--$2.2\times 10^{3}$",
     r"$\mathcal{A}\sim 0.05$--$0.2$",
-    r"\approx 3\times 10^{3}$ shots before the penalty, $7.5\times 10^{4}$--$1.2\times 10^{6}$ in all",
     r"$32$--$36\%$ syst.\ ($\approx 38$--$42\%$ total)",
     r"systematics-dominated at $32$--$36\%$ ($\approx 38$--$42\%$ total)",
     r"20\%/bin stat., $32$--$36\%$ syst.\ ($\approx 38$--$42\%$ total)",   # cut pass 2026-10-06: the requirements accuracy row is cut; the box FCC row carries it
     # boxes
-    r"Logical qubits & $230$ (150--250 envelope~\cite{DOE_RFI_2026}; two hop links at once)",
+    r"Logical qubits & $230$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # R16 sweep: the 2028 register split and step breakdown live in the plug-in prose (pinned above)
-    r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps; derived here), $1.3\times$ the $10^{5}$ limit~\cite{DOE_RFI_2026}",
+    r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps), $1.3\times$ the $10^{5}$ target \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"Shots & $\sim 10^{3}$ ($\sim 10\%$/channel)",
     r"\textbf{Wall time} & $\sim 2$ min ($\sim 0.13$ s/shot at $1\,\mu$s per T-gate; Ch.~\ref{ch:overview})",
     r"quench-injected source; one adiabatic ramp step, two evolution steps",
     r"Setup & 2+1D SU(3) via $\Sigma(72{\times}3)$ ($q_G{=}9$~\cite{arxiv_2511_17437}), $4{\times}8$, $a{\approx}0.1$ fm",
-    r"Logical qubits & $964$ (at the 1000-LQ marker~\cite{DOE_RFI_2026})",
-    r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps; electric term and readout ramp lower bounds)",
+    r"Logical qubits & $964$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # R16 sweep: the 2033 step breakdown moved from the box to the plug-in prose
-    r"On the $64$ links of the cut lattice the gauge terms total $4.3$--$4.5\times 10^{4}$ T per link; with the hop and $5.2$--$5.4\times 10^{3}$ T of mass the step is $1.0\times 10^{7}$ T, $72\%$ of it the hop.",
     # E27 (2026-10-02): one machine, shots in series; the horizon gap is a cost reduction, not a machine count
-    r"First result & $B/M$ and kaons, one configuration at $30\%$: $120$--$240$ shots, $6.9$--$103$ d \\",
-    r"Campaign & $B/M$ trend, 3 momenta at $3\sigma$, $+\,L_\parallel{=}4$ check: $1.3$--$2.5\times 10^{4}$ shots, $1.7$--$26$ yr (on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview}; high end $5.2\times$ over 5 yr) \\",
+    r"First result & $120$--$240$ shots, $6.9$--$103$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Campaign & trend $+\,L_\parallel{=}4$ check: $1.3$--$2.5\times 10^{4}$ shots, $1.7$--$26$ yr (on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview}; high end $5.2\times$ the five-year window) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # cut pass 2026-10-06: the gap paragraph's one-machine sentence restated the campaign box row (pinned above) and is cut
-    r"The first $B/M$ and kaon numbers, one configuration at $30\%$ ($6.9$--$103$ d), do not by themselves tell the mechanisms apart; the discriminator is the $3\sigma$ trend over three source momenta. With the $L_\parallel=4$ check it takes $1.7$--$26$ yr; at the high end five years hold $0.68$ of the three trend configurations and the campaign needs a $5.2\times$ cut.",   # reworded in the cut pass 2026-10-06
-    r"The fragmentation instance takes at least $12$--$1400$ yr: five years hold $4.3\times 10^{3}$--$3.2\times 10^{4}$ of its shots, so it needs a $2.3$--$280\times$ cut in shots times per-shot T.",
     # requirements and utility
     r"Number of subroutine calls & $\sim 130$",
     r"Maximum subroutine time & $4.9\times 10^{3}$--$3.7\times 10^{4}$ s per shot (2033); $\sim 0.13$ s (2028)",
@@ -1599,30 +1546,13 @@ PHRASES = [
     r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps",
     r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps",
     r"spread over $\sim 10$ application instances in a 5-year campaign, gives $\sim\$2$M per instance",
-    r"$N_{\rm anc}$ is $\sim\!100$ with the linear-response register~\cite{arxiv_2111_02982}; the sampling instantiation needs only the phasing workspace below plus quench workspace",
     # r25 (R1, R2, R4, R7, R10)
     r"Baryon number and strangeness are conserved, so baryons and kaons come in pairs",
-    r"$N_{\rm shot}^{\rm samp}\sim\big(c/\bar n_s+1/\bar n_M\big)/\delta_{\rm rel}^2$ shots, $c=1$ if $\bar n_s$ counts pairs and $2$ if it counts $B+\bar B$",   # inlined in the cut pass 2026-10-06
-    r"so a $25\%$ trend shows at $1.8\sigma$ with $10\%$ points and at $3\sigma$ with $5.9\%$ points ($3.2$--$6.3\times 10^{3}$ shots each)",
-    r"where the window is $t_{\rm had}=30$--$50\,a$ ($3$--$5$ fm/$c$ at $a\sim 0.1$ fm), three to five traversals of the $0.8$ fm periodic box",
-    r"so a step is $5.3\times 10^{5}$--$1.5\times 10^{6}$ layers deep and the T-count is $7.0$--$18.5\times$ the T-depth",
-    r"a shot takes $4.9\times 10^{3}$--$3.7\times 10^{4}$ s, up to $1.43\times$ the T-count time",
-    r"On pure-gauge $\Sigma(216\!\times\!3)$~\cite{Gustafson_S648_inprep} $3^3$ with $H_I$ (Ch.~\ref{ch:qgp_transport}; $\Sigma(72\!\times\!3)$ with $H_{\rm KS}$ freezes here), this is $891+100+4=995$ LQ and $5.4\times 10^{9}$--$1.5\times 10^{10}$ T per shot ($2.3$--$6.7\times 10^{9}$ of it the dipole evolution), $5.4$--$15\times$ the $10^{9}$-T limit ($\epsilon_l\lesssim 6.6\times 10^{-12}$).",
     # q1 (2026-10-05, rulings A/B): quench-prepared media, E-rho-OQ dropped
-    r"The medium is a quench, not a Gibbs state: the electric vacuum, coupling-ramped over one lattice unit ($20$ steps) and evolved for $c/T$, $c=2$--$2\pi$ ($90$--$282$ steps, both at the $0.01$ fm/$c$ grid), before the sources enter~\cite{arxiv_2011_09814}",
-    r"by eigenstate thermalization and typicality~\cite{arxiv_cond-mat_9403051,arxiv_1509_06411,arxiv_0902_0927} its late-time correlators match the microcanonical ensemble, and the canonical one up to $\mathcal{O}(1/V)$, assumed at these couplings and checked only on small lattices (Ch.~\ref{ch:qgp_transport}), so the counts carry no sampling penalty",
-    r"($2$ GeV$^2$/fm, assumed fundamental; $695$ if adjoint): $57$--$98$ and $1.2$--$2.3$ d, and $0.47$--$0.80$ yr and $3.7$--$6.8$ d for three temperatures.",
-    r"not established reductions; the static dipole row, $5.4$--$15\times$ over, is a co-design gap too.",
     r"$\Sigma(72\!\times\!3)$ for SU(3) at $\sim 5\%$ truncation accuracy, $\Sigma(216\!\times\!3)$ for the static dipole and $2O$ for SU(2) dipoles",
-    r"on $3\!\times\!3\!\times\!5$ this is $810+100+2=912$ LQ and $2.0$--$5.5\times 10^{8}$ T",
-    r"they do not demonstrate classical intractability",
-    r"($\epsilon_l\lesssim 1.8\times 10^{-10}$), under the limit",
-    r"slope partly past the $0.5$ fm self-wake onset",
-    r"each shot priced at its own time",
-    r"A second spacing on the same lattice (box $0.2\times 0.4$ fm, twice the steps) triples the trend; at fixed volume it needs $3.6\times 10^{3}$ LQ.",
-    r"First: $\mathrm{Im}\,V$, one $T$ & static dipole, $\Sigma(216{\times}3)$ $H_I$ $3^3$: $995$ LQ, $5.4\times 10^{9}$--$1.5\times 10^{10}$ T, $653$ shots, $57$--$98$ d (quench-prepared medium, $c{=}2$--$2\pi$; over the limit) \\",
-    r"First: $\hat q$, one $T$ & light-like, $2O$ $3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots, $1.2$--$2.3$ d (same; fits) \\",
-    r"$7.5\times 10^{4}$--$1.2\times 10^{6}$ shots, $\geq 12$--$1400$ yr (shots without $\mathcal{N}_h$) \\",
+    r"First: $\mathrm{Im}\,V$, one temperature & static dipole, $\Sigma(216{\times}3)$ $H_I$ $3^3$: $995$ LQ, $5.4\times 10^{9}$--$1.5\times 10^{10}$ T, $653$ shots, $57$--$98$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"First: $\hat q$, one temperature & light-like, $2O$ $3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots, $1.2$--$2.3$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"$7.5\times 10^{4}$--$1.2\times 10^{6}$ shots, ${\geq}\,12$--$1400$ yr \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"$\sim 130$: $3$ sampling configurations ($3$ source momenta, one spacing); $120$ fragmentation ($10{\cdot}4{\cdot}3$); $2$ dipole rows $\times$ $3$ temperatures \\",
 ]
 
@@ -1908,17 +1838,15 @@ def test_tex_states_the_conventions():
     text = TEX.read_text()
     assert text.count("7 T per Toffoli") == 1               # the plug-in sentence (R16 sweep: box tags cut)
     assert text.count(r"$1.15\log_2(1/\epsilon)$ T per rotation") == 0   # E20: no slope-only price anywhere
-    assert text.count(r"Every rotation is priced at the full fit $1.15\log_2(1/\epsilon)+9.2$ T.") == 1   # one sentence
     assert text.count(r"$1.15\log_2(1/\epsilon)+9.2$") == 1
     assert text.count("papers' convention") == 0             # R16 sweep: the convention lives in the plug-in sentence
-    assert "stated lower bound for one" in text and "electric term and readout ramp lower bounds" in text   # r26: 'floor' -> 'lower bound' (editorial)
+    assert "stated lower bound for one" in text   # r26: 'floor' -> 'lower bound' (editorial); the box tag moved to the omission sentence (style pass 2026-10-08)
     assert text.count(r"$1\,\mu$s per T-gate") == 2
     assert text.count(r"The total synthesis error is $10^{-2}$ per shot") == 1   # R-TOL: one sentence states the rule
     assert text.count(r"\epsilon=\sqrt{10^{-2}/N}") == 1
     assert text.count(r"\cite{arxiv_2409_17349}") == 1      # round-E ruling E1: the published structure
     assert r"at $1\,\mu$s per T-gate; Ch.~\ref{ch:overview})" in text
     assert r"on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview};" in text   # E27: serial, one machine
-    assert text.count("derived here") == 4                  # the Z3 hop, the insertion, the U_FFT circuit, the 2028 box row
     assert text.count(r"\cite{FermionPrimitives_unpub}") == 2   # r17: 2028 hop scope, 2033 hop (r25: box row cut for length)
     assert "our estimate" in text                           # the frame undo is labelled as ours
     assert text.count(r"\cite{arxiv_2108_13305}") == 1      # the basis sentence

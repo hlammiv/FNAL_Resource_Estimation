@@ -1402,10 +1402,8 @@ def INSTANCE_ROWS(a, era, r):
              (i["family_8x8_nphi4_t_banked"],) * 2, dict(base, note=f"{TEX}:134 quotes 158 LQ, 5.9e4 T (1.944e5/3.3)")),
             (r"family $8^2$, $N_\phi{=}16$", (i["family_8x8_nphi16_lq"],) * 2,
              (i["family_8x8_nphi16_t_banked"],) * 2, dict(base, note=f"{TEX}:134 quotes 286 LQ, 2.9e5 T (9.723e5/3.3)")),
-            (r"interim scalar+Wilson $4^2$", (i["interim_lq"],) * 2, (i["interim_t_from_inputs"],) * 2,
-             dict(base, conditional=True,
-                  note=f"{TEX}:176-178 quotes ~115 LQ (96 + 17 = 113), ~1.4e5 T raw (c_T 754.8 x 192 = 1.449e5, R12). "
-                       "4.4e4 with the banked 3.3x; not run in 2028 because N_phi=4 cannot resolve the biased well")),
+            # the interim 4^2 scalar+Wilson variant was removed from the chapter text (2026-10-08);
+            # its intermediates are kept below as a record and are no longer published
         ]
     if era == "2033":
         return [(r"wall scattering $15{\times}8$", r.lq, r.hard_ops,

@@ -621,16 +621,13 @@ def test_codesign_is_refused(a):
 
 def test_instance_rows(a, r28, r33):
     rows28 = m.INSTANCE_ROWS(a, "2028", r28)
-    assert len(rows28) == 4
+    assert len(rows28) == 3            # the interim 4^2 variant is no longer published (2026-10-08)
     for _, lq, t, extra in rows28:
         assert lq[0] <= lq[1] and t[0] <= t[1]
         assert {"t_bound", "conditional", "codesign", "reconciled"} <= set(extra)
     main = rows28[0]
     assert main[1] == (174, 174) and main[2] == r28.hard_ops and main[3]["reconciled"]
-    interim = [row for row in rows28 if "interim" in row[0]][0]
-    assert interim[1] == (113, 113)
-    assert interim[2] == (r28.intermediates["interim_t_from_inputs"],) * 2
-    assert interim[3]["conditional"]
+    assert not [row for row in rows28 if "interim" in row[0]]
     rows33 = m.INSTANCE_ROWS(a, "2033", r33)
     assert len(rows33) == 1
     lbl, lq, t, extra = rows33[0]
@@ -783,7 +780,7 @@ def test_referee_text_hooks():
     import pathlib
     tex = (pathlib.Path(__file__).resolve().parents[3] / "applications" / "app05_baryogenesis.tex").read_text()
     assert r"${\gtrsim}\,9.9\times 10^{8}$ T at depth $33$" in tex              # G2 box headline
-    assert r"any ramp ($r>0.007$) forces a shallower schedule" in tex              # B3: bound at the priced schedule
+    assert r"any dressing with $r>0.007$ forces a shallower schedule" in tex              # B3: bound at the priced schedule
     assert r"$p_0=0.66$" in tex                                                   # B2 flag contrast (box)
     assert "flavor-summed asymmetry vanishes" in tex                               # C'
     assert "unquantified" not in tex and "is not priced. We write $r$ for the full" not in tex

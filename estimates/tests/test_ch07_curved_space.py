@@ -699,7 +699,6 @@ def test_2028_grid_check(a):
         tex = TEX.read_text()
         assert r"by $40$--$250\%$ after one step" in tex
         assert r"within $5\%$ for two steps" in tex
-        assert r"$K=8$ holds every shell to $0.15\%$ over four steps" in tex
         assert r"so the 2028 benchmark runs one step at $K=8$, which holds every shell to $0.15\%$" in tex
         assert "is an open choice" not in tex
         assert "Re-centering" not in tex

@@ -743,19 +743,18 @@ def test_r25_2033_first_result(a, r33):
 def test_r25_tex_prints_the_new_numbers():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app07_finite_density.tex").read_text()
     for s in (r"$\sim 13.5\,$min per sector", r"$27$--$40\,$min", r"$2.2\%$", r"$2.9\times 10^{3}$--$1.6\times 10^{4}$",
-              r"$9.9$--$15$", r"$2.7$--$4.0\times 10^{4}$", r"$9.1\times 10^{5}$", r"$4.8\times 10^{3}$",
-              r"$3.9\times 10^{5}$", r"$2.2\times 10^{6}$", r"$2.6\times 10^{5}$",
+              r"$9.9$--$15$", r"$2.7$--$4.0\times 10^{4}$", r"$9.1\times 10^{5}$",
+              r"$2.2\times 10^{6}$", r"$2.6\times 10^{5}$",
               r"$3.7\times 10^{3}$", r"$6.1\times 10^{4}$", r"$6.1\times 10^{8}$",
               r"$\gtrsim 4.0\times 10^{5}$", r"$4.2\times 10^{6}$", r"$3.2\%$",
               # author ruling 2026-10-05: the QSVT/TPQ headline
               r"$2.8$--$5.6\times 10^{9}$", r"$d_\beta=30$", r"$2m+1=17$", r"$510$ block-encoding queries",
-              r"$1.0$--$2.0\times 10^{3}$ step equivalents", r"$1.1\times 10^{-5}$--$8.0\times 10^{-6}$",
               r"$0.26$--$2.8$~yr", r"$23$--$46$", r"$0.91$--$1.8$~yr", r"$4.0$--$26$~yr", r"$80$--$160$~yr",
               r"$200$--$400$~yr", r"$4.5$--$9.2", r"$17$--$56$", r"$46$--$94$~min", r"\lesssim 1.8\times 10^{-11}$",
               r"$3.6\times 10^{-11}$", r"$280$--$560", r"$28$--$56$ faults", r"$4.7$--$9.6\times 10^{8}$ T",
-              r"$4.7$--$9.6\times 10^{3}$ times the cap", r"$1.8$--$3.7\times 10^{10}$", r"$d_\beta=56$",
+              r"$1.8$--$3.7\times 10^{10}$", r"$d_\beta=56$",
               r"$9.6\times 10^{6}$-T step", r"$\sim 8\times 10^{13}$--$4\times 10^{14}$ T per shot",
-              r"\cite{arxiv_2311_09207,arxiv_2405_20322}", r"$1014$ Toffolis each", r"lattice cutoff"):
+              r"\cite{arxiv_2311_09207,arxiv_2405_20322}", r"lattice cutoff"):
         assert s in tex, s
     # retired numbers: the referee round and the Gibbs-sampler headline (2026-10-04 to 2026-10-05)
     for old in (r"\kappa_8/\kappa_4^2\sim", r"$51$~days", r"$8.7\times$", r"$\sim 44$", r"$3.9\times 10^{4}$--$1.3\times 10^{5}$",
