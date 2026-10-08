@@ -1055,7 +1055,7 @@ def test_single_machine_serial_campaign(a, r28, r33, tex):
         ch3.Assumptions(campaign_horizon_yr=c.Stated((5, 10), "x"))
     if tex is None:
         pytest.skip("chapter .tex not on disk")
-    assert "Campaign horizon & 5 years" in tex
+    assert "Campaign window & 5 years" in tex
     low = tex.lower()
     for s in ("shot-parallel", "shot parallel", "embarrassingly", "across machines", "machine-year",
               "machine year", "-fold parallelism", "serialized", "divides across", "machines needed",

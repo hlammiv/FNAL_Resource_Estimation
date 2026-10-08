@@ -15,7 +15,7 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - No T-depth or device schedule is derived for the two benchmarks: the depth, factory and wall-time exports are `None` with `depth_status = "not_established"`; shot counts and gate volumes are reported instead.
 - The 2033 primitive counts (`counts("2033", steps)`) are constructive allowances for the 908-qubit construction, not a compiled full-register circuit.
 - Rotation synthesis is priced at the leading Ross-Selinger term, 3 log2(N_R / 0.005) T per rotation (`coherent_synthesis_allowance`, `exact_synthesis = False`); the subleading term is pending.
-- Physical accuracy of the finite-volume correlators and the logical-noise behaviour of the circuits are not derived.
+- Physical accuracy of the finite-volume correlators and the logical-noise behavior of the circuits are not derived.
 - The longer-term 12C row is an evolution-scaling estimate on the legacy assumptions, not a complete response shot, with no step-error validation.
 
 ## Ch. 3, Mu2e and neutrinoless double beta decay (`ch03_mu2e_0nubb.py`)
@@ -70,7 +70,7 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - Vector and pseudoscalar mesons are degenerate at strong coupling; a per-meson V/PS readout needs a Fourier transform of hard-core link excitations in the label register, which is neither constructed nor priced, and the same object is needed for momentum-resolved N_h(P_h).
 - On the 0.8 fm axis the back-to-back pair recollides after 0.4 fm/c (`recollision_time_fm`), so the 2033 counts are the hadron content of a box-confined state; the three-momentum trend uses the box modes 1.55, 3.1 and 4.65 GeV (`source_box_modes_GeV`), the top one at pa about 2.4, and whether box effects cancel in the trend is not established (`L_par_for_separation` = 20 would need 2260 logical qubits).
 - The fragmentation instance prices the bilocal current without N_h, so its shots are lower bounds; the per-bin variance raises them 4.7 times (occupations equal to amplitude shares) to 23 times (`ff_nh_shot_factor`), and the momentum transform is unpriced.
-- The dipole rows measure <|w|^2> rather than |<w>|^2 and correct the slope with a Markovian colour model (`floor_slope_ratio`); q-hat = 2 GeV^2/fm is taken as the fundamental value (695 shots if adjoint, `shots_qhat_if_adjoint`), and kappa/T^3 = 2.5, P_d = 0.9 and the 1/3 colour factor are assumed.
+- The dipole rows measure <|w|^2> rather than |<w>|^2 and correct the slope with a Markovian color model (`floor_slope_ratio`); q-hat = 2 GeV^2/fm is taken as the fundamental value (695 shots if adjoint, `shots_qhat_if_adjoint`), and kappa/T^3 = 2.5, P_d = 0.9 and the 1/3 color factor are assumed.
 - The quench-prepared dipole media assume eigenstate thermalization at aT about 0.45 for Sigma(216x3) H_I and 2O; the ramp is not tuned to the target temperature, a coarser thermalization step (2-5x) is an unpriced lever, and the static Im V row is 5.4-15 times the 1e9-T budget.
 - The species row runs Sigma(72x3) with H_KS at a about 0.1 fm in 2+1D, where the freezing point is unchecked; switching it to Sigma(216x3) would need a fermion hop that does not exist and 1092 logical qubits.
 - The dipole circuits' T-depth is not analysed; their walls are serial T-count walls.
@@ -79,7 +79,7 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - The adiabatic ramp of 1e2-1e3 steps runs twice per shot (preparation and readout); at 1e2 steps the campaign high end would fall from about 26 yr to about 6 yr.
 - Source-free calibration circuits that measure the vacuum fake rate b multiply the shots by (sqrt(1 + r) + sqrt(r))^2 with r = b/n_s; they are in no printed number.
 - At L_par = 8 the momentum quantum is 1.55 GeV, so about 3 of the 10 z-bins of readout (b) are resolvable.
-- The 2033 hop runs one link at a time because its colour-angle flags fill the workspace (F* 7.0-18.5, `f_star_per_circuit_2033`); a streamed-flag schedule would give F* 26-61 at about 5% more hop T.
+- The 2033 hop runs one link at a time because its color-angle flags fill the workspace (F* 7.0-18.5, `f_star_per_circuit_2033`); a streamed-flag schedule would give F* 26-61 at about 5% more hop T.
 
 ## Ch. 7, quantum fields in curved space (`ch07_curved_space.py`)
 
@@ -100,7 +100,7 @@ Chapters 11 and 12 have no model in this package and are not listed.
 
 - The free part of the Delta-n state preparation is priced (4.6e5 T per application, 1.6% of the evolution, `free_prep`); the interacting dressing ramp is not, and any ramp lowers the MLAE depth (`prep_sensitivity`: r = 0.2 gives depth 27 and 9.7 yr per campaign point, r = 1 gives depth 15 and 29 yr); a static wall needs a degenerate well or a pinning term.
 - The flag contrast p0 = 0.66 at a m_f = 0.5 on the free vacuum, 0.60-0.65 on the wall background (`flag_contrast`), multiplies the queries by about 2.3; the chapter does not fix a m_f.
-- By an exact charge-conjugation-plus-flavour-swap symmetry (`c_prime_residual` = 0) the flavour-summed asymmetry vanishes identically, so Delta n is flavour-resolved.
+- By an exact charge-conjugation-plus-flavor-swap symmetry (`c_prime_residual` = 0) the flavor-summed asymmetry vanishes identically, so Delta n is flavor-resolved.
 - The bath for the nucleation circuits is estimated, not priced: one unit of Lindblad time is about 5.5e5 T (`bath_sweep_t`), one application of each of the 240 scalar jumps is 1.3e8 T (five nucleation circuits), and the sweeps needed to mix and the dissipator rate during the evolution are open; the Gibbs preparation and the basin projector are carried at 0 T, UNSOURCED.
 - The 2028 count 1.6e5 T includes an unbanked 3.3x reduction of c_T that is an assumed development target (`ct_reduction_banked`) and omits the adiabatic preparation and basin projector, so it is neither a lower nor an upper bound.
 - The integrated asymmetry S_int is not computed; the first result takes 1e-3 (`s_int_taken`) and its wall scales as (1e-3/S_int)^2.
@@ -144,7 +144,7 @@ Chapters 11 and 12 have no model in this package and are not listed.
 
 ## Shared across chapters
 
-- The staggered and Wilson hops of Chs. 5, 6, 9 and 10 come from an unpublished gate-count draft (`groups.hop_link_cost`); the frame undo, the SU(3) squish uncompute, the per-field colour rotations, the C^nX convention (n - 1 Toffolis), the diagonalizer slope (4 rotations), the Sigma(72x3) class count (taken from Sigma(36x3)) and 7 T per flag Toffoli are this package's readings where the draft is silent or inconsistent; Ch. 6 keeps a strict xfail on the colour-frame count as a tripwire.
+- The staggered and Wilson hops of Chs. 5, 6, 9 and 10 come from an unpublished gate-count draft (`groups.hop_link_cost`); the frame undo, the SU(3) squish uncompute, the per-field color rotations, the C^nX convention (n - 1 Toffolis), the diagonalizer slope (4 rotations), the Sigma(72x3) class count (taken from Sigma(36x3)) and 7 T per flag Toffoli are this package's readings where the draft is silent or inconsistent; Ch. 6 keeps a strict xfail on the color-frame count as a tripwire.
 - The fault budget of 0.1 expected faults per shot counts T gates only (`eps_l = 0.1 / N_T`); Clifford, idle, measurement and magic-state-injection faults are excluded, only Ch. 7 bounds the bias on its observable, and a per-instance detection model is not derived.
 - The Hamming-weight-phasing ancilla count k - w(k) plus one repeat-until-success ancilla (`common.hwp_ancilla`, `common.RUS_ANCILLA`) is applied everywhere; Ch. 10 does not itemize the synthesis ancilla.
 - The reference budgets (1e5 and 1e9 hard ops, 150-250 and 1000 logical qubits, eps_l 1e-8) and the seconds per year (3.156e7 in some modules, 3.15576e7 in others) are typed per module; no printed number depends on the difference.

@@ -357,7 +357,7 @@ From `docs/OPEN_ITEMS.md` and the model's own notes:
 - **Depth.** The resonant-drive walls are depth-limited (qDRIFT samples run one at a time, F* 3.5-7.7). The 2033 27Al walls assume 12 commuting rotations in flight; gate by gate the campaign floor is 135 days to 3.0 years.
 - **Cancellations not taken.** PREPARE trees that cancel or act on unused amplitudes in the 2028 shot are kept as priced, so the insertion count is an upper bound for its construction. The 2033 27Al shot also keeps the operator query (about 1% of its T), which the direct readout does not use.
 - **Category separation** needs targets with different Z, N/Z and spin; a second target such as 48Ti in pf is not priced.
-- **Fault model.** ε_l = 0.1/N_T counts T gates only; Clifford, idle, measurement and injection faults are not modelled.
+- **Fault model.** ε_l = 0.1/N_T counts T gates only; Clifford, idle, measurement and injection faults are not modeled.
 - **Utility.** No Mu2e-specific spread of the nuclear matrix elements is quoted, and the 60% utility fraction is a stated choice; the dollar figure is linear in it.
 - **Beyond 2033.** 76Ge (jj44 and converged bases) has no simplification that keeps its physics inside the 2033 budget, and the converged 27Al flagship is 8.5e4-3.3e6 times over it.
 

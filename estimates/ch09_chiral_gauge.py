@@ -9,7 +9,7 @@ INPUTS AND SOURCES
   Pauli strings per hop = 2        Stated app06 (the link-free fifth-direction hops)
   fifth-direction hops             DERIVED HERE r21 (a): open boundary, V (L5 - 1) (fifth_boundary)
   spatial hop                      R-HOP, groups.rhop_link (DERIVED HERE, Ch. 6 round D; ruled report-wide):
-                                   Z3 diagonal -> no colour move; 8 strings per copy; k = 12 passed by Ch. 9
+                                   Z3 diagonal -> no color move; 8 strings per copy; k = 12 passed by Ch. 9
   hop rotation price               full fit (r17 e; R-HOP's slope-only price kept as the record hop_synthesis_legacy)
   on-site term 2028                arXiv:2505.20419 (m + r(1+d)); 2N R_Z per site, FermionPrimitives_unpub section_mass.tex:12
   Pauli strings per electric = 3   Stated app06 ('three diagonal Z-strings per two-qubit link')
@@ -183,34 +183,34 @@ Round B rulings (H. Lamm, 2026-09-28) applied here:
                price retired; Z3 has no Fermion_Primitives entry, so the R-HOP structure stays), and the
                missing on-site domain-wall term m + r(1+d) as one lattice-wide phasing group of k = 192.
           2033: the 81 link terms per BE query priced by groups.hop_link_cost('2O', Wilson, d=3): the
-               authors' unpublished gate counts, colour frame applied and undone (ESTIMATED), n_spin = 2
+               authors' unpublished gate counts, color frame applied and undone (ESTIMATED), n_spin = 2
                (ESTIMATED), MBU ladders, no Trotter phasing; Higgs one U_x per site. Band top = the draft's W2.
                [Hop sharing superseded by r19 below.]
 
   r19     (H. Lamm 2026-10-01, rulings E21 (1)-(3); apply_log/r19_core.md, r19_ch09.md)
-          (1) "make the switch": the colour squish and parity flags are computed once per link and held through
+          (1) "make the switch": the color squish and parity flags are computed once per link and held through
               V(x), V(y), hop, V^dag(x), V^dag(y) (share="link", the new groups.hop_link_cost default), undo kept.
               The undo stays OUR estimate: the draft draws V_C^dag (PD/section_hamiltonian.tex:86-91) but its
               2 C^G counts V_C on the two sites only (PD/section_su2_diag.tex:238, section_resources.tex:15).
               The r17 per-application recompute (share="draft") is the conservative sensitivity record.
-          (2) n_spin = 2 at Wilson d=3: author-confirmed.  (3) SU(3) colour rotations = 2 N_angles: confirmed
+          (2) n_spin = 2 at Wilson d=3: author-confirmed.  (3) SU(3) color rotations = 2 N_angles: confirmed
               (no Ch. 9 number depends on it; the 2O hop is SU(2)).
           2028 (Z3): no change.  2033: per link 1182 -> 384 Toffoli (144 T, 704 rotations unchanged), so the
-              rotation count and eps_rot do not move; c_be 2,557,184.8 -> 2,104,718.8, centre 6.891e11 -> 5.672e11
+              rotation count and eps_rot do not move; c_be 2,557,184.8 -> 2,104,718.8, center 6.891e11 -> 5.672e11
               T/shot. Floor and W2 top do not move (band 3.383e9-1.2952e12 unchanged).
 
   r20     (H. Lamm 2026-10-01, rulings E23 (1)-(5); apply_log/r20_ch09.md)
           (1) "2O just is Clifford, that's a math fact": 2O is the lift to SU(2) of the 24-element octahedral rotation
               group, which is the single-qubit Clifford group modulo phases. Stated as a standard fact (no cite).
           (2) the band floor, investigated (DERIVED HERE): the old floor priced every link and Higgs term at zero T.
-              Not justified: (a) the colour index is two Jordan-Wigner modes, and U_g acts on them as the matchgate
+              Not justified: (a) the color index is two Jordan-Wigner modes, and U_g acts on them as the matchgate
               1 + U_g + 1, a two-qubit Clifford only for the 8 elements of Q8; (b) the link is a quantum register, so the
               frame is the multiplexer sum_g |g><g| (x) U_g, a controlled Clifford; (c) group multiplication on the 6-bit
               encoding is not affine, so U_x cannot be Clifford. What IS justified: 2O entries lie in Z[1/sqrt2, i], so no
               rotation synthesis. Explicit multiplexer (colour_multiplexer_2O; verified on all 48 elements in the tests):
               3 Toffolis + 18 T, 1 ancilla, 0 rotations. Floor link = 2 (W, W^dag) x n_spin x mux + the draft's spinor
               frame = 52 Toffolis + 104 T = 468 T; floor c_be 12,551.6 -> 61,043.6; band 3.383e9-1.2952e12 ->
-              1.645e10-1.2952e12. The centre stays the draft's frame (ruling e); promoting the multiplexer is Henry's call.
+              1.645e10-1.2952e12. The center stays the draft's frame (ruling e); promoting the multiplexer is Henry's call.
           (3) Gibbs sampler priced from first principles (ESTIMATED HERE): jumps x D_ov queries per jump x T per D_ov.
           (4) on-site term basis: kept the draft's diagonal-gamma^0 encoding (no number moves).
           (5) ancilla itemized, peak concurrency: 2028 37 (HWP k=32) + 2 (RUS) = 39 (was 40 asserted): 248 -> 247 LQ;
@@ -218,7 +218,7 @@ Round B rulings (H. Lamm, 2026-09-28) applied here:
               so it is counted with p, q and the hop register, not as a transient; 42 -> 43).
 
   r21     (H. Lamm 2026-10-01: "1) promote 2) do TPQ 3) settle them"; apply_log/r21_ch09.md)
-          (1) PROMOTE: the derived 2O colour multiplexer (r20) is the 2033 headline (link_frame = "multiplexer"): 468 T
+          (1) PROMOTE: the derived 2O color multiplexer (r20) is the 2033 headline (link_frame = "multiplexer"): 468 T
               per link per query, no rotations in the link. The draft's general diagonalizing frame is the stated
               alternative (link_frame = "draft"); the draft's W2 is a record. One headline, no band. The link-term
               workspace is now the multiplexer's: ancilla 43 -> 33, register 1015 -> 1005 LQ (the draft frame needs 43).
@@ -229,7 +229,7 @@ Round B rulings (H. Lamm, 2026-09-28) applied here:
                   norms: 83,195 steps at g^2 = 1 (trotter_bound_steps), not the stated ~30;
               (c) LCU terms per site (lcu_terms_per_site): 24 hop + 8 on-site + 40 Higgs = 72, 1944 at V = 27 (was the
                   absolute 1.7e3, 63 per site implied);
-              (d) 2028 shot variance: sigma^2 = 10 x 27 / 24 = 11.25 for the 24 site-colour copies taken as independent,
+              (d) 2028 shot variance: sigma^2 = 10 x 27 / 24 = 11.25 for the 24 site-color copies taken as independent,
                   1125 shots (was 1e3 borrowed from V = 27);
               (e) 1+1D Z3 Wilson-kernel block encoding: 30 strings per site, 240 terms, c_be = 2.2e3 T; one sgn(H_W)
                   at kappa = 30 is 3.0e5 T, a ground-state preparation 3.1e6 T, 11x the domain-wall shot.
@@ -239,7 +239,7 @@ Round B rulings (H. Lamm, 2026-09-28) applied here:
                 architecture of arxiv_2607_28524 (Lamm, Roggero, Singh, Spagnoli), the only valid one. H = psi^dag h_ov psi
                 with h_ov = gamma^0 + sgn(H_W[U]); sgn acts on the Q x Q kernel on a 9-qubit index register and the link
                 registers, and two selected-Majorana unitaries lift it to the Fock register. Compiled here: one query is
-                598 Toffolis + 24 T + 6 rotations (561 Toffolis read the addressed link; the 2O multiplexer on a colour
+                598 Toffolis + 24 T + 6 rotations (561 Toffolis read the addressed link; the 2O multiplexer on a color
                 qubit is 10 T); one application is 692 queries + lift (862 Toffolis) + reflection + the Higgs vertex once
                 (outside sgn) = 3.06e6 T. The r17-r21 construction (QSVT of sgn on a second-quantized block encoding)
                 computes the sign of the many-body operator; it is kept as a record (62,896.2; 1.809e13).
@@ -250,7 +250,7 @@ Round B rulings (H. Lamm, 2026-09-28) applied here:
                 5031 steps, range 1186-14,242; 13 applications per step; 2.008e11 T per shot. The worst-case commutator
                 bound (83,195 steps, 1.276e12 T) is quoted as the worst case; trotter_rule_2033 = "state".
           (iii) "do 1" and E26 core ("do 2"): 2028 ancilla 31 (HWP k=32, k - w(k)) + 1 (RUS) = 32, register 240 LQ;
-                single colour copy 112; unchunked 190 + 1, 399 LQ.
+                single color copy 112; unchunked 190 + 1, 399 LQ.
           (iv)  2033 ancilla itemized for the single-particle architecture: 5 + 14 + 5 + 14 = 38, register 1010 LQ.
                 The amplification reflection (arxiv_2407_17966) and the gauge and Higgs terms of a step are not priced
                 (records).
@@ -296,9 +296,9 @@ Two chains, one per era.
           (1.077e11); the floor 2Q t = 21,600 applications (6.6e10).
     Records: the retired second-quantized construction at the worst-case step (r21 box: c_be 62,896.2, 4.346e7 per D_ov,
           1.809e13 per shot, 33 ancilla, 1005 LQ), and its earlier prints (T/shot at the pre-r21 390 x 691 queries and
-          the 1.7e3-term LCU line): r20 centre (draft frame) 5.672e11; r20 floor (multiplexer) 1.645e10; W2 top 1.2952e12;
+          the 1.7e3-term LCU line): r20 center (draft frame) 5.672e11; r20 floor (multiplexer) 1.645e10; W2 top 1.2952e12;
           zero-T floor 3.383e9; pre-r17 one U_x per vertex 1.479e10; R-HOP two U_x per link 2.335e10; the draft's W1
-          without the undo 4.342e11; r17 centre (share="draft") 6.891e11; shared squish without the undo 3.935e11;
+          without the undo 4.342e11; r17 center (share="draft") 6.891e11; shared squish without the undo 3.935e11;
           n_spin = 1 3.120e11; 2n-3 ladders 5.981e11.
 """
 
@@ -362,16 +362,16 @@ def _chunk(k: int, n_groups: int, chunk_k: int | None) -> list[tuple[int, int]]:
 
 
 # --------------------------------------------------------------------------- #
-# E23 (2), r20: the 2O colour multiplexer (DERIVED HERE)
+# E23 (2), r20: the 2O color multiplexer (DERIVED HERE)
 # --------------------------------------------------------------------------- #
 
 def colour_multiplexer_2O() -> dict:
-    """W = sum_g |g><g| (x) M(U_g) on one site's two colour modes (one spinor component), DERIVED HERE (r20).
+    """W = sum_g |g><g| (x) M(U_g) on one site's two color modes (one spinor component), DERIVED HERE (r20).
 
-    M(U) is the Jordan-Wigner image of the colour rotation psi -> U psi: identity on |00>, |11> and U on the singly
+    M(U) is the Jordan-Wigner image of the color rotation psi -> U psi: identity on |00>, |11> and U on the singly
     occupied pair (|01>, |10>) (FermionPrimitives_unpub section_su2_diag.tex:27-60). The 2O register uses the ordered
     product g = (-1)^x1 j^x2 k^x3 u^(2x4+x5) t^x6 of arXiv:2312.10285, so M(U_g) is a product of six singly controlled
-    generator matchgates. A CNOT (q2 -> q1) turns q1 into the odd-occupancy flag and q2 into the colour qubit of the
+    generator matchgates. A CNOT (q2 -> q1) turns q1 into the odd-occupancy flag and q2 into the color qubit of the
     singly occupied sector, so each factor is the generator on q2 doubly controlled by (x_i, flag):
         x1  -1                 CZ(x1, flag)                                   0 Toffoli, 0 T
         x2  j = iY             exp(i pi/2 x2 flag Y) = 4 pi/8 Pauli rotations 0 Toffoli, 4 T
@@ -392,8 +392,8 @@ def colour_multiplexer_2O() -> dict:
 def multiplexer_link_2O(n_spin: int, spinor: dict) -> dict:
     """The link term per BE query with the derived multiplexer (r20 floor, r21 headline): W and W^dag on the far site
     for each of the n_spin hopping spinor components, plus the draft's spinor frame (groups.spinor_counts). The hop
-    between the near site and the rotated far site is colour-diagonal and g-independent, so it enters SELECT as fixed
-    Pauli strings (counted in lcu_terms_per_site): no hop squish, no diagonalizers, no colour squish."""
+    between the near site and the rotated far site is color-diagonal and g-independent, so it enters SELECT as fixed
+    Pauli strings (counted in lcu_terms_per_site): no hop squish, no diagonalizers, no color squish."""
     mx = colour_multiplexer_2O()
     n_mux = 2 * n_spin
     return {"n_mux": n_mux, "toffoli": n_mux * mx["toffoli"] + spinor["toffoli"],
@@ -411,8 +411,8 @@ def lcu_terms_per_site(d: int, n_spin: int, n_c: int, n_f: int, strings_per_bili
     """Pauli strings per site of the block-encoded Wilson kernel in the Jordan-Wigner encoding (DERIVED HERE, r21 c, e).
 
     hop     d links per site x n_spin hopping spinor components (r = 1: the projector 1 - gamma_k keeps half of them, and
-            the spinor frame makes the hop spin-diagonal) x n_c n_f colour-flavour copies x strings per bilinear.
-            A colour-diagonal bilinear a^dag b + h.c. is XX + YY with a Z string: 2 strings (2033, after the colour
+            the spinor frame makes the hop spin-diagonal) x n_c n_f color-flavor copies x strings per bilinear.
+            A color-diagonal bilinear a^dag b + h.c. is XX + YY with a Z string: 2 strings (2033, after the color
             multiplexer). On a Z3 link the phase omega^g multiplies the bilinear and enters as Z strings on the link
             register: 8 strings per copy (groups.RHOP_N_PAULI_DIAGONAL, derived in Ch. 6 round D).
     onsite  the Wilson on-site term psi^dag gamma^0 (m + r d) psi: 2 N (d <= 2) or 4 N (d = 3) number operators, one
@@ -441,7 +441,7 @@ def trotter_bound_steps(n_links: int, t_lat: float, eps: float, g2: float, casim
     half-ranges:
         e = (g^2 / 2) C_max / 2      one link's electric term (g^2/2) E^2, spectrum [0, (g^2/2) C_max]
         b = hop_norm + n_plaq 4/g^2  the terms that depend on that link: the Wilson hop (one unit-norm bilinear per
-                                     hopping (spinor, colour) mode at r = 1) and the plaquettes containing it
+                                     hopping (spinor, color) mode at r = 1) and the plaquettes containing it
                                      (Kogut-Susskind -(2/g^2) Re Tr U_p, |Re Tr U_p| <= 2 for SU(2))
         Lambda = n_links (e^2 b / 3 + e b^2 / 6).
     The neglected cross-link terms (hops sharing a site, plaquettes sharing two links) and the Higgs terms only add.
@@ -467,9 +467,9 @@ def trotter_bound_steps(n_links: int, t_lat: float, eps: float, g2: float, casim
 # --------------------------------------------------------------------------- #
 
 def colour_multiplexer_index_2O() -> dict:
-    """M = sum_g |g><g| (x) U_g on the ONE colour qubit of the index register (DERIVED HERE, r22).
+    """M = sum_g |g><g| (x) U_g on the ONE color qubit of the index register (DERIVED HERE, r22).
 
-    On the index register colour is a qubit, not two Jordan-Wigner modes, so no occupancy flag is needed and the
+    On the index register color is a qubit, not two Jordan-Wigner modes, so no occupancy flag is needed and the
     six bits of g = (-1)^x1 j^x2 k^x3 u^(2x4+x5) t^x6 (arXiv:2312.10285) each control one fixed generator:
         x1  -1                  a Z on the bit (as a sign of the read link it is a CZ with the address leaf)   0 T
         x2  j = iY, x3  k = iZ  controlled Pauli times S on the control: Clifford                             0 T
@@ -497,7 +497,7 @@ def _ctrl_shift_toffolis(L: int) -> int:
 
 def single_particle_query_2O(D: int, L: int, link_qubits: int) -> dict:
     """One block-encoding query U_h = P^dag S P of the single-particle Wilson kernel H_W[U] on the index register
-    (colour, spin, D coordinates) and the link registers (DERIVED HERE, r22; construction of arxiv_2607_28524).
+    (color, spin, D coordinates) and the link registers (DERIVED HERE, r22; construction of arxiv_2607_28524).
 
     LCU of 4D + 1 unitaries: the on-site term and, for each direction and orientation, a Dirac and a Wilson hop.
     Term register: mass/hop, direction, orientation, Dirac/Wilson (5 qubits at D = 3), so the +-i and -1
@@ -509,7 +509,7 @@ def single_particle_query_2O(D: int, L: int, link_qubits: int) -> dict:
                             (Babbush_PRX_2018)
         link copy           bits x2..x6 of the addressed link into a scratch register: the link is   (b - 1) D L^D
                             quantum data, one Toffoli per bit; x1 is a sign and enters as CZ(leaf, x1)
-        M or M^dag          the colour multiplexer or its inverse, chosen by the orientation qubit   2 (b - 1)
+        M or M^dag          the color multiplexer or its inverse, chosen by the orientation qubit   2 (b - 1)
         fix-up pass         the copy is measured out in X; its phase fix-ups walk the addresses again  D (L^D - 1)
         forward flags       flag AND not-orientation, recomputed (holding the backward flags through  D
                             the read would save these and cost D more qubits)
@@ -540,9 +540,9 @@ def single_particle_query_2O(D: int, L: int, link_qubits: int) -> dict:
 
 
 def single_particle_query_Z3_1p1d(L: int, link_qubits: int) -> dict:
-    """The same query for the 1+1D Z3 kernel of the 2028 comparison (DERIVED HERE, r22): index register of colour
+    """The same query for the 1+1D Z3 kernel of the 2028 comparison (DERIVED HERE, r22): index register of color
     (2 qubits), spin (1) and a log2 L-bit coordinate; 4D + 1 = 5 LCU terms on a 3-qubit term register (hop,
-    orientation, Dirac/Wilson). Z3 is diagonal on the colour index, so the link enters as the phase omega^(+-g):
+    orientation, Dirac/Wilson). Z3 is diagonal on the color index, so the link enters as the phase omega^(+-g):
     one synthesized rotation on each copied bit."""
     n = L.bit_length() - 1
     tof = {"backward_flag": 1, "controlled_shifts": 2 * _ctrl_shift_toffolis(L), "dirac_flag": 1,
@@ -557,7 +557,7 @@ def lift_cost(q_modes: int, n_uniform3: int) -> dict:
     <0| U_L h U_R |0> = psi^dag h psi / Q, with U_L, U_R each one of 2Q Majorana strings (type X or Y, mode a)
     selected by unary iteration with an accumulator for the Jordan-Wigner string: 2Q - 1 Toffolis each. Q, not
     2^q, because the index register is prepared uniform over the valid modes: each of its n_uniform3 three-valued
-    sub-registers (the D coordinates at L = 3; the colour index of the 1+1D Z3 kernel) is prepared uniform over 3
+    sub-registers (the D coordinates at L = 3; the color index of the 1+1D Z3 kernel) is prepared uniform over 3
     values, in and out (one rotation and one controlled-H, 2 T, each way); two-valued and 2^n-valued ones by Hadamards."""
     return {"toffoli": 2 * (2 * q_modes - 1), "t_direct": 2 * n_uniform3 * 2, "n_rot": 2 * n_uniform3, "leaves": 2 * q_modes,
             "anc_iteration": math.ceil(math.log2(2 * q_modes)) + 1}
@@ -615,7 +615,7 @@ def trotter_state_dependent_steps(L: int, n_adj: int, t_lat: float, eps: float, 
     second moment, the draft's formula as written) gives 'n_high'.
     Weak-coupling evaluation: each transverse gauge mode is an oscillator with w_k^2 = 4 sum_i sin^2(k_i/2);
     o1 = -w^3 P^2, o2 = -w^3 X^2; thermal mean -(w^3/2) coth(w/2T), variance 2 [(w^3/2) coth(w/2T)]^2 for each.
-    n_adj colours x (d - 1) polarizations per non-zero momentum; the variances add over modes, so sigma grows as the
+    n_adj colors x (d - 1) polarizations per non-zero momentum; the variances add over modes, so sigma grows as the
     square root of the volume. At this order there is no dependence on g or on the electric cutoff.
     'n_low': the phase of the fastest mode right to eps over the whole evolution, w^3 dt^2 t / 24 = eps (the
     frequency shift of the second-order step)."""
@@ -651,7 +651,7 @@ def free_overlap_modes(L: int, d: int, m: float, r: float) -> list:
     arXiv:2607.28524 (h_W(p) = sum_i Gamma^i sin p_i + Gamma^0 c(p), c = m + r sum_i (1 - cos p_i); m = -1.5 gives the
     chapter's alpha = 7.5). DERIVED HERE: h_ov(p) = Gamma^0 (1 + c/N) + (b.Gamma)/N, N = sqrt(b^2 + c^2), so its
     eigenvalues are +-sqrt(2 + 2c/N), each twice (4 spinor components per momentum); zero at p = 0 (c < 0, b = 0).
-    Checked against a dense diagonalization on 3^3 (scratch free_overlap_tpq.py). Returns one colour's 4 L^d modes."""
+    Checked against a dense diagonalization on 3^3 (scratch free_overlap_tpq.py). Returns one color's 4 L^d modes."""
     out = []
     for n in itertools.product(range(L), repeat=d):
         p = [2.0 * math.pi * ni / L for ni in n]
@@ -683,7 +683,7 @@ def ncs_free_field_background(L: int, n_adj: int, temp_lat: float, g2: float, t_
     """Referee C3 (DERIVED HERE). Non-topological <(Delta N_CS)^2>(t) of the free (abelianized) gauge field on L^d in
     the quantum thermal state. With canonical fields int E.B = -d/dt (1/2) int A.B, so N = (kappa/2) sum w (|A_+|^2 -
     |A_-|^2), kappa = g^2 / 8 pi^2, each helicity a real scalar field; Wick with the Wightman function gives
-    <(Delta N)^2>(t) = (kappa^2/4) sum_{k, hel, colour} ((n+1)^2 + n^2)(1 - cos 2wt), n = 1/(e^{w/T} - 1).
+    <(Delta N)^2>(t) = (kappa^2/4) sum_{k, hel, color} ((n+1)^2 + n^2)(1 - cos 2wt), n = 1/(e^{w/T} - 1).
     Bounded in t (no diffusion in the free theory) and dominated by zero-point fluctuations at T a = 0.5.
     VERIFIER 2026-10-05: this is the IDEAL helicity-A.B operator (curl eigenvalues +-w), not the chapter's lattice
     estimator; kept as a record (8.93e-3 at 10a). The chapter's estimator is ncs_lattice_background."""
@@ -702,7 +702,7 @@ def ncs_free_field_background(L: int, n_adj: int, temp_lat: float, g2: float, t_
 def ncs_lattice_background(L: int, n_adj: int, temp_lat: float, g2: float, t_lat: float, pairing: str = "avg",
                            n_quad: int = 0, statistics: str = "quantum") -> float:
     """Referee C3, verifier fix (DERIVED HERE, 2026-10-05). <(Delta N_CS)^2>(t) of the chapter's lattice estimator in
-    the free abelian theory on L^3 (quantum thermal state, n_adj colours): Qdot = kappa sum_{x,k} E_k(x) B_k(x), B_k(x)
+    the free abelian theory on L^3 (quantum thermal state, n_adj colors): Qdot = kappa sum_{x,k} E_k(x) B_k(x), B_k(x)
     the clover (average of the four k-plaquettes at x), E_k(x) the field on link (x,k) ("fwd") or the average over links
     (x,k) and (x-k,k) ("avg"). With z = (q, p) in the transverse normal modes, Delta N = z0^T A z0, A = kappa int_0^t
     S(tau)^T W S(tau) dtau (Gauss-Legendre), and <(Delta N)^2> = 2 Re Tr(A G0 A G0^T), G0 = <z z^T>. "avg" gives a
@@ -799,7 +799,7 @@ def ncs_hadamard_rel_var(lam: float, t_lat: float, signal: float) -> float:
 # shifts act on disjoint (flag, coordinate) pairs and run in parallel across directions (12 -> 2 + 2). 'fanout': with
 # a CNOT fan-out of the shared control onto FANOUT_ANCILLA_2033 extra qubits, those groups run in parallel. The read
 # and fix-up walks (78 + 78) are serial in every variant (unary iteration is a sequential walk and the directions share
-# the iteration temporaries); M and M^dag are 20 serial pi/8 rotations on one colour qubit.
+# the iteration temporaries); M and M^dag are 20 serial pi/8 rotations on one color qubit.
 SP_QUERY_DEPTH_2O = {
     "register": {"direction_flags": 2, "backward_flags": 3, "shift_backward": 2, "read_iteration": 78,
                  "link_copy": 405, "mux_orientation": 10, "mux_t": 20, "fixup_iteration": 78, "shift_forward": 2,
@@ -979,14 +979,14 @@ class Assumptions:
     eps_l_2028_stated: Tagged = Stated(3.5e-7, "app06 2028 derivation and box", "'eps_l <~ 3.5e-7' at 0.1 expected faults "
                                                                                 "per shot (R3), from the chunked 2.885e5 T")
     # r21 (3d), DERIVED HERE: the 2028 shot count. The chapter's sigma^2 ~ 10 is for the condensate averaged over the
-    # 27 sites of the 2033 lattice. The 2028 estimator averages N_c V = 24 site-colour copies, the three colour copies
+    # 27 sites of the 2033 lattice. The 2028 estimator averages N_c V = 24 site-color copies, the three color copies
     # being decoupled and TAKEN AS independent (they share the link, so this is an assumption), so sigma^2 = 10 x 27 / 24 = 11.25 and shots = sigma^2 / eps^2 = 1125.
     # Operator-norm bound: each copy's bilinear has eigenvalues in {-1, 0, 1}, so its variance is at most 1; if the
-    # sites of one colour copy were fully correlated only the 3 colour copies would average: sigma^2 <= 10 x 27 / 3 = 90.
+    # sites of one color copy were fully correlated only the 3 color copies would average: sigma^2 <= 10 x 27 / 3 = 90.
     shots_2028_stated: Tagged = Stated(1.1e3, "app06 2028 box", "'1.1e3 (psi-bar psi at one coupling)'; 1125 from "
                                                                 "sigma^2 = 11.25 (r21 d; was 1e3, borrowed from V = 27)")
     shots_2028_worst_stated: Tagged = Stated(9e3, "app06 shot-count paragraph", "'at most sigma^2 ~ 90, 9e3 shots' if the "
-                                                                                "sites of a colour copy are fully correlated")
+                                                                                "sites of a color copy are fully correlated")
     wall_per_shot_2028_stated: Tagged = Stated((0.27, 0.29), "app06 2028 derivation", "'0.27-0.29 s per shot at 1 us per "
                                                                                       "T-gate' (r21 a; r17 0.28-0.30)")
     # the 1+1D overlap figures that motivate the domain-wall choice. r22 (E26 (i)): priced in the valid single-particle
@@ -1069,7 +1069,7 @@ class Assumptions:
                                            "iteration (Babbush_PRX_2018); the AND ladder holds ceil(log2 L) - 1 temporaries")
     anc_link_pq: Tagged = Cited(6, "FermionPrimitives_unpub section_su2_diag.tex:188 (BO row, 'Ancilla 6')",
                                 "RECORD (second-quantized construction, draft frame): the p, q angle registers of the 2O "
-                                "colour squish, held through V, hop, V^dag (share='link')")
+                                "color squish, held through V, hop, V^dag (share='link')")
     anc_link_hop_register: Tagged = Cited(3, "FermionPrimitives_unpub section_hopping.tex:154",
                                           "RECORD (second-quantized construction, draft frame): 'at most a 3-qubit ancilla "
                                           "register for the eigenvalue computations', held with p, q")
@@ -1091,7 +1091,7 @@ class Assumptions:
                                                                         "(r24; r17-r23 691, printed ~700)")
     # the Higgs vertex's SELECT strings (r21 c), and the LCU records of the second-quantized construction
     lcu_strings_per_bilinear: Tagged = Cited(2, "Jordan-Wigner encoding (standard)",
-                                             "a colour-diagonal bilinear a^dag b + h.c. is (XX + YY)/2 with a Z string: two "
+                                             "a color-diagonal bilinear a^dag b + h.c. is (XX + YY)/2 with a Z string: two "
                                              "Pauli strings (record: the hop strings of the second-quantized LCU)")
     lcu_toffoli_per_term: Tagged = Stated(1, "app06 2033 derivation; Babbush_PRX_2018",
                                           "one SELECT Toffoli per LCU term (unary iteration over L terms costs L - 1): the "
@@ -1113,18 +1113,18 @@ class Assumptions:
     # RECORD parameters of the second-quantized construction (r17-r21): the link frame and the draft's compiled hop
     link_frame: Tagged = Cited("multiplexer", "r21 ruling (1), H. Lamm 2026-10-01 ('promote'); DERIVED HERE r20 "
                                               "(colour_multiplexer_2O; arxiv_2312_10285 ordered-product encoding)",
-                               "RECORD (second-quantized construction): the link-dressed Fock-space hop as the 2O colour "
+                               "RECORD (second-quantized construction): the link-dressed Fock-space hop as the 2O color "
                                "multiplexer W and W^dag on the far site plus the draft's spinor frame, 468 T per link per "
                                "query; 'draft' = the general diagonalizing frame of the unpublished counts")
     hop_fermion_2033: Tagged = Stated("wilson", "app06 2033 derivation", "the overlap kernel H_W is the Wilson operator")
     hop_frame_undo: Tagged = Cited(True, "ruling E21 (1), H. Lamm 2026-10-01 (apply_log/r19_core.md); "
                                          "FermionPrimitives_unpub section_hamiltonian.tex:86-91, su2_diag.tex:238, "
                                          "section_resources.tex:15",
-                                   "RECORD (second-quantized, draft frame). OUR ESTIMATE, ruled in: the colour frame V_g is "
+                                   "RECORD (second-quantized, draft frame). OUR ESTIMATE, ruled in: the color frame V_g is "
                                    "applied AND undone on both sites of every link in every BE query. The draft draws V_C^dag "
                                    "(fig. da_diagonalizer) but does not count it: its 2 C^G is V_C on the two sites only")
     hop_share: Tagged = Cited("link", "ruling E21 (1), H. Lamm 2026-10-01 ('make the switch'; apply_log/r19_core.md)",
-                              "RECORD (second-quantized, draft frame): the colour squish and parity flags are computed once per "
+                              "RECORD (second-quantized, draft frame): the color squish and parity flags are computed once per "
                               "link and held through V(x), V(y), hop, V^dag(x), V^dag(y); 'draft' recomputes them")
     hop_mcx: Tagged = Cited("mbu", "groups.mcx_toffolis (r17 core)", "C^nX ladders at n-1 Toffolis: the n-2 AND temporaries "
                                                                     "uncomputed by measurement (the report's rule)")
@@ -1437,11 +1437,11 @@ class Assumptions:
 # --------------------------------------------------------------------------- #
 
 def _spatial_hop_rule(a: Assumptions, k: int, tc: str, eps: float, synthesis: str | None = None) -> dict:
-    """Rule R-HOP (groups.rhop_link) for one Z3 spatial link shared by the Nc L5 colour-and-s copies.
+    """Rule R-HOP (groups.rhop_link) for one Z3 spatial link shared by the Nc L5 color-and-s copies.
 
     The L5 fifth-direction slices play the role of the N_stag fields on one link (so the rule's
     default k = Nc L5 = 12 is Ch. 9's grouping ruling R6); the grouping passes its own k.  Z3 is
-    diagonal on the register, so the rule prices no colour move and 8 Pauli strings per copy.
+    diagonal on the register, so the rule prices no color move and 8 Pauli strings per copy.
     `eps` is the circuit's own R-TOL tolerance (_step_rtol_2028); the string count does not depend on it.
     r17: rotations at the full fit (a.hop_synthesis = "rus"); `synthesis` overrides it for the legacy record.
     """
@@ -1661,13 +1661,13 @@ def _model_2028(a: Assumptions) -> Result:
                                              t_per_rotation(eps_coh_ch, hop_synthesis))
 
     # r22 (E26 (i)), DERIVED HERE: the 1+1D overlap route the chapter rejects, in the valid single-particle architecture
-    # (arxiv_2607_28524), priced as the 2033 query is. Index register: colour (2 qubits), spin (1), coordinate (3); five
+    # (arxiv_2607_28524), priced as the 2033 query is. Index register: color (2 qubits), spin (1), coordinate (3); five
     # LCU terms. A query reads one of the eight two-qubit links and applies the phase omega^(+-g). One application of the
     # block-encoded overlap Hamiltonian is d_sgn + 1 queries plus the lift. Each circuit (one application, or a
     # ground-state preparation of n_sgn of them) sets its own R-TOL tolerance.
     q_modes_1p1 = dirac * Nf * Nc * V                                  # 48
     spq1 = single_particle_query_Z3_1p1d(L, g.link_qubits)             # 40 Toffolis + 6 rotations
-    lift1 = lift_cost(q_modes_1p1, 1)                                  # 190 Toffolis; the colour index is uniform over 3
+    lift1 = lift_cost(q_modes_1p1, 1)                                  # 190 Toffolis; the color index is uniform over 3
 
     def _overlap_1p1d(kappa, n_sgn):
         d = math.ceil(kappa * math.log(1 / float(a.delta_1p1d_a.value)))
@@ -1710,8 +1710,8 @@ def _model_2028(a: Assumptions) -> Result:
     t_shot_before_rtol = (n_steps * _retired_step(pre[0]), n_steps * _retired_step(pre[1]))   # 223333, 236899
 
     # r21 (3d), DERIVED HERE: shots from the estimator variance. The chapter's sigma^2 ~ 10 is the condensate averaged
-    # over the 27 sites of the 2033 lattice; here N_c V = 24 site-colour copies average (the colour copies are decoupled,
-    # hence independent). If the sites of one colour copy were fully correlated only the N_c copies would average.
+    # over the 27 sites of the 2033 lattice; here N_c V = 24 site-color copies average (the color copies are decoupled,
+    # hence independent). If the sites of one color copy were fully correlated only the N_c copies would average.
     eps_obs = float(a.eps_obs.value)
     copies_2033 = int(a.L_2033.value) ** int(a.D_2033.value)          # 27
     copies_2028 = Nc * V                                              # 24
@@ -2025,9 +2025,9 @@ def _model_2033(a: Assumptions) -> Result:
     fd = FERMION_DRAFT[a.gauge_group_2033.value]
 
     # r22 (E26 (i)): the single-particle kernel. H = psi^dag h_ov[U] psi, h_ov = gamma^0 + sgn(H_W[U]); H_W[U] is a
-    # Q x Q matrix of link operators, promoted to an index register (colour, spin, coordinates) and the link registers.
+    # Q x Q matrix of link operators, promoted to an index register (color, spin, coordinates) and the link registers.
     q_modes = lq_f                                    # Q = 216 single-particle modes = the Jordan-Wigner register
-    q_index = {"colour": math.ceil(math.log2(Nc * Nf)), "spin": math.ceil(math.log2(dirac)),
+    q_index = {"color": math.ceil(math.log2(Nc * Nf)), "spin": math.ceil(math.log2(dirac)),
                "coordinates": D * math.ceil(math.log2(L))}                # 1 + 2 + 6 = 9
     n_index = sum(q_index.values())
     m0 = float(a.m0_wilson.value)
@@ -2065,10 +2065,10 @@ def _model_2033(a: Assumptions) -> Result:
     t_over_a_r22 = float(a.t_evol_fm_r22.value) / float(a.a_fm.value)   # 50 (record)
     eps_tr = float(a.eps_trotter.value)               # 0.1
     # r22 (E26 (ii)), headline: the state-dependent second-order estimate in the thermal state (weak coupling)
-    n_adj = Nc * Nc - 1                               # 3 adjoint colours
+    n_adj = Nc * Nc - 1                               # 3 adjoint colors
     sd = trotter_state_dependent_steps(L, n_adj, t_over_a, eps_tr, float(a.temp_lat_2033.value), d=D)
     # r21 (3b), now the quoted worst case: the second-order commutator bound with operator norms
-    hop_norm = float(Nc * Nf * n_spin)                # 4: one unit-norm bilinear per hopping (spinor, colour) mode, r = 1
+    hop_norm = float(Nc * Nf * n_spin)                # 4: one unit-norm bilinear per hopping (spinor, color) mode, r = 1
     n_plaq_per_link = 2 * (D - 1)                     # 4
     g2 = float(a.g2_bare.value)
     cas = float(a.casimir_max_2O.value)
@@ -2204,7 +2204,7 @@ def _model_2033(a: Assumptions) -> Result:
     def _hop(eps, **over):
         return hop_link_cost(a.gauge_group_2033.value, Nf, D, eps=eps, **{**hop_kw, **over})
     hop0 = _hop(1e-4)                                 # counts only (eps-free)
-    n_rot_link_draft = hop0["n_rot"]                  # 704 = 480 colour + 224 diagonalizer
+    n_rot_link_draft = hop0["n_rot"]                  # 704 = 480 color + 224 diagonalizer
     spinor_item = next(x for x in hop0["items"] if x["name"] == "spinor_frame")
     mux = colour_multiplexer_2O()
     ml = multiplexer_link_2O(n_spin, spinor_item)     # 52 Toffoli + 104 T
@@ -2300,8 +2300,8 @@ def _model_2033(a: Assumptions) -> Result:
     qubits_per_site = D * g.link_qubits + (n_rho_q + g.link_qubits) + dirac * Nf * Nc   # 36
 
     # Records at the pre-r21 query count (30 x 5 + 240 = 390 D_ov, 691 each) and the pre-r21 1.7e3-term LCU line, so
-    # every earlier print stays reproducible: the r20 centre (draft frame), the r20 floor (multiplexer), the W2 top,
-    # the zero-T floor, and the older centres. All of them price the retired second-quantized construction.
+    # every earlier print stays reproducible: the r20 center (draft frame), the r20 floor (multiplexer), the W2 top,
+    # the zero-T floor, and the older centers. All of them price the retired second-quantized construction.
     R_draft = _price_sq(n_trot_pre, "draft", c_toff_=c_toff_pre)       # c_be 2,104,718.8; 5.672e11
     R_mux = _price_sq(n_trot_pre, "multiplexer", c_toff_=c_toff_pre)   # 61,043.6; 1.645e10
     R_w2 = _price_sq(n_trot_pre, "w2", c_toff_=c_toff_pre)             # 4,806,210.4; 1.2952e12
@@ -2324,7 +2324,7 @@ def _model_2033(a: Assumptions) -> Result:
     # RECORD (r19 prose, retired r20): the draft's frame with its rotation synthesis removed. Not a realizable circuit:
     # the draft diagonalizes U_g, and 2O eigenphases include e^{+-i pi/3}, e^{+-2i pi/3} (outside Z[1/sqrt2, i]).
     c_be_rotation_free = R_zero["c_be"] + n_links * t_link_clifford_t + c_higgs
-    # For the record: the pre-round-B centre (4-T Toffolis, the retired unsourced 190-T vertex),
+    # For the record: the pre-round-B center (4-T Toffolis, the retired unsourced 190-T vertex),
     # read from groups.py's UNSOURCED record so the retired number lives in one place.
     retired = g.primitives["controlled_group_action"]
     n_ga = n_links + V                                # 108 vertices of the retired count
@@ -2871,7 +2871,7 @@ def _model_2033(a: Assumptions) -> Result:
         f"{sum(anc_query.values())} + link read {sum(anc_select.values())} = {lq_anc}; asserted {lq_anc_asserted} before "
         f"r20. Register {lq} LQ. The readout control is idle during the TPQ filter (one spare at the peak).",
         f"2O = single-qubit Clifford group mod phases ({a.clifford_2O.value}): the link needs no rotation synthesis; on a "
-        f"colour qubit the multiplexer is {mux_ix['t_direct']} T.",
+        f"color qubit the multiplexer is {mux_ix['t_direct']} T.",
         f"Condensate arm (r24 (1)): static, measured on the prepared state; shot = {C['n_dov']} TPQ applications at its "
         f"own R-TOL ({C['n_rot_shot']} rotations, eps_rot {C['eps_rot']:.4g}, {C['t_rot']:.3f} T) = {t_shot_cond:.4g} T, "
         f"eps_l {eps_l_cond:.3g}, {wall_shot_cond:.4g} s/shot.",
@@ -2923,12 +2923,12 @@ def model(a: Assumptions, era: str) -> Result:
 #   2028 (was R6): grouping 'color+s', Toffolis at 7 T, N_Trotter = 20 -> 1.11e5-1.245e5 T/shot
 #                  vs the box's 1.1-1.25e5.  Since R-HOP (2026-09-29): 2.233e5-2.369e5 vs 2.2-2.4e5.
 #                  Since R-TOL (2026-09-29): 1.951e5-2.046e5 vs 1.95-2.05e5.
-#   2033 (was R5): 7 T throughout, one U_x per vertex at the centre; band floor = vertex at
+#   2033 (was R5): 7 T throughout, one U_x per vertex at the center; band floor = vertex at
 #                  0 T, top = two U_x -> 3.41e9-2.62e10 vs the box's 3.4e9-2.6e10
 #                  (R-TOL: 3.383e9-2.620e10, same print).
 #   r17 (2026-10-01, rulings e/f): 2028 2.76e5-2.97e5 vs the box's 2.8-3.0e5; 2033 band 3.383e9-1.2952e12
-#                  vs 3.4e9-1.3e12, centre 6.891e11 vs '~6.9e11'.
-#   r19 (2026-10-01, E21): 2028 unchanged; 2033 band unchanged, centre 5.672e11 vs '~5.7e11'.
+#                  vs 3.4e9-1.3e12, center 6.891e11 vs '~6.9e11'.
+#   r19 (2026-10-01, E21): 2028 unchanged; 2033 band unchanged, center 5.672e11 vs '~5.7e11'.
 #   r20 (2026-10-01, E23): 2028 LQ 247; 2033 LQ 1015, band 1.645e10-1.2952e12 vs 1.6e10-1.3e12.
 #   r21 (2026-10-01, "promote / do TPQ / settle them"): 2028 268,995-288,535 vs the box's 2.7-2.9e5; 2033 one
 #                  headline, 1.809e13 vs '~1.8e13', LQ 1005.

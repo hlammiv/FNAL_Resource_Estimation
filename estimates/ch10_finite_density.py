@@ -16,7 +16,7 @@ INPUTS AND SOURCES
   c_BE = 5e5 (2033) T/step                       Stated, app07:96,105,169 BEFORE R-HOP; superseded
                                                  by the derived 3.91e5 (kept as a record only)
   hop: Fermion_Primitives draft counts, undo,    r17/r19 (groups.hop_link_cost; FermionPrimitives_unpub),
-       link sharing, MBU, HWP phasing, full fit   estimated pieces labelled there
+       link sharing, MBU, HWP phasing, full fit   estimated pieces labeled there
   mass: HWP(N_c N_stag) per site, mu_B folded in  r17 (groups.staggered_mass_site; FP section_mass.tex:3-10)
   Gibbs at V=2^2: >~14 sampler steps             Stated, app07:103 (restated from '>~1e6 T' = 1e6/7.25e4); record
                                                  since referee F2 (the V=2^2 sample is now priced, 1.3e12 T)
@@ -42,13 +42,13 @@ INPUTS AND SOURCES
                                                  importance weights; ensemble pairs Assumed from scratch searches
 WHAT IS NOT DERIVED HERE
   The staggered hop comes from an UNPUBLISHED draft's gate tables; the frame undo, the SU(3)
-    squish uncompute, the per-field colour rotations and the HWP phasing are estimated here
+    squish uncompute, the per-field color rotations and the HWP phasing are estimated here
     (groups.py, NEEDS_AUTHOR 'Cross-chapter: fermion hop'). SCALING where estimated.
   Gauge primitives: the papers' tables with every rotation at the full fit (E20); the papers' own
     slope-only price is the record c_be_gauge_t_per_step_papers_convention.
   The Gibbs bound at V=2^2 is carried in sampler steps (>~14), not derived (item 10 open).
   N_anc at every rung (Stated). 2028: ~100 is a sized budget (ruling ch10-ancilla-contents A):
-    workspace 29 (serial reuse; since r19 the draft's 24-qubit colour-squish scratch is held through the hop,
+    workspace 29 (serial reuse; since r19 the draft's 24-qubit color-squish scratch is held through the hop,
     so it sits beside the hop's largest piece, the C^7X ladder 5; the hop's HWP(6) holds 4 = 6 - w(6) (E26, r22;
     was 7) and with the 1 repeat-until-success synthesis ancilla is also 5; the other pieces U_FFT 8/U_Tr 7/
     U_inv 4/U_mul 2/mass HWP(3) 1 reuse it) to 55 (no reuse) plus 1 Hadamard-test qubit is accounted, the rest
@@ -76,9 +76,9 @@ WHAT IS NOT DERIVED HERE
 WALL TIME AND FACTORIES
   t_gate_s = 1e-6 s per T, shot_overhead_s = 1e-4 s per shot, ONE machine, serial (r23, R9).
   T-depth per shot from factory.json (Ch. 10 runs, scratchpad factories/ch10_depth_v2.py), low/high:
-    2028 one Trotter step 2.67e4 (T-par colour frame, 8 link rounds: its ~60 parity ancilla per hop fit the
+    2028 one Trotter step 2.67e4 (T-par color frame, 8 link rounds: its ~60 parity ancilla per hop fit the
     ~100 budget only at 8 rounds; 4 rounds, 1.43e4 / F* 28, is over budget) - 4.05e4 (as compiled, 2d = 4
-    colour classes); F* = 9.9-15. F* < 10 at the as-compiled end, so the shot is depth-limited there: 0.405 s, not
+    color classes); F* = 9.9-15. F* < 10 at the as-compiled end, so the shot is depth-limited there: 0.405 s, not
     0.400 s (corrected wall, R9 rule 12). Fully serial 1.84e5 (F* 2.2) is the pessimistic bound, not priced.
     2033 Gibbs shot 9.85e7 (T-par, 12 link rounds: ~51 + ~170 parity ancilla per hop fit the 750 band only at
     ~3 concurrent hops; 6 rounds, 5.23e7 / F* 106, would need ~880) - 3.16e8 (as compiled, 12 rounds at the
@@ -133,18 +133,18 @@ which is kept only as a record (superseded).
 r17 (ruling (e) H. Lamm 2026-10-01; apply_log/r17_core.md, apply_log/r17_ch10.md): the hop is
 groups.hop_link_cost("S36x3", N_stag): the unpublished Fermion_Primitives gate tables
 (FermionPrimitives_unpub) under the report rules, with the pieces the draft leaves out estimated
-(frame undo, SU(3) squish uncompute, per-field colour rotations, MBU ladders, HWP phasing). The
+(frame undo, SU(3) squish uncompute, per-field color rotations, MBU ladders, HWP phasing). The
 staggered mass is groups.staggered_mass_site: one HWP group of N_c N_stag per site, mu_B N_B folded
 into the same angle (it commutes with H). Hop and mass rotations are at the full fit
 1.15 log2(1/eps) + 9.2. Since E20 (r18, 2026-10-01; apply_log/r18_core.md) the gauge primitives are too
 (n_rot = the paper's log coefficient / 1.15, Toffoli constants kept). R-HOP is kept as a legacy comparison
 intermediate only.
 
-r19 (E21 rulings, H. Lamm 2026-10-01; apply_log/r19_core.md, apply_log/r19_ch10.md): (1) the hop's colour
+r19 (E21 rulings, H. Lamm 2026-10-01; apply_log/r19_core.md, apply_log/r19_ch10.md): (1) the hop's color
 squish and parity flags are computed once per link and held through V(x), V(y), hop, V^dag(x), V^dag(y)
 (share="link"), with the frame undo kept (undo=True; the draft draws V_C^dag but does not count it,
 PD/section_hamiltonian.tex:86-91 vs PD/section_resources.tex:15). The per-application recompute
-(share="draft") is the conservative sensitivity. (3) SU(3) colour rotations = 2 N_angles (su3_diag.tex:120
+(share="draft") is the conservative sensitivity. (3) SU(3) color rotations = 2 N_angles (su3_diag.tex:120
 "6 N_angles" is a draft slip). E20 is applied to the chapter in the same round. Since r19 each shot also
 carries ~0.1 ms of overhead (report rule; it moves no printed number).
 2028: N_rot 10,908 (3,708 gauge + 7,192 hop + 8 mass), eps 9.575e-4, step 399,956.8 T (4.0x the cap).
@@ -167,7 +167,7 @@ are their own circuits and set their own eps from their own N_rot.
 
 R-HOP report-wide (ruling H. Lamm 2026-09-29; apply_log/rhop_ch10.md; RETIRED by r17, kept as the
 legacy comparison): the hop was priced per link per Trotter step by the shared groups.rhop_link: 2 N_stag link-controlled
-colour moves at one U_mul (308 T, arXiv:2405.05973 tab:tgatecost; ruling VERTEX) plus
+color moves at one U_mul (308 T, arXiv:2405.05973 tab:tgatecost; ruling VERTEX) plus
 2 Pauli strings x HWP(N_c N_stag) (common.hwp_group, papers' convention, eps_rot):
 (691.12 T/link at N_stag = 1, 2,068.25 T/link at N_stag = 3 at the old fixed 1e-4). The cap-filling UNSOURCED
 allowances (1.57e4 at 2028, 1.88e5 at 2033) are gone; totals follow.
@@ -275,7 +275,7 @@ class Assumptions:
                                      "PD/section_hamiltonian.tex:86-91, but its 2 C^G counts only the 2 forward "
                                      "applications, PD/section_su2_diag.tex:238, section_resources.tex:15)",
                                "groups.fermion_hop_counts; E21 (1), apply_log/r19_core.md")
-    hop_share: Tagged = Assumed("link", "colour squish + parity computed once per link and held through V(x), V(y), "
+    hop_share: Tagged = Assumed("link", "color squish + parity computed once per link and held through V(x), V(y), "
                                         "hop, V^dag(x), V^dag(y) (E21 (1) 'make the switch'); 'draft' (recompute per "
                                         "frame application) is the conservative sensitivity, reported beside it",
                                 "groups.fermion_hop_counts; apply_log/r19_core.md")
@@ -376,14 +376,14 @@ class Assumptions:
                                   "r25 task rulings; app07:145")
     n_sectors_2028: Tagged = Stated((2, 3), f"{TEX}:141", "'ground-state energies E_0(N_B) in 2--3 sectors'")
     t_depth_2028: Tagged = Assumed((26719.289742577264, 40488.90205167576),
-                                   "T-depth of the one-step 2028 shot: low = T-par colour frame (commuting Euler-factor "
+                                   "T-depth of the one-step 2028 shot: low = T-par color frame (commuting Euler-factor "
                                    "rotations in one layer), 8 link rounds (its ~60 parity ancilla per hop fit the ~100 "
                                    "budget only at 8 rounds; 4 rounds, 1.43e4, is over budget); high = as compiled, "
-                                   "2d = 4 colour classes. "
+                                   "2d = 4 color classes. "
                                    "Fully serial 183,854 (F* 2.2) is the pessimistic bound, not priced",
                                    "factory.json Ch. 10 run 1 (scratchpad factories/ch10_depth_v2.py), r25")
     t_depth_2033: Tagged = Assumed((98454105.32846098, 315713175.1043646),
-                                   "T-depth of the 2e3-step Gibbs shot: low = T-par colour frame, 12 link rounds (its "
+                                   "T-depth of the 2e3-step Gibbs shot: low = T-par color frame, 12 link rounds (its "
                                    "~170 parity ancilla per hop fit the 750 band only at ~3 concurrent hops; 6 rounds, "
                                    "5.23e7, needs ~880); high = as compiled, 12 link rounds (250-ancilla end). Fully serial "
                                    "3.89e9 (F* 1.4) is the pessimistic bound, not priced",
@@ -474,7 +474,7 @@ class Assumptions:
             raise ValueError(f"hop_synthesis={self.hop_synthesis.value!r} is not a common.t_per_rotation model")
         if self.hop_share.value not in ("draft", "link"):
             raise ValueError(f"hop_share={self.hop_share.value!r}")
-        if self.hop_mcx.value not in ("mbu", "2n-3", "draft-colour"):
+        if self.hop_mcx.value not in ("mbu", "2n-3", "draft-color"):
             raise ValueError(f"hop_mcx={self.hop_mcx.value!r}")
         if self.hop_phasing.value not in ("hwp", "plain", "none"):
             raise ValueError(f"hop_phasing={self.hop_phasing.value!r}")
@@ -547,7 +547,7 @@ def _rot_per_step(a: Assumptions, d: int, L: int, n_stag: int) -> dict:
     """R-TOL: synthesized (arbitrary-angle) rotations per Trotter step.
 
     Gauge: PrimitiveCost.rot (= t_log / 1.15) x multiplicity per link (U_Tr 7, U_FFT 102, U_phi 256,
-    U_inv and U_mul 0 for Sigma(36x3)). Hop: groups.fermion_hop_counts n_rot per link (colour rotations,
+    U_inv and U_mul 0 for Sigma(36x3)). Hop: groups.fermion_hop_counts n_rot per link (color rotations,
     diagonalizer rotations, HWP phasing). Mass: the HWP(N_c N_stag) rotations per site. The counts do not
     depend on eps, so there is no iteration.
     """
@@ -566,7 +566,7 @@ def gibbs_jump_set(d: int, L: int, n_stag: int) -> dict:
     """Referee F2: a gauge-invariant local jump set, closed under adjoint, that connects every conserved sector.
     Plaquette Tr U and its adjoint (moves electric flux); staggered hop psi†_f U psi_f and adjoint, per link and
     field; local baryon eps_abc psi_a psi_b psi_c and adjoint, per site and field (changes N_B, which H conserves);
-    on-site colour-singlet psi†_f psi_f' and adjoint per field pair (changes the separately conserved field numbers)."""
+    on-site color-singlet psi†_f psi_f' and adjoint per field pair (changes the separately conserved field numbers)."""
     v = L ** d
     fam = dict(plaquette=2 * (d * (d - 1) // 2) * v, hop=2 * d * v * n_stag, baryon=2 * v * n_stag,
                field_mixing=2 * v * (n_stag * (n_stag - 1) // 2))
@@ -926,7 +926,7 @@ def _model_2028(a: Assumptions) -> Result:
     qb28 = qsvt_band(a, d, L, ns28, a.gibbs_beta_h_2028.lo, geo["gauge_lq"] + geo["fermion_lq"], lq[1])
 
     # ancilla budget (ruling ch10-ancilla-contents A), re-sized for the r17 hop: the paper workspace plus the
-    # hop's HWP(2 N_c N_stag) and largest MBU ladder (C^7X in the Sigma(36x3) colour squish: 5 AND ancillas),
+    # hop's HWP(2 N_c N_stag) and largest MBU ladder (C^7X in the Sigma(36x3) color squish: 5 AND ancillas),
     # the draft's 24-qubit Sigma(36x3) squish scratch (su3_diag.tex:103), and the mass HWP(N_c N_stag). The draft's
     # separate flag and parity registers are not sized (NEEDS_AUTHOR); the 24 may already hold them.
     # r19 (share="link"): the squish is held through the hop, so under serial reuse the 24 sit beside the
@@ -939,7 +939,7 @@ def _model_2028(a: Assumptions) -> Result:
     ws = {"U_FFT": prim["U_FFT"].ancilla, "U_Tr": prim["U_Tr"].ancilla, "U_inv": prim["U_inv"].ancilla,
           "U_mul": prim["U_mul"].ancilla, f"hop HWP({k_hop})": hwp_ancilla(k_hop),
           "hop C^7X ladder (MBU)": mcx_toffolis(7, "mbu") - 1,
-          "hop colour-squish scratch (FP su3_diag tab:su3squishcosts)": SQUISH_ANCILLA_S36,
+          "hop color-squish scratch (FP su3_diag tab:su3squishcosts)": SQUISH_ANCILLA_S36,
           f"mass HWP({ms['k']})": ms["ancilla"]}
     lq_sys = geo["gauge_lq"] + geo["fermion_lq"]
     ws_serial = max(ws.values())
@@ -1031,7 +1031,7 @@ def _model_2028(a: Assumptions) -> Result:
             "Gauge terms (groups.py, arXiv:2405.05973 tab:primcost + arXiv:2408.00075 FFT, full fit): 13,068 T per "
             "link x 8 = 104,541 T/step; electric share 81%. Papers' slope-only record 70,427.",
             "Hop (r19, groups.hop_link_cost, share='link' + undo): 2,592 Toffoli + 120 T + 899 rotations = 36,902.7 "
-            "T/link; colour frame 80% of it; x 8 = 295,222 T/step. Sensitivity share='draft' 85,118.7 T/link "
+            "T/link; color frame 80% of it; x 8 = 295,222 T/step. Sensitivity share='draft' 85,118.7 T/link "
             "(step 785,685, 7.9x); no undo 30,102; the draft's printed 2 C^G + C^hop 3.2e4; R-HOP was 676.",
             "Mass: HWP(3) per site, 2 rotations + 1 Toffoli = 48.47 T; x 4 = 193.9 T/step; mu_B N_B folded in.",
             "Step = 104,541 + 295,222 + 194 = 399,957 T = 4.0x the 1e5 cap: no step fits (floor = 0). hard_ops is "
@@ -1391,7 +1391,7 @@ def INSTANCE_ROWS(a, era, r):
     if era == "2028":
         return [(r"2+1D SU(3) $\mu_B{>}0$", r.lq, r.hard_ops,
                  {"note": "one Trotter step (lower bound on the executed ramp), 4.0x the cap; gauge terms compiled (full fit), hops from the "
-                          "unpublished Fermion_Primitives counts with the colour squish held per link and an "
+                          "unpublished Fermion_Primitives counts with the color squish held per link and an "
                           "estimated frame undo (r19)"})]
     if era == "2033":
         return [(r"3D SU(3) $\Sigma(36{\times}3)$ $2^3$, QSVT/TPQ", r.lq, r.hard_ops,

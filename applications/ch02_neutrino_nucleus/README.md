@@ -395,7 +395,7 @@ From `docs/OPEN_ITEMS.md`:
 - The 2033 primitive counts are constructive allowances, not a compiled full-register circuit.
 - Rotation synthesis is priced at the leading Ross-Selinger term (`exact_synthesis = False`); the subleading term is
   pending.
-- Physical accuracy of the finite-volume correlators and the logical-noise behaviour of the circuits are not derived.
+- Physical accuracy of the finite-volume correlators and the logical-noise behavior of the circuits are not derived.
 - The 12C row is an evolution-scaling estimate on the legacy assumptions, not a complete response shot, with no
   step-error validation.
 

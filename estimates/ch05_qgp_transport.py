@@ -14,7 +14,7 @@ numbers below are at E20, r18 Ch. 5 apply), eps set per circuit
 by ruling R-TOL (eps_rot = sqrt(1e-2 / N_rot), common.eps_rot_for; 2028 7.628e-4, 2033 reference shot 7.99e-6).
 The 2033 fermion hop and mass (r17, 2026-10-01) are priced from the Fermion_Primitives draft's gate tables at
 the full fit 1.15 log2(1/eps) + 9.2, at the same circuit eps. Since r19 (author ruling E21 (1), 2026-10-01) the
-hop holds the colour squish and parity flags once per link (share="link") with the frame undo kept (undo=True);
+hop holds the color squish and parity flags once per link (share="link") with the frame undo kept (undo=True);
 the r17 per-application recompute (share="draft") is a conservative sensitivity.
 Every primitive cost comes from groups.py (magnetic_per_link and the primitives
 table); nothing is retyped here.
@@ -125,18 +125,18 @@ WHAT IS NOT DERIVED HERE
     r17 ruling (e), H. Lamm 2026-10-01: "adopt the fermion primitive numbers ... estimate or approximate the
     missing pieces"), through the shared groups.hop_link_cost("S72x3", n_stag=3) with its defaults
     (share="link", undo=True, mcx="mbu", phasing="hwp"; E21 (1), 2026-10-01, "make the switch"): per link per
-    step the colour squish (2 x 1,219 Toffoli at MBU, compute + uncompute) and parity flags (892) computed ONCE
-    and held through V_g(x), V_g(y), hop, V_g^dag(x), V_g^dag(y) (3,330 Toffoli); 4 colour-frame applications
-    x 3 fields x 184 colour rotations (2 N_angles, E21 (3); 2,208 rotations), the V_g^dag half ESTIMATED HERE
+    step the color squish (2 x 1,219 Toffoli at MBU, compute + uncompute) and parity flags (892) computed ONCE
+    and held through V_g(x), V_g(y), hop, V_g^dag(x), V_g^dag(y) (3,330 Toffoli); 4 color-frame applications
+    x 3 fields x 184 color rotations (2 N_angles, E21 (3); 2,208 rotations), the V_g^dag half ESTIMATED HERE
     (FP draws V_C^dag in big_fig_group_agnostic.pdf, section_hamiltonian.tex:86-91, but its 2 C^G is two sites
     forward only, resources.tex:15,37-41); the hop squish + flags once per link (326 Toffoli); 2 x 10 classes
-    x 3 colours x 3 fields = 180 controlled diagonalizers (360 T + 720 rotations); one HWP(18) phasing group
+    x 3 colors x 3 fields = 180 controlled diagonalizers (360 T + 720 rotations); one HWP(18) phasing group
     (16 Toffoli + 5 rotations). In all 3,672 Toffoli + 360 T + 2,933 rotations per link-step, 1.098e5 T at the
     2033 eps (15.7x the retired R-HOP 6.97e3 at the same eps). The undo is 1,104 rotations, 3.15e4 T.
     Sensitivities at the same eps: share="draft" (the r17 headline, squish + parity per frame application and
     hop squish per field: 14,314 Toffoli) 1.843e5, shot 7.683e9; no undo (the draft's 2 C^G
     rotation layers, squish per link) 7.83e4; no undo at share="draft" 1.061e5.
-  The staggered mass (r17, option M-B): one R_Z per colour-flavour copy per site (FP section_mass.tex:3-10), the
+  The staggered mass (r17, option M-B): one R_Z per color-flavor copy per site (FP section_mass.tex:3-10), the
     9 copies on a site as one HWP(9) group, 4 rotations + 7 Toffoli = 163 T per site-step, 4.4e3 T per step
     (0.02% of the step). mu_B N_B commutes with H and folds into the same angle at no cost.
   The 2033 breakdown is ONE shot at a_s = 0.2 fm at the deepest fit point of the slow end (tau = 1/(2 pi T), c =
@@ -285,7 +285,7 @@ class Assumptions:
     hop_group_2033: Tagged = Assumed("S72x3", "s648: no hop circuit exists for Sigma(216x3) (the Fermion_Primitives draft "
                                               "covers 2T, 2O, Sigma(36x3), Sigma(72x3)). The 2033 hop is priced at the "
                                               "Sigma(72x3) counts as a PLACEHOLDER, not a bound: Sigma(216x3) has 24 classes "
-                                              "against 16 and a wider register, so its colour frame is likely larger. "
+                                              "against 16 and a wider register, so its color frame is likely larger. "
                                               "NEEDS_AUTHOR")
     # s648 (author ruling 2026-10-05, (2)): freezing from the literature, not Monte Carlo
     beta_f_S72x3: Tagged = Cited(3.18, "arxiv_2511_17437", "isotropic Wilson 3+1D freezing beta_f = 3.18(3); g^2_f = 6 / "
@@ -325,7 +325,7 @@ class Assumptions:
     # the 2028 convention; for pricing T_c^lat = 150-200 MeV, i.e. T = 225-300 MeV, carried as a band through every
     # T-dependent number (1/T steps, t_th, tau = 1/(2 pi T), fit steps, eps, walls, k_min / T, LT).
     Tc_lat_2033_MeV: Tagged = Assumed((150.0, 200.0),
-                                      "T_c^lat of the simulated lattice theory, NOT KNOWN; bracketed by the 2+1-flavour "
+                                      "T_c^lat of the simulated lattice theory, NOT KNOWN; bracketed by the 2+1-flavor "
                                       "QCD crossover: HotQCD chiral-limit T_c^0 = 132(+3)(-6) MeV (arxiv_1903_04801, Ding "
                                       "et al. PRL 123, 062002) and physical-mass 156.5(1.5) MeV (arxiv_1812_08235, HotQCD "
                                       "PLB 795, 15); T_c rises roughly linearly with m_pi, so the heavier pions (300-400 "
@@ -406,7 +406,7 @@ class Assumptions:
                                            "is the group's, not a misprint. Matching the fundamental keeps the strong-coupling "
                                            "flux energy (g^2/2a) C_F per link that the workflow's string-tension tuning fixes; "
                                            "matching the adjoint (C_max = 4) would raise the worst-case bound 1.5x")
-    trotter_n_adj: Tagged = Assumed(8, "G7: weak-coupling (free-field) evaluation treats Sigma(72x3) as SU(3): 8 colour "
+    trotter_n_adj: Tagged = Assumed(8, "G7: weak-coupling (free-field) evaluation treats Sigma(72x3) as SU(3): 8 color "
                                        "copies of each transverse gauge oscillator; a discrete group has no such expansion")
     campaign_horizon_yr: Tagged = Stated(5, f"{TEX}:196", "Campaign horizon 5 years")
     # ---- r25: each shot at its own depth (R4), two tiers (R1), Gibbs cut required (R5) ----------------------
@@ -694,7 +694,7 @@ def evolution_2033(a: Assumptions, steps: int) -> dict:
 
 # T-depth schedules from factory.json (Ch. 5; scratchpad factories/ch05_depth_v2.py). A Toffoli is one T layer (its
 # seven pi/8 rotations commute); a synthesized rotation is t_rot layers. Toffoli and rotation counts come from groups.py;
-# the numbers below are the schedule (tree depth, packing width, colour classes / hop rounds) of that analysis.
+# the numbers below are the schedule (tree depth, packing width, color classes / hop rounds) of that analysis.
 SCHED_2028 = dict(classes_lo=2, classes_hi=4, mul_tree=8, tof_width=3, inv_layers=2, tr_rot_layers=3,
                   fft_tof_width=2, fft_rot_width=5)
 SCHED_2033 = dict(classes_lo=5, classes_hi=11, hop_rounds_lo=7, hop_rounds_hi=17, mul_tree=8, tof_width=7,
@@ -737,7 +737,7 @@ def step_depth_2033(a: Assumptions, t_rot: float) -> tuple[float, float]:
     sq, rot, fl, dg, ph = (it[k] for k in ("colour_squish_and_parity", "colour_rotations", "hop_squish_and_flags",
                                           "hop_diagonalizers", "hop_phasing_hwp"))
     nf = SCHED_2033["n_fields_parallel"]
-    rot_per_frame = rot["n_rot"] / (4 * nf)                 # 184 colour rotations per frame application per field
+    rot_per_frame = rot["n_rot"] / (4 * nf)                 # 184 color rotations per frame application per field
     n_diag = dg["t_direct"] // 2                            # 180 controlled diagonalizers (2 T + 4 rotations each)
     ms = staggered_mass_site(int(a.n_c.lo), int(a.n_stag.lo), eps=1e-3)
     S = SCHED_2033
@@ -1678,7 +1678,7 @@ def trotter_check(a: Assumptions, o: dict) -> dict:
 
 
 def trotter_check_2028(a: Assumptions) -> dict:
-    """Step rule for the 2028 box (2T on 4^2, free-field model with 3 colour copies, T a_s = 0.75): (ii) and (iii) for
+    """Step rule for the 2028 box (2T on 4^2, free-field model with 3 color copies, T a_s = 0.75): (ii) and (iii) for
     the six-step full benchmark at a_t/4 (0.15 fm/c) and the one-step first result at dt_first_2028_fm; and, as a
     record, the old Delta t = a_t (one and six steps)."""
     L, d = int(a.L_2028.lo), int(a.dim_2028.lo)
@@ -1686,7 +1686,7 @@ def trotter_check_2028(a: Assumptions) -> dict:
     hb = a.hbarc.lo
     Tc = a.tc_over_sqrt_sigma.lo * a.sqrt_sigma_MeV.lo
     temp = a.T_over_Tc_2028.lo * Tc * a.a_s_fm.lo / hb        # 0.749
-    eps, nadj = a.trotter_eps.lo, 3                           # SU(2): 3 colour copies
+    eps, nadj = a.trotter_eps.lo, 3                           # SU(2): 3 color copies
     dt = a.dt_over_at_2028.lo * a.a_t_fm.lo / a.a_s_fm.lo     # 0.125 a_s
     d1 = a.dt_first_2028_fm.lo / a.a_s_fm.lo                  # 0.225 a_s
     n = int(a.trotter_steps_2028.lo)

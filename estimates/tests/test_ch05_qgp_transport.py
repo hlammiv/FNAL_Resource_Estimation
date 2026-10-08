@@ -985,7 +985,7 @@ def _free_staggered_infidelity(dims, m_lat, dt, n, temp):
 
 
 def test_g7_free_field_reproduces_ch9():
-    """The exact free-gauge-field error reproduces Ch. 9's r22 numbers (3^3, 3 colours, T a = 0.5, t = 10 a)."""
+    """The exact free-gauge-field error reproduces Ch. 9's r22 numbers (3^3, 3 colors, T a = 0.5, t = 10 a)."""
     for n, err in ((450, 0.0044), (200, 0.022), (107, 0.078)):
         near(m.free_gauge_trotter_error((3, 3, 3), 3, 10 / n, n, 0.5), err, 0.03)
 
@@ -1062,7 +1062,7 @@ def test_g7_improved_dispersion_matches_ch6():
 
 
 def test_g7_2028_step_rule(r28):
-    """Step rule at 2028 (2T on 4^2, 3 colour copies, T a_s = 0.75): Delta t = a_t gave 0.88 (state-dependent) / 0.77
+    """Step rule at 2028 (2T on 4^2, 3 color copies, T a_s = 0.75): Delta t = a_t gave 0.88 (state-dependent) / 0.77
     (free field) after one step; six steps of a_t/4 reach 0.15 fm/c at 0.083 (free field 0.044); the one-step first
     result at 0.045 fm/c is 0.081 (largest one-step Delta t 0.048 fm/c). The T per shot does not change."""
     i = r28.intermediates
@@ -1078,7 +1078,7 @@ def test_g7_2028_step_rule(r28):
 
 
 def test_g7_fermions_negligible_in_2033_check():
-    """Three free staggered fields x 3 colours change the free-field error by about 1% (27 sites, density from 4^3)."""
+    """Three free staggered fields x 3 colors change the free-field error by about 1% (27 sites, density from 4^3)."""
     dens = _free_staggered_infidelity((4, 4, 4), 0.023, 0.05, 36, 0.162) / 64
     gauge = m.free_gauge_trotter_error((3, 3, 3), 8, 0.05, 36, 0.162) ** 2 / 2
     assert 9 * 27 * dens < 0.05 * gauge

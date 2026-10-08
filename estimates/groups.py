@@ -33,7 +33,7 @@ What the papers give, and what they do not:
   (4 T + 2 rotations) is an explicit circuit DERIVED HERE (Ch. 6 round E, 2026-09-29) on
   the published two-level structure of arxiv_2409_17349; `t_gates` carries its 4 exact T.
 - Not in any paper: a controlled/multiplexed group action; "190 T" (the figure
-  Ch. 9 used until 2026-09-28, retired in favour of the sourced U_mul = 392 T);
+  Ch. 9 used until 2026-09-28, retired in favor of the sourced U_mul = 392 T);
   that the 2O fundamental irrep is the single-qubit Clifford group (Ch. 9 now
   states it as the authors' own observation).
 """
@@ -477,11 +477,11 @@ def plaquette_t_from_primitives(group: str, toffoli_convention: str, t_per_rot: 
 #
 #   T_hop = moves_per_field N_stag C_W(G) + n_P(G) HWP_T(k),     k = N_c N_stag by default
 #
-#   C_W(G)  = 0 where D(g) is diagonal on the register (Z3 as the centre of SU(3): D(g) = omega^g on
-#             every colour), otherwise one U_mul of the group's published table (ruling VERTEX), status
+#   C_W(G)  = 0 where D(g) is diagonal on the register (Z3 as the center of SU(3): D(g) = omega^g on
+#             every color), otherwise one U_mul of the group's published table (ruling VERTEX), status
 #             SCALING: a comparison, no compiled circuit, not a floor.
 #   moves   = 2 per field (move across the link and back: W and W^dag).
-#   n_P(G)  = Pauli strings per colour-flavour copy: 2 for the plain XX+YY bilinear after a move; 8 for
+#   n_P(G)  = Pauli strings per color-flavor copy: 2 for the plain XX+YY bilinear after a move; 8 for
 #             the Z3-dressed hop in the group basis of arxiv_2408_00075 (Walsh expansion of Re/Im omega^g
 #             after one Clifford CNOT; checked in tests/test_ch06_collider.py test_z3_hop_*).
 #   HWP_T   = common.hwp_group: one Hamming-weight-phasing group of k per (link, Pauli string),
@@ -493,12 +493,12 @@ def plaquette_t_from_primitives(group: str, toffoli_convention: str, t_per_rot: 
 # R-HOP (see staggered_mass_site).
 #
 # LEGACY (r17, author ruling (e), 2026-10-01): R-HOP is RETIRED for the non-diagonal groups (2T, 2O, Sigma(36x3),
-# Sigma(72x3)) in favour of hop_link_cost below, which prices the hop from the authors' unpublished Fermion_Primitives
+# Sigma(72x3)) in favor of hop_link_cost below, which prices the hop from the authors' unpublished Fermion_Primitives
 # gate counts. rhop_link is kept, unchanged in logic, as the recorded legacy comparison; hop_link_cost reports it
 # beside the new price. For Z3 (diagonal link, no draft entry) hop_link_cost still uses the R-HOP structure, priced
 # at the full fit.
 
-DIAGONAL_LINK = frozenset({"Z3"})        # D(g) diagonal on the published register: no colour move
+DIAGONAL_LINK = frozenset({"Z3"})        # D(g) diagonal on the published register: no color move
 RHOP_N_PAULI_DIAGONAL = {"Z3": 8}        # dressed hop, strings per copy (derived here, Ch. 6 round D)
 RHOP_N_PAULI_MOVED = 2                   # plain XX+YY after the move (app06:108, app10:88,90)
 RHOP_MOVES_PER_FIELD = 2                 # W and W^dag per field per link (app10:88,90)
@@ -509,13 +509,13 @@ RHOP_SRC = ("DERIVED HERE: rule R-HOP (apply_log/ch06_roundD.md; TRACKED_CHANGES
 def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = None,
               n_pauli: int | None = None, moves_per_field: int = RHOP_MOVES_PER_FIELD,
               synthesis: str = "rus", toffoli_convention: str = "textbook") -> dict:
-    """LEGACY rule R-HOP: T per link per Trotter step of the hop of `n_stag` fields of `n_c` colours.
+    """LEGACY rule R-HOP: T per link per Trotter step of the hop of `n_stag` fields of `n_c` colors.
 
     Superseded for non-diagonal groups by hop_link_cost (r17); kept as the recorded comparison.
 
     `k` is the number of copies that share one link and one Pauli string and so form one phasing
     group; the default N_c N_stag is Ch. 6's. A chapter whose own grouping ruling differs (Ch. 9's
-    colour-and-s copies) passes its k. `n_pauli` and `moves_per_field` default to the rule; a chapter
+    color-and-s copies) passes its k. `n_pauli` and `moves_per_field` default to the rule; a chapter
     passes its own Stated inputs so their provenance stays in its Assumptions.
 
     Returns {"k", "hwp", "n_pauli", "n_moves", "t_move", "t_moves", "t_phasing", "t"}: `hwp` is the
@@ -535,7 +535,7 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
             n_pauli = RHOP_N_PAULI_DIAGONAL[group]
     else:
         if "U_mul" not in GROUPS[group].primitives:
-            raise ValueError(f"R-HOP: {group} has no published U_mul to price the colour move")
+            raise ValueError(f"R-HOP: {group} has no published U_mul to price the color move")
         n_moves = moves_per_field * n_stag
         t_move = GROUPS[group].primitives["U_mul"].t(eps)
         if n_pauli is None:
@@ -557,8 +557,8 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
 #
 # STRUCTURE of one gauge-covariant hop on a link (FP section_hamiltonian.tex:42-62, mapping_circuits/
 # FinalDiagonalizations.tex, HoppingDiag.tex):
-#   colour frame V_g on both sites (FP's "2 C^G", su2_diag.tex:238)  ->  [spinor frame V_S, Wilson only]
-#   ->  eigen-class squish of g  ->  per (class, colour[, spinor]) controlled diagonalizer T  ->  phasing Rz(-th), Rz(th)
+#   color frame V_g on both sites (FP's "2 C^G", su2_diag.tex:238)  ->  [spinor frame V_S, Wilson only]
+#   ->  eigen-class squish of g  ->  per (class, color[, spinor]) controlled diagonalizer T  ->  phasing Rz(-th), Rz(th)
 #   ->  T^dag  ->  squish^dag  ->  V_g^dag on both sites (the undo; drawn in FP, never counted, see FRAME UNDO below).
 #
 # FRAME UNDO (r19, author ruling E21 (1), H. Lamm 2026-10-01 "make the switch"; frame-undo reading, two readers +
@@ -575,10 +575,10 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
 #   - V_C^dag(x), V_C^dag(y) are drawn in big_fig_group_agnostic.pdf (fig da_diagonalizer, section_hamiltonian.tex:
 #     86-91), in the identical Fermionic_Primitive.pdf (running_notes.tex:124-128) and written as V_g^dag(s+e)
 #     V_g^dag(s) in running_notes.tex:213-225, but no count or sentence anywhere prices them.
-#   So the model adds V_g^dag on both sites: 4 colour-rotation layers per link per field per spinor component
+#   So the model adds V_g^dag on both sites: 4 color-rotation layers per link per field per spinor component
 #   (undo=True, the default). Adjacent links carry different g, so the frame cannot telescope into the next link.
 #
-# SQUISH / PARITY MULTIPLICITY (a separate assumption from the undo). The colour squish and parity flags depend on
+# SQUISH / PARITY MULTIPLICITY (a separate assumption from the undo). The color squish and parity flags depend on
 # g only, and g is untouched between V(x), V(y), hop, V^dag(x), V^dag(y). Headline since r19 (E21 (1)):
 # share="link", computed once per link, held live through all four frame applications and the hop, then
 # uncomputed (compute + uncompute = 2 squish + parity per link; su2_diag.tex:238 allows the memory/operations
@@ -587,13 +587,13 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
 # re-squishing for the undo, nor for an SU(3) squish uncompute; the draft variant is the model's extension.
 #
 # COMPONENT COUNTS, as FP prints them, and the reading used here:
-#   colour squish   C^nX table (su2_diag.tex:186-191; su3_diag.tex:98-106). FP's printed T (917, 189, 7854, 12789,
+#   color squish   C^nX table (su2_diag.tex:186-191; su3_diag.tex:98-106). FP's printed T (917, 189, 7854, 12789,
 #                   su2_diag.tex:207-211, su3_diag.tex:86-92) equal the table at 2(n-2) Toffolis per C^nX (n>=3), 1 per
 #                   C^2X. Under the report's measurement-based uncompute (MBU) a C^nX costs n-1 Toffolis.
-#   colour parity   SU(2): 44 (BT), 56 (BO) Toffolis (su2_diag.tex:225). SU(3): flag Toffolis 778 (S36), 892 (S72)
+#   color parity   SU(2): 44 (BT), 56 (BO) Toffolis (su2_diag.tex:225). SU(3): flag Toffolis 778 (S36), 892 (S72)
 #                   (su3_diag.tex:202-215); FP prices S36's at 2 T each in C^G = 10918.8 (su3_diag.tex:132), here 7.
 #                   Kept as printed (FP gives totals only, no C^nX split for MBU).
-#   colour rotations per frame application per field: BT 52, BO 60 (su2_diag.tex:225-229, 4 R_Z per controlled
+#   color rotations per frame application per field: BT 52, BO 60 (su2_diag.tex:225-229, 4 R_Z per controlled
 #                   rotation); S36 164, S72 184 (su3_diag.tex:121-126, 194-198: 2 N_angles,
 #                   author-confirmed E21 (3); the "6 N_angles" in the text at su3_diag.tex:120 is a draft slip).
 #   squish copies   SU(2) C_V counts compute + uncompute (su2_diag.tex:232-238); SU(3) C^G counts the squish once
@@ -604,39 +604,39 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
 #   hop flags       SU(3) 100 Toffolis (hopping.tex:268-281); SU(2) none. Kept as printed.
 #   diagonalizer    C(T) = 38.8 + 4.45 log2(1/eps) (hopping.tex:309-311) = 2 T (controlled H) + 4 rotations at
 #                   9.2 + 1.15 L; the printed slope 4.45 is read as 4 x 1.15 = 4.6 (38.8 = 2 + 4 x 9.2 fixes the
-#                   count at 4). One T and one T^dag per (eigen-class, colour) (FinalDiagonalizations.tex). FP's text
+#                   count at 4). One T and one T^dag per (eigen-class, color) (FinalDiagonalizations.tex). FP's text
 #                   C_T(hop) (hopping.tex:335-347) reproduces exactly as 2 squish (+ 2 flags) + n_diag C(T), with
 #                   n_diag = 2 n_cls N for BO and the SU(3) groups (28; 60) but n_cls N for BT (10): BT counts T only.
 #                   Here: 2 n_cls N for every group.
-#   phasing         Rz(-th) Rz(th) per (colour[, spinor]) pair (FinalDiagonalizations.tex); not in any FP constant.
+#   phasing         Rz(-th) Rz(th) per (color[, spinor]) pair (FinalDiagonalizations.tex); not in any FP constant.
 #                   After the frames every pair carries the same |phi lambda| = 1 (staggered) or the same 1-r gamma^0
 #                   weight 2 (Wilson, r=1), so the 2 N n_spin n_stag rotations on one link are one equal-angle
 #                   Hamming-weight-phasing group (HWP; arxiv_1709_06648, arxiv_1902_10673). A block encoding drops them.
-#   spinor (Wilson) per colour 280 floor((d-1)/2) + 16 T (resources.tex:60-67) = 4 W gates x (4 T + 10 Toffolis) at
+#   spinor (Wilson) per color 280 floor((d-1)/2) + 16 T (resources.tex:60-67) = 4 W gates x (4 T + 10 Toffolis) at
 #                   d=3,4 (spin_diag.tex:282-297); 16 T and no Toffoli at d=1,2. The 10 Toffolis per W are 5 triply-
 #                   controlled rotations at 2 compute + 2 uncompute (spin_diag.tex:280); MBU halves them to 5.
 #
 # PER LINK, per Trotter step, n_stag fields sharing the link (share="link", undo=True: the default since r19, E21):
 #   frame:   n_app = 4 applications (2 sites x apply/undo; 2 without the undo). g-only part: 2 x squish + parity
 #            Toffolis ONCE per link (share="link"); n_app x that under share="draft". Plus n_app x n_stag x n_spin
-#            colour-rotation sets: the rotations act on each field's colour modes and are not shared
+#            color-rotation sets: the rotations act on each field's color modes and are not shared
 #            (correction to "one shared C^G": FP's formula is per field).
 #   hop:     g-only hop squish + flags 2 (squish + flags) Toffolis once per link (n_stag x under share="draft"),
 #            plus 2 n_cls N n_spin n_stag diagonalizers.
 #   phasing: one HWP group of k = 2 N n_spin n_stag (or plain, or none for a block encoding).
 #   spinor:  n_stag x N x C^spinor(d), Wilson only.
-# AUTHOR-CONFIRMED (E21 (2), (3), 2026-10-01): n_spin = 2 for Wilson d = 3 (one colour frame per hopping spinor
-#   component; 1 - gamma^0 keeps 2 of 4 at r = 1); SU(3) colour rotations = 2 N_angles per frame application
+# AUTHOR-CONFIRMED (E21 (2), (3), 2026-10-01): n_spin = 2 for Wilson d = 3 (one color frame per hopping spinor
+#   component; 1 - gamma^0 keeps 2 of 4 at r = 1); SU(3) color rotations = 2 N_angles per frame application
 #   (184 = 2 x 92 for Sigma(72x3), su3_diag.tex:194-198; the "6 N_angles" at su3_diag.tex:120 is a draft slip).
 # Z3 has no FP entry; D(g) is diagonal on the register: the R-HOP structure (C_W = 0, 8 strings, HWP(k)) at the full fit.
 
-MCX_CONVENTIONS = ("mbu", "2n-3", "draft-colour")
+MCX_CONVENTIONS = ("mbu", "2n-3", "draft-color")
 
 
 def mcx_toffolis(n_controls: int, convention: str = "mbu") -> int:
     """Toffolis in one C^nX. "mbu": n-1 (the report's rule: the n-2 AND temporaries uncomputed by measurement);
-    "2n-3": clean-ancilla ladder with coherent uncompute (FP's hop squish); "draft-colour": 2(n-2) for n >= 3,
-    the convention that reproduces FP's printed colour-squish T (917, 189, 7854, 12789)."""
+    "2n-3": clean-ancilla ladder with coherent uncompute (FP's hop squish); "draft-color": 2(n-2) for n >= 3,
+    the convention that reproduces FP's printed color-squish T (917, 189, 7854, 12789)."""
     n = int(n_controls)
     if n < 1:
         raise ValueError("need >= 1 control")
@@ -648,7 +648,7 @@ def mcx_toffolis(n_controls: int, convention: str = "mbu") -> int:
         return n - 1
     if convention == "2n-3":
         return 2 * n - 3
-    if convention == "draft-colour":
+    if convention == "draft-color":
         return 2 * (n - 2)
     raise ValueError(f"unknown C^nX convention {convention!r}")
 
@@ -664,11 +664,11 @@ class FermionDraftGroup:
     key: str
     draft_name: str
     n: int                                   # fiducial irrep dimension N
-    col_squish_mcx: Mapping[int, int]        # colour (V_g) squish C^nX table
+    col_squish_mcx: Mapping[int, int]        # color (V_g) squish C^nX table
     col_squish_t_printed: float
     col_parity_toffoli: int                  # SU(2) parity / SU(3) flag Toffolis per frame application
     col_parity_t_each_printed: float         # T per parity Toffoli in FP's constant (7; 2 for S36)
-    col_rot: int                             # colour rotations per frame application per field
+    col_rot: int                             # color rotations per frame application per field
     col_squish_copies_printed: int           # squish copies inside FP's C_V / C^G (2 SU(2), 1 SU(3))
     hop_squish_mcx: Mapping[int, int]
     hop_squish_t_printed: float
@@ -708,7 +708,7 @@ FERMION_DRAFT: dict[str, FermionDraftGroup] = {
                  "C_hop_text": (1954.4, 124.6), "C_S": (9234.4, 266.8)},
         src={"col": "su2_diag.tex:186-191 (BO row), :210, :225, :229, :236", "hop": "hopping.tex:32-34, :212, :339",
              "tab": "resources.tex:62, :33"},
-        note="Printed colour squish 917 T = 131 Toffolis = the table at 2(n-2); at 2n-3 it is 163 (1141 T), "
+        note="Printed color squish 917 T = 131 Toffolis = the table at 2(n-2); at 2n-3 it is 163 (1141 T), "
              "under MBU 105 (735 T)."),
     "S36x3": FermionDraftGroup(
         "S36x3", "Sigma(36x3)", 3,
@@ -747,15 +747,15 @@ def fp_printed(group: str, quantity: str, eps: float) -> float:
 
 def fp_reconstruct(group: str, quantity: str) -> tuple[float, float]:
     """FP's printed constants rebuilt from its own component counts in its own conventions (no report rule):
-    rotations at 9.2 + 1.15 L (the slope as FP prints it), colour squish at 2(n-2), hop squish at 2n-3 (SU(2)) or
+    rotations at 9.2 + 1.15 L (the slope as FP prints it), color squish at 2(n-2), hop squish at 2n-3 (SU(2)) or
     its printed T (SU(3)). Returns (a, b). Used by the tests to show which printed numbers are self-consistent."""
     g = FERMION_DRAFT[group]
     if quantity == "col_squish_t":
-        return 7.0 * mcx_table_toffolis(g.col_squish_mcx, "draft-colour"), 0.0
+        return 7.0 * mcx_table_toffolis(g.col_squish_mcx, "draft-color"), 0.0
     if quantity == "hop_squish_t":
         if g.n == 2:
             return 7.0 * mcx_table_toffolis(g.hop_squish_mcx, "2n-3"), 0.0
-        return 7.0 * mcx_table_toffolis(g.hop_squish_mcx, "draft-colour"), 0.0   # the commented-out 469 / 616
+        return 7.0 * mcx_table_toffolis(g.hop_squish_mcx, "draft-color"), 0.0   # the commented-out 469 / 616
     sq = g.col_squish_t_printed
     rot_a, rot_b = 9.2 * g.col_rot, 1.15 * g.col_rot
     par = g.col_parity_toffoli * g.col_parity_t_each_printed
@@ -770,8 +770,8 @@ def fp_reconstruct(group: str, quantity: str) -> tuple[float, float]:
 
 
 def spinor_counts(d: int, n: int, mcx: str = "mbu") -> dict:
-    """Wilson spinor diagonalization per link per field, all N colours: FP resources.tex:60-67
-    (280 floor((d-1)/2) + 16 T per colour) split as spin_diag.tex:282-297. Under MBU the 10 Toffolis per W gate
+    """Wilson spinor diagonalization per link per field, all N colors: FP resources.tex:60-67
+    (280 floor((d-1)/2) + 16 T per color) split as spin_diag.tex:282-297. Under MBU the 10 Toffolis per W gate
     (5 triply-controlled rotations x 2 compute + 2 uncompute, spin_diag.tex:280) become 5."""
     if d <= 2:
         return {"toffoli": 0, "t_direct": 16 * n, "n_rot": 0}
@@ -795,18 +795,18 @@ def fermion_hop_counts(group: str, n_stag: int = 1, *, fermion: str = "staggered
     fermion   "staggered" or "wilson" (needs d). n_spin: spinor components that hop after V_S; default 1
               (staggered) and n_D / 2 at r = 1 (Wilson, n_D = 2^{floor((d+1)/2)}: the projector 1 - gamma^0 keeps
               half; FP section_hamiltonian.tex:77-80). FP's W1 has no spinor multiplicity; n_spin = 2 at d = 3
-              (one colour frame per hopping spinor component) is AUTHOR-CONFIRMED (E21 (2), 2026-10-01). V_S and V_g
-              act on different indices and commute, so only the hopping components need the colour frame.
+              (one color frame per hopping spinor component) is AUTHOR-CONFIRMED (E21 (2), 2026-10-01). V_S and V_g
+              act on different indices and commute, so only the hopping components need the color frame.
     undo      count V_g^dag on both sites (default True). FP draws V_C^dag (big_fig_group_agnostic.pdf,
               section_hamiltonian.tex:86-91; running_notes.tex:124-128, :213-225) but never counts it: its
               factor 2 / "2 C^G" is two sites, forward only (su2_diag.tex:238; resources.tex:15), SU(3) C^G is one
               forward application (su3_diag.tex:130-134), and the printed totals are 2 C^G + 2 C^hop(table)
               exactly (resources.tex:37-41, e.g. 46243.6 = 2 x 20725.8 + 2 x 2396). False = FP's literal 2 C^G.
     share     SEPARATE assumption from the undo (the g-only squish / parity multiplicity). "link" (default since
-              r19, author ruling E21 (1)): colour squish + parity and hop squish + flags computed once per link
+              r19, author ruling E21 (1)): color squish + parity and hop squish + flags computed once per link
               and held through V(x), V(y), hop, V^dag(x), V^dag(y). "draft" (conservative sensitivity, the r17
-              headline): colour squish + parity per frame application and hop squish + flags per field.
-    mcx       C^nX convention for squish ladders: "mbu" (report rule), "2n-3", "draft-colour".
+              headline): color squish + parity per frame application and hop squish + flags per field.
+    mcx       C^nX convention for squish ladders: "mbu" (report rule), "2n-3", "draft-color".
     phasing   "hwp" (one group of 2 N n_spin n_stag), "plain" (that many rotations), "none" (block encoding).
     frame_rot_per_field  False reproduces the literal "4 C^G shared by the fields" reading (rotations not
               multiplied by n_stag); recorded only.
@@ -848,7 +848,7 @@ def fermion_hop_counts(group: str, n_stag: int = 1, *, fermion: str = "staggered
             raise ValueError(f"unknown fermion {fermion!r}")
         n_app = 4 if undo else 2
         src_fp = f"{FP_KEY} ({FP_DIR})"
-        # colour frame: g-only part
+        # color frame: g-only part
         sq = mcx_table_toffolis(g.col_squish_mcx, mcx)
         frame_shared = 2 * sq + g.col_parity_toffoli
         n_shared = n_app if share == "draft" else 1
@@ -912,7 +912,7 @@ def hop_link_cost(group: str, n_stag: int = 1, d: int | None = None, n_rot_circu
     the retired R-HOP price at the same eps (both at the chapters' old "rus-slope" and at the full fit) and the
     ratio new / old.
 
-    Defaults (r19, author ruling E21 (1)): undo=True (V_g^dag on both sites) and share="link" (colour squish +
+    Defaults (r19, author ruling E21 (1)): undo=True (V_g^dag on both sites) and share="link" (color squish +
     parity and hop squish + flags once per link, held through V(x), V(y), hop, V^dag(x), V^dag(y)). The r17
     per-application recompute stays reachable as the conservative sensitivity: share="draft".
 
@@ -943,7 +943,7 @@ def hop_link_cost(group: str, n_stag: int = 1, d: int | None = None, n_rot_circu
 
 def staggered_mass_site(n_c: int, n_stag: int, eps: float | None = None, n_rot_circuit: float | None = None, *,
                         synthesis: str = "rus", toffoli_convention: str = "textbook") -> dict:
-    """Staggered mass per site per Trotter step: one R_Z per colour-flavour copy (FP section_mass.tex:3-10,
+    """Staggered mass per site per Trotter step: one R_Z per color-flavor copy (FP section_mass.tex:3-10,
     resources.tex:5-7), the N_c N_stag equal-angle copies grouped as one HWP group (Ch. 6's ruled form; option M-B).
     A baryon chemical potential mu_B N_B commutes with H and adds the same (-mu_B/3) dt to every copy on a site,
     so it folds into this angle at no extra cost. eps as hop_link_cost (or R-TOL from n_rot_circuit)."""

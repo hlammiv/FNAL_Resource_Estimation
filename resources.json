@@ -415,7 +415,7 @@
     367607228,
     43637040878
    ],
-   "note": "window 30-50 a plus a 1e2-1e3-step ramp and the same ramp backwards for the species readout map (R4; r26 J1); electric term at the Sigma(72x3) fast-transform lower bound, a floor; hop from the authors' unpublished colour-diagonalized gate counts (FermionPrimitives_unpub), colour squish and parity held once per link (E21), 1.1e5 T per link, 72% of the step; walls on one machine with the T-depth correction (F* 7.0-18.5); eps at the two ramp ends from R-TOL; every rotation at the full fit (E20)"
+   "note": "window 30-50 a plus a 1e2-1e3-step ramp and the same ramp backwards for the species readout map (R4; r26 J1); electric term at the Sigma(72x3) fast-transform lower bound, a floor; hop from the authors' unpublished color-diagonalized gate counts (FermionPrimitives_unpub), color squish and parity held once per link (E21), 1.1e5 T per link, 72% of the step; walls on one machine with the T-depth correction (F* 7.0-18.5); eps at the two ramp ends from R-TOL; every rotation at the full fit (E20)"
   },
   {
    "ch": 6,
@@ -470,7 +470,7 @@
     106639,
     195683
    ],
-   "note": "R7 first-result row; compiled 2O transform; q1 (ruling B): quench-prepared medium (20-step ramp + c/T, c = 2-2 pi) before the sources enter, ETH / typicality assumed; fits the 1e9-T limit; shots binomial on P_s, no estimator penalty; O(1/N_c^2) colour correction (J4)"
+   "note": "R7 first-result row; compiled 2O transform; q1 (ruling B): quench-prepared medium (20-step ramp + c/T, c = 2-2 pi) before the sources enter, ETH / typicality assumed; fits the 1e9-T limit; shots binomial on P_s, no estimator penalty; O(1/N_c^2) color correction (J4)"
   },
   {
    "ch": 6,
@@ -705,7 +705,7 @@
    ],
    "codesign": false,
    "src": "app07:2028 box ('~180' rounds 176; 'Per-shot T >~4.0e5': one Trotter step, a lower bound, 4.0x the cap; gauge 1.0e5 (E20 full fit) + hops 3.0e5 (share='link' + undo, E21) + mass 1.9e2 = 399,957 at the R-TOL eps_rot 9.6e-4, r19); rel_tol 0.10",
-   "note": "one Trotter step (lower bound on the executed ramp), 4.0x the cap; gauge terms compiled (full fit), hops from the unpublished Fermion_Primitives counts with the colour squish held per link and an estimated frame undo (r19)"
+   "note": "one Trotter step (lower bound on the executed ramp), 4.0x the cap; gauge terms compiled (full fit), hops from the unpublished Fermion_Primitives counts with the color squish held per link and an estimated frame undo (r19)"
   },
   {
    "ch": 10,

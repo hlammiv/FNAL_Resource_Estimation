@@ -17,13 +17,13 @@ on-site domain-wall term m + r(1+d) as one k=192 phasing group: 1.95-2.05e5 -> 2
 undo and n_spin = 2 estimated, MBU): c_be 5.5e4 -> 2.56e6, 1.48e10 -> 6.89e11 T/shot, band
 3.383e9-1.2952e12 (top = the draft's W2).
 
-2026-10-01 r19 (E21 (1)-(3); apply_log/r19_ch09.md): the colour squish and parity are computed once per link and
+2026-10-01 r19 (E21 (1)-(3); apply_log/r19_ch09.md): the color squish and parity are computed once per link and
 held through V, hop, V^dag (share="link"), undo kept (our estimate, drawn but not counted in the draft); n_spin = 2
-confirmed. Per link 1182 -> 384 Toffolis, rotations unchanged (704): c_be 2.56e6 -> 2.10e6, centre 6.891e11 ->
-5.672e11 T/shot. 2028, the band floor and the W2 top do not move. The r17 centre is the record share="draft".
+confirmed. Per link 1182 -> 384 Toffolis, rotations unchanged (704): c_be 2.56e6 -> 2.10e6, center 6.891e11 ->
+5.672e11 T/shot. 2028, the band floor and the W2 top do not move. The r17 center is the record share="draft".
 
 2026-10-01 r20 (E23 (1)-(5); apply_log/r20_ch09.md): (1) 2O = single-qubit Clifford group mod phases, stated as a
-fact; (2) the band floor is the derived 2O colour multiplexer (3 Toffolis + 18 T, verified below on all 48 elements),
+fact; (2) the band floor is the derived 2O color multiplexer (3 Toffolis + 18 T, verified below on all 48 elements),
 468 T per link: floor c_be 12,551.6 -> 61,043.6, band 3.383e9 -> 1.645e10 at the bottom; (3) the Gibbs sampler is
 estimated here (4.4e14 / 2.3e15 / 1.4e16 T); (4) on-site basis kept; (5) ancilla itemized at peak: 2028 39 (247 LQ),
 2033 43 (1015 LQ; verifier: parity held under share='link').
@@ -174,7 +174,7 @@ C_BE33D = C_TOFF + 81 * (LINK_CT + LINK_ROT * T33D) + 27 * 392 + 25 * T33D    # 
 # records: the pre-r21 query count (30 x 5 + 240 = 390 D_ov) and the 1.7e3-term LCU line
 NQ_PRE = 390 * 691                                    # 269,490
 T_PRE = fit(NROTQ * NQ_PRE)                           # 32.478
-C_BE_R20 = 11900 + 81 * LINK_CT + 27 * 392 + NROTQ * T_PRE        # 2,104,718.8 (the r19-r20 centre)
+C_BE_R20 = 11900 + 81 * LINK_CT + 27 * 392 + NROTQ * T_PRE        # 2,104,718.8 (the r19-r20 center)
 T_PRE_F = fit(25 * NQ_PRE)                            # 26.063
 C_FLOOR_ZERO = 11900 + 25 * T_PRE_F                   # 12,551.6 (pre-r20 zero-T floor)
 C_FLOOR = 11900 + 81 * LINK_MUX + 27 * 392 + 25 * T_PRE_F          # 61,043.6 (the r20 floor)
@@ -534,13 +534,13 @@ def test_2028_1p1d_overlap_in_the_single_particle_architecture(a, r28):
 
 def test_2028_shots_and_wall_time(a, r28):
     # r21 (3d), derived here: sigma^2 ~ 10 is the 27-site average of the 2033 lattice; the 2028 estimator averages
-    # N_c V = 24 site-colour copies
+    # N_c V = 24 site-color copies
     i = r28.intermediates
     assert i["condensate_copies"] == (27, 3 * 8)
     assert math.isclose(i["sigma2_condensate_2028"], 10 * 27 / 24) and math.isclose(i["sigma2_condensate_2028"], 11.25)
     assert math.isclose(i["shots"], 11.25 / 0.1 ** 2) and round(i["shots"]) == 1125
     assert rel(i["shots"], i["shots_stated"]) <= 0.03                          # '1.1e3'
-    # operator-norm bound: fully correlated sites leave only the 3 independent colour copies
+    # operator-norm bound: fully correlated sites leave only the 3 independent color copies
     assert math.isclose(i["sigma2_condensate_2028_worst"], 10 * 27 / 3) and math.isclose(i["shots_worst"], 9000)
     assert math.isclose(i["shots_worst"], i["shots_worst_stated"])
     # 'its variance is at most 1': the bilinear a^dag b + b^dag a has eigenvalues {-1, 0, 0, 1}; the chapter's
@@ -551,7 +551,7 @@ def test_2028_shots_and_wall_time(a, r28):
     ev = np.linalg.eigvalsh(a0.conj().T @ a1 + a1.conj().T @ a0)
     assert np.allclose(sorted(ev), [-1, 0, 0, 1]) and i["condensate_variance_per_copy_max"] == 1.0
     assert math.isclose(i["condensate_per_copy_min_for_sigma2"], 1 / math.sqrt(270)) and rel(1 / math.sqrt(270), 0.06) <= 0.02
-    # it scales as 1 / copies: one colour copy would need three times the shots
+    # it scales as 1 / copies: one color copy would need three times the shots
     b = dataclasses.replace(a, Nc_2028=c.Assumed(1, "test"))
     assert math.isclose(m.model(b, "2028").intermediates["shots"], 3 * i["shots"])
     assert i["wall_s_per_shot_stated"] == (0.27, 0.29)
@@ -616,7 +616,7 @@ def test_2033_architecture_is_the_single_particle_lift(a, r33):
         dataclasses.replace(a, sgn_architecture=c.Cited("second_quantized", "test"))
     # Q = N^d N_I 2^((d+1)/2) = 27 x 2 x 4; index register q = n_I + n_S + n_X = 1 + 2 + 3 x 2
     assert i["q_modes"] == 27 * 2 * 4 == 216 == i["lq_fermion"]
-    assert i["index_register"] == {"colour": 1, "spin": 2, "coordinates": 6} and i["index_register_qubits"] == 9
+    assert i["index_register"] == {"color": 1, "spin": 2, "coordinates": 6} and i["index_register_qubits"] == 9
     assert i["n_lcu_unitaries"] == 4 * 3 + 1 == 13 and i["term_register_qubits"] == 5
     assert i["be_normalization"] == 2 * 216 == 432
 
@@ -635,7 +635,7 @@ def test_2033_single_particle_query_itemized(a, r33):
     # 'this takes 78 + 405 + 78: 561 of the query's 598 Toffolis'; 'the other 37'
     assert q["link_read_toffoli"] == 78 + 405 + 78 == 561 == i["sp_link_read_toffoli"] and 598 - 561 == 37
     assert m.single_particle_query_2O(3, 3, 6) == q
-    # the multiplexer on a colour qubit: 10 T, no Toffoli, no ancilla
+    # the multiplexer on a color qubit: 10 T, no Toffoli, no ancilla
     assert i["mux_index_per_bit"] == {"x1": (0, 0), "x2": (0, 0), "x3": (0, 0), "x4": (0, 4), "x5": (0, 4), "x6": (0, 2)}
     assert (i["mux_index_toffoli"], i["mux_index_t_direct"], i["mux_index_ancilla"]) == (0, 10, 0)
     # the price of a query at the shot's tolerance
@@ -695,7 +695,7 @@ def test_2033_trotter_steps_state_dependent(a, r33):
     assert a.trotter_rule_2033.prov is c.Provenance.CITED and "AlvesLammLiu_inprep" in a.trotter_rule_2033.src
     assert "E26" in a.trotter_rule_2033.src and a.temp_lat_2033.prov is c.Provenance.ASSUMED
     sd = i["trotter_state_dependent"]
-    # 156 transverse oscillators: 3 colours x 2 polarizations x 26 non-zero momenta; w in {sqrt3, sqrt6, 3}
+    # 156 transverse oscillators: 3 colors x 2 polarizations x 26 non-zero momenta; w in {sqrt3, sqrt6, 3}
     assert sd["n_momenta"] == 27 - 1 == 26 and sd["n_modes"] == 3 * 2 * 26 == 156 == i["trotter_n_modes_stated"]
     assert math.isclose(sd["w_max"], 3.0)
     ws = sorted({round(math.sqrt(4 * sum(math.sin(math.pi * n / 3) ** 2 for n in k)), 9)
@@ -1393,7 +1393,7 @@ def test_2033_record_lcu_terms_per_site(a, r33):
 
 
 def test_2033_record_link_term_multiplexer(a, r33):
-    # r20-r21: the Fock-space 2O colour multiplexer of the second-quantized construction (3 Toffolis + 18 T)
+    # r20-r21: the Fock-space 2O color multiplexer of the second-quantized construction (3 Toffolis + 18 T)
     i = r33.intermediates
     assert a.link_frame.value == "multiplexer" == i["link_frame"] and "RECORD" in a.link_frame.note
     assert (i["mux_toffoli"], i["mux_t_direct"], i["mux_ancilla"]) == (3, 18, 1) and i["mux_t_report"] == 39
@@ -1455,13 +1455,13 @@ def test_2033_records_of_earlier_and_alternative_centres(r33):
     assert rel(rec["vertex_1_umult_pre_r17"], 1.4792e10) <= 1e-4               # the old headline
     assert rel(rec["rhop_2_umult_per_link"], 2.335e10) <= 1e-3                  # R-HOP literal (2033-B)
     assert rel(rec["draft_w1_no_undo"], 4.342e11) <= 1e-3                       # the draft's W1 without the undo
-    # r19 (E21 (1)): the r17 centre is the conservative sensitivity (squish recomputed at each application)
+    # r19 (E21 (1)): the r17 center is the conservative sensitivity (squish recomputed at each application)
     assert math.isclose(rec["share_draft_r17_centre"], NQ_PRE * (11900 + 81 * LINK_CT_DRAFT + 27 * 392 + NROTQ * T_PRE))
     assert rel(rec["share_draft_r17_centre"], 6.891e11) <= 1e-4
     assert rel(rec["share_link_no_undo"], 3.935e11) <= 1e-3
-    assert rel(rec["w1u_n_spin_1"], 3.120e11) <= 1e-3                           # r19-r20 centre at n_spin = 1
+    assert rel(rec["w1u_n_spin_1"], 3.120e11) <= 1e-3                           # r19-r20 center at n_spin = 1
     assert rel(rec["w1u_mcx_2n_3"], 5.981e11) <= 1e-3
-    # the r20 box: centre (draft frame), floor (multiplexer), top (the draft's W2), and the pre-r20 zero-T floor
+    # the r20 box: center (draft frame), floor (multiplexer), top (the draft's W2), and the pre-r20 zero-T floor
     assert math.isclose(i["c_be_r20_centre_draft_frame"], C_BE_R20) and round(C_BE_R20, 1) == 2104718.8
     assert math.isclose(rec["r20_centre_draft_frame"], NQ_PRE * C_BE_R20) and rel(rec["r20_centre_draft_frame"], 5.672e11) <= 1e-4
     assert math.isclose(i["c_be_r20_floor_multiplexer"], C_FLOOR) and round(C_FLOOR, 1) == 61043.6
@@ -1785,7 +1785,7 @@ def _2o_generator_decompositions():
 
 
 def test_2O_index_register_multiplexer_is_10_T():
-    """colour_multiplexer_index_2O: on ONE colour qubit, g = (-1)^x1 j^x2 k^x3 u^(2x4+x5) t^x6 is a product of singly
+    """colour_multiplexer_index_2O: on ONE color qubit, g = (-1)^x1 j^x2 k^x3 u^(2x4+x5) t^x6 is a product of singly
     controlled generators. x1: a sign; x2, x3: controlled iY, iZ (Clifford); x4, x5: two controlled pi/2 Pauli
     rotations each (2 T each); x6: one. 10 T, no Toffoli, no ancilla. Checked on all 48 elements, with the inverse."""
     import numpy as np
@@ -1943,8 +1943,8 @@ def test_single_particle_select_reproduces_the_covariant_wilson_kernel():
     m0, r = 1.5, 1.0
     Q = 2 * 4 * L ** D
 
-    def idx(colour, spin, x):
-        return ((x[0] * L + x[1]) * L + x[2]) * 8 + spin * 2 + colour
+    def idx(color, spin, x):
+        return ((x[0] * L + x[1]) * L + x[2]) * 8 + spin * 2 + color
     G0 = np.kron(I2, Z)                                        # spin index = s0 + 2 s1
     Gk = [np.kron(P, X) for P in (X, Y, Z)]
 
@@ -1986,10 +1986,10 @@ def test_single_particle_select_reproduces_the_covariant_wilson_kernel():
     def enc(v):
         return v & 1, (v >> 1) & 1
 
-    def build(sim, term, colour, spin, x):
+    def build(sim, term, color, spin, x):
         h, d, o, w = term
         s = 0
-        for name, val in (("h", h), ("d0", d & 1), ("d1", d >> 1), ("o", o), ("w", w), ("c", colour),
+        for name, val in (("h", h), ("d0", d & 1), ("d1", d >> 1), ("o", o), ("w", w), ("c", color),
                           ("s0", spin & 1), ("s1", spin >> 1)):
             s |= val << sim.reg(name)
         for i in range(D):

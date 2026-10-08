@@ -33,7 +33,7 @@ fits). 2033: N_rot 1.517e8, eps 8.118e-6, c_BE 3.913e6, 7.825e9 T/shot; QSVT rai
 62 yr serialized, 15.5 yr on four machines, 13 machines for the 5-yr horizon.
 
 Updated 2026-10-01 for r19 (E20 applied to the chapter; E21 rulings; apply_log/r19_ch10.md): every gauge
-rotation at the full fit; the hop's colour squish and parity flags held per link (share="link") with the
+rotation at the full fit; the hop's color squish and parity flags held per link (share="link") with the
 estimated frame undo; share="draft" kept as the conservative sensitivity; ~0.1 ms per-shot overhead.
 2028: step 399,956.8 T = 4.0x the cap, eps_l 2.50e-7, 0.40 s/shot, 13 min. 2033: c_BE 2.760e6,
 5.521e9 T/shot (5.5x), eps_l 1.81e-11, ~55 faults at the floor, 43.7 yr serialized, 10.9 yr on four,

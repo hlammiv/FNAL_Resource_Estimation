@@ -18,7 +18,7 @@ or (antiparticle, transmitted), so a = [P_R(p) + 1 - P_R(pbar)]/2. Suzuki's Fish
 Manuscript_v2.tex Eq. Fisher_final, :238) per circuit of m = 2k+1 applications is m^2/(a(1-a)) for a, i.e.
 m^2/(1 - Delta^2) for Delta. All N circuits at one depth m: queries N m = (1 - Delta^2)/(eps_C^2 m), constant 1
 (the 1 - Delta^2 = 1 - 1e-6 is dropped). That requires a prior that keeps m theta in one monotone branch of
-sin^2(m theta), theta = arcsin sqrt(a) = pi/4 + arcsin(Delta)/2. For odd m, m pi/4 is the centre of a branch,
+sin^2(m theta), theta = arcsin sqrt(a) = pi/4 + arcsin(Delta)/2. For odd m, m pi/4 is the center of a branch,
 so the condition is |Delta| < sin(pi/(2 m)) = 0.0476 at m = 33. No state-independent bound gives this: the
 ~1e-3 is an order-of-magnitude estimate of the very quantity being measured, and the 'suppressed below
 Delta theta_C' statement is itself a scaling estimate (|y| and the wall-profile integral are not fixed); even
@@ -112,7 +112,7 @@ WHAT IS NOT DERIVED HERE
   R17 (c): the chapter states it as an assumed development target, neither derived nor cited; 'derived here'
   in the box applies to c_T only.
 R17 (e) CHECK: the Fermion_Primitives (FP) hop prices gauge-covariant hops; Ch.8 has no gauge field, so no
-  colour squish or diagonalizer enters and groups.hop_link_cost does not apply. Mass + Wilson term: 4 R_Z per
+  color squish or diagonalizer enters and groups.hop_link_cost does not apply. Mass + Wilson term: 4 R_Z per
   site-step = FP section_mass.tex 2N at d = 2, N = N_c N_f = 2 (groups.wilson_mass_rotations(1, 2, 2)).
   Spinor basis change: FP's 8N T per link (W+ and W- at the two ends) would give 32 T per site-step; Ch.8 uses
   16 T because at r = 1 the hop is rank one with the same vector at both ends, so one pi/4 Givens per site per
@@ -722,7 +722,7 @@ def mlae_depths(m_max: int) -> list[int]:
 
 def balanced_branch_bound(m: int) -> float:
     """Largest |Delta| that keeps m theta in one monotone branch of sin^2(m theta) for the balanced encoding
-    a = (1 + Delta)/2, theta = pi/4 + arcsin(Delta)/2 (m odd: m pi/4 is a branch centre, half-width pi/4)."""
+    a = (1 + Delta)/2, theta = pi/4 + arcsin(Delta)/2 (m odd: m pi/4 is a branch center, half-width pi/4)."""
     if m % 2 == 0:
         raise ValueError("odd depth required")
     return math.sin(math.pi / (2 * m))

@@ -161,7 +161,7 @@ def test_2028_spectrum_dense_crosscheck():
 
 
 def test_2x2x2x2_is_degenerate():
-    # app12:26: 'The smaller V=2^4 periodic lattice is degenerate': +mu and -mu neighbours coincide, the
+    # app12:26: 'The smaller V=2^4 periodic lattice is degenerate': +mu and -mu neighbors coincide, the
     # hopping cancels, M = m0 x identity and W = 0.16 x identity. Antiperiodic in t: W = 1.16 x identity.
     _, m2 = staggered_M(2)
     assert all(row == {i: M0} for i, row in enumerate(m2))

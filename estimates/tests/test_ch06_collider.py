@@ -9,7 +9,7 @@ assumed). Static Im V 2.3/6.7e9 -> 5.4e9-1.5e10 T per shot (5.4-15x the limit), 
 STAGE: r26 (referee report 2026-10-04; editorial_review/responses/ch06.md): J1 the species readout map N_h = U Pi_h U^dagger
 runs the preparation ramp backwards on every 2033 shot (2033: 4.9e9-2.5e10 T, was 3.9e9-1.5e10; first result 6.9-103 d,
 campaign 1.5-22 yr, fragmentation >= 12-1400 yr); J2 gauge-invariant source and the 0.4 fm/c recollision; J4 P_s vs |W|^2
-(Markovian colour floor); G8 the dipole shot counts binomial at an exact thermal state, the E-rho-OQ factor open (the r25
+(Markovian color floor); G8 the dipole shot counts binomial at an exact thermal state, the E-rho-OQ factor open (the r25
 x40 is a record). Before it:
 r25 (apply_log/r25_ch06.md): author rulings R1-R10 (H. Lamm 2026-10-02). R1 two tiers at 2033 (first result
 at 30%, campaign at the physics target); R2 conserved-pair clustering in the ratio shots and the 3-momentum trend at
@@ -22,7 +22,7 @@ multiple machines"). Every wall time is serial on one machine at 1 us per T-gate
 5-year horizon the chapter gives what fits in 5 years on one machine and the cost reduction needed (serial years / 5).
 No per-shot T or LQ moves. Before it:
 r19 (apply_log/r19_ch06.md): author ruling E21 (1) (H. Lamm 2026-10-01, "make the switch"): the Sigma(72x3)
-hop's colour squish and parity are computed once per link and held through V(x), V(y), hop, V^dag(x), V^dag(y)
+hop's color squish and parity are computed once per link and held through V(x), V(y), hop, V^dag(x), V^dag(y)
 (groups share='link'), the frame undo kept; share='draft' (the r17-r18 headline) is the sensitivity. Rotation counts and
 every eps are unchanged; the hop is 3,672 Toffoli + 360 T + 2,933 rotations per link (was 14,314 Toffoli). 2028 unchanged.
 2033: 1.0971e10-2.0208e10 T. 3+1D: 3.238e10 T. Before it:
@@ -813,7 +813,7 @@ def test_2033_hop_from_the_draft(a, r33):
     near(i["hopping_share_of_step_2033"], 0.7164, 0.002)     # '72% of it the hop'
     near(i["hop_over_retired_2033"], 20.65, 0.002)
     rows = {p.name: p for p in r33.breakdown}
-    assert not any("move" in n for n in rows)                # the U_mul colour move is retired
+    assert not any("move" in n for n in rows)                # the U_mul color move is retired
     cs = rows["hop_colour_squish_and_parity_S72x3_evolution_toffoli"]
     assert cs.status is c.CircuitStatus.SCALING and "FermionPrimitives_unpub" in cs.src and "ESTIMATED" in cs.note
     assert "share='link'" in cs.note
@@ -1166,7 +1166,7 @@ def test_2033_dipole_rows(a, r33):
     near(ds["t_shot_over_cap"][0], 5.404, 1e-3); near(ds["t_shot_max_over_cap"], 15.09, 1e-3)   # '5.4--15x the 10^9-T limit'
     assert dl["t_shot_max_over_cap"] < 1 and ds["lq_over_marker"] < 1                 # q-hat row 'under the limit'
     near(ds["eps_l_required"], 6.63e-12, 2e-3); near(dl["eps_l_required"], 1.82e-10, 2e-3)   # '6.6e-12', '1.8e-10'
-    # shots (unchanged by q1): binomial on the colour-floor P_s curve, rate corrected by the colour model (r26 v2, J4)
+    # shots (unchanged by q1): binomial on the color-floor P_s curve, rate corrected by the color model (r26 v2, J4)
     near(ds["shots_per_T_binomial"], 653.14, 1e-4)          # '653'
     near(dl["shots_per_T_binomial"], 405.00, 1e-4)          # '405'
     near(ds["shots_per_T_W2"], 614.74, 1e-4); near(dl["shots_per_T_W2"], 249.40, 1e-4)   # r26 v1 record (|W|^2 shape)
@@ -1190,8 +1190,8 @@ def test_2033_dipole_rows(a, r33):
 
 
 def test_dipole_markov_colour_floor_derivation():
-    """J4 (r26), standard library only. In a colour-covariant Markovian (Lindblad) description with Hermitian colour kicks,
-    the q qbar colour space is 1 + 8 (1 + 3 for SU(2)), so P_s relaxes as 1/N^2 + (1 - 1/N^2) e^{-Gamma t}, while the
+    """J4 (r26), standard library only. In a color-covariant Markovian (Lindblad) description with Hermitian color kicks,
+    the q qbar color space is 1 + 8 (1 + 3 for SU(2)), so P_s relaxes as 1/N^2 + (1 - 1/N^2) e^{-Gamma t}, while the
     averaged singlet amplitude decays at |Im V|; equal initial slopes give Gamma = 2|Im V| N^2 / (N^2 - 1). Checked
     numerically against the full 9x9 (4x4) Lindbladian at source correlations 0, 0.5, 0.9 in
     scratchpad/referee/ch06/j4_lindblad.py. Here: the large-r case, P_s from one-site depolarizing at rate
@@ -1513,7 +1513,7 @@ PHRASES = [
     r"2\!\cdot\!16\!\cdot\!2+3\!\cdot\!3\!\cdot\!16+22=230",
     # 2033
     r"The magnetic term is $9.4\times 10^{3}$ T per link per step~\cite{arxiv_2511_17437}",
-    # r19 (E21 (1)): the colour squish held per link; the undo drawn in the draft but not counted there
+    # r19 (E21 (1)): the color squish held per link; the undo drawn in the draft but not counted there
     # R3
     r"Required $\epsilon_l$ & $\lesssim 8\times 10^{-7}$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"Required $\epsilon_l$ & $\lesssim 3.8\times 10^{-12}$--$2.0\times 10^{-11}$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
@@ -1715,7 +1715,7 @@ RETIRED = [
     r"$U_\times$ comparison$)$",
     r"($\bar n_s{\sim}0.1$, binomial)",
     r"($3\times 10^{3}\times\mathcal{A}^{-2}$)",
-    # r17 (2026-10-01): R-TOL prints at the slope-only price and the R-HOP colour move, retired
+    # r17 (2026-10-01): R-TOL prints at the slope-only price and the R-HOP color move, retired
     r"9.7\times 10^{4}",
     r"3.24\times 10^{4}",
     r"$0.97\times$",
@@ -1764,7 +1764,7 @@ RETIRED = [
     r"$\sim 0.08$ s",
     r"3.6 yr",
     r"$7.4$--$220$",
-    # r19 (2026-10-01): E21 (1) holds the colour squish once per link; the r18 2033 and 3+1D prints retired
+    # r19 (2026-10-01): E21 (1) holds the color squish once per link; the r18 2033 and 3+1D prints retired
     r"second uncompute",
     r"1.4\times 10^{4}$ Toffolis",
     r"1.9\times 10^{5}$ T per link",
@@ -1848,7 +1848,7 @@ def test_tex_states_the_conventions():
     assert r"at $1\,\mu$s per T-gate; Ch.~\ref{ch:overview})" in text
     assert r"on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview};" in text   # E27: serial, one machine
     assert text.count(r"\cite{FermionPrimitives_unpub}") == 2   # r17: 2028 hop scope, 2033 hop (r25: box row cut for length)
-    assert "our estimate" in text                           # the frame undo is labelled as ours
+    assert "our estimate" in text                           # the frame undo is labeled as ours
     assert text.count(r"\cite{arxiv_2108_13305}") == 1      # the basis sentence
 
 
@@ -1878,8 +1878,8 @@ def test_2028_shots_give_the_printed_accuracy(a, r28):
 
 
 def test_2033_hop_move_is_compiled(r33):
-    """Item 4 of apply_log/ch06_roundD.md CLOSED at r17 (apply_log/r17_ch06.md): the U_mul colour move (ruling VERTEX) is
-    gone. The authors' unpublished draft compiles the colour frame V_g, the eigen-class squish and the controlled
+    """Item 4 of apply_log/ch06_roundD.md CLOSED at r17 (apply_log/r17_ch06.md): the U_mul color move (ruling VERTEX) is
+    gone. The authors' unpublished draft compiles the color frame V_g, the eigen-class squish and the controlled
     diagonalizers, so the hop now rests on gate tables, not on a U_mul comparison."""
     rows = {p.name: p for p in r33.breakdown}
     assert not any("move" in n for n in rows)
@@ -1954,7 +1954,7 @@ def test_g7_2033_step_numbers(r33):
     assert round(s0, 1) == 4.5 and round(s1, 1) == 7.5
     ph = i["trotter_pair_phase_by_box_mode"]
     assert round(ph[2][1], 2) == 0.06 and round(ph[3][1], 2) == 0.13 and ph[1][1] < 0.01
-    # fermions: 3 fields x 3 colours of free staggered quarks on the 4 x 8 lattice, T = 0, m a = 0.02
+    # fermions: 3 fields x 3 colors of free staggered quarks on the 4 x 8 lattice, T = 0, m a = 0.02
     H, S, ex = _staggered_step((4, 8), 0.02, 0.1)
     e, v = np.linalg.eigh(H)
     nF = (v * (e < 0)) @ v.conj().T

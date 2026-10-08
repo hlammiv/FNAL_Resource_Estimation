@@ -41,10 +41,10 @@ STAGE: r26 (referee report 2026-10-04, items J1-J4, G7, G8; editorial_review/res
       3.90e9-1.51e10, kept as t_total_2033_r25). V/PS needs a symmetry-projected readout (open; no number).
   J2  the source is a gauge-invariant wave packet sum_d f_p(d) psibar_x W_{x,x+d} psi_{x+d} over separations up to
       L_par links (<= L_par bilocal insertions, t_source_wavepacket_2033, < 2% of a step; not added; r26 v1 priced a
-      single nearest-neighbour bilinear, which has no relative-momentum profile). Box modes are multiples of
+      single nearest-neighbor bilinear, which has no relative-momentum profile). Box modes are multiples of
       2 pi / L_par = 1.55 GeV (source_momenta_box_modes_GeV); the 0.8 fm axis recollides at 0.4 fm/c
       (recollision_time_fm); separation through 1/Lambda needs L_par = 20, 2260 LQ.
-  J4  the dipole rows measure P_s = <|w|^2>, not |W|^2. The shots are priced on the Markovian colour-floor curve
+  J4  the dipole rows measure P_s = <|w|^2>, not |W|^2. The shots are priced on the Markovian color-floor curve
       P_s = P0 (1/N^2 + (1 - 1/N^2) e^{-Gamma t}) and corrected with that model (r26 v2: 653 and 405 per temperature;
       the |W|^2-shape counts 615 and 250 are records, shots_per_T_W2). q-hat is the fundamental-source q-hat,
       <W_F> = e^{-q L r^2/4}; if the Assumed 2 GeV^2/fm is an adjoint value the SU(2) exponent takes C_F/C_A = 3/8
@@ -58,7 +58,7 @@ Before r26: r25 (author rulings R1-R10, H. Lamm 2026-10-02; apply_log/r25_ch06.m
       conserved-pair clustering: N = (c / n_s + 1 / n_M) / delta^2, c = 1 (pair rate) to 2 (B + Bbar multiplicity).
   R4  the evolution window is 30-50 a (3-5 fm/c, 3-5 traversals of the 0.8 fm box; shot audit), not 100 a; the ramp
       range 1e2-1e3 is unchanged. The dipole rows price each shot at its own evolution time.
-  R7  2033 first-result rows: the static colour-singlet dipole (Im V(r = a, T)) on pure-gauge Sigma(216x3) / H_I 3^3
+  R7  2033 first-result rows: the static color-singlet dipole (Im V(r = a, T)) on pure-gauge Sigma(216x3) / H_I 3^3
       (s648; was Sigma(72x3) / H_KS), and the
       light-like dipole q-hat on pure-gauge 2O 3x3x5 (simplobs.json). The full q-hat (the 2404-LQ 3+1D lattice) is
       past 2033.
@@ -78,10 +78,10 @@ ancilla, the same number as its Toffolis, and repeat-until-success synthesis hol
 64 + 144 + 8 = 216 LQ (8 = 7 for the k = 9 phasing group + 1 for synthesis; was 11 and 219, printed '~220'). No T moves.
 
 r19 (apply_log/r19_ch06.md). Author rulings E21 (H. Lamm 2026-10-01; apply_log/r19_core.md): (1) "make the
-switch": the Sigma(72x3) hop's colour squish and parity flags are computed once per link and held through V(x), V(y),
+switch": the Sigma(72x3) hop's color squish and parity flags are computed once per link and held through V(x), V(y),
 hop, V^dag(x), V^dag(y) (groups share="link", the new default), the frame undo kept (undo=True); the r17 per-application
 recompute (share="draft") is the conservative sensitivity. (2) n_spin = 2 for Wilson d=3 (no effect here: staggered).
-(3) SU(3) colour rotations = 2 N_angles (unchanged count). The rotation count, so every R-TOL eps, is unchanged; only the
+(3) SU(3) color rotations = 2 N_angles (unchanged count). The rotation count, so every R-TOL eps, is unchanged; only the
 g-only Toffolis move (14,314 -> 3,672 per link). The Z3 hop has no squish and does not move, so 2028 is unchanged.
 2033: 1.622e10-2.974e10 -> 1.097e10-2.021e10 T; 3+1D: 4.669e10 -> 3.238e10 T.
 Before r19: r18 (apply_log/r18_ch06.md). E20 (H. Lamm 2026-10-01, "do 1"): every rotation in every circuit at the full fit
@@ -90,7 +90,7 @@ rotations at the full fit); the papers' slope-only price is the *_papers record.
 do the 1 ramp+2 evolutions if its only 1.27"): 1 ramp + 2 evolution steps, 132,174.9 T = 1.32x the 1e5 reference at the
 E20 price, accepted as an overshoot; the E4 step-size cross-check (t = 0.2 a at two step sizes) is restored.
 Before r18: r17 (apply_log/r17_ch06.md): ruling (e) (H. Lamm 2026-10-01, "adopt the fermion primitive numbers ... estimate
-the missing pieces"). The hop is groups.hop_link_cost (Sigma(72x3): the authors' unpublished colour-diagonalized hop,
+the missing pieces"). The hop is groups.hop_link_cost (Sigma(72x3): the authors' unpublished color-diagonalized hop,
 FermionPrimitives_unpub, with the pieces it leaves out estimated in groups.py; Z3: the R-HOP structure), the mass
 groups.staggered_mass_site, and their rotations at the full fit 1.15 log2(1/eps) + 9.2 at the circuit's R-TOL eps.
 r17 fitted 2028 to 1 ramp + 1 evolution step (E3, 'as many as fit'; 84,027.9 T at the r17 price).
@@ -136,8 +136,8 @@ Ruling R-TOL (H. Lamm, 2026-09-29, TRACKED_CHANGES.md 'RULINGS, R-TOL and oversh
   eps = 5.89e-6 / 4.37e-6, 1.622e10-2.974e10 T. 3+1D: N = 7.86e8, eps = 3.57e-6, 4.669e10 T.]
 
 HOP SINCE r17: groups.hop_link_cost. For Sigma(72x3) the per-link counts come from the authors' unpublished
-  Fermion_Primitives draft (colour frame V_g on both sites and its undo, eigen-class squish, controlled diagonalizers,
-  one HWP phasing group; since r19 (E21) the colour squish and parity held once per link: 3,672 Toffoli + 360 T +
+  Fermion_Primitives draft (color frame V_g on both sites and its undo, eigen-class squish, controlled diagonalizers,
+  one HWP phasing group; since r19 (E21) the color squish and parity held once per link: 3,672 Toffoli + 360 T +
   2,933 rotations per link for the 3 fields; r17-r18 recomputed them per frame application, 14,314 Toffoli), with the
   frame undo (drawn in the draft, not counted there), the SU(3) squish uncompute, the MBU ladders and the phasing
   estimated there (status SCALING). For Z3 (no draft
@@ -147,7 +147,7 @@ HOP SINCE r17: groups.hop_link_cost. For Sigma(72x3) the per-link counts come fr
 RULE R-HOP, RETIRED BY r17 (derived here; no published circuit priced a gauge-covariant staggered hop on a discrete-group link)
   Per link per Trotter step:  T_hop = n_moves x C_move(G) + n_P(G) x HWP_T(k),   k = N_c N_stag
     - group-element basis: the link operator is diagonal, so the hop needs no Fourier transform
-    - C_move = 0 where D(g) is diagonal on the register (Z3 as the centre of SU(3): D(g) = omega^g on all
+    - C_move = 0 where D(g) is diagonal on the register (Z3 as the center of SU(3): D(g) = omega^g on all
       colors); otherwise each field is moved across the link and back, n_moves = 2 N_stag, each move priced
       at one U_mul (Ch. 9 ruling VERTEX), status SCALING (no compiled circuit; not a floor)
     - n_P = Pauli strings per color-flavor copy: 8 for the Z3-dressed hop on the arxiv_2408_00075 register
@@ -221,7 +221,7 @@ WHAT IS NOT DERIVED HERE, OR RESTS ON A COMPARISON
   ~100 linear-response ancilla, 10x qubitized trim, the 1e3 per-step target of the algorithm gap: Stated.
   RETIRED in round D: the working figures 5e3 (2028 hopping), 3.4e5 (2033 hopping and current insertion) and
     2.04e6 (3+1D); kept as Uncited retired_* inputs only to reproduce the legacy_* record.
-  The dipole rows' physics inputs (q-hat, kappa/T^3, P_d, the colour factor) are Assumed; the estimator-variance
+  The dipole rows' physics inputs (q-hat, kappa/T^3, P_d, the color factor) are Assumed; the estimator-variance
     factor 40 and the E-rho-OQ prep are Ch. 5's (Stated there).
 WALL TIME AND FACTORIES
   t_gate_s = 1e-6 s per T, shot_overhead_s = 1e-4 s per shot, ONE machine, serial (report convention).
@@ -487,7 +487,7 @@ class Assumptions:
                                         "Sigma(216x3) 3^3', qubit encoding, 11 qubits/link (groups.py)")
     hamiltonian_dipole_static: Tagged = Stated("I", f"{TEX}:98", "s648 ruling (1)/(5): the improved H_I, as Ch. 5's "
                                                "2033 box; tab:primcost H_I multiplicities, U_phi twice (phi_mult)")
-    static_src_qubits: Tagged = Stated(4, f"{TEX}:97", "two static colour sources, one qutrit each in two qubits")
+    static_src_qubits: Tagged = Stated(4, f"{TEX}:97", "two static color sources, one qutrit each in two qubits")
     lightlike_dims: Tagged = Stated((3, 3, 5), f"{TEX}:97", "pure-gauge 2O on 3x3x5: the 5-site (1 fm) axis delays the "
                                                             "self-wake to L ~ 0.5 fm")
     lightlike_src_qubits: Tagged = Stated(2, f"{TEX}:97", "two SU(2) fundamental sources, one qubit each")
@@ -803,9 +803,9 @@ def hop_link_rhop(a: Assumptions, group: str, synthesis: str = "rus-slope") -> d
 def hop_link(a: Assumptions, group: str) -> dict:
     """The hop per link per Trotter step since r17 (ruling (e), 2026-10-01): groups.hop_link_cost at this circuit's
     R-TOL eps and the full fit. Z3 (diagonal link, no draft entry): the R-HOP structure, 8 strings x HWP(k = N_c
-    N_stag), 56 Toffoli + 32 rotations per link. Sigma(72x3): the authors' unpublished colour-diagonalized staggered
+    N_stag), 56 Toffoli + 32 rotations per link. Sigma(72x3): the authors' unpublished color-diagonalized staggered
     hop (FermionPrimitives_unpub) for the N_stag fields on the link, with the pieces the draft leaves out estimated
-    in groups.py (frame undo, SU(3) squish uncompute, MBU ladders, HWP phasing). Since r19 (ruling E21 (1)) the colour
+    in groups.py (frame undo, SU(3) squish uncompute, MBU ladders, HWP phasing). Since r19 (ruling E21 (1)) the color
     squish and parity are held once per link (a.hop_share = 'link'); the Z3 hop has no squish, so share does not move
     it. Returns the hop_link_cost dict plus
     "rhop" (the legacy R-HOP at the slope-only price, the pre-r17 print) and "rhop_full" (R-HOP at the full fit)."""
@@ -982,7 +982,7 @@ def depth_2028(a: Assumptions, t_rot: float, n_links: int, V: int, n_steps: floa
 
 def depth_2033_step(a: Assumptions, t_rot: float, n_links: int, est: int) -> float:
     """T-depth of one 2033 Sigma(72x3) Trotter step on the priced register, factory.json schedule (P): the hop
-    links run one at a time (each holds ~92 colour-angle flags, ~110 LQ, against 100 ancilla), the electric
+    links run one at a time (each holds ~92 color-angle flags, ~110 LQ, against 100 ancilla), the electric
     rotations in series. est = 0 (low: log-tree squish) / 1 (high: serial ladders)."""
     pick = lambda v: (v.lo, v.hi)[est]
     return (pick(a.depth_step_const_2033) + pick(a.depth_step_rot_2033) * t_rot
@@ -1457,7 +1457,7 @@ def dipole_rule_steps(a: Assumptions) -> dict:
 def trotter_check_2033(a: Assumptions) -> dict:
     """Referee G7 (2026-10-04, DERIVED HERE): the three Trotter-error estimates of Ch. 5's trotter_check at the chosen
     Delta t = 0.1 a over the 30-50 a window (300-500 steps) on the priced 4 x 8 lattice (64 links), and for the dipole
-    rows (Delta t = 0.05 a, a T = 0.45, 50 and 100 steps; 3^3 Sigma(72x3) with 8 colour copies, 3x3x5 2O with 3).
+    rows (Delta t = 0.05 a, a T = 0.45, 50 and 100 steps; 3^3 Sigma(72x3) with 8 color copies, 3x3x5 2O with 3).
     (i) worst case (same-link nested commutators, hop n_stag N_c / 2 per link); (ii) state-dependent connected variance
     in the free-field vacuum; (iii) exact free-field error in the vacuum. The injected pair: the second-order dispersion
     phase N (2 arcsin(w dt / 2) - w dt) of one gauge quantum at the box modes k = 2 pi n / L_par, n = 1, 2, 3
@@ -1595,7 +1595,7 @@ def _model_2033(a: Assumptions) -> Result:
     # J1: the electric-basis measurement after the backward ramp, one Fourier transform per link (not added; the
     # Sigma(72x3) transform is the paper's lower bound)
     t_readout_fourier = n_links * GROUPS[gk].primitives[fourier_key(gk)].t(float(a.eps_rot))
-    # J2: the gauge-invariant source and the box geometry. r26 v1 priced a single nearest-neighbour bilinear (one
+    # J2: the gauge-invariant source and the box geometry. r26 v1 priced a single nearest-neighbor bilinear (one
     # link's hop, record); v2 is the wave packet sum_d f_p(d) psibar_x W_{x,x+d} psi_{x+d}, d = 1..L_par, priced
     # at L_par bilocal insertions of the full L_par-link Wilson line (an upper bound per separation)
     t_source_per_step = hl["t"]
@@ -1619,7 +1619,7 @@ def _model_2033(a: Assumptions) -> Result:
     # r19 (E21): the headline is share='link' + undo; 'share_draft' is the r17-r18 per-application recompute
     hop_var = {name: hop_link_cost(gk, n_stag, eps=float(a.eps_rot), legacy=False, **kw)
                for name, kw in (("share_draft", {"share": "draft"}), ("no_undo", {"share": "link", "undo": False}),
-                                ("draft_mcx", {"share": "link", "mcx": "draft-colour"}),
+                                ("draft_mcx", {"share": "link", "mcx": "draft-color"}),
                                 ("share_draft_no_undo", {"share": "draft", "undo": False}))}
 
     # the same pricing at the upper end of the register range (V = 40): not in the chapter. A different circuit,
@@ -1790,7 +1790,7 @@ def _model_2033(a: Assumptions) -> Result:
     n_T = int(a.n_dipole_T.value)
 
     def _floor_slope_ratio(rate, n_c):
-        """J4: two-point log slope of P_s in the Markovian colour description, P_s = P0 (1/N^2 + (1 - 1/N^2)
+        """J4: two-point log slope of P_s in the Markovian color description, P_s = P0 (1/N^2 + (1 - 1/N^2)
         e^{-Gamma t}), Gamma = rate N^2 / (N^2 - 1), over the |W|^2 slope 'rate' (= 2|Im V|, or q-hat r^2 / 2)."""
         f = 1 / n_c ** 2
         gam = rate / (1 - f)
@@ -1798,13 +1798,13 @@ def _model_2033(a: Assumptions) -> Result:
         return math.log(ps[0] / ps[1]) / (rate * (times[1] - times[0]))
 
     def _floor_curve(rate, n_c):
-        """J4: P_s at the two times in the Markovian colour description (|W|^2 slope 'rate')."""
+        """J4: P_s at the two times in the Markovian color description (|W|^2 slope 'rate')."""
         f = 1 / n_c ** 2
         gam = rate / (1 - f)
         return tuple(P0 * (f + (1 - f) * math.exp(-gam * t)) for t in times)
 
     def _dipole(rows_c, rows_evo, rows_rule, p, rate, n_c):
-        # r26 v2 (J4): binomial on the measured P_s (colour-floor curve); the rate is the P_s slope over
+        # r26 v2 (J4): binomial on the measured P_s (color-floor curve); the rate is the P_s slope over
         # floor_slope_ratio, a fixed model factor, so the relative error of the rate is that of the slope.
         # q1: rows_c = (rows at c = 2, rows at c = 2 pi), each the two times; walls and t_shot span the c range
         p_s = _floor_curve(rate, n_c)
@@ -1946,7 +1946,7 @@ def _model_2033(a: Assumptions) -> Result:
         "t_per_link_2033": gs["per_link"],                                # 4.412e4 (hi end 4.469e4) -> '4.4--4.5e4'
         "electric_floor_share_of_step_2033": n_links * gs["electric"] / t_step,   # 0.15
         "t_gauge_per_step_2033": t_gauge_step,                            # 2.82e6 -> '2.8e6'
-        # hop (r17: FermionPrimitives_unpub colour-diagonalized staggered hop; r19: share=link + undo, E21)
+        # hop (r17: FermionPrimitives_unpub color-diagonalized staggered hop; r19: share=link + undo, E21)
         "hop_toffoli_per_link_2033": hl["toffoli"],                       # 3,672 (r17-r18, share=draft: 14,314)
         "hop_t_direct_per_link_2033": hl["t_direct"],                     # 360
         "hop_rotations_per_link_2033": hl["n_rot"],                       # 2933
@@ -2169,7 +2169,7 @@ def _model_2033(a: Assumptions) -> Result:
         f"{gs['electric']:.4g} electric = {gs['per_link']:.4g} T per link per step, {t_gauge_step:.4g} T per step on "
         f"{n_links} links. The electric term is the paper's stated lower bound for a fast transform: a FLOOR "
         f"(the dense transform is {gs['electric_dense']:.3g} T per link).",
-        f"Hopping (r17, FermionPrimitives_unpub colour-diagonalized hop for {n_stag} fields, groups.hop_link_cost; "
+        f"Hopping (r17, FermionPrimitives_unpub color-diagonalized hop for {n_stag} fields, groups.hop_link_cost; "
         f"share='{a.hop_share.value}', E21): {hl['toffoli']} Toffoli + {hl['t_direct']} T + {hl['n_rot']} rotations = {hl['t']:.4g} T per link, "
         f"{t_hop_step:.4g} per step ({100 * t_hop_step / t_step:.0f}% of the step), {hl['t'] / hl['rhop']['t']:.1f}x "
         f"the retired R-HOP; estimated pieces {', '.join(it['name'] for it in hl['items'] if it['status'] is not CircuitStatus.COMPILED)}. "
@@ -2404,8 +2404,8 @@ def INSTANCE_ROWS(a, era, r):
                   "wall_time_s_fragmentation": [round(x) for x in i["wall_ff_s"]],
                   "note": "window 30-50 a plus a 1e2-1e3-step ramp and the same ramp backwards for the species "
                           "readout map (R4; r26 J1); electric term at the Sigma(72x3) fast-transform "
-                          "lower bound, a floor; hop from the authors' unpublished colour-diagonalized gate counts "
-                          "(FermionPrimitives_unpub), colour squish and parity held once per link (E21), 1.1e5 T per "
+                          "lower bound, a floor; hop from the authors' unpublished color-diagonalized gate counts "
+                          "(FermionPrimitives_unpub), color squish and parity held once per link (E21), 1.1e5 T per "
                           "link, 72% of the step; walls on one "
                           "machine with the T-depth correction (F* 7.0-18.5); eps at the two ramp ends from R-TOL; every "
                           "rotation at the full fit (E20)"}),
@@ -2428,7 +2428,7 @@ def INSTANCE_ROWS(a, era, r):
                   "wall_time_s_first_result": [round(x) for x in dl["wall_first_s"]],
                   "note": "R7 first-result row; compiled 2O transform; q1 (ruling B): quench-prepared medium (20-step "
                           "ramp + c/T, c = 2-2 pi) before the sources enter, ETH / typicality assumed; fits the 1e9-T "
-                          "limit; shots binomial on P_s, no estimator penalty; O(1/N_c^2) colour correction (J4)"})]
+                          "limit; shots binomial on P_s, no estimator penalty; O(1/N_c^2) color correction (J4)"})]
     if era == "codesign":
         return [(r"3+1D stretch, $\Sigma(72{\times}3)$ $4^3$, 3 stag.", r.lq, r.hard_ops,
                  {"group": "S72x3", "lattice": "4^3",

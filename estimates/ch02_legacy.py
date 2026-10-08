@@ -621,7 +621,7 @@ def _walk_compiled(a: Assumptions, M: int, w_q: int) -> dict:
 
 def _lambda_per_site_MeV(a: Assumptions) -> float:
     """1-norm per site of the arxiv_1911_06368 lattice pionless Hamiltonian in Pauli form (N_f = 4, 3D):
-    kinetic 4 species x 6 neighbours x (XX+YY) x t/2 = 24t; Z: 4 x (3/4)|C0+D0|; ZZ: 6 pairs x |C0+2D0|/4;
+    kinetic 4 species x 6 neighbors x (XX+YY) x t/2 = 24t; Z: 4 x (3/4)|C0+D0|; ZZ: 6 pairs x |C0+2D0|/4;
     ZZZ: 4 triples x D0/4 (the identity term is dropped). 706.76 MeV at a = 1.4 fm."""
     t, c0, d0 = a.hop_t_MeV.lo, -a.c0_abs_MeV.lo, a.d0_MeV.lo
     return 24 * t + 3 * abs(c0 + d0) + 1.5 * abs(c0 + 2 * d0) + d0

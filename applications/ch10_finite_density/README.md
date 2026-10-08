@@ -54,7 +54,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `toffoli_convention` | textbook | Cited | arxiv_2405_05973 | 7 T per Toffoli, as in the papers' tables (PAPER_COSTS.md Sec. 4) |
 | `hop_synthesis` | rus | Assumed | apply_log/r17_core.md; FermionPrimitives_unpub resources.tex:7-10 | every hop and mass rotation at the full fit 1.15 log2(1/eps) + 9.2 (r17 rule 7; the draft prices 9.2 + 1.15 L too) |
 | `hop_undo` | True | Assumed | groups.fermion_hop_counts; E21 (1), apply_log/r19_core.md | V_g^dag on both sites after the diagonal hop (ESTIMATED; the draft draws it, PD/section_hamiltonian.tex:86-91, but its 2 C^G counts only the 2 forward applications, PD/section_su2_diag.tex:238, section_resources.tex:15) |
-| `hop_share` | link | Assumed | groups.fermion_hop_counts; apply_log/r19_core.md | colour squish + parity computed once per link and held through V(x), V(y), hop, V^dag(x), V^dag(y) (E21 (1) 'make the switch'); 'draft' (recompute per frame application) is the conservative sensitivity, reported beside it |
+| `hop_share` | link | Assumed | groups.fermion_hop_counts; apply_log/r19_core.md | color squish + parity computed once per link and held through V(x), V(y), hop, V^dag(x), V^dag(y) (E21 (1) 'make the switch'); 'draft' (recompute per frame application) is the conservative sensitivity, reported beside it |
 | `hop_mcx` | mbu | Assumed | groups.mcx_toffolis | C^nX ladders at n-1 Toffolis (measurement-based uncompute, report rule) |
 | `hop_phasing` | hwp | Assumed | groups.fermion_hop_counts; arxiv_1709_06648 | the 2 N_c N_stag equal-angle Rz of the diagonal hop as one HWP group (derived here) |
 
@@ -81,7 +81,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `shots_2028` | 2000.0 | Stated-not-derived | app07:150 | ~2e3 shots, single (T,mu_B) point; no eps given |
 | `sigma2_2028` | 1.0 | Assumed | r25 task rulings; app07:145 | per-shot variance bound sigma^2 <= 1 of the normalized E_0 estimator; 2e3 shots -> 2.2% rms per sector (author approved 2026-10-02) |
 | `n_sectors_2028` | (2, 3) | Stated-not-derived | app07:141 | 'ground-state energies E_0(N_B) in 2--3 sectors' |
-| `t_depth_2028` | (26719.289742577264, 40488.90205167576) | Assumed | factory.json Ch. 10 run 1 (scratchpad factories/ch10_depth_v2.py), r25 | T-depth of the one-step 2028 shot: low = T-par colour frame (commuting Euler-factor rotations in one layer), 8 link rounds (its ~60 parity ancilla per hop fit the ~100 budget only at 8 rounds; 4 rounds, 1.43e4, is over budget); high = as compiled, 2d = 4 colour classes. Fully serial 183,854 (F* 2.2) is the pessimistic bound, not priced |
+| `t_depth_2028` | (26719.289742577264, 40488.90205167576) | Assumed | factory.json Ch. 10 run 1 (scratchpad factories/ch10_depth_v2.py), r25 | T-depth of the one-step 2028 shot: low = T-par color frame (commuting Euler-factor rotations in one layer), 8 link rounds (its ~60 parity ancilla per hop fit the ~100 budget only at 8 rounds; 4 rounds, 1.43e4, is over budget); high = as compiled, 2d = 4 color classes. Fully serial 183,854 (F* 2.2) is the pessimistic bound, not priced |
 
 #### 2033 target: 3D SU(3), V = 2^3, register and step count
 
@@ -94,7 +94,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `t_ref_2033` | 1000000000.0 | Cited | DOE_RFI_2026 | 2033 per-shot hard-op reference; app07:105,158,169 |
 | `beta_h_2033` | 100.0 | Stated-not-derived | app07:105 | beta\|\|H\|\| ~ 1e2 for the KMS Gibbs preparation |
 | `c_mix` | 20 | Stated-not-derived | app07:105 | t_mix = c beta\|\|H\|\| with c ~ 20; 'least controlled constant in the 2033 costing'. Referee F2 (2026-10-04): read as c sweeps of the jump set (t_mix ~ c at per-jump rate 1) |
-| `t_depth_2033` | (98454105.32846098, 315713175.1043646) | Assumed | factory.json Ch. 10 run 2 (scratchpad factories/ch10_depth_v2.py), r25 | T-depth of the 2e3-step Gibbs shot: low = T-par colour frame, 12 link rounds (its ~170 parity ancilla per hop fit the 750 band only at ~3 concurrent hops; 6 rounds, 5.23e7, needs ~880); high = as compiled, 12 link rounds (250-ancilla end). Fully serial 3.89e9 (F* 1.4) is the pessimistic bound, not priced |
+| `t_depth_2033` | (98454105.32846098, 315713175.1043646) | Assumed | factory.json Ch. 10 run 2 (scratchpad factories/ch10_depth_v2.py), r25 | T-depth of the 2e3-step Gibbs shot: low = T-par color frame, 12 link rounds (its ~170 parity ancilla per hop fit the 750 band only at ~3 concurrent hops; 6 rounds, 5.23e7, needs ~880); high = as compiled, 12 link rounds (250-ancilla end). Fully serial 3.89e9 (F* 1.4) is the pessimistic bound, not priced |
 
 #### 2033 target: QSVT/TPQ thermal state (the priced route)
 
@@ -162,7 +162,7 @@ The chain is register, then rotation tolerance, then the cost of one Trotter ste
 
 ### 4.1 Logical qubits (`_geometry`, lines 491-504)
 
-N_q = d L^d q_G + N_stag N_c L^d + N_anc: links times qubits per link, plus one qubit per colour per field per site, plus an ancilla budget.
+N_q = d L^d q_G + N_stag N_c L^d + N_anc: links times qubits per link, plus one qubit per color per field per site, plus an ancilla budget.
 
 | instance | gauge | fermion | ancilla | total (`lq_total`) | test |
 |---|---|---|---|---|---|
@@ -170,7 +170,7 @@ N_q = d L^d q_G + N_stag N_c L^d + N_anc: links times qubits per link, plus one 
 | 2033 | 24 links x 8 = 192 | 3 x 3 x 8 = 72 | 250-750 | 514-1014 | `test_2033_register_components` |
 | stretch | 192 links x 9 = 1728 | 3 x 3 x 64 = 576 | 250-750 | 2554-3054 | `test_codesign_register` |
 
-The 2028 budget of 100 ancillas is itemized (lines 937-951; `ancilla_workspace`): U_FFT 8, U_Tr 7, U_inv 4, U_mul 2, the hop's Hamming-weight-phasing group HWP(6) 4, its C^7X ladder 5, the 24-qubit colour-squish scratch of the hop, and the mass HWP(3) 1. With serial reuse the workspace is 29 (the squish scratch is held through the hop, so it sits beside the ladder); without reuse it is 55. With one Hadamard-test qubit the algorithmic register is 106-132 of the 176 (`algorithmic_register`; `test_2028_ancilla_budget_accounting`); the rest is margin. The 2033 band of 250-750 (block-encoding workspace and the parity ancillas of hops run in parallel) is Stated and not itemized.
+The 2028 budget of 100 ancillas is itemized (lines 937-951; `ancilla_workspace`): U_FFT 8, U_Tr 7, U_inv 4, U_mul 2, the hop's Hamming-weight-phasing group HWP(6) 4, its C^7X ladder 5, the 24-qubit color-squish scratch of the hop, and the mass HWP(3) 1. With serial reuse the workspace is 29 (the squish scratch is held through the hop, so it sits beside the ladder); without reuse it is 55. With one Hadamard-test qubit the algorithmic register is 106-132 of the 176 (`algorithmic_register`; `test_2028_ancilla_budget_accounting`); the rest is margin. The 2033 band of 250-750 (block-encoding workspace and the parity ancillas of hops run in parallel) is Stated and not itemized.
 
 ### 4.2 Rotation tolerance (`_rot_per_step`, lines 546-562; `_eps`, lines 690-692)
 
@@ -198,21 +198,21 @@ Rotations per Trotter step (`n_rot_per_step`): 10,908 at 2028 (3,708 gauge + 7,1
 
 The electric term is 81% of the 2028 gauge cost (`electric_share`). Without the FFT it would be 633 (2028) to 651 (2033) times larger (`naive_over_fft`).
 
-**Staggered hop** (`_hop_link`, lines 524-531; `groups.fermion_hop_counts` and `groups.hop_link_cost`, `groups.py` lines 787-941). The gate counts come from an unpublished draft on gauge-covariant fermion primitives (bibliography key `FermionPrimitives_unpub`). A hop on a link applies a colour frame V on both sites, a diagonal hop, and V^dag on both sites. Per link per step, at the chapter's readings (`hop_undo` True, `hop_share` "link", `hop_mcx` "mbu", `hop_phasing` "hwp"):
+**Staggered hop** (`_hop_link`, lines 524-531; `groups.fermion_hop_counts` and `groups.hop_link_cost`, `groups.py` lines 787-941). The gate counts come from an unpublished draft on gauge-covariant fermion primitives (bibliography key `FermionPrimitives_unpub`). A hop on a link applies a color frame V on both sites, a diagonal hop, and V^dag on both sites. Per link per step, at the chapter's readings (`hop_undo` True, `hop_share` "link", `hop_mcx` "mbu", `hop_phasing` "hwp"):
 
 | piece | 2028 (N_stag = 1) | 2033 (N_stag = 3) | how it is counted |
 |---|---|---|---|
-| colour squish and parity | 2,296 Toffoli = 16,072 T | same | 2 x 759 squish + 778 parity/flag Toffolis, computed once per link and held through the hop |
-| colour rotations | 656 rotations = 13,600.7 T | 1,968 = 56,377.4 T | 164 per frame application x 4 applications (V and V^dag on both sites) x N_stag |
+| color squish and parity | 2,296 Toffoli = 16,072 T | same | 2 x 759 squish + 778 parity/flag Toffolis, computed once per link and held through the hop |
+| color rotations | 656 rotations = 13,600.7 T | 1,968 = 56,377.4 T | 164 per frame application x 4 applications (V and V^dag on both sites) x N_stag |
 | hop squish and flags | 292 Toffoli = 2,044 T | same | 2 x (46 + 100), compute and uncompute |
-| diagonalizers | 60 x (2 T + 4 rot) = 5,095.9 T | 180 x (2 T + 4 rot) = 20,985.9 T | 2 x 10 classes x 3 colours x N_stag |
+| diagonalizers | 60 x (2 T + 4 rot) = 5,095.9 T | 180 x (2 T + 4 rot) = 20,985.9 T | 2 x 10 classes x 3 colors x N_stag |
 | phasing | HWP(6): 3 rot + 4 Toffoli = 90.2 T | HWP(18): 5 rot + 16 Toffoli = 255.2 T | the 2 N_c N_stag equal-angle Rz as one Hamming-weight-phasing group |
 | **per link** (`hop_t_per_link`) | 2,592 Toffoli + 120 T + 899 rot = **36,902.7** | 2,604 + 360 + 2,693 = **95,734.4** | |
 | per step (`hop_t_per_step`) | x 8 = 295,221.9 | x 24 = 2,297,626.8 | |
 
-The colour frame (first two rows) is 80% of the 2028 hop and 76% of the 2033 hop (`hop_colour_frame_share`). The model also carries the alternative readings at the same tolerance: recomputing the squish at every frame application (`hop_t_per_link_share_draft`, 85,118.7 and 148,038.4 T/link), dropping the frame undo (`hop_t_per_link_no_undo`, 30,102.4 at 2028), and the draft's own printed formula (`hop_t_per_link_fp_printed`, 32,297.9 at 2028). These are pinned in `test_2028_per_step_cost_derived_from_the_papers`, `test_2033_c_be_consistent_with_compiled_floor` and `test_r19_hop_reading_is_e21`.
+The color frame (first two rows) is 80% of the 2028 hop and 76% of the 2033 hop (`hop_colour_frame_share`). The model also carries the alternative readings at the same tolerance: recomputing the squish at every frame application (`hop_t_per_link_share_draft`, 85,118.7 and 148,038.4 T/link), dropping the frame undo (`hop_t_per_link_no_undo`, 30,102.4 at 2028), and the draft's own printed formula (`hop_t_per_link_fp_printed`, 32,297.9 at 2028). These are pinned in `test_2028_per_step_cost_derived_from_the_papers`, `test_2033_c_be_consistent_with_compiled_floor` and `test_r19_hop_reading_is_e21`.
 
-**Staggered mass** (`_mass_site`, lines 534-537; `groups.staggered_mass_site`, `groups.py` lines 944-958). One Rz per colour and field on each site, the N_c N_stag equal angles grouped as one HWP group. Because N_B commutes with H, the mu_B N_B term adds the same angle to every copy on a site and folds in at no cost. HWP(3) is 2 rotations + 1 Toffoli = 48.47 T per site (x 4 sites = 193.9 T); HWP(9) is 4 rotations + 7 Toffolis = 163.6 T per site (x 8 = 1,308.7 T).
+**Staggered mass** (`_mass_site`, lines 534-537; `groups.staggered_mass_site`, `groups.py` lines 944-958). One Rz per color and field on each site, the N_c N_stag equal angles grouped as one HWP group. Because N_B commutes with H, the mu_B N_B term adds the same angle to every copy on a site and folds in at no cost. HWP(3) is 2 rotations + 1 Toffoli = 48.47 T per site (x 4 sites = 193.9 T); HWP(9) is 4 rotations + 7 Toffolis = 163.6 T per site (x 8 = 1,308.7 T).
 
 **The step** (`c_be_t_per_step`): at 2028, 104,541.0 + 295,221.9 + 193.9 = **399,956.8 T**, 4.0 times the 1e5 cap, so no step fits (`steps_under_cap` = 0). At 2033 and the tolerance of 2e3 plain steps, 461,523.9 + 2,297,626.8 + 1,308.7 = 2,760,459.4 T, of which the hop is 83% (`hop_share_of_c_be`). Inside the QSVT shot the same step is re-priced at that circuit's tolerance: 2,718,083 T at the low end and 2,761,708 T at the high end (`qsvt_c_step`).
 
@@ -353,7 +353,7 @@ From `docs/CIRCUIT_STATUS.md` (generated by `python -m estimates --status`). COM
 | hop_phasing_hwp, mass_hwp_rotations | SCALING | grouping of equal-angle rotations into one HWP group, derived here |
 | qsvt_reference_rotations, qsvt_signal_rotations, qsvt_reflection_toffolis (2033 only) | SCALING | the QSVT wrapper, priced by counting |
 
-Across both eras the file lists 16 COMPILED and 11 SCALING rows. By T, SCALING primitives carry 59.6% of the 2028 step and 63.3% of the 2033 low-end shot, almost all of it the hop's colour frame.
+Across both eras the file lists 16 COMPILED and 11 SCALING rows. By T, SCALING primitives carry 59.6% of the 2028 step and 63.3% of the 2033 low-end shot, almost all of it the hop's color frame.
 
 ## 7. Open items and limitations
 
@@ -363,9 +363,9 @@ From `docs/OPEN_ITEMS.md` and the chapter's own gap list.
 - **The QSVT degree and query cost are not derived.** d_beta is set by ||H||, not a block-encoding normalization; at the Chapter 9 value beta lambda = 864 (lambda/||H|| = 8.64) it would be round(sqrt(864 ln 1e4)) = 89 (`ch09_chiral_gauge.py`, `d_beta_stated`), and the shot about 3 times larger. The 2-4 Trotter steps per query are Stated. The 17 calls are the standard amplification count at amplitude 0.1; a fixed-point sequence would need more calls, which is not priced (`docs/OPEN_ITEMS.md`).
 - **kappa_2 of N_B at V = 2^3 sets the campaign.** The grid needs 2.6e5 shots at 0.01, 9.1e5 at 0.05 and 2.2e6 at 0.1. A classical exact-diagonalization or strong-coupling estimate of kappa_2 and its T dependence would settle the band.
 - **The chi_4/chi_2 target may be the wrong one.** It is an absolute 0.1; at small kappa_2 the ratio is pinned near 1/9 or 1 by quark or baryon content, so the precision on the deviation from that baseline may be what matters.
-- **The 2028 count is a lower bound.** One ramp step is priced; the executed circuit is the N-step ramp plus the grouped energy readout (a ten-step ramp is 4.2e6 T). lambda, mu_c/lambda, the readout grouping, the ramp length and the term variances behind the 2e3 shots are open. The step itself is 4.0x the cap and needs a substantially cheaper colour frame for the hop before it can run.
+- **The 2028 count is a lower bound.** One ramp step is priced; the executed circuit is the N-step ramp plus the grouped energy readout (a ten-step ramp is 4.2e6 T). lambda, mu_c/lambda, the readout grouping, the ramp length and the term variances behind the 2e3 shots are open. The step itself is 4.0x the cap and needs a substantially cheaper color frame for the hop before it can run.
 - **The 5% pressure target is not separately costed.** It references the classical mu_B = 0 pressure of this exact Hamiltonian; if that is not available, p needs an energy channel that is not priced.
-- **The hop comes from an unpublished draft.** The frame undo, the SU(3) squish uncompute, the per-field colour rotations, the C^nX convention (n - 1 Toffolis) and 7 T per flag Toffoli are this package's readings where the draft is silent; the recompute-per-application reading would raise the 2028 step to 7.9x the cap.
+- **The hop comes from an unpublished draft.** The frame undo, the SU(3) squish uncompute, the per-field color rotations, the C^nX convention (n - 1 Toffolis) and 7 T per flag Toffoli are this package's readings where the draft is silent; the recompute-per-application reading would raise the 2028 step to 7.9x the cap.
 - **2033 depth is scaled, not scheduled.** The T-depth is the 2e3-step factory band scaled by each end's T ratio (F* 17.5-56, Assumed).
 - **Ancillas.** The 2033 band of 250-750 is Stated, not sized. The 2028 itemization does not list the synthesis ancilla as its own line, and the draft's separate flag and parity registers are not sized.
 - **Physics systematics outside the cost model.** Sigma(36x3) truncation (5-10%, a conjecture), O(a^2) discretization at one spacing (~20-30%), uncontrolled finite volume (m_pi L <~ 1), and the 4+2 taste content, which shifts the universality class and the critical point. The digitized Sigma(36x3) path integral has its own sign problem at mu_B = 0, so the classical-comparator verdict is not established.

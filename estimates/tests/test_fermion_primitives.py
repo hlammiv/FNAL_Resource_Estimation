@@ -3,13 +3,13 @@
 Author ruling (e), H. Lamm 2026-10-01: adopt the unpublished Fermion_Primitives gate counts report-wide in place
 of R-HOP and estimate the missing pieces. Part 1 shows which printed numbers of the draft rebuild from its own
 gate tables in its own conventions (so the counts in groups.FERMION_DRAFT are read correctly). Part 2 pins the
-draft's internal inconsistencies as found. Part 3 pins the report-rule counts, every estimated piece labelled.
+draft's internal inconsistencies as found. Part 3 pins the report-rule counts, every estimated piece labeled.
 Log: apply_log/r17_core.md.
 
-r19 (author ruling E21 (1), 2026-10-01, "make the switch"): the default is share="link" + undo=True (colour squish +
+r19 (author ruling E21 (1), 2026-10-01, "make the switch"): the default is share="link" + undo=True (color squish +
 parity and hop squish + flags once per link, held through V(x), V(y), hop, V^dag(x), V^dag(y)); the r17
 per-application recompute is the sensitivity share="draft", still pinned below. n_spin = 2 (Wilson d=3) and 2 N_angles
-colour rotations are author-confirmed (E21 (2), (3)). Log: apply_log/r19_core.md.
+color rotations are author-confirmed (E21 (2), (3)). Log: apply_log/r19_core.md.
 """
 import math
 
@@ -117,7 +117,7 @@ def test_su3_printed_hop_squish_is_not_integer_toffolis():
 
 def test_bo_colour_squish_under_each_convention():
     t = FERMION_DRAFT["2O"].col_squish_mcx
-    assert mcx_table_toffolis(t, "draft-colour") == 131      # 917 T, printed
+    assert mcx_table_toffolis(t, "draft-color") == 131      # 917 T, printed
     assert mcx_table_toffolis(t, "2n-3") == 163              # 1141 T
     assert mcx_table_toffolis(t, "mbu") == 105               # 735 T, used
 
@@ -129,7 +129,7 @@ def test_bo_colour_squish_under_each_convention():
 def test_mcx_conventions():
     assert [mcx_toffolis(n) for n in range(1, 8)] == [0, 1, 2, 3, 4, 5, 6]
     assert [mcx_toffolis(n, "2n-3") for n in range(1, 8)] == [0, 1, 3, 5, 7, 9, 11]
-    assert [mcx_toffolis(n, "draft-colour") for n in range(1, 8)] == [0, 1, 2, 4, 6, 8, 10]
+    assert [mcx_toffolis(n, "draft-color") for n in range(1, 8)] == [0, 1, 2, 4, 6, 8, 10]
     with pytest.raises(ValueError):
         mcx_toffolis(3, "bogus")
 
@@ -307,7 +307,7 @@ def test_judge_per_link_values(args, kw, link_true, link_false, draft_true, draf
 
 
 def test_su3_rotations_are_2_n_angles():
-    """E21 (3): SU(3) colour rotations per frame application = 2 N_angles (su3_diag.tex:194-198; the text's
+    """E21 (3): SU(3) color rotations per frame application = 2 N_angles (su3_diag.tex:194-198; the text's
     '6 N_angles' at :120 is a draft slip). Printed rotation log coefficient / 1.15 = the model's col_rot."""
     for g, n_angles in (("S36x3", 82), ("S72x3", 92)):
         assert FERMION_DRAFT[g].col_rot == 2 * n_angles

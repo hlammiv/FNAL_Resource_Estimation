@@ -484,7 +484,7 @@ def neighbor_qubits_free(D: int) -> int:
     """Column index of the FREE staggered W: ceil(log2(2D+1)) = 4 at D = 4.
 
     Without links the mixed mu != nu terms cancel (arXiv:2407.13080 Eqs. 23-24), leaving the
-    diagonal and the 2D two-hop neighbours: 2D + 1 = 9 nonzero entries."""
+    diagonal and the 2D two-hop neighbors: 2D + 1 = 9 nonzero entries."""
     return ceil_log2(2 * D + 1)
 
 
@@ -503,7 +503,7 @@ def scaling_units(D: int, V: int, base: float) -> float:
 
 def column_qubits_M(D: int) -> int:
     """Column index of the gauged (or free) staggered M itself: 2D + 1 = 9 nonzero entries per column (the
-    diagonal and the 2D nearest neighbours), ceil(log2 9) = 4 qubits. Ruling R3: the Tr M^-1 rungs block-encode M."""
+    diagonal and the 2D nearest neighbors), ceil(log2 9) = 4 qubits. Ruling R3: the Tr M^-1 rungs block-encode M."""
     return ceil_log2(2 * D + 1)
 
 

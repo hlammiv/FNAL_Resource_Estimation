@@ -422,7 +422,7 @@ class Assumptions:
             if int(K.lo) & (int(K.lo) - 1):
                 raise ValueError("K must be a power of two: the uniform grid uses log2 K qubits per site")
         if self.trotter_order.lo != 2:
-            raise ValueError("only the symmetric second-order splitting is modelled (app04:81,84)")
+            raise ValueError("only the symmetric second-order splitting is modeled (app04:81,84)")
         # the chapter's stability rule: dt <~ 1/omega_max (app04:73)
         for dt, w in ((self.dt_Hinf_2028, self.omega_max_Hinf_2028),
                       (self.dt_Hinf_2033, self.omega_max_Hinf_2033)):
@@ -1242,18 +1242,18 @@ def exact_reduced_step(lam: float, g: float, hs, enc: str = "chi", T_m: float = 
                        L: int = 3, K: int = 16, b: float = 3.46, Phi0: float = 0.31, m_psi: float = 0.1,
                        H_over_m: float = 0.01, r: float = 1.0):
     """U2 exact step check on a reduced instance (units m_phi = 1). Exact many-body evolution of a 1D periodic ring
-    of L sites at the chapter's b, with the site normalisation v = b^3 of the 5^3 instance (so per-site quanta,
-    digitisation and couplings match), a real scalar on the K-point grid of arXiv:2108.10793 and one 2-component
+    of L sites at the chapter's b, with the site normalization v = b^3 of the 5^3 instance (so per-site quanta,
+    digitization and couplings match), a real scalar on the K-point grid of arXiv:2108.10793 and one 2-component
     Wilson fermion (gamma0 = s3, gamma0 gamma1 = s1) at half filling (L = 3: dim 20 x 16^3 = 81920).
     Step = the chapter's symmetric splitting D(h/2) [Kin(h) Hop(h)] D(h/2), coefficients at a(t + h/2); D holds every
     term diagonal in the field/occupation basis (mass, phi^4, gradient, Wilson on-site, m_psi, Yukawa), Kin the per-site
-    pi^2 (exact via the centred DFT), Hop the fermion hop (exact, it acts on the other register).
+    pi^2 (exact via the centered DFT), Hop the fermion hop (exact, it acts on the other register).
     enc = "fixed": phi on the grid set at a = 1. enc = "chi": the comoving field a^{3/2} phi, which adds
     gamma (x p + p x)/2 with gamma = (3/2) adot/a, applied as D/2 Dil/2 [Kin Hop] Dil/2 D/2 (explicit squeeze).
     enc = "shear": the same H written as p^2/2 + gamma(xp+px)/2 = U (p^2/2) U^dag - gamma^2 x^2/2, U = exp(-i gamma
     x^2/2): Kin -> U Kin U^dag and -gamma^2 x^2/2 joins D. The x^2 phases are ZZ angle changes on the phi^2
     rotations, so this is the priced circuit (U2 verifier).
-    Initial state: ground state of the digitised H at a = 1, then the boost exp(i sqrt(v) Phi0 sum_x x_x).
+    Initial state: ground state of the digitized H at a = 1, then the boost exp(i sqrt(v) Phi0 sum_x x_x).
     Readout at each time in rec: fermion particle number per |k| (positive-energy out-modes of h(k) at
     M = m_psi + g phibar) and the scalar quasiparticle n at k = 2 pi/(L b). Returns {h: [dict per rec time]}."""
     import numpy as np
@@ -1448,14 +1448,14 @@ def ds2028_grid_check(m: float, K: int, frame: str = "adapted", n_steps: int = 4
     against the continuum Gaussian evolved by the same map (the chapter's reference).
 
     Ring of L = 4 sites at the 2028 spacing (its lowest shell and frequency are those of the 4^3 IR shell), K-point
-    grid of arXiv:2108.10793 (spacing sqrt(2 pi/K), centred DFT), state = the in-state Gaussian sampled on the grid.
+    grid of arXiv:2108.10793 (spacing sqrt(2 pi/K), centered DFT), state = the in-state Gaussian sampled on the grid.
     Register frame z' = S z per site, S lower triangular (dilation + shear):
       'fixed'   : S balanced on the in-state site marginal, held for the whole run (the chapter's grid);
       'adapted' : S re-balanced on the reference site covariance at each kinetic-block boundary.
     Each kinetic half-step in the frame is S_out Up(u) S_in^-1 = Lx(c1) Up(u') Lx(c2): x^2 and p^2 phases on the
     existing phi^2 / pi^2 rotations, so no rotation is added; D in a lower-triangular frame is an x-phase with
     Q / s^2. Returns, after each step, the list of per-shell errors (index 1 = the IR shell).
-    merged = True joins the two pi^2 half-steps between neighbouring steps into one kinetic block (n + 1 QFT pairs
+    merged = True joins the two pi^2 half-steps between neighboring steps into one kinetic block (n + 1 QFT pairs
     for n steps, the priced circuit) and returns only the final-time errors (one-element list)."""
     import numpy as np
     b, E, C, lap = _ds2028_setup(m, L)
