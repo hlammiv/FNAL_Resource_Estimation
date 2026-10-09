@@ -176,8 +176,11 @@ COMPILED: 40  SCALING: 30  CONJECTURE: 4  UNSOURCED: 0
 | 2033 | qft_centering_rotations | 500 | 29.6 | 1.48e+04 | **COMPILED** | arXiv:2210.07985 Eq. fftqft; derived here (app04:84) | two R_z layers per shot, non-Clifford+T angles; eps_rot = 4.47e-06 over N_rot = 499697875 (R-TOL), 29.64 T each |
 | 2033 | condensate_boost_rotations | 500 | 29.6 | 1.48e+04 | **COMPILED** | derived here (U1) | exp(i pibar sum_x phi_x): 125 sites x 4 single-Z, once after the ramp; eps_rot = 4.47e-06 over N_rot = 499697875 (R-TOL), 29.64 T each |
 | 2033 | wilson_hop_pauli_strings | 2.46e+08 | 29.6 | 7.29e+09 | **COMPILED** | derived here (app04:84) | 41000 x 375 links x 16 strings (8 bilinears of gamma^0(1-gamma_i) x 2 JW strings); eps_rot = 4.47e-06 over N_rot = 499697875 (R-TOL), 29.64 T each |
+| 2033 | dt_sweep_steps | 50 | 7.25e+05 | 3.62e+07 | **COMPILED** | derived here (U2 verifier) | linear sweep of Delta t from the ramp step to the evolution step, 50 steps at the evolution-step T (priced 2026-10-09) |
+| 2033 | conjugate_basis_qft_readout | 1 | 4.2e+04 | 4.2e+04 | **COMPILED** | QFT per arXiv:2210.07985 Eq. fftqft | one per-site QFT pair for the pi-basis readout setting (priced 2026-10-09) |
+| 2033 | fermion_out_basis_givens_bound | 2.5e+05 | 29.6 | 7.39e+06 | **SCALING** | derived here (R6) | <= N(N-1)/2 Givens rotations on 500 modes, 2 R_z each; an upper bound (priced 2026-10-09) |
 
-COMPILED: 14  SCALING: 1  CONJECTURE: 0  UNSOURCED: 0
+COMPILED: 16  SCALING: 2  CONJECTURE: 0  UNSOURCED: 0
 
 ## Ch. 8 — ch08_baryogenesis
 
@@ -277,4 +280,4 @@ COMPILED: 16  SCALING: 11  CONJECTURE: 0  UNSOURCED: 0
 
 ## Totals
 
-COMPILED: 122  SCALING: 68  CONJECTURE: 5  UNSOURCED: 5
+COMPILED: 124  SCALING: 69  CONJECTURE: 5  UNSOURCED: 5
