@@ -422,12 +422,6 @@ class Assumptions:
     fq_light_nucleus_t: Tagged = Cited(1e7, "arxiv_2507_22814", "'sits at the ~1e7-T scale' (app11:160)")
     ext_qubitization_sd_toffoli: Tagged = Cited(1e9, "arxiv_2607_21563", "'~1e9 Toffoli gates in the sd shell' (app11:144)")
     ext_qubitization_pb208_toffoli: Tagged = Cited(3e10, "arxiv_2607_21563", "'~3e10 ... 102-orbital 208Pb-core space'")
-    # utility box (G5 open item 4, Claude's decision 2026-10-04): Mu2e-only base; no 0nubb dollar figure
-    mu2e_tpc_musd: Tagged = Cited(315.7, "DOE_HEP_FY25_CJ", "'the $315.7M Mu2e total project cost' (app11:188); "
-                                  "FY 2025 CJ, Science/HEP p. 245: BCP approved 2022-12-21, TPC $315,700,000")
-    utility_fraction: Tagged = Stated(0.6, f"{TEX}:188", "'about 60% of the $315.7M Mu2e total project cost ... "
-                                      "The fraction is not derived.' First set for 0nubb (NME sets the reach); for Mu2e the NMEs enter only the "
-                                      "operator analysis, so 60% is a generous choice and the value is linear in it (box says so)")
     nme_spread: Tagged = Cited(3, "arxiv_2308_15634", "'factor-three spread across nuclear models' (app11:225)")
 
     # ---- r25 (rulings R1, R9, R10; H. Lamm 2026-10-02): T-depth, factories, and the two 2033 tiers ----
@@ -511,7 +505,6 @@ class Assumptions:
                       "select_and_deficit", "insertion_t_per_toffoli",
                       "d_amplitudes", "t_gate_s", "shot_overhead_s", "campaign_horizon_yr", "eps_mu2e", "eps_0nubb",
                       "n_op_mu2e", "n_op_0nubb", "n_pairs_cross_check", "n_survey_elements",
-                      "utility_fraction", "mu2e_tpc_musd",
                       "rfi_t_2028", "rfi_t_2033", "rfi_lq_2033", "mass_number_ge", "fault_budget",
                       "he4_charge_radius_fm", "proton_radius_fm", "hbarc_mev_fm", "m_mu_mev",
                       "m_nucleon_mev", "z_he4", "mass_number_he4", "loads_per_shot",
@@ -2002,24 +1995,6 @@ def model(a: Assumptions, era: str) -> Result:
     if era == "codesign":
         return _model_codesign(a)
     raise ValueError(f"unknown era {era!r}; expected one of {ERAS}")
-
-
-def utility(a: Assumptions) -> dict:
-    """The utility box's checkable arithmetic (app11:188-189).
-
-    G5 open item 4 (Claude's decision, 2026-10-04): the base is the Mu2e TPC alone ($315.7M,
-    DOE_HEP_FY25_CJ p. 245), at the stated ~60% (not derived), over the six Mu2e operator categories:
-    0.6 x 315.7 = $189.4M ('~$190M'), /6 = $31.57M ('~$32M per instance'). No 0nubb dollar figure
-    (LEGEND-1000 / nEXO no longer in the base). Superseded: 0.61 x ($411M + $406M) / 20 = $25M.
-    """
-    n = a.n_op_mu2e.value                                                             # 6
-    total = a.utility_fraction.value * a.mu2e_tpc_musd.value                          # 189.42
-    return dict(exposure_equivalent=a.nme_spread.value ** 4,                          # 3^4 = 81, '~80' (0nubb, no $)
-                base_musd=a.mu2e_tpc_musd.value,                                      # 315.7
-                fraction=a.utility_fraction.value,                                    # 0.6
-                elements=n,
-                musd_attributed_total=total,                                          # 189.42 -> '~$190M'
-                musd_per_instance=total / n)                                          # 31.57 -> '~$32M'
 
 
 PUBLISHED = {

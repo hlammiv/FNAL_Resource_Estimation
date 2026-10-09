@@ -376,7 +376,7 @@ def test_2028_gibbs_lower_bound_is_carried_not_derived(a, r28):
     assert _close(i["gibbs_2x2_t_lower_bound"], 14 * i["c_be_t_per_step"], rel=1e-12)
 
 
-# --- 2033 utility box (app07:158-201) --------------------------------------
+# --- 2033 box (app07:158-201) --------------------------------------------
 
 def test_2033_register_components(r33):
     i = r33.intermediates
@@ -798,16 +798,3 @@ def test_e29_tex_wording_fixes():
 
 def test_e29_chain_reuse_ratio_to_floor(r33):
     assert round(1e-8 / r33.intermediates["chain_reuse_eps_l_required"], -4) == 8.4e5   # record
-
-
-def test_utility_box_heavy_ion_research_base():
-    # G5 open item 4 (Claude's decision, 2026-10-04): RHIC operations end for EIC construction; the base is the
-    # NP Heavy Ion research line ($47.454M/yr FY24-25 enacted, DOE_NP_FY26_budget); 2% disjoint from Ch. 5's 5%
-    p = Path(__file__).resolve().parents[3] / "applications" / "app07_finite_density.tex"
-    if not p.exists():
-        pytest.skip("chapter .tex not on disk")
-    box = p.read_text().split("begin{utilitybox}")[1].split("end{utilitybox}")[0]
-    assert round(0.02 * 47.454, 2) == 0.95
-    assert "$\\sim\\$0.95$M/yr, for a future production EoS" in box and "($\\sim\\$0.95$M/yr)" in box
-    assert "$\\$47.5$M/yr DOE NP Heavy Ion research line" in box
-    assert "187" not in box and "3.7$M" not in box

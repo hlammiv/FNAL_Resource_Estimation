@@ -376,10 +376,7 @@ class Assumptions:
     t_interim_scalar_share_quoted: Tagged = Stated(1.1e5, f"{TEX}:181", "'~1.1e5 if applied to the scalar share alone, "
                                                    "below the benchmark's 1.6e5'")
 
-    # ---- utility box -------------------------------------------------------------
-    # Referee G5 ruling (2026-10-04, "do 3"): the box's LISA dollar figure (5% of an unsourced several-hundred-
-    # million-dollar U.S. LISA contribution, $15-25M over 5-10 scenarios, ~$3M per scenario) is removed; no
-    # source was found in references.bib or the chapter. The box keeps the qualitative LISA link only.
+    # ---- utility box: no dollar figure (referee G5, 2026-10-04; paper-wide ruling 2026-10-09) ----------------
 
     def __post_init__(self):
         for f in fields(self):

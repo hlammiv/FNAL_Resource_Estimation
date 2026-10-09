@@ -61,7 +61,6 @@ INPUTS AND SOURCES
   envelope steps       O(10)          app04:90        needs <~ 7e3 T/step at K = 8, a cut of about 9x (was 8e3, 2.3x at K = 4)
   de Sitter variant    20 steps       app04:103       T_phys = 10/H_inf at dt = 0.5/H_inf: ~1.2e7 T
   H_inf                1e-5 M_Pl      app04:139,159   enters no arithmetic
-  utility              3% x $109M/yr  app04:164       DOE_HEP_FY25_CJ Cosmic Frontier line
 
 WHAT IS NOT DERIVED HERE
   The 2028 Gaussian-network prep (3e4 T at K = 8, Stated; app04:78 says so). The 2033 ramp's
@@ -402,10 +401,6 @@ class Assumptions:
         10, "app04", "'an O(10)-step de Sitter run inside 1e5 hard ops'")
     H_inf_over_Mpl: Tagged = Stated(
         1e-5, "app04:139", "'H_inf = 1e-5 M_Pl setting the reheating scale'; enters no arithmetic")
-    # ---- utility box -------------------------------------------------------
-    cosmic_frontier_musd_per_yr: Tagged = Cited(109, "DOE_HEP_FY25_CJ",
-                                                "$109M/yr DOE Cosmic Frontier Experimental Physics (app04:164)")
-    utility_share: Tagged = Assumed(0.03, "3% share; 'a stated, rescalable convention'", src="app04:164")
 
     def __post_init__(self):
         for f in fields(self):
@@ -1045,14 +1040,6 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
     return Result(era="2033", lq=reg["lq"], hard_ops=(t_total, t_total), breakdown=breakdown,
                   intermediates=inter, shots=shots_camp, wall_time_s=wall_camp,
                   epsilon_l=(eps_l_for_budget, eps_l_for_budget), notes=notes)
-
-
-def utility(a: Assumptions) -> dict:
-    """The utility box (app04:158-164): 3% of the $109M/yr Cosmic Frontier line."""
-    per_yr = a.utility_share.lo * a.cosmic_frontier_musd_per_yr.lo      # 3.27 -> "~$3M/yr"
-    return {"utility_musd_per_yr": per_yr,
-            "utility_musd_per_yr_rounded": round(per_yr),
-            "utility_musd_campaign": round(per_yr) * a.campaign_years.lo}
 
 
 # --------------------------------------------------------------------------- #

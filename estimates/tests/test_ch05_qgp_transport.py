@@ -618,16 +618,6 @@ def test_2033_campaign_split_is_stated(a):
         assert r.hard_ops == r0.hard_ops and r.wall_time_s == pytest.approx(r0.wall_time_s)
 
 
-def test_2033_utility_box_product(r33):
-    i = r33.intermediates
-    # G5 open item 4 (2026-10-04): base is the NP Heavy Ion research line, $47.454M/yr (RHIC ops line retired)
-    near(i["utility_musd_per_yr"], 2.3727, 1e-9)     # app03:186: 5% of $47.454M/yr -> "$2.4M/yr"
-    near(i["utility_musd_campaign"], 11.8635, 1e-9)  # "$12M over a 5-year campaign"
-    assert round(i["utility_musd_per_yr"], 1) == 2.4 and round(i["utility_musd_campaign"]) == 12
-    box = TEX.read_text().split("begin{utilitybox}")[1].split("end{utilitybox}")[0]
-    assert "$\\sim\\$2.4$M/yr ($\\sim\\$12$M over a 5-year campaign)" in box
-    assert "$\\$47.5$M/yr (FY24--FY25 enacted; $\\$37.0$M requested for FY26)" in box
-    assert "187" not in box and "future EIC" not in box
 
 
 # --- codesign: the box's own BE-trim line, not a separate box -----------------
@@ -740,7 +730,7 @@ def test_bad_inputs_rejected(a):
     r"Required $\epsilon_l$ & $\lesssim 4.5\times 10^{-12}$ ($1.6\times 10^{-11}$ fast end, $3.4\times 10^{-12}$ 2nd spacing), 0.1 faults/shot \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ ($\mu_B\in\{0,200,400,600\}$ MeV) \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
-    r"An eventual first-principles (continuum, larger-volume) $\eta/s, \zeta/s$ at $20\%$",
+    r"the eventual first-principles (continuum, larger-volume) $\eta/s$ and $\zeta/s$ at $20\%$",
     r"so $\zeta/s$ adds up to $1\times$ the $\eta/s$ campaign's shots, less where the two operators commute and share a shot set.",
     r"\textbf{Wall time} & first result $3.1$--$11$ yr on one machine;",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"campaign $250$--$940$ yr on one machine, $51$--$190\times$ the five-year window; one $20\%$ grid point takes $7$--$24$ yr \\",   # style pass 2026-10-08: box row reworded, numbers unchanged

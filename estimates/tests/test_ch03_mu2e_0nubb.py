@@ -134,7 +134,6 @@ def test_stated_and_uncited_inputs_are_tagged_honestly(a):
     assert a.qrom_t_per_amplitude.prov is c.Provenance.CITED and a.qrom_t_per_amplitude.value == 7
     assert a.qrom_t_per_amplitude.value == c.T_PER_TOFFOLI["textbook"]
     assert not hasattr(a, "d_break")
-    assert a.utility_fraction.prov is c.Provenance.STATED and a.utility_fraction.value == 0.6
     # the synthesis budget (R-TOL, report-wide) and the fault budget are stated in the prose (app11:90, :93)
     assert a.eps_synth_total.prov is c.Provenance.STATED and a.eps_synth_total.value == 0.01
     assert a.fault_budget.prov is c.Provenance.STATED and a.fault_budget.value == 0.1
@@ -1267,31 +1266,6 @@ def test_printed_strings_are_in_the_tex(a, tex):
         assert v in tex or v.replace("--", "$--$") in tex, f"{k}: {v!r} not in app11_mu2e_0nubb.tex"
     assert "10^{-2}/N_{\\rm rot}" in tex and "c_T\\approx 27" not in tex     # R-TOL rule sentence, app11:90
     assert "0.1/N_{\\rm gate}^{\\rm shot}" in tex                    # R3 definition, app11:93
-
-
-def test_utility_box(a):
-    # G5 open item 4 (Claude's decision, 2026-10-04): Mu2e-only base, six operator categories, no 0nubb dollars
-    u = ch3.utility(a)
-    assert u["exposure_equivalent"] == 81                   # "3^4 ~ 80" (0nubb exposure range; no dollar value)
-    assert a.mu2e_tpc_musd.prov is c.Provenance.CITED and a.mu2e_tpc_musd.src == "DOE_HEP_FY25_CJ"
-    assert u["base_musd"] == 315.7 and u["fraction"] == 0.6 and u["elements"] == 6
-    _is(u["musd_attributed_total"], 0.6 * 315.7)            # 189.42 -> "~$190M"
-    _is(u["musd_per_instance"], 0.6 * 315.7 / 6)            # 31.57 -> "~$32M"
-    assert round(u["musd_attributed_total"], -1) == 190 and round(u["musd_per_instance"]) == 32
-    assert not hasattr(a, "nexo_tpc_musd") and not hasattr(a, "utility_leverage_fraction")
-
-
-def test_utility_box_text_matches_model(a, tex):
-    if tex is None:
-        pytest.skip("chapter .tex not on disk")
-    box = tex.split("begin{utilitybox}")[1].split("end{utilitybox}")[0]
-    assert "$\\sim\\$32$M per application instance" in box
-    assert ("an attribution of $\\approx\\$190$M, about $60\\%$ of the \\$315.7M Mu2e total project cost"
-            "~\\cite{DOE_HEP_FY25_CJ}") in box and "The fraction is not derived." in box
-    # style pass 2026-10-08 (rule 9): the "no dollar figure" sentence is cut; the box still carries none
-    assert "We attach no dollar figure" not in box and "M per instance" not in box.split("0\\nu\\beta\\beta$ programs")[-1]
-    for gone in ("nEXO", "\\$820", "\\$406", "\\$25$M", "0.5$B"):
-        assert gone not in box, gone
 
 
 def test_instance_rows(a, r28, r33, rcd):

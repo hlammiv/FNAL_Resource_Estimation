@@ -1099,18 +1099,3 @@ def test_referee_h2_hvp_mapping_and_error_budget():
                "purely imaginary", "no $0.3\\%$ target"):
         assert s_ in TEX, s_
     assert "uncosted HVP estimator" not in TEX and "not yet costed" not in TEX
-
-
-def test_utility_box_one_time_basis():
-    # G5 open item 4 (Claude's decision, 2026-10-04): value and capital base on one time basis (one-time);
-    # $5M/yr over the 5-year horizon = $25M, 25/146 = 17% of the $46M + ~$100M capital base; the unsourced
-    # ~$5M/yr DUNE/Mu2e add-on carries no dollar figure.
-    box = TEX.split("begin{utilitybox}")[1].split("end{utilitybox}")[0]
-    assert "$\\sim\\$25$M, one-time, at the post-2033 stage" in box
-    assert round(100 * 5 * 5 / (46 + 100)) == 17 and "about $17\\%$ of that one-time $\\sim\\$150$M capital base" in box
-    # smaller ruling (c), 2026-10-05: the ~$25M premise is kept; its basis is the DOE-reported capital base
-    # ($46M project, DOE_PMAA_g2_2019; $100M reused equipment, DOE_g2_breakthrough_2026), stated in the box
-    assert "both as DOE reports them" in box and "DOE_PMAA_g2_2019" in box and "DOE_g2_breakthrough_2026" in box
-    assert "the $17\\%$ share is a stated, rescalable assumption" in box
-    for gone in ("\\$10$M/yr", "Another $\\sim\\$5$M/yr", "\\$10M/yr"):
-        assert gone not in box, gone

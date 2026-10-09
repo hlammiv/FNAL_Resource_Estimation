@@ -81,7 +81,6 @@ INPUTS AND SOURCES
                                                           the computational basis), 0.18-0.67 yr, ~6% of the first result
   m_pi = 300-400 MeV, m_pi L >= 4 target, 12^3 extension app03:51,77
   Sigma(360x3): 12 qubits/link compiled, 11 dense          QC/discrete_gates/s1080/paper_s1080.tex:95; app03:162
-  $47.454M/yr NP Heavy Ion research x 5% -> "$2.4M/yr", 5-yr campaign "$12M"   app03:186 (utility box; not a resource number)
 WHAT IS NOT DERIVED HERE
   Synthesis tolerance per rotation: ruling R-TOL (H. Lamm 2026-09-29), total synthesis error 1e-2 per
     shot, each circuit's eps_rot = sqrt(1e-2 / N_rot) with N_rot its own synthesized-rotation count
@@ -436,10 +435,6 @@ class Assumptions:
                                                     "Delta t ||H|| is held), not at the first spacing's per-shot cost, which "
                                                     "let Delta t ||H|| grow by 4/3 and broke the chapter's own step rule. "
                                                     "False restores the old convention (record)", "app03:72,79")
-    # G5 open item 4 (Claude's decision, 2026-10-04): RHIC operations end for EIC construction, so the base is the
-    # NP Heavy Ion research line (FY 2026 CJ, Science/NP p. 220: FY24 and FY25 enacted $47,454K; FY26 request $37,004K)
-    heavy_ion_research_musd_per_yr: Tagged = Cited(47.454, "DOE_NP_FY26_budget", "app03:186: '$47.5M/yr (FY24--FY25 enacted; $37.0M requested for FY26)'")
-    utility_fraction: Tagged = Assumed(0.05, "app03:186: '5% of it gives ~$2.4M/yr ... The percentage is the stated, rescalable assumption'", f"{TEX}:186")
     m_pi_MeV: Tagged = Stated((300, 400), f"{TEX}:51,138", "m_pi = 300--400 MeV")
     m_pi_L_target: Tagged = Stated(4, f"{TEX}:77", "requires m_pi L >~ 4")
     L_ext: Tagged = Stated(12, f"{TEX}:77", "~12^3 lattice at a_s = 0.2 fm")
@@ -480,8 +475,6 @@ class Assumptions:
             raise ValueError("fermion_synthesis: full-fit models only (r17: never the slope-only variant)")
         if self.toffoli_convention.value not in ("textbook", "jones"):
             raise ValueError("toffoli_convention must be 'textbook' or 'jones'")
-        if not (0.0 <= self.utility_fraction.lo <= 1.0):
-            raise ValueError("utility_fraction must be in [0, 1]")
         if not (0.0 < self.faults_per_shot.lo <= 1.0):
             raise ValueError("faults_per_shot must be in (0, 1]")
         if self.shot_overhead_s.lo < 0:
@@ -1296,10 +1289,6 @@ def _intermediates_2033(a: Assumptions, c: dict) -> dict:
         "shot_time_2033_reference_s": c["t_evol"] * c["gate_s"] + c["t0"],   # 1.474e4 s (reference shot, record)
         "shot_overhead_s": c["t0"],                                      # 1e-4 (report rule)
         "n_subroutine_calls": c["n_calls"],                              # 1.92e5 -> "~2e5" (app03:198)
-        # utility box (app03:189): not a resource number, but a stated product
-        "utility_musd_per_yr": a.heavy_ion_research_musd_per_yr.lo * a.utility_fraction.lo,   # 2.3727 -> "$2.4M/yr"
-        "utility_musd_campaign": (a.heavy_ion_research_musd_per_yr.lo * a.utility_fraction.lo
-                                  * a.campaign_horizon_yr.lo),           # 11.86 -> "$12M over a 5-year campaign"
         # the retired working figure, for the record (groups.py S72x3.plaquette_t, Stated 5e3)
         "legacy_t_per_shot_2033_at_5e3_per_plaq": (c["plaq"] * GROUPS["S72x3"].plaquette_t.lo * c["steps"]),   # 1.62e8 (old box, Sigma(72x3) working figure)
     }

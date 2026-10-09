@@ -31,7 +31,7 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - The 2033 walls assume 12 commuting Trotter rotations in flight (`trotter_concurrency`, F* = 11.8); gate by gate the campaign floor is 135 d to 3.0 yr (`floor_wall_gate_by_gate_s`).
 - Dead and cancelling PREPARE trees would remove about 2.2e3 T from the 2028 Hadamard-test shot (42% of the insertion); the count is kept as priced.
 - Separating operator classes needs targets with different Z, N/Z and spin; a second target such as 48Ti in pf is not priced.
-- No Mu2e-specific nuclear-matrix-element spread is quoted, and the 60% utility fraction (`utility_fraction`) is a stated choice first made for the 0nubb case.
+- No Mu2e-specific nuclear-matrix-element spread is quoted.
 
 ## Ch. 4, hybrid lattice QCD (`ch04_hybrid_lqcd.py`)
 
@@ -148,4 +148,4 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - The fault budget of 0.1 expected faults per shot counts T gates only (`eps_l = 0.1 / N_T`); Clifford, idle, measurement and magic-state-injection faults are excluded, only Ch. 7 bounds the bias on its observable, and a per-instance detection model is not derived.
 - The Hamming-weight-phasing ancilla count k - w(k) plus one repeat-until-success ancilla (`common.hwp_ancilla`, `common.RUS_ANCILLA`) is applied everywhere; Ch. 10 does not itemize the synthesis ancilla.
 - The reference budgets (1e5 and 1e9 hard ops, 150-250 and 1000 logical qubits, eps_l 1e-8) and the seconds per year (3.156e7 in some modules, 3.15576e7 in others) are typed per module; no printed number depends on the difference.
-- The illustrative dollar figures are stated shares of cited budget lines (Ch. 3: 60% of the Mu2e project cost; Ch. 4: 17% of a one-time capital base of about $150M; Chs. 5 and 10: 5% and 2% of the DOE NP Heavy Ion research line), rescalable and not derived; Chs. 8 and 9 attach none.
+- The utility boxes carry no dollar figures (author ruling 2026-10-09); the models hold no utility inputs.

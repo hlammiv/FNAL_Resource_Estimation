@@ -528,11 +528,6 @@ def test_published_is_the_box_as_printed():
     assert "codesign" not in ch7.PUBLISHED
 
 
-def test_utility_box(a):
-    u = ch7.utility(a)
-    _is(u["utility_musd_per_yr"], 3.27)        # 3% x $109M/yr             app04:164
-    assert u["utility_musd_per_yr_rounded"] == 3   # "~$3M/yr"              app04:159
-    assert u["utility_musd_campaign"] == 15        # "~$15M over a 5-year campaign"
 
 
 def test_instance_rows(a, r28, r33):

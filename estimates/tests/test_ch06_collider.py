@@ -175,7 +175,6 @@ def test_working_figures_are_retired(a):
 def test_working_assumptions_are_tagged_assumed(a):
     assert a.n_s.prov is c.Provenance.ASSUMED and a.n_s.value == 0.1            # CHANGE_MAP ruling 3
     assert a.hadamard_amplitude.prov is c.Provenance.ASSUMED and a.hadamard_amplitude.value == (0.05, 0.2)
-    assert a.utility_share.prov is c.Provenance.ASSUMED
     # what is not the chapter's is tagged as such
     assert a.lambda_qcd_GeV.prov is c.Provenance.ASSUMED and "NOT IN THE CHAPTER" in a.lambda_qcd_GeV.note
     assert a.draft_hop_S72x3_t_const.prov is c.Provenance.UNCITED and "UNPUBLISHED DRAFT" in a.draft_hop_S72x3_t_const.note
@@ -1245,11 +1244,10 @@ def test_systematics_in_quadrature(r33):
     assert [round(100 * x) for x in i["total_error_quadrature"]] == [38, 42]
 
 
-def test_clock_and_utility_numbers(r33):
+def test_clock_numbers(r33):
     i = r33.intermediates
     near(i["z_sample_ratio_fcc_over_lep"], 3.5e5, 0.01)     # 6e12 / 1.7e7
     near(i["sqrt_z_sample_ratio"], 594, 0.001)              # the chapter cites '~300' (arxiv_2407_09593)
-    near(i["utility_musd_per_instance"], 2.0, 1e-12)        # 5% x $0.4B / 10
 
 
 def test_draft_printed_hop_is_recorded(r33, r3d):
@@ -1537,7 +1535,7 @@ PHRASES = [
     r"First result & $120$--$240$ shots, $6.9$--$103$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"Campaign & trend $+\,L_\parallel{=}4$ check: $1.3$--$2.5\times 10^{4}$ shots, $1.7$--$26$ yr (on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview}; high end $5.2\times$ the five-year window) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # cut pass 2026-10-06: the gap paragraph's one-machine sentence restated the campaign box row (pinned above) and is cut
-    # requirements and utility
+    # requirements
     r"Number of subroutine calls & $\sim 130$",
     r"Maximum subroutine time & $4.9\times 10^{3}$--$3.7\times 10^{4}$ s per shot (2033); $\sim 0.13$ s (2028)",
     # cut pass 2026-10-06: the Hard-op row restated the box Per-shot T and is cut; the Size row is back (template rows kept for cross-chapter consistency)
@@ -1545,7 +1543,6 @@ PHRASES = [
     r"$3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots",
     r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps",
     r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps",
-    r"spread over $\sim 10$ application instances in a 5-year campaign, gives $\sim\$2$M per instance",
     # r25 (R1, R2, R4, R7, R10)
     r"Baryon number and strangeness are conserved, so baryons and kaons come in pairs",
     # q1 (2026-10-05, rulings A/B): quench-prepared media, E-rho-OQ dropped

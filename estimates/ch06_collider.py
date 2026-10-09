@@ -203,7 +203,6 @@ INPUTS AND SOURCES
   fragmentation shots              A = 0.05-0.2 (Assumed), eps = 0.2, N_z=10, N_tens=4, N_boost=3      app10:86,148-149
   campaign                         3 source momenta, one spacing; 120 FF calls; 2 dipole rows x 3 T; 5 yr app10:168-169
   systematics                      O(a^2) 10-20%, volume 30%, subgroup 5%; 20% stat per z-bin         app10:48,155-156,176
-  utility                          5% of $0.4B over 10 instances                                       app10:183
   Ch. 9 counting rules             estimates.ch09_chiral_gauge: the HWP helpers of R-HOP, and the ch9_rules_*
                                    record (Ch. 9's PRE-R-HOP 2-string, 30-T accounting on this lattice, the basis
                                    of the retired 5e3). Since R-HOP Ch. 9 prices its spatial Z3 hop by the same
@@ -407,14 +406,10 @@ class Assumptions:
     syst_volume: Tagged = Stated(0.30, f"{TEX}:158", "'~30% at L_perp = 4a'")
     syst_subgroup: Tagged = Stated(0.05, f"{TEX}:108,159", "'~5% at Sigma(72x3)'")
 
-    # ---- clocks (overview, app10:10) and utility box (app10:186) --------------
+    # ---- clocks (overview, app10:10) -----------------------------------------
     n_z_fcc: Tagged = Cited(6e12, "arxiv_2505_00272", "'6e12 Z bosons' at Tera-Z (app10:10)")
     n_z_lep: Tagged = Cited(1.7e7, "LEPEWWG_Zresonance_2006", "'1.7e7 at LEP' (app10:10)")
     lep_error_divisor: Tagged = Cited(300, "arxiv_2407_09593", "'the LEP uncertainty divided by approximately 300' (app10:10)")
-    utility_share: Tagged = Assumed(0.05, "'a ~5% share ... the share is the stated, rescalable assumption' (app10:186)", src=f"{TEX}:186")
-    cms_capital_musd: Tagged = Stated(400, f"{TEX}:186", "'~$0.4B U.S. CMS detector capital (the CMS share of the $331M ... plus the $200M "
-                                                        "HL-LHC CMS upgrade)'; the CMS share of the $331M is not printed")
-    n_instances_utility: Tagged = Stated(10, f"{TEX}:186", "'spread over ~10 application instances in a 5-year campaign'")
 
     # ---- hopping and mass: rule R-HOP (round-D ruling 3), derived here; app10:88,90 ---------------
     n_pauli_hop_diagonal: Tagged = Stated(8, f"{TEX}:88", "'the dressed hop is 8 Pauli strings per copy' (Z3). DERIVED HERE: Re and "
@@ -622,7 +617,7 @@ class Assumptions:
                                  "transform) for this group")
         for name in ("dim_2028", "L_2028", "n_anc_2028", "n_c", "n_stag", "dim_2033", "L_perp",
                      "L_par_uncut", "L_par_priced", "n_anc_2033", "L_s_3d", "n_z", "n_tens", "n_boost",
-                     "n_spacings", "n_source_momenta", "n_qhat_T", "n_species_channels", "n_instances_utility",
+                     "n_spacings", "n_source_momenta", "n_qhat_T", "n_species_channels",
                      "n_trot_2028", "ramp_steps_2028", "twosteps_n_trot_2028", "n_pauli_hop_diagonal", "n_pauli_hop_moved", "moves_per_field",
                      "n_pauli_mass", "insertion_links"):
             if not float(getattr(self, name).value).is_integer():
@@ -640,7 +635,7 @@ class Assumptions:
                              "extension (L_s_3d, era 'codesign')")
         if not (0 < self.hadamard_amplitude.lo <= self.hadamard_amplitude.hi <= 1):
             raise ValueError("Hadamard amplitude must lie in (0, 1]")
-        for name in ("eps_stat", "n_s", "utility_share", "syst_volume", "syst_subgroup", "clean_shot_faults"):
+        for name in ("eps_stat", "n_s", "syst_volume", "syst_subgroup", "clean_shot_faults"):
             if not (0 < getattr(self, name).value <= 1):
                 raise ValueError(f"{name} must lie in (0, 1]")
         for name in ("delta_rel_2028", "delta_rel_2033", "syst_discretization"):
@@ -2145,10 +2140,9 @@ def _model_2033(a: Assumptions) -> Result:
         # systematics
         "syst_quadrature": syst,                                          # (0.320, 0.364) -> '32--36%'
         "total_error_quadrature": total_err,                              # (0.377, 0.415) -> '38--42%' (R4)
-        # clocks and utility (not resource numbers)
+        # clocks (not resource numbers)
         "z_sample_ratio_fcc_over_lep": float(a.n_z_fcc) / float(a.n_z_lep),                  # 3.5e5
         "sqrt_z_sample_ratio": math.sqrt(float(a.n_z_fcc) / float(a.n_z_lep)),               # 594; the chapter cites ~300
-        "utility_musd_per_instance": float(a.utility_share) * float(a.cms_capital_musd) / float(a.n_instances_utility),   # 2
     }
     notes = (
         "Step rule (2026-10-04, Claude's decision on G7, NEEDS_AUTHOR closed): the state-dependent estimate at eps = 0.1 "

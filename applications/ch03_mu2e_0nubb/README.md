@@ -174,18 +174,16 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `qdrift_eps` | 0.1 | Assumed | Campbell_qDRIFT_2019 | qDRIFT error on the drive term; N_q = 2 (lambda/M)^2 (pi/2)^2 / eps_q |
 | `rabi_shots` | (250, 1000) | Assumed | app11:163 | Rabi-readout shots including a 5-10-detuning resonance scan; 250 give ~5% on \|M\| at t_pi/2 (schematic interaction) |
 
-#### External comparison points and the utility box (not used in any T-count)
+#### External comparison points (not used in any T-count)
 
 | field | value | provenance | source | note |
 |---|---|---|---|---|
 | `fq_light_nucleus_t` | 10000000.0 | Cited | arxiv_2507_22814 | 'sits at the ~1e7-T scale' |
 | `ext_qubitization_sd_toffoli` | 1000000000.0 | Cited | arxiv_2607_21563 | '~1e9 Toffoli gates in the sd shell' |
 | `ext_qubitization_pb208_toffoli` | 30000000000.0 | Cited | arxiv_2607_21563 | '~3e10 ... 102-orbital 208Pb-core space' |
-| `mu2e_tpc_musd` | 315.7 | Cited | DOE_HEP_FY25_CJ | 'the $315.7M Mu2e total project cost'; FY 2025 CJ, Science/HEP p. 245: BCP approved 2022-12-21, TPC $315,700,000 |
-| `utility_fraction` | 0.6 | Stated-not-derived | app11:188 | 'about 60% of the $315.7M Mu2e total project cost ... The fraction is not derived.' The dollar value is linear in it |
 | `nme_spread` | 3 | Cited | arxiv_2308_15634 | 'factor-three spread across nuclear models' |
 
-99 fields: Cited 23, Stated-not-derived 43, Assumed 33
+97 fields: Cited 22, Stated-not-derived 42, Assumed 33
 
 ## 4. How the numbers are built
 
@@ -319,7 +317,6 @@ The boxes, as `PUBLISHED` holds them and as the model computes them:
 | validation ladder | f7p3 0.91-1.9e8 T, 15-31 days; f7p3p1 4.4-7.2e8 T, 2.0-11 days; pf x2.3-3.7, 19-110 days | as in section 4.6 | `test_simplified_0nubb_rows` |
 | co-design LQ | ~700-1100 | 660-1144 | `test_codesign_flagship`, `test_codesign_flagship_fits_1000_lq_as_printed` |
 | co-design T | 8.5e13-3.3e15 | 8.532e13-3.331e15 | `test_codesign_flagship` |
-| utility | ~$32M per instance (~$190M over six) | 31.57 (189.42) $M = 0.6 × 315.7 / 6 | `test_utility_box` |
 
 `test_instance_rows` pins the `resources.json` rows and their roles, and `test_printed_strings_are_in_the_tex` checks every string `printed(a)` returns against a fixed expected list (and, next to the paper, against the chapter text). The load-angle add-on (L, b, 765-1017 T, the D = 596 fit) is pinned by the load-angle test (test file, line 1440).
 
@@ -358,7 +355,7 @@ From `docs/OPEN_ITEMS.md` and the model's own notes:
 - **Cancellations not taken.** PREPARE trees that cancel or act on unused amplitudes in the 2028 shot are kept as priced, so the insertion count is an upper bound for its construction. The 2033 27Al shot also keeps the operator query (about 1% of its T), which the direct readout does not use.
 - **Category separation** needs targets with different Z, N/Z and spin; a second target such as 48Ti in pf is not priced.
 - **Fault model.** ε_l = 0.1/N_T counts T gates only; Clifford, idle, measurement and injection faults are not modeled.
-- **Utility.** No Mu2e-specific spread of the nuclear matrix elements is quoted, and the 60% utility fraction is a stated choice; the dollar figure is linear in it.
+- **Utility.** No Mu2e-specific spread of the nuclear matrix elements is quoted; the box carries no dollar figure (author ruling 2026-10-09).
 - **Beyond 2033.** 76Ge (jj44 and converged bases) has no simplification that keeps its physics inside the 2033 budget, and the converged 27Al flagship is 8.5e4-3.3e6 times over it.
 
 ## 8. Conventions used
