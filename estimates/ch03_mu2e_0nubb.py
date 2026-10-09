@@ -435,16 +435,23 @@ class Assumptions:
     # 2033 readout (shot audit, Ch. 3; ruling R2/R1 and the Ch. 3 rulings of 2026-10-02). The bare one-body
     # spin-independent (SI) elements in sd are pinned classically to +/-0.6% in any state (the derived
     # any-state band); the spin-dependent (SD, tensor) element carries the shots: <O_SD> = 2 <S_p> o_0d.
-    sd_spin_expectation: Tagged = Assumed((0.30, 0.34), "<S_p>(27Al) in sd, shot-audit estimate; needs a "
-                                                        "shell-model value (NEEDS_AUTHOR)", f"{TEX}:151")
-    direct_readout_variance: Tagged = Assumed(1.0, "per-shot variance of the direct (basis-rotated Z) readout "
-                                                   "of the SD one-body operator, variance ~1, estimate (shot audit); "
-                                                   "Popoviciu worst case x8.3",
-                                              f"{TEX}:151")
-    projection_success: Tagged = Assumed(0.5, "heralded ground-state projection success p for 27Al (deformed; "
-                                              "shot-audit estimate, band 0.1-0.9; computable exactly in sd)",
-                                         f"{TEX}:151")
-    projection_success_band: Tagged = Assumed((0.1, 0.9), "sensitivity band on p (shot audit)", f"{TEX}:151")
+    # author ruling 2026-10-09 (batch 1 item 8): the three readout inputs are computed in the USDB sd ground state
+    # (J = M = 5/2, exact Lanczos, M-dim 64299; scratch chopen/app11/al27_sd.py, al27_sd_readout.json).
+    sd_spin_expectation: Tagged = Assumed(0.32620, "COMPUTED: <S_p> = <sum_p sigma_z>/2 in the USDB sd ground state "
+                                                   "(was the shot audit's 0.30-0.34); a record, the element below "
+                                                   "carries the shots", f"{TEX}:151")
+    sd_element_expectation: Tagged = Assumed(0.36681, "COMPUTED: <O_SD> = <sum_p o_l(q) sigma_z> in the USDB sd ground "
+                                                      "state with o_0d, o_1s from al27_dipole_sd; 2 <S_p> o_0d = 0.3646 "
+                                                      "is 0.6% lower (0d3/2-0d5/2 mixing and the 1s modes)", f"{TEX}:151")
+    direct_readout_variance: Tagged = Assumed(0.45116, "COMPUTED: Var(O_SD) = <O_SD^2> - <O_SD>^2 in the USDB sd ground "
+                                                       "state, the per-shot variance of the direct (basis-rotated Z) "
+                                                       "readout (was the shot audit's estimate 1.0; Popoviciu worst case "
+                                                       "8.3)", f"{TEX}:151")
+    projection_success: Tagged = Assumed(0.27359, "COMPUTED: heralded projection success p = |<ref|gs>|^2 for the 0d5/2 "
+                                                  "filling (protons m = 5/2..-3/2, neutrons all six), which is the "
+                                                  "largest configuration of the USDB ground state; the ten largest "
+                                                  "configurations hold 0.38, the hundred largest 0.61 (was the shot "
+                                                  "audit's 0.5, band 0.1-0.9)", f"{TEX}:151")
     first_result_scans: Tagged = Stated(1, f"{TEX}:153", "first result at one Hamiltonian (R1; shot audit)")
     eps_first_generic: Tagged = Assumed(0.3, "R1 report-wide first-result statistical error (H. Lamm, "
                                              "2026-10-02); quoted for comparison only", f"{TEX}:151")
@@ -1765,11 +1772,13 @@ def _model_2033(a: Assumptions) -> Result:
     # element <O_SD> = 2 <S_p> o_0d = 0.33-0.38 carries the shots. A Hadamard test would need (lambda'/<O_SD>)^2
     # = 79-101 x eps^-2; a direct readout after one single-particle basis rotation needs var / (eps <O_SD>)^2,
     # divided by the heralded projection success p. Per Hamiltonian at eps = 0.05, p = 0.5: 5.5e3-7.1e3 shots.
-    o_sd = (2 * a.sd_spin_expectation.hi * al_dip["o_0d"], 2 * a.sd_spin_expectation.lo * al_dip["o_0d"])  # 0.380, 0.335
-    sd_hadamard_factor = ((al_dip["lam_lcu"] / o_sd[0]) ** 2, (al_dip["lam_lcu"] / o_sd[1]) ** 2)        # 79-101
+    # 2026-10-09 (batch 1 item 8): <O_SD>, Var and p computed in USDB (see the fields); o_sd kept as a (lo, hi) pair
+    o_sd = (a.sd_element_expectation.value, a.sd_element_expectation.value)                             # 0.367
+    sd_spin_check = 2 * a.sd_spin_expectation.value * al_dip["o_0d"]                                    # 0.365 (record)
+    sd_hadamard_factor = ((al_dip["lam_lcu"] / o_sd[0]) ** 2, (al_dip["lam_lcu"] / o_sd[1]) ** 2)        # 84
     var, p_succ = a.direct_readout_variance.value, a.projection_success.value
-    sd_shots_p1 = tuple(var / (a.eps_mu2e.value * o) ** 2 for o in o_sd)                             # 2770-3564
-    sd_shots = tuple(x / p_succ for x in sd_shots_p1)                                                 # 5540-7129
+    sd_shots_p1 = tuple(var / (a.eps_mu2e.value * o) ** 2 for o in o_sd)                             # 1341
+    sd_shots = tuple(x / p_succ for x in sd_shots_p1)                                                 # 4903
     si_pin = (al_dip["exp_band_any_state"][1] - al_dip["exp_band_any_state"][0]) / \
         (al_dip["exp_band_any_state"][1] + al_dip["exp_band_any_state"][0])                          # +/-0.61%
     # T-depth at G concurrent rotations, per band end (factory.json): F* ~ G with the insertion tail
@@ -1792,9 +1801,7 @@ def _model_2033(a: Assumptions) -> Result:
     floor_g1 = tuple(n * d_ * REACTION_TIME_S for n, d_ in zip(shots_camp, d33_g1))                    # gate by gate
     camp_frac_horizon = (wall_camp[0] / (a.campaign_horizon_yr.value * YEAR_S),
                          wall_camp[1] / (a.campaign_horizon_yr.value * YEAR_S))
-    # sensitivity: p over its band (x 0.56 - 5 on the shots), and R1's generic 30% on the SD element
-    p_band = _band(a.projection_success_band)
-    wall_camp_p_band = (wall_camp[0] * p_succ / p_band[1], wall_camp[1] * p_succ / p_band[0])
+    # R1's generic 30% on the SD element (the p sensitivity band was retired when p was computed, 2026-10-09)
     shots_first_30 = tuple(var / (a.eps_first_generic.value * o) ** 2 / p_succ for o in o_sd)          # 154-198
     wall_first_30 = wall_one_machine(a, shots_first_30, total, d33)                                    # 4.5-24 h
     # R7: the simplified 0nubb rows (first light 48Ca in f7/2 p3/2, then f7/2 p3/2 p1/2 by Rabi; full pf Rabi)
@@ -1898,7 +1905,7 @@ def _model_2033(a: Assumptions) -> Result:
         **{k: ex[k] for k in ("t_depth_per_shot", "f_star", "floor_wall_s", "factories_for_1yr")},
         wall_first_result_s=wall_first, wall_campaign_s=wall_camp,
         depth_exports_campaign=ex, depth_exports_first_result=ex_first,
-        campaign_fraction_of_horizon=camp_frac_horizon, wall_campaign_p_band_s=wall_camp_p_band,
+        campaign_fraction_of_horizon=camp_frac_horizon, sd_element_from_spin_check=sd_spin_check,
         shots_first_result_at_30pct=shots_first_30, wall_first_result_at_30pct_s=wall_first_30,
         simplified_0nubb=simp,
         # referee M3 (2026-10-05): 27Al state prep at the USDB gap, against the generic band (record; band kept)
@@ -2130,7 +2137,6 @@ def printed_r25(a: Assumptions) -> dict:
     tsh = (w28[0] / i28["shots"], w28[1] / i28["shots"])
     w1, wc = i33["wall_first_result_s"], i33["wall_campaign_s"]
     fl = i33["floor_wall_gate_by_gate_s"]
-    pb = i33["wall_campaign_p_band_s"]
     w30 = i33["wall_first_result_at_30pct_s"]
     b, bp, h, apf = sim["f7p3_projection"], sim["f7p3p1_rabi"], sim["pf_rabi"], sim["pf_projection_0plus"]
     return {
@@ -2148,19 +2154,20 @@ def printed_r25(a: Assumptions) -> dict:
         "box_wall_2028:189": f"$\\sim {round(w28[0] / 60)}$--${round(w28[1] / 60)}$ min (Hadamard test) or "
                              f"$\\sim {round(wae)}$ s (MLAE",
         # 2033 deliverable (app11:149-151 and the box)
-        "o_sd:149": f"= {round_sig(i33['o_sd'][1], 2):g}$--${round_sig(i33['o_sd'][0], 2):g}$",
-        "sd_factor:149": f"= {round(i33['sd_hadamard_factor'][0])}$--${round(i33['sd_hadamard_factor'][1])}$",
-        "sd_shots_p1:149": "= " + fact(i33["sd_shots_per_hamiltonian_p1"], 3)[1:] + " shots",
-        "sd_shots:149,box": fact(i33["sd_shots_per_hamiltonian"], 3),
+        # 2026-10-09: <O_SD>, Var(O_SD) and p computed in USDB, so these are single values
+        "o_sd:149": f"= {round_sig(i33['o_sd'][0], 2):g}$",
+        "sd_factor:149": f"= {round(i33['sd_hadamard_factor'][0])}$",
+        "sd_shots_p1:149": f"= {g2(i33['sd_shots_per_hamiltonian_p1'][0] / 1e3)}\\times 10^{{3}}$ shots",
+        "sd_shots:149,box": f"${g2(i33['sd_shots_per_hamiltonian'][0] / 1e3)}\\times 10^{{3}}$",
         "t_depth_2033:151": f"${g2(i33['t_depth_per_shot'][0] / 1e6)}\\times 10^{{6}}$--"
                             f"${g2(i33['t_depth_per_shot'][1] / 1e7)}\\times 10^{{7}}$",
         "f_star_2033:151": f"up to ${round(i33['f_star_per_end'][0])}$ factories stay busy",
         "floor_g1_2033:151": f"below ${round(fl[0] / day)}$ days to ${round_sig(fl[1] / yr, 2):.1f}$ years",
         "first_result_2033:151,box": f"${g2(w1[0] / day)}$--${g2(w1[1] / day)}$ days",
-        "shots_campaign_2033:151,box": fact(i33["shots_campaign"], 4),
+        "shots_campaign_2033:151,box": f"${g2(i33['shots_campaign'][0] / 1e3)}\\times 10^{{3}}$--"
+                                       f"${g2(i33['shots_campaign'][1] / 1e4)}\\times 10^{{4}}$",
         "campaign_2033:151": f"${g2(wc[0] / day)}$ days to ${round_sig(wc[1] / month, 2):.1f}$ months",
         "campaign_box_2033": f"$\\approx {g2(wc[0] / day)}$ days--${round_sig(wc[1] / month, 2):.1f}$ months on one machine",
-        "p_band_2033:151": f"${round_sig(pb[0] / day, 2):.1f}$ days and ${round_sig(pb[1] / yr, 2):.1f}$ years",
         "first_30pct_2033:151": f"${round_sig(w30[0] / 3600, 2):.1f}$--${g2(w30[1] / 3600)}$ hours",
         # R7 first light (app11:156-158 and the box)
         "pf_0plus_t:156": f"${round_sig(apf['t'][0] / 1e9, 2):.2f}$--${round_sig(apf['t'][1] / 1e9, 2):.1f}\\times 10^{{9}}$ T",

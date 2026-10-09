@@ -40,8 +40,8 @@ estimated frame undo; share="draft" kept as the conservative sensitivity; ~0.1 m
 9 machines; QSVT 2.86-5.81e9; V=3^3 6.3e9, ~63x cut. Algorithmic register 108-137.
 
 Updated 2026-10-01 for r22 (E26; apply_log/r22_hwp_chapters.md): a Hamming-weight-phasing group of k holds
-k - w(k) ancilla (HWP(6) 4, HWP(3) 1; were 7 and 3). 2028 primitive workspace 29-55 (was 31-60), algorithmic
-register 106-132 (was 108-137). The ~100 sized budget, the ~180 box and every T count are unchanged.
+k - w(k) ancilla (HWP(6) 4, HWP(3) 1; were 7 and 3). 2028 primitive workspace 29-56 (was 31-60; synthesis ancilla itemized 2026-10-09), algorithmic
+register 106-133 (was 108-137). The ~100 sized budget, the ~180 box and every T count are unchanged.
 
 Updated 2026-10-02 for r23 (apply_log/r23_ch10.md; ruling "we don't want to anywhere assume we have multiple
 machines"): one machine, serial wall times only. n_machines, wall_parallel_yr, machines_for_horizon and
@@ -236,28 +236,29 @@ def test_2028_register_components(r28):
 
 
 def test_2028_ancilla_budget_accounting(r28):
-    # app07:93 "primitive workspace 29--55 ..., Hadamard test 1; ... algorithmic register is 106--132 LQ
+    # app07:87 "primitive workspace 29--56 ..., Hadamard test 1; ... algorithmic register is 106--133 LQ
     # of the ~180 sized" (ruling ch10-ancilla-contents A; r17 adds the hop HWP(6), the C^7X ladder, the draft's
     # 24-qubit Sigma(36x3) squish scratch (su3_diag.tex:103), mass HWP(3); r19 holds the squish through the hop.
     # r22 (E26): a phasing group of k holds k - w(k) ancilla, so HWP(6) is 4 (was 7) and HWP(3) is 1 (was 3); the
     # serial-reuse floor is 24 + the C^7X ladder 5 = 29 (was 24 + HWP(6) 7 = 31) and the no-reuse sum 55 (was 60))
     prim = GROUPS["S36x3"].primitives
     assert (c.hwp_ancilla(6), c.hwp_ancilla(3)) == (4, 1)
-    ws = [prim[k].ancilla for k in ("U_FFT", "U_Tr", "U_inv", "U_mul")] + [c.hwp_ancilla(6), 5, 24, c.hwp_ancilla(3)]
-    assert sorted(ws) == [1, 2, 4, 4, 5, 7, 8, 24]
+    # author ruling 2026-10-09: the RUS synthesis ancilla (1) is itemized as in Chs. 6 and 9; sum 56 (was 55)
+    ws = [prim[k].ancilla for k in ("U_FFT", "U_Tr", "U_inv", "U_mul")] + [c.hwp_ancilla(6), 5, 24, c.hwp_ancilla(3), c.RUS_ANCILLA]
+    assert sorted(ws) == [1, 1, 2, 4, 4, 5, 7, 8, 24]
     assert sorted(r28.intermediates["ancilla_workspace"].values()) == sorted(ws)
-    assert (max(ws), sum(ws)) == (24, 55)
+    assert (max(ws), sum(ws)) == (24, 56)
     assert r28.intermediates["ancilla_workspace_serial"] == 24 + max(c.hwp_ancilla(6), 5) == 29
     # the repeat-until-success synthesis ancilla (1, E26) does not move the floor: HWP(6) 4 + 1 = the ladder's 5
     assert r28.intermediates["ancilla_rus"] == c.RUS_ANCILLA == 1
     assert r28.intermediates["ancilla_workspace_serial_with_rus"] == 24 + c.hwp_ancilla(6) + c.RUS_ANCILLA == 29
     lq_sys = r28.intermediates["lq_system"]
-    assert r28.intermediates["algorithmic_register"] == (lq_sys + 29 + 1, lq_sys + sum(ws) + 1) == (106, 132)
+    assert r28.intermediates["algorithmic_register"] == (lq_sys + 29 + 1, lq_sys + sum(ws) + 1) == (106, 133)
     assert lq_sys + sum(ws) + 1 <= r28.intermediates["lq_total"][0]   # accounted part fits the budget
     tex = Path(__file__).resolve().parents[3] / "applications" / "app07_finite_density.tex"
     if tex.exists():
         text = tex.read_text()
-        assert r"primitive workspace $29$--$55$" in text and r"algorithmic register is $106$--$132$ LQ" in text
+        assert r"primitive workspace $29$--$56$" in text and r"algorithmic register is $106$--$133$ LQ" in text
         assert r"$31$--$60$" not in text and r"$108$--$137$" not in text
 
 

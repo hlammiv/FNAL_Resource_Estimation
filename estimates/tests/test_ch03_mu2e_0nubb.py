@@ -899,23 +899,25 @@ def test_2033_shots_as_printed(a, r33, tex):
     d = ch3.al27_dipole_sd(a)
     # SI elements pinned classically: the any-state band is +/-0.61%
     assert round(100 * i["si_pinned_fraction"], 2) == 0.61
-    # <O_SD> = 2 <S_p> o_0d at <S_p> = 0.34 .. 0.30
-    _rng(i["o_sd"], (2 * 0.34 * d["o_0d"], 2 * 0.30 * d["o_0d"]), 1e-12)
-    assert tuple(round(x, 2) for x in i["o_sd"]) == (0.38, 0.34)
-    # Hadamard-test factor (lambda'/<O_SD>)^2 = 79-101 (the audit's 78.6-101.0)
-    assert tuple(round(x) for x in i["sd_hadamard_factor"]) == (79, 101)
-    # direct readout: var / (eps <O_SD>)^2 = 2.77e3-3.56e3, over p = 0.5: 5.54e3-7.11e3 per Hamiltonian
-    _rng(i["sd_shots_per_hamiltonian_p1"], tuple(1 / (0.05 * o) ** 2 for o in i["o_sd"]), 1e-12)
-    assert tuple(round(x) for x in i["sd_shots_per_hamiltonian_p1"]) == (2769, 3557)
-    _rng(i["sd_shots_per_hamiltonian"], _div(i["sd_shots_per_hamiltonian_p1"], 0.5), 1e-12)
+    # 2026-10-09 (author ruling, batch 1 item 8): <O_SD> = 0.36681, <S_p> = 0.32620, Var(O_SD) = 0.45116 and
+    # p = 0.27359 computed in the USDB sd ground state (chopen/app11/al27_sd.py); 2 <S_p> o_0d = 0.3646 is the record
+    _rng(i["o_sd"], (0.36681, 0.36681), 1e-12)
+    assert round(i["sd_element_from_spin_check"], 4) == 0.3646 and round(2 * 0.32620 * d["o_0d"], 4) == 0.3646
+    assert a.sd_element_expectation.prov is c.Provenance.ASSUMED and "COMPUTED" in a.sd_element_expectation.note
+    # Hadamard-test factor (lambda'/<O_SD>)^2 = 84 (was 79-101 on the audit band)
+    assert tuple(round(x) for x in i["sd_hadamard_factor"]) == (84, 84)
+    # direct readout: var / (eps <O_SD>)^2 = 1.34e3, over p = 0.274: 4.9e3 per Hamiltonian (were 2.77-3.56e3, 5.5-7.1e3)
+    _rng(i["sd_shots_per_hamiltonian_p1"], tuple(0.45116 / (0.05 * o) ** 2 for o in i["o_sd"]), 1e-12)
+    assert tuple(round(x) for x in i["sd_shots_per_hamiltonian_p1"]) == (1341, 1341)
+    _rng(i["sd_shots_per_hamiltonian"], _div(i["sd_shots_per_hamiltonian_p1"], 0.27359), 1e-12)
     _rng(i["shots_first_result"], i["sd_shots_per_hamiltonian"], 1e-12)
     _rng(i["shots_campaign"], (2 * i["sd_shots_per_hamiltonian"][0], 3 * i["sd_shots_per_hamiltonian"][1]), 1e-12)
-    assert tuple(ch3.round_sig(x) for x in i["shots_campaign"]) == (1.1e4, 2.1e4)
+    assert tuple(ch3.round_sig(x) for x in i["shots_campaign"]) == (9.8e3, 1.5e4)
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     # style pass 2026-10-08: box rows hold quantity and value only (rule 10); numbers unchanged
-    assert ("$5.5$--$7.1\\times 10^{3}$ per Hamiltonian; "
-            "$1.1$--$2.1\\times 10^{4}$ over the $2$--$3$ basis-cutoff scans") in tex
+    assert ("$4.9\\times 10^{3}$ per Hamiltonian; "
+            "$9.8\\times 10^{3}$--$1.5\\times 10^{4}$ over the $2$--$3$ VS-IMSRG Hamiltonians") in tex
     assert "Per-shot wall time & $\\sim 1.8$--$7.3$ min" in tex and "T-depth & $8.9\\times 10^{6}$--$3.7\\times 10^{7}$" in tex
     assert "Flagship $^{27}$Al & $e_{\\max}{=}8$--$10$: $\\approx 700$--$1100$ LQ, $\\times 8.5\\times 10^{4}$--$3.3\\times 10^{6}$ the 2033 target" in tex   # box row; multiple_flagship is in retired
     assert "(all six categories at the dipole's shot factor)" not in tex and "estimand;" not in tex
@@ -937,29 +939,28 @@ def test_2033_tiers_depth_and_walls(a, r33, tex):
     # walls: shots x (max(N_T t_g, D_T t_r) + 0.1 ms); here the T supply binds
     for key, shots in (("wall_first_result_s", i["shots_first_result"]), ("wall_campaign_s", i["shots_campaign"])):
         _rng(i[key], (shots[0] * i["t_shot_s"][0], shots[1] * i["t_shot_s"][1]), 1e-12)
-    assert (round(i["wall_first_result_s"][0] / day, 1), round(i["wall_first_result_s"][1] / day)) == (6.8, 36)
-    assert round(i["wall_campaign_s"][0] / day) == 14 and round(i["wall_campaign_s"][1] / month, 1) == 3.6
-    assert round(100 * i["wall_fraction_of_horizon"][1], 1) == 6.0 and i["wall_fits_horizon_on_one_machine"]
-    # gate by gate (G = 1): campaign floor 135 d - 3.0 yr
-    assert round(i["floor_wall_gate_by_gate_s"][0] / day) == 135
-    assert round(i["floor_wall_gate_by_gate_s"][1] / yr, 1) == 3.0
-    # p over 0.1-0.9: 7.5 d - 1.5 yr; R1's generic 30% on SD: 154-198 shots, 4.5-24 h
-    assert round(i["wall_campaign_p_band_s"][0] / day, 1) == 7.5 and round(i["wall_campaign_p_band_s"][1] / yr, 1) == 1.5
-    assert tuple(round(x) for x in i["shots_first_result_at_30pct"]) == (154, 198)
-    assert round(i["wall_first_result_at_30pct_s"][0] / 3600, 1) == 4.5
-    assert round(i["wall_first_result_at_30pct_s"][1] / 3600) == 24
+    assert (round(i["wall_first_result_s"][0] / day, 1), round(i["wall_first_result_s"][1] / day)) == (6.0, 25)
+    assert round(i["wall_campaign_s"][0] / day) == 12 and round(i["wall_campaign_s"][1] / month, 1) == 2.5
+    assert round(100 * i["wall_fraction_of_horizon"][1], 1) == 4.1 and i["wall_fits_horizon_on_one_machine"]
+    # gate by gate (G = 1): campaign floor 120 d - 2.1 yr (was 135 d - 3.0 yr at the audit's shots)
+    assert round(i["floor_wall_gate_by_gate_s"][0] / day) == 120
+    assert round(i["floor_wall_gate_by_gate_s"][1] / yr, 1) == 2.1
+    # the p sensitivity band (0.1-0.9) is retired now that p is computed; R1's generic 30% on SD: 136 shots, 4.0-17 h
+    assert "wall_campaign_p_band_s" not in i and not hasattr(a, "projection_success_band")
+    assert tuple(round(x) for x in i["shots_first_result_at_30pct"]) == (136, 136)
+    assert round(i["wall_first_result_at_30pct_s"][0] / 3600, 1) == 4.0
+    assert round(i["wall_first_result_at_30pct_s"][1] / 3600) == 17
     # exports (campaign run), via common.depth_exports
     ex = c.depth_exports(r33.hard_ops, i["t_depth_per_shot"], i["shots_campaign"], a.t_gate_s, a.shot_overhead_s)
     for k in ("t_depth_per_shot", "f_star", "floor_wall_s", "factories_for_1yr"):
         assert i[k] == ex[k], k
-    assert tuple(round(x, 2) for x in i["factories_for_1yr"]) == (0.37, 2.98)
+    assert tuple(round(x, 2) for x in i["factories_for_1yr"]) == (0.33, 2.05)
     if tex is None:
         pytest.skip("chapter .tex not on disk")
-    for frag in ("one Hamiltonian, $5\\%$ on the spin-dependent element: $\\approx 6.8$--$36$ days on one machine",
-                 "$\\approx 14$ days--$3.6$ months on one machine ($2$--$3$ scans)",   # referee M2: SD element only
-                 "takes at most $6.0\\%$ of the five-year window on one machine",     # style pass: rule 7 wording
-                 "no number of factories brings the campaign below $135$ days to $3.0$ years",
-                 "between $7.5$ days and $1.5$ years"):     # style pass: the 30% alternative (4.5-24 h) is cut (rule 3)
+    for frag in ("one Hamiltonian, $5\\%$ on the spin-dependent element: $\\approx 6.0$--$25$ days on one machine",
+                 "$\\approx 12$ days--$2.5$ months on one machine ($2$--$3$ scans)",   # referee M2: SD element only
+                 "takes at most $4.1\\%$ of the five-year window on one machine",     # style pass: rule 7 wording
+                 "no number of factories brings the campaign below $120$ days to $2.1$ years"):   # the p band and the 30% alternative are cut
         assert frag in tex, frag
     assert "8.5$ days" not in tex and "$2.9\\%$" not in tex
 
@@ -1017,7 +1018,7 @@ def test_simplified_0nubb_rows(a, r33, tex):
                  "The qDRIFT samples run one at a time, so these circuits keep only $4$--$8$ factories busy.",
                  "accidental resonances between excited parent and daughter $0^+$ states",
                  "$1.4\\times 10^{-10}$--$1.1\\times 10^{-9}$ ($0\\nu\\beta\\beta$ validation stage)",
-                 "with per-shot variance about one (our estimate; the worst case is about 8 times larger)",
+                 "with per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
                  "\\cite{Campbell_qDRIFT_2019}", "It stays past 2033.",
                  "We take the daughter projection at the parent's cost; a daughter with a smaller gap raises it"):
         assert frag in tex, frag
@@ -1047,7 +1048,7 @@ def test_single_machine_serial_campaign(a, r28, r33, tex):
     _is(ch3.YEAR_S, 365.25 * 86400)
     _is(i["campaign_horizon_s"], 5 * 365.25 * 86400)
     _rng(i["wall_fraction_of_horizon"], _div(r33.wall_time_s, i["campaign_horizon_s"]), 1e-12)
-    assert tuple(ch3.round_sig(100 * x) for x in i["wall_fraction_of_horizon"]) == (0.74, 6.0)
+    assert tuple(ch3.round_sig(100 * x) for x in i["wall_fraction_of_horizon"]) == (0.65, 4.1)
     assert tuple(ch3.round_sig(100 * x) for x in i["wall_fraction_of_horizon_pre_r25"]) == (0.47, 2.9)   # record
     assert i["wall_fits_horizon_on_one_machine"] is True and r33.wall_time_s[1] < i["campaign_horizon_s"]
     with pytest.raises(ValueError, match="campaign_horizon_yr"):
@@ -1067,7 +1068,7 @@ def test_single_machine_serial_campaign(a, r28, r33, tex):
     assert "the parallel Hadamard test~\\cite{arxiv_2607_12344}" in tex
     # 'machines' (plural) appears nowhere; 'machine' only as one machine / machine time / the RFI machine
     assert not re.search(r"\bmachines\b", low)
-    assert "shot-parallel" not in low and "basis-cutoff scans \\\\" in tex
+    assert "shot-parallel" not in low and "VS-IMSRG Hamiltonians \\\\" in tex
 
 
 
@@ -1235,7 +1236,7 @@ def test_printed_strings_are_in_the_tex(a, tex):
         "insertion_sd:143": "$9.3\\times 10^{5}$--$3.9\\times 10^{6}$",
         "t_per_shot_sd:209,243": "$1.1\\times 10^{8}$--$4.4\\times 10^{8}$",
         # r23: the single-machine serial campaign as a share of the 5-year horizon
-        "wall_fraction_of_horizon_max:149": "at most $6.0\\%$",
+        "wall_fraction_of_horizon_max:149": "at most $4.1\\%$",
     }
     r25 = ch3.printed_r25(a)
     assert set(expected) | set(r25) == set(p), set(expected) ^ set(p)

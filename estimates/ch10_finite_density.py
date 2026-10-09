@@ -52,7 +52,7 @@ WHAT IS NOT DERIVED HERE
     so it sits beside the hop's largest piece, the C^7X ladder 5; the hop's HWP(6) holds 4 = 6 - w(6) (E26, r22;
     was 7) and with the 1 repeat-until-success synthesis ancilla is also 5; the other pieces U_FFT 8/U_Tr 7/
     U_inv 4/U_mul 2/mass HWP(3) 1 reuse it) to 55 (no reuse) plus 1 Hadamard-test qubit is accounted, the rest
-    is margin; algorithmic register 106-132 of the ~180 sized (was 31-60 and 108-137 with the weight register
+    is margin; algorithmic register 106-133 of the ~180 sized (synthesis ancilla itemized 2026-10-09; was 106-132) (was 31-60 and 108-137 with the weight register
     added on top of the adder carries). The synthesis ancilla is not a line of the no-reuse sum; it is in the
     margin. The draft's separate flag and parity registers are not sized.
     Stretch: carries the 2033 250-750 band (ruling ch10-stretch-ancilla a).
@@ -225,7 +225,7 @@ class Assumptions:
     n_stag_2028: Tagged = Stated(1, f"{TEX}:139", "1 staggered field (2 degenerate light tastes)")
     n_anc_2028: Tagged = Stated(100, f"{TEX}:93,146",
                                 "~100 ancilla as a sized budget (ruling ch10-ancilla-contents A): primitive "
-                                "workspace 29-55 (groups.py S36x3 + the r17 hop, its 24-qubit squish scratch held per link (r19), and the mass; "
+                                "workspace 29-56 (groups.py S36x3 + the r17 hop, its 24-qubit squish scratch held per link (r19), and the mass; "
                                 "phasing groups at k - w(k) ancilla, E26) + 1 Hadamard-test qubit "
                                 "accounted, rest margin")
     # 2033 target: 3D, V=2^3, three staggered fields
@@ -940,7 +940,8 @@ def _model_2028(a: Assumptions) -> Result:
           "U_mul": prim["U_mul"].ancilla, f"hop HWP({k_hop})": hwp_ancilla(k_hop),
           "hop C^7X ladder (MBU)": mcx_toffolis(7, "mbu") - 1,
           "hop color-squish scratch (FP su3_diag tab:su3squishcosts)": SQUISH_ANCILLA_S36,
-          f"mass HWP({ms['k']})": ms["ancilla"]}
+          f"mass HWP({ms['k']})": ms["ancilla"],
+          "RUS synthesis ancilla": RUS_ANCILLA}        # itemized as in Chs. 6 and 9 (author ruling 2026-10-09)
     lq_sys = geo["gauge_lq"] + geo["fermion_lq"]
     ws_serial = max(ws.values())
     if a.hop_share.value == "link":
@@ -1043,9 +1044,9 @@ def _model_2028(a: Assumptions) -> Result:
             "'>~14 steps' (5.6e6 T).",
             "Shots ~2e3 are Stated with no derivation. The ~100 ancilla are a sized budget (ruling "
             "ch10-ancilla-contents A): workspace 29 (serial reuse; the 24-qubit squish scratch held beside the "
-            "C^7X ladder 5; the hop HWP(6) 4 with 1 synthesis ancilla is also 5) to 55 (none: squish scratch 24, "
-            "U_FFT 8, U_Tr 7, U_inv 4, U_mul 2, hop HWP(6) 4, C^7X ladder 5, mass HWP(3) 1; phasing groups at "
-            "k - w(k), E26) + 1 Hadamard-test qubit; algorithmic register 106-132 of 176. The "
+            "C^7X ladder 5; the hop HWP(6) 4 with 1 synthesis ancilla is also 5) to 56 (none: squish scratch 24, "
+            "U_FFT 8, U_Tr 7, U_inv 4, U_mul 2, hop HWP(6) 4, C^7X ladder 5, mass HWP(3) 1, synthesis 1; phasing groups at "
+            "k - w(k), E26) + 1 Hadamard-test qubit; algorithmic register 106-133 of 176. The "
             "draft's separate flag and parity registers are not sized.",
             "epsilon_l (R3): 0.1 expected faults in 399,957 ops -> 2.50e-7; the RFI floor 1e-8 suffices. "
             "Wall 0.40 s/shot serial (incl. 0.1 ms overhead), 800 s for 2e3 shots. r25 (R9): T-depth 2.67e4-4.05e4, "

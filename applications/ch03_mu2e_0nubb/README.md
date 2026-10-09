@@ -144,10 +144,10 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `mass_number_al27` | 27 | Stated-not-derived | app11:6 | 27Al |
 | `z_core_al27` | 8 | Stated-not-derived | app11:44 | sd valence space: 16O core, 8 core protons (0s^2 0p^6) |
 | `trotter_concurrency` | 12 | Assumed | arxiv_1905_09749 | commuting Trotter rotations in flight at once (12-24 of the 50-150 ancillas); G >= 10 keeps the 10-factory baseline fed |
-| `sd_spin_expectation` | (0.3, 0.34) | Assumed | app11:151 | <S_p>(27Al) in sd, an estimate pending a shell-model value |
-| `direct_readout_variance` | 1.0 | Assumed | app11:151 | per-shot variance of the direct (basis-rotated Z) readout of the SD one-body operator, ~1 (estimate); worst case x8.3 (Popoviciu bound) |
-| `projection_success` | 0.5 | Assumed | app11:151 | heralded ground-state projection success p for deformed 27Al (estimate; computable exactly in sd); sensitivity band 0.1-0.9 |
-| `projection_success_band` | (0.1, 0.9) | Assumed | app11:151 | sensitivity band on p |
+| `sd_spin_expectation` | 0.3262 | Assumed | app11:151 | COMPUTED: <S_p> in the USDB sd ground state (2026-10-09); a record, `sd_element_expectation` carries the shots |
+| `sd_element_expectation` | 0.36681 | Assumed | app11:151 | COMPUTED: <O_SD> in the USDB sd ground state (2026-10-09); 2 <S_p> o_0d = 0.3646 is 0.6% lower |
+| `direct_readout_variance` | 0.45116 | Assumed | app11:151 | COMPUTED: Var(O_SD) in the USDB ground state (2026-10-09; was the audit's estimate 1.0) |
+| `projection_success` | 0.27359 | Assumed | app11:151 | COMPUTED: overlap of the 0d5/2 filling with the USDB ground state (2026-10-09; was 0.5) |
 | `first_result_scans` | 1 | Stated-not-derived | app11:153 | the first result uses one Hamiltonian (one basis-cutoff scan) |
 | `eps_first_generic` | 0.3 | Assumed | app11:151 | report-wide first-result statistical error, quoted for comparison only |
 | `gap_al27_usdb_mev` | 2.327866 | Assumed | scratchpad chopen/app11/gap_usdb_sd_27Al_J-1.0.json | COMPUTED: first excited state reachable from an M = 5/2 reference (J >= 5/2; the 7/2+), USDB in sd |
@@ -266,7 +266,7 @@ The 27Al shot is then the whole circuit at the shared tolerance: N_T = (N_rot,pr
 
 **T-depth** (`depth_2033`, lines 1308-1317). Commuting Trotter rotations share one diagonalizing Clifford, so G = 12 run at once: D_T = N_rot,prep c_T / 12 + (Γ - 1) + 2^(k-1) c_T = 8.93e6-3.73e7, F* = 11.8 at both ends. The ten-factory T supply binds, and a shot takes 105-440 s (1.8-7.3 min).
 
-**Wall time.** First result 5.84e5-3.13e6 s (6.8-36 days); campaign 1.17e6-9.40e6 s (13.5 days to 3.6 months), at most 6.0% of the 5-year horizon. Sensitivities: p over 0.1-0.9 moves the campaign to 7.5 days-1.5 years. Gate by gate (G = 1), no number of factories brings it below 135 days-3.0 years. A 30% target on the spin-dependent element would cut the first result to 154-198 shots, 4.5-24 hours, without separating the operator categories.
+**Wall time.** First result 5.17e5-2.16e6 s (6.0-25 days); campaign 1.03e6-6.48e6 s (12 days to 2.5 months), at most 4.1% of the 5-year window (2026-10-09: the readout inputs are computed in USDB, so the p sensitivity band is retired). Gate by gate (G = 1), no number of factories brings it below 120 days-2.1 years. A 30% target on the spin-dependent element would cut the first result to 136 shots, 4.0-17 hours, without separating the operator categories.
 
 ### 4.6 2033: the 0νββ validation stage
 
@@ -309,8 +309,8 @@ The boxes, as `PUBLISHED` holds them and as the model computes them:
 | 2033 LQ | 74-174 | 74-174 | `test_2033_registers` |
 | 2033 T per shot | 1.1e8-4.4e8 | 1.054e8-4.404e8 | `test_2033_al_sd_cell` |
 | 2033 ε_l | 2.3-9.5e-10 | 2.27e-10-9.49e-10 | `test_2033_al_sd_cell`, `test_fault_budget_is_applied_everywhere` |
-| 2033 shots | 5.5-7.1e3 per Hamiltonian; 1.1-2.1e4 campaign | 5539-7114; 11077-21342 | `test_2033_shots_as_printed` |
-| 2033 wall | 6.8-36 days first result; 14 days-3.6 months campaign | 5.84e5-3.13e6 s; 1.17e6-9.40e6 s | `test_2033_tiers_depth_and_walls` |
+| 2033 shots | 4.9e3 per Hamiltonian; 9.8e3-1.5e4 campaign | 4902; 9805-14707 | `test_2033_shots_as_printed` |
+| 2033 wall | 6.0-25 days first result; 12 days-2.5 months campaign | 5.17e5-2.16e6 s; 1.03e6-6.48e6 s | `test_2033_tiers_depth_and_walls` |
 | 2033 time per shot | 1.8-7.3 min | 105.4-440.4 s | `test_2033_shots_wall_time_campaign` |
 | 0νββ near miss (pf) | x1.8-7.3 | 1.75-7.30 | `test_2033_valence_pairs` |
 | co-design pairs | x2.6-11 (jj44), x12-50 (jj55), x6-25 (Mo/Ru) | as in section 4.3 | `test_2033_valence_pairs`, `test_2033_jj55_codesign_pairs`, `test_2033_mo_ru_generic_gap` |
@@ -348,7 +348,7 @@ From `docs/OPEN_ITEMS.md` and the model's own notes:
 - **The 2028 headline depends on D.** It is priced over D = 100-600. A schematic Minnesota ground state reaches fidelity 0.999 at D = 77-103, but a chiral (SRG-evolved) ground state could need more. A narrower band would move the headline toward the insertion alone (5363 T).
 - **The other five Mu2e categories** are assumed to carry the 4He dipole's shot factor and to fit in the 128-string insertion; their string counts are not derived.
 - **The 2033 readout covers only the spin-dependent element.** If the deliverable is the VS-IMSRG-evolved operators, the readout of their two-body parts is not priced. ⟨S_p⟩ = 0.30-0.34 and the per-shot variance of about one are estimates (the worst-case variance is about 8 times larger); a shell-model value would replace both.
-- **Projection success p = 0.5 for 27Al** is assumed. It is computable exactly in sd; p over 0.1-0.9 spans 7.5 days to 1.5 years of campaign.
+- **Projection success p = 0.274 for 27Al** is the overlap of the 0d5/2 filling with the USDB ground state (computed 2026-10-09); a reference of the ten largest configurations would reach 0.38.
 - **Gaps.** The 27Al and survey cells use a generic 1-2 MeV band, while the 48Ca/48Ti ladder uses the KB3G 0+ gaps of each truncated space. The USDB gap that an M = 5/2 reference can reach in 27Al is 2.33 MeV and would lower the 27Al preparation to 8.9e7-1.8e8 T (`al27_prep_t_at_usdb_gap`); the band is kept. The daughter projection is priced at the parent's gap; a daughter with a smaller gap raises the cost in proportion to 1/Δ.
 - **The resonant-drive readout is checked only on a schematic interaction.** λ/|M| = 69, 164 and 600-720 and p_ref = 0.93 come from that interaction; Stark bias, resonance identification and the Trotter and qDRIFT errors are not simulated, so its shot counts and walls are conditional.
 - **Depth.** The resonant-drive walls are depth-limited (qDRIFT samples run one at a time, F* 3.5-7.7). The 2033 27Al walls assume 12 commuting rotations in flight; gate by gate the campaign floor is 135 days to 3.0 years.
