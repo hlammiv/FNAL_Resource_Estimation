@@ -518,22 +518,22 @@
     1050
    ],
    "t": [
-    14855018462.655024,
-    14855018462.655024
+    14898685569.14598,
+    14898685569.14598
    ],
    "codesign": false,
    "src": "app04:2033 box ('1050', '1.5e10 T-gates'); requirements summary. Referee U2 (2026-10-04): m_phi dt = 0.05; 2e4 evolution + 500 ramp steps x 7.246e5 + boost + closing block = 1.486e10, 14.9x the 1e9 reference budget (was 1.0e9 at m_phi dt = 1). LQ 1000+30-50 = 1030-1050 (prose, no Hadamard qubits, R6).",
    "shots": 1500,
-   "wall_time_s": 22282527.843982533,
+   "wall_time_s": 22892580.610931773,
    "shots_hi": 6000,
-   "wall_time_s_hi": 89130111.37593013,
+   "wall_time_s_hi": 91570322.44372709,
    "shots_first": [
     17,
     34
    ],
    "wall_first_result_s": [
-    252535.3155651354,
-    505070.6311302708
+    259449.24692389343,
+    518898.49384778686
    ],
    "t_evolution_raw": 14492400724.226261,
    "t_evolution_net": 14492400724.226261,

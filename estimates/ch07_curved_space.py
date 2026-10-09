@@ -265,7 +265,7 @@ class Assumptions:
                                        "a sudden switch to the evolution step leaves 5e-3 to 3e-2 quanta per mode")
     dt_sweep_steps_2033: Tagged = Stated(
         50, "app04 (U2 verifier)", "linear Delta t sweep 0.01 -> 5e-4 /H_inf over 50 extra steps at the end of the "
-                                   "ramp: leaves < 2e-5 quanta per mode (switch_occupation); not priced")
+                                   "ramp: leaves < 2e-5 quanta per mode (switch_occupation); priced in the shot since 2026-10-09")
     exact_step_err_reduced_2033: Tagged = Assumed(
         3.1e-3, "U2 exact check (2026-10-04): largest relative step error of the fermion n_k at m_phi dt = 0.05 in "
                 "exact_reduced_step (3-site ring at b = 3.46, K = 16, one Wilson fermion, the chapter's a(t), Phi0, m_psi; "
@@ -779,11 +779,10 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
     t_raw = n_steps_raw * t_step
     t_prep = n_prep * t_step                                # 3.62e8
     t_boost = n_boost * sc["t_per_rot"]                     # 1.5e4
-    t_total = sc["t_total"]                                 # 1.486e10
-    t_closing = t_total - t_evol - t_prep - t_boost         # closing D block + centering layers
+    t_core = sc["t_total"]                                  # 1.486e10: evolution + ramp + boost + closing
+    t_closing = t_core - t_evol - t_prep - t_boost          # closing D block + centering layers
     ceiling = a.hard_op_ceiling_2033.lo
     t0 = a.shot_overhead_s.lo                               # 0.1 ms per shot (report rule)
-    t_shot_s = t_total * gt + t0                            # 1.486e4 s (4.1 h)
     # R1/R6 (r25): two-point readout in N_set settings; per profile N = N_set ((n+1/2)/n)^2 / (m' eps^2)
     n_set = a.n_settings_2033.lo
     nb = a.occupation_band_2033.lo
@@ -795,15 +794,13 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
     base_camp, spp_camp = shots_per_profile(a.precision_campaign_2033.lo)    # 150 -> (150, 300)
     shots_first = (a.profiles_first_2033.lo * spp_first[0], a.profiles_first_2033.hi * spp_first[1])
     shots_camp = (a.profiles_campaign_2033.lo * spp_camp[0], a.profiles_campaign_2033.hi * spp_camp[1])
-    wall_first = (shots_first[0] * t_shot_s, shots_first[1] * t_shot_s)     # 2.9-5.8 d
-    wall_camp = (shots_camp[0] * t_shot_s, shots_camp[1] * t_shot_s)        # 0.71-2.8 yr
     # readout circuits (R6): scalar conjugate setting adds one per-site QFT; the fermion out-basis change is bounded
     lr, lt = centering_layer(st["n_q"])
     t_qft_readout = st["V"] * (st["cs_per_qft"] * a.t_per_controlled_s.lo
                                + (st["cr_per_qft"] * a.rot_per_controlled_phase.lo + lr) * sc["t_per_rot"] + lt)
     n_ferm_modes = st["V"] * reg["qubits_per_site_fermion"]                  # 500
     n_givens = n_ferm_modes * (n_ferm_modes - 1) // 2                       # 124,750
-    t_ferm_readout = 2 * n_givens * sc["t_per_rot"]                         # ~7.4e6 (bound)
+    t_ferm_readout = 2 * n_givens * sc["t_per_rot"]                         # ~7.4e6 (bound; priced since 2026-10-09)
     # U3: the vacuum reference (prep-only run: the ramp without the boost or the evolution) costs this per shot
     t_vacuum_reference = (n_prep + 1) * t_step
     omega_dt = dt * lever * a.omega_max_Hinf_2033.lo        # 0.05
@@ -820,7 +817,15 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
                 switch_occupation(w_hi, omega_dt_ramp, omega_dt))            # 3.0e-2 at the top mode
     n_sweep = int(a.dt_sweep_steps_2033.lo)
     n_switch_swept = max(switch_occupation(w, omega_dt_ramp, omega_dt, n_sweep) for w in (1.0, 1.2, w_hi))
-    t_sweep = n_sweep * t_step                              # 3.6e7, not priced
+    t_sweep = n_sweep * t_step                              # 3.6e7 (priced since 2026-10-09)
+    # author ruling 2026-10-09 (batch 3 item 13): the Delta t sweep, the conjugate-basis QFT setting and the fermion
+    # out-basis bound are in the shot; one prep-only vacuum-reference run per shot is in the wall times (not the
+    # deepest circuit). Before: t_total = t_core = 1.486e10, walls 2.9-5.8 d and 0.71-2.8 yr.
+    t_total = t_core + t_sweep + t_qft_readout + t_ferm_readout     # 1.490e10 (box "1.5e10")
+    t_shot_s = t_total * gt + t0                            # 1.490e4 s (4.1 h)
+    t_reference_s = t_vacuum_reference * gt + t0            # 363 s: the prep-only run paired with each shot
+    wall_first = (shots_first[0] * (t_shot_s + t_reference_s), shots_first[1] * (t_shot_s + t_reference_s))   # 3.0-6.0 d
+    wall_camp = (shots_camp[0] * (t_shot_s + t_reference_s), shots_camp[1] * (t_shot_s + t_reference_s))       # 0.73-2.9 yr
     e_folds = (2.0 / 3.0) * math.log(1.0 + 1.5 * T_phys)   # 1.85
     n_steps_ds = T_phys / a.dt_Hinf_2028.lo                 # 20
     t_ds_variant = shot_counts(a, "2033", n_steps_ds)["t_total"]   # 1.19e7 (its own R-TOL eps)
@@ -859,7 +864,16 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
     dx_first = depth_exports(t_total, t_depth, shots_first, gt, t0)
     hwp = hwp_group(32, sc["eps_rot"], synthesis="rus")
     s = sc["terms"]
-    breakdown = _primitives(a, sc, "2033")
+    breakdown = _primitives(a, sc, "2033") + (
+        Primitive("dt_sweep_steps", n_sweep, t_step, CircuitStatus.COMPILED, "derived here (U2 verifier)",
+                  "linear sweep of Delta t from the ramp step to the evolution step, 50 steps at the evolution-step "
+                  "T (priced 2026-10-09)"),
+        Primitive("conjugate_basis_qft_readout", 1, t_qft_readout, CircuitStatus.COMPILED,
+                  "QFT per arXiv:2210.07985 Eq. fftqft", "one per-site QFT pair for the pi-basis readout setting "
+                  "(priced 2026-10-09)"),
+        Primitive("fermion_out_basis_givens_bound", 2 * n_givens, sc["t_per_rot"], CircuitStatus.SCALING,
+                  "derived here (R6)", "<= N(N-1)/2 Givens rotations on 500 modes, 2 R_z each; an upper bound "
+                  "(priced 2026-10-09)"))
     inter = {
         "V": reg["V"],
         "qubits_per_site_scalar": reg["qubits_per_site_scalar"],
@@ -890,7 +904,7 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
         "switch_occupation": n_switch,                              # (5.2e-3, 3.0e-2) per mode, sudden
         "switch_occupation_swept": n_switch_swept,                  # < 2e-5 after a 50-step linear sweep
         "dt_sweep_steps": n_sweep,                                  # 50
-        "t_dt_sweep": t_sweep,                                      # 3.6e7 (not priced)
+        "t_dt_sweep": t_sweep,                                      # 3.6e7 (priced)
         "dt_sweep_fraction": t_sweep / t_total,                     # 0.24%
         "condensate_amplitude": a.condensate_amplitude_2033.lo,     # 0.31 m_phi
         "condensate_quanta_per_site": a.condensate_amplitude_2033.lo ** 2 * a.lattice_spacing_mphi_2033.lo ** 3 / 2,
@@ -926,7 +940,10 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
         "ramp_window_over_m_phi_period": n_prep * a.dt_ramp_Hinf_2033.lo * a.omega_max_Hinf_2033.lo,  # 500/m_phi
         "t_prep": t_prep,                                           # 3.62e8
         "t_closing": t_closing,                                     # closing D block + centering
-        "t_per_shot": t_total,                                      # 1.486e10
+        "t_per_shot": t_total,                                      # 1.490e10 (t_core + sweep + QFT setting + fermion bound)
+        "t_core": t_core,                                           # 1.486e10 (evolution + ramp + boost + closing)
+        "t_reference_run_s": t_reference_s,                         # 363 s per shot (prep-only vacuum reference)
+        "wall_per_shot_with_reference_s": t_shot_s + t_reference_s,
         "hard_op_ceiling": ceiling,
         "ratio_to_ceiling": t_total / ceiling,                      # 14.9
         "overshoot_fraction": t_total / ceiling - 1.0,
@@ -957,7 +974,7 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
         "t_qft_readout": t_qft_readout,                             # ~4e4: scalar conjugate setting
         "n_fermion_modes": n_ferm_modes,                            # 500
         "n_givens_bound": n_givens,                                 # 124,750
-        "t_fermion_readout_bound": t_ferm_readout,                  # ~7.4e6 (not priced)
+        "t_fermion_readout_bound": t_ferm_readout,                  # ~7.4e6 (bound, priced)
         "fermion_readout_fraction_bound": t_ferm_readout / t_total, # 5e-4
         "t_gate_s": gt,
         "shot_overhead_s": t0,
@@ -1013,11 +1030,13 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
         f"<= {100 * a.proxy_step_err_2033.lo * a.exact_over_proxy_step_2033.lo:.0f}% scaled to 5^3); the retired m_phi dt = 1 "
         f"had a {100 * freq_err_old:.2f}% Verlet frequency error, {phase_err_old:.0f} rad over m_phi T = 1000.",
         f"T/shot: {n_steps_net:.0f} x {t_step:.4g} = {t_evol:.4g} + {n_prep} ramp steps at 0.01/H_inf = {t_prep:.4g} "
-        f"+ boost {n_boost} rot = {t_boost:.3g} + closing {t_closing:.3g} = {t_total:.4g}, "
+        f"+ boost {n_boost} rot = {t_boost:.3g} + closing {t_closing:.3g} = {t_core:.4g}; + dt sweep {t_sweep:.3g} "
+        f"+ QFT setting {t_qft_readout:.3g} + fermion out-basis bound {t_ferm_readout:.3g} = {t_total:.4g}, "
         f"{t_total / ceiling:.1f}x the 1e9 reference budget (beyond the 1.5x small-overshoot rule).",
         f"Shots per profile (R6): {n_set:g} x ((n+1/2)/n)^2 / (m' eps^2) at n = {nb:g}, m' = {m_sh:g}: "
         f"{base_first:.2f} at 30% -> {spp_first}, {base_camp:.0f} at 10% -> {spp_camp} (x1-2 margin).",
-        f"First result (R1), one machine: 1 profile, {shots_first[0]}-{shots_first[1]} shots x {t_shot_s:.4g} s = "
+        f"First result (R1), one machine: 1 profile, {shots_first[0]}-{shots_first[1]} shots x ({t_shot_s:.4g} + "
+        f"{t_reference_s:.3g} reference-run) s = "
         f"{wall_first[0] / 86400:.2f}-{wall_first[1] / 86400:.2f} d.",
         f"Campaign: {a.profiles_campaign_2033.lo:g}-{a.profiles_campaign_2033.hi:g} profiles, "
         f"{shots_camp[0]}-{shots_camp[1]} shots = {wall_camp[0] / SECONDS_PER_YEAR:.2f}-"
@@ -1025,8 +1044,8 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
         f"T-depth {dx['t_depth_per_shot'][0]:.3g}-{dx['t_depth_per_shot'][1]:.3g}, F* = "
         f"{dx['f_star'][0]:.0f}-{dx['f_star'][1]:.0f}; floor {dx['floor_wall_s'][0]:.3g}-{dx['floor_wall_s'][1]:.3g} s.",
         f"Readout: scalar conjugate setting +{t_qft_readout:.3g} T; fermion out-basis <= {n_givens} Givens = "
-        f"{t_ferm_readout:.3g} T ({100 * t_ferm_readout / t_total:.2f}% of the shot), not priced; vacuum reference "
-        f"run {100 * t_vacuum_reference / t_total:.1f}% per shot, not priced.",
+        f"{t_ferm_readout:.3g} T ({100 * t_ferm_readout / t_total:.2f}% of the shot), priced as a bound; vacuum "
+        f"reference run {100 * t_vacuum_reference / t_total:.1f}% per shot, in the wall times (2026-10-09).",
         f"eps_l: 0.1 / {t_total:.4g} = {eps_l_for_budget:.3g}, printed '<~7e-12' ({faults_at_printed:.3f} faults); "
         f"{faults_at_rfi:.0f} expected faults per shot at the RFI 1e-8. No split-circuit route (U4).",
         f"G4: idle qubit-cycles {idle_qubit_cycles:.3g} = {idle_over_t:.0f}x N_T; late-fault bias <= "

@@ -242,8 +242,8 @@ Rows in `resources.json` (`instances`, `"ch": 7`), as written by `INSTANCE_ROWS`
 | `t_prep` | 30000 | 3.6231002e8 | prep; "3.6e8 switch-on" | `test_2028_hard_ops_derived`, `test_2033_ramp_window_ruling` |
 | `shots` | 450 | 1500 (`shots_hi` 6000) | 450; campaign $1.5$-$6.0\times10^3$ | `test_2028_shots_and_wall_time`, `test_2033_shots_wall_time_campaign` |
 | `shots_first` | (one tier) | [17, 34] | first result 17-34 | `test_2033_shots_wall_time_campaign` |
-| `wall_time_s` | 42.684 | 2.2282528e7 (`wall_time_s_hi` 8.9130111e7) | 43 s; campaign 0.71-2.8 yr | same two tests |
-| `wall_first_result_s` | (one tier) | [252535.3, 505070.6] | 2.9-5.8 days | `test_2033_shots_wall_time_campaign` |
+| `wall_time_s` | 42.684 | 2.2893e7 (`wall_time_s_hi` 9.1570e7) | 43 s; campaign 0.73-2.9 yr (prep-only reference runs included, 2026-10-09) | same two tests |
+| `wall_first_result_s` | (one tier) | [259449, 518899] | 3.0-6.0 days | `test_2033_shots_wall_time_campaign` |
 | `conditional`, `t_bound` | | false, null | a point estimate, no lever | `test_instance_rows` |
 
 Other exports the chapter prints, with their tests: $\epsilon_l = 6.73\times10^{-12}$ and about 149 faults at $10^{-8}$ (`test_2033_error_rate_argument`); T-depth and $F^*$ (`test_2028_depth_exports`, `test_2033_depth_exports`); the one-shot time of $1.5\times10^4$ s for the requirements summary (`test_2033_shots_wall_time_campaign`); and the utility, $0.03 \times \$109$M/yr $= \$3.27$M/yr, rounded to \$3M/yr and \$15M over 5 years (`utility`, `test_utility_box`). Table 1.1 of the paper quotes the same box values (220-240 LQ, $9.5\times10^4$ T; 1050 LQ, $1.5\times10^{10}$ T). In `test_common.py`, `test_model_reproduces_published[7]` requires the model to land within 10% of the `PUBLISHED` box values (lines 1628-1640), and `test_model_contract[7]` and `test_model_exports_depth[7]` check the shared contract.
@@ -273,7 +273,7 @@ From `docs/OPEN_ITEMS.md` and the model's list of what it does not derive:
 - Not priced at 2033:
   - the free vacuum the ramp starts from, about $7.5\times10^4$ T at 150 T per scalar qubit (model docstring), $5\times10^{-6}$ of the $1.49\times10^{10}$-T shot;
   - the fermion out-basis readout, at most $7.4\times10^6$ T (`t_fermion_readout_bound`), $5\times10^{-4}$ of the shot;
-  - the preparation-only vacuum reference run, 2.4% of a shot (`vacuum_reference_fraction`);
+  - the preparation-only vacuum reference run, 2.4% of a shot (`vacuum_reference_fraction`), in the wall times since 2026-10-09 (one per shot);
   - the scalar conjugate-basis readout QFT, $4.2\times10^4$ T (`t_qft_readout`);
   - the 50-step $\Delta t$ sweep between ramp and evolution, $3.6\times10^7$ T, 0.24% of the shot (`t_dt_sweep`).
 - The 2033 step rests on a mean-field proxy and an exact check on a 3-site ring with one fermion. The full 3D case and the Pauli-string split of the hop are not tested.

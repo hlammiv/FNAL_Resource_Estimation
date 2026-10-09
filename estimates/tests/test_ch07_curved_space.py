@@ -117,7 +117,7 @@ def test_breakdown_is_primitive_level(r28, r33):
     # only the 2028 Gaussian-network prep stays SCALING (Stated, app04:78)
     for r in (r28, r33):
         for p in r.breakdown:
-            if p.name == "gaussian_network_prep":
+            if p.name in ("gaussian_network_prep", "fermion_out_basis_givens_bound"):   # Stated prep; a bound (2026-10-09)
                 assert p.status is c.CircuitStatus.SCALING
             else:
                 assert p.status is c.CircuitStatus.COMPILED, p
@@ -330,7 +330,7 @@ def test_2033_step_accuracy_argument(r33):
     assert i["switch_occupation_swept"] < 2e-5                        # "below 2e-5" after the 50-step sweep
     assert i["dt_sweep_steps"] == 50
     assert 3.5e7 <= i["t_dt_sweep"] < 3.7e7                           # "3.6e7 T"
-    assert 2e-3 <= i["dt_sweep_fraction"] < 2.5e-3                    # "0.2% of the shot", not priced
+    assert 2e-3 <= i["dt_sweep_fraction"] < 2.5e-3                    # "0.2% of the shot", priced since 2026-10-09
 
 
 def test_2033_ramp_window_ruling(a, r33):
@@ -359,12 +359,15 @@ def test_2033_de_sitter_variant(r33):
 
 def test_2033_per_shot_total_is_sum_of_box_lines(r33):
     i = r33.intermediates
-    # U2: 2e4 x 7.25e5 + 500 x 7.25e5 + boost + closing block = 1.486e10, box "1.5e10"
-    _is(i["t_per_shot"][0], i["t_evolution_net"] + i["t_prep"] + i["t_condensate_boost"] + i["t_closing"])
+    # U2: 2e4 x 7.25e5 + 500 x 7.25e5 + boost + closing block = 1.486e10 (t_core); 2026-10-09 (batch 3 item 13):
+    # + the 50-step dt sweep + the conjugate-basis QFT setting + the fermion out-basis bound = 1.490e10, box "1.5e10"
+    _is(i["t_core"], i["t_evolution_net"] + i["t_prep"] + i["t_condensate_boost"] + i["t_closing"])
+    _is(i["t_per_shot"][0], i["t_core"] + i["t_dt_sweep"] + i["t_qft_readout"] + i["t_fermion_readout_bound"])
+    assert 1.485e10 <= i["t_core"] < 1.487e10
     assert 2.8e5 <= i["t_closing"] < 3.0e5
     assert 1.45e4 <= i["t_condensate_boost"] < 1.55e4      # "1.5e4-T boost"
     assert i["condensate_boost_rotations"] == 125 * 4      # "500 single-qubit rotations"
-    assert 1.48e10 <= i["t_per_shot"][0] < 1.49e10
+    assert 1.489e10 <= i["t_per_shot"][0] < 1.491e10
     assert r33.hard_ops == (i["t_per_shot"][0], i["t_per_shot"][0])
     _is(r33.breakdown_total(), i["t_per_shot"][0])
     assert c.close(r33.hard_ops, (1.5e10, 1.5e10), 0.01)
@@ -389,16 +392,20 @@ def test_2033_shots_wall_time_campaign(r33):
     assert 1.45e4 <= i["t_shot_s"] < 1.55e4
     assert 4.05 <= i["t_shot_hours"] < 4.15     # "4.1 h"
     lo, hi = i["wall_first_result_d"]
-    assert 2.85 <= lo < 2.95 and 5.75 <= hi < 5.85          # "2.9--5.8 days"
+    assert 2.95 <= lo < 3.05 and 5.95 <= hi < 6.05          # "3.0--6.0 days" (2026-10-09: reference run in the wall)
     lo, hi = i["wall_campaign_yr"]
-    assert 0.705 <= lo < 0.715 and 2.75 <= hi < 2.85        # "0.71--2.8 yr"
-    _is(i["wall_campaign_s"][1], 6000 * (t * 1e-6 + 1e-4))
-    _is(i["wall_first_result_s"][0], 17 * (t * 1e-6 + 1e-4))
+    assert 0.72 <= lo < 0.735 and 2.85 <= hi < 2.95         # "0.73--2.9 yr" (2026-10-09)
+    # 2026-10-09: each shot is paired with a prep-only vacuum-reference run (2.4% of a shot) in the wall times
+    tr = i["t_reference_run_s"]
+    _is(tr, i["t_vacuum_reference_per_shot"] * 1e-6 + 1e-4)
+    assert 360 <= tr < 366
+    _is(i["wall_campaign_s"][1], 6000 * (t * 1e-6 + 1e-4 + tr))
+    _is(i["wall_first_result_s"][0], 17 * (t * 1e-6 + 1e-4 + tr))
     assert i["campaign_fits_horizon"] is True              # "inside the 5-year horizon"
     # Result carries the campaign band as flat (lo, hi) floats (common.Result contract)
     assert r33.shots == (1500, 6000)
-    _is(r33.wall_time_s[0], 1500 * (t * 1e-6 + 1e-4))
-    _is(r33.wall_time_s[1], 6000 * (t * 1e-6 + 1e-4))
+    _is(r33.wall_time_s[0], 1500 * (t * 1e-6 + 1e-4 + tr))
+    _is(r33.wall_time_s[1], 6000 * (t * 1e-6 + 1e-4 + tr))
     row = ch7.INSTANCE_ROWS(ch7.Assumptions(), "2033", r33)[0][3]
     assert row["shots"] == 1500 and row["shots_hi"] == 6000
 
@@ -410,7 +417,7 @@ def test_2033_depth_exports(r33):
     _is(lo, 27 * i["t_per_rotation"] * 20500)
     _is(hi, 92 * i["t_per_rotation"] * 20500)
     assert 1.6e7 <= lo < 1.7e7 and 5.55e7 <= hi < 5.65e7                # "1.6--5.6e7"
-    assert 265 <= i["f_star"][0] < 267 and 905 <= i["f_star"][1] < 907    # "270--910"
+    assert 266 <= i["f_star"][0] < 268 and 907 <= i["f_star"][1] < 909    # "270--910" (2026-10-09: +0.3% per shot)
     assert all(i["baseline_ok"]) and all(i["fits_1yr"])
     _is(i["floor_wall_s"][0], 1500 * lo * 1e-5)
 
@@ -457,7 +464,7 @@ def test_chapter_text_assumes_one_machine():
                    "50-profile", "Hadamard-test", "10 IR modes", "60 momentum bins",
                    "split into", "re-preparation", "shot survival", "rung", " arm "):
         assert banned not in tex, banned
-    for s in (r"$2.9$--$5.8$ days", r"$0.71$--$2.8$~yr", r"$17$--$34$", r"$450$ shots",
+    for s in (r"$3.0$--$6.0$ days", r"$0.73$--$2.9$~yr", r"$17$--$34$", r"$450$ shots",
               r"$1.5$--$6.0\times 10^{3}$", r"$\epsilon_l\lesssim 7\times 10^{-12}$", r"$222$--$242$",
               r"$1030$--$1050$", r"\approx 270$--$910$", r"$1.5\times 10^{10}$ T-gates",
               r"$m_\phi\Delta t=0.05$", r"$1.6$--$5.6\times 10^{7}$"):

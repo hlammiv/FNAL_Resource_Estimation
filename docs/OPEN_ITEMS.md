@@ -87,14 +87,14 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - The condensate amplitude Phi0 about 0.3 m_phi is set by what the K = 16 register holds (`condensate_quanta_per_site`); the scalar shells then sit at n_k below 0.06 and are read to only 45-65%, so the 10% target is on the fermion; the alternatives (b about 1.5/m_phi at twice the cost, or K = 32 at +125 logical qubits) are priced and not taken.
 - At the couplings (lambda, g) = (1, 1), (3, 0.5), (1, 2) a Gaussian truncation reaches the late fermion n_k to within 5.3% (`twopi_lo`), so the 5^3 instance is a cross-check, not an advantage; an advantage needs stronger per-site coupling or the scalar shells, which the truncation misses by up to 66%.
 - The 2028 run is one step at K = 8 (`ds2028_grid_check`); its one-step map is 13-25% from exact de Sitter, light fields m below H fail beyond two steps at any K up to 16, and the chapter should state m about 1-1.4 H_inf.
-- The 50-step dt sweep between ramp and evolution (3.6e7 T, 0.24% of the shot, `t_dt_sweep`) is stated and not priced.
+- The 50-step dt sweep between ramp and evolution (3.6e7 T, 0.24% of the shot, `t_dt_sweep`) is in the per-shot count since 2026-10-09.
 - The lattice spacing b about 3.5/m_phi is implied by omega_max about m_phi and is to be confirmed.
 - The background a(t) proportional to t^(2/3) is prescribed; self-consistent backreaction is not priced.
 - The fault budget counts T gates only; idle storage (1.6e12 qubit-cycles per 2033 shot, `idle_qubit_cycles`) would dominate at the same rate per location, a late fault shifts the fermion n_k by at most 0.12 per mode (`fermion_fault_shift`), and early faults are not bounded.
 - The shot count N_set ((n + 1/2)/n)^2 / (m' eps^2) at n = 1, m' = 3 with a 1-2x margin (`shots_per_profile_campaign`) covers fermion shells with n_k above 0.05; whether the target is the fermion spectrum or a scalar precision is open.
 - The scalar energy density, pressure and Yukawa readout are a first equation-of-state proxy with unestimated statistical error.
 - The campaign is 10-20 profiles (`profiles_campaign`); which parameters are scanned is not fixed.
-- The preparation-only vacuum reference run (2.4% of a shot, `vacuum_reference_fraction`) and the fermion out-basis readout (at most 7.4e6 T, `t_fermion_readout_bound`) are not priced, and the 2028 Gaussian-network preparation (3e4 T, `t_prep_2028`) is stated, not derived.
+- The preparation-only vacuum reference run (2.4% of a shot, `vacuum_reference_fraction`, one per shot in the wall times since 2026-10-09) and the fermion out-basis readout (at most 7.4e6 T, `t_fermion_readout_bound`, priced as a bound since 2026-10-09) are counted; the 2028 Gaussian-network preparation (3e4 T, `t_prep_2028`) is stated, not derived.
 
 ## Ch. 8, electroweak baryogenesis (`ch08_baryogenesis.py`)
 
