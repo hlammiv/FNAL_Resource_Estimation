@@ -168,6 +168,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
+                              SECONDS_PER_YEAR as _SECONDS_PER_YEAR)   # shared anchors (2026-10-09)
 from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive,
                               CircuitStatus, Result, Published, ERAS,
                               t_per_rotation, eps_per_rotation, toffoli_t,
@@ -182,7 +184,7 @@ ETH_KEYS = ("arxiv_cond-mat_9403051,arxiv_0708_1324,arxiv_1509_06411,arxiv_0902_
 
 TEX = "app03"
 HBARC_MEV_FM = 197.327          # PDG; used for k = 2 pi / L and tau conversions
-SECONDS_PER_YEAR = 3.156e7
+SECONDS_PER_YEAR = _SECONDS_PER_YEAR   # common.SECONDS_PER_YEAR (was 3.156e7 here until 2026-10-09)
 R3 = "TRACKED_CHANGES.md 'RULINGS, NEEDS_AUTHOR round A' R3 (2026-09-28)"
 R25 = "apply_log/r25_ch05.md: author rulings R1-R10 (H. Lamm 2026-10-02)"
 
@@ -255,7 +257,7 @@ class Assumptions:
                                             "rule; as Ch. 8 shot_overhead_s. E27: every wall time is serial on ONE "
                                             "machine, shots x (T x 1 us + t0); R9 unified name",
                                       "main-overview.tex 'A reference machine'; ch08_baryogenesis.py")
-    rfi_2028_t: Tagged = Cited(1e5, "DOE_RFI_2026", "first-generation ~1e5 T/Toffoli hard ops (app03:74,78,123)")
+    rfi_2028_t: Tagged = Cited(RFI_T_2028, RFI_SRC, "first-generation ~1e5 T/Toffoli hard ops (app03:74,78,123)")
     per_step_cut_levers: Tagged = Stated((3, 10), f"{TEX}:78,123,180",
                                          "the named per-step levers give 3-10x (ruling (b) 2026-10-01: the 2028 box needs "
                                          ">=5.9x at E20, so only the upper part of the range closes it)")
@@ -360,8 +362,8 @@ class Assumptions:
                                            "few a_s moves T_eff from 0.80 to 0.30 (scratchpad quench/res "
                                            "out_2tramp_2x2)", "scratchpad quench/run/g2t_ramp2.py")
     be_trim: Tagged = Stated(10, f"{TEX}:91,147", "qubitized BE trims 10x; Sigma(72x3) BE not yet synthesized")
-    ceiling_2033_t: Tagged = Cited(1e9, "DOE_RFI_2026", "'the RFI's ~1e9-hard-op 2033 envelope' (app03 budget split (classical-sample rail),149); R3: the ceiling")
-    rfi_eps_l: Tagged = Cited(1e-8, "DOE_RFI_2026", "the RFI's logical error rate; eps_l is printed as a requirement instead")
+    ceiling_2033_t: Tagged = Cited(RFI_T_2033, RFI_SRC, "'the RFI's ~1e9-hard-op 2033 envelope' (app03 budget split (classical-sample rail),149); R3: the ceiling")
+    rfi_eps_l: Tagged = Cited(RFI_EPS_L, RFI_SRC, "the RFI's logical error rate; eps_l is printed as a requirement instead")
     faults_per_shot: Tagged = Cited(0.1, R3, "0.1 expected faults per shot, report-wide: eps_l = 0.1/N (app03:149)")
     shots_per_gridpt: Tagged = Stated(1e3, "app03 r23 box (retired r25)",
                                       "RECORD: the r23 10^3/grid-pt (eps^-2 = 25 x ~40) of the 4 fm/c reference campaign; "

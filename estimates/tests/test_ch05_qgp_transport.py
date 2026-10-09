@@ -572,7 +572,7 @@ def test_2033_own_depth_walls(r33):
     near(i["first_result_over_horizon"][0], 0.624, 0.002)         # the cheap corner's first result fits the horizon
     assert i["first_result_over_horizon"][0] < 1 < i["first_result_over_horizon"][1]
     assert r33.wall_time_s == i["wall_campaign_s"]
-    yr = 3.156e7
+    yr = m.SECONDS_PER_YEAR          # common.SECONDS_PER_YEAR since 2026-10-09 (was 3.156e7 here)
     near(i["wall_campaign_s"][1] / yr, i["campaign_two_spacings_yr_own"][1], 1e-12)
 
 
@@ -586,7 +586,7 @@ def test_2033_r9_exports(r33):
     near(i["t_per_shot"][0], 6.9638e9, 0.001)                 # over both spacings, quench prep included
     near(i["f_star"][0], 35.01, 0.002)
     near(i["f_star"][1], 523.4, 0.002)
-    near(i["wall_serial_s"][0], i["campaign_two_spacings_yr_own_baseline"][0] * 3.156e7, 1e-9)
+    near(i["wall_serial_s"][0], i["campaign_two_spacings_yr_own_baseline"][0] * m.SECONDS_PER_YEAR, 1e-9)
     near(i["factories_for_1yr"][0], 2542, 0.002)
     near(i["floor_wall_s"][1] / 3.156e7, 72.59, 0.002)
     assert i["baseline_ok"] == (True, True)

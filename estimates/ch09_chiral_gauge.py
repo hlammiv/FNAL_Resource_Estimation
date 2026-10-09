@@ -41,7 +41,7 @@ INPUTS AND SOURCES
   applications per step            DERIVED HERE r22: Jacobi-Anger order at 2Q dt, QSP error 1e-2 over the shot (Assumed)
   beta||H|| = 2Q / (T a) = 864     DERIVED HERE (referee C1, 2026-10-04; the r25 Stated 1e2 is a record, beta_H_rule)
   8 AA rounds / 17 filter calls     Stated app06: a PLACEHOLDER (chapter-open pass 2026-10-05): 17 calls = 8 rounds of
-                                   fixed-point AA or 17 post-selection attempts at success 1/17. k rounds call the filter
+                                   standard AA (not fixed-point; 2026-10-09) or 17 post-selection attempts at success 1/17. k rounds call the filter
                                    2k + 1 = 17 times (verifier 2026-10-04; r25 and the first referee pass charged one call
                                    per round, 8, a record: n_dov_tpq_one_call_per_round)
   typical-reference TPQ (C1)       DERIVED HERE (chapter-open pass): free fermion sector of 3^3 at beta = 2a,
@@ -308,6 +308,8 @@ import itertools
 import math
 from dataclasses import dataclass, fields, replace
 
+from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
+                              SECONDS_PER_YEAR as _SECONDS_PER_YEAR)   # shared anchors (2026-10-09)
 from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive,
                               CircuitStatus, Result, Published, ERAS, T_PER_TOFFOLI,
                               SYNTHESIS_SRC, t_per_rotation, eps_per_rotation, toffoli_t,
@@ -895,8 +897,8 @@ class Assumptions:
     t_gate_s: Tagged = Assumed(1e-6, "app06 boxes 'at 1 us/T-gate'")
     shot_overhead_s: Tagged = Assumed(1e-4, "per-shot overhead ~0.1 ms (register initialization, final readout, decode), "
                                             "report rule as Chs. 8 and 10; moves no printed number here")
-    envelope_2028: Tagged = Cited(1e5, "DOE_RFI_2026", "app06:105 '<= 1e5 T-gates'")
-    envelope_2033: Tagged = Cited(1e9, "DOE_RFI_2026", "app06:102 '~1e9 2033 resource limit'")
+    envelope_2028: Tagged = Cited(RFI_T_2028, RFI_SRC, "app06:105 '<= 1e5 T-gates'")
+    envelope_2033: Tagged = Cited(RFI_T_2033, RFI_SRC, "app06:102 '~1e9 2033 resource limit'")
     faults_per_shot: Tagged = Assumed(0.1, "ruling R3 (TRACKED_CHANGES.md 2026-09-28): eps_l = 0.1 expected "
                                            "faults per shot, report-wide; app06:103 'at 0.1 expected faults per shot'")
 
@@ -2095,7 +2097,7 @@ def _model_2033(a: Assumptions) -> Result:
     d_beta = round(d_beta_exact)                      # 89 (r25: 30)
     d_beta_at_1e3 = math.sqrt(beta_H_used * math.log(1e3))   # 77.3, the other candidate (r25 26.3)
     d_beta_record_r25 = round(math.sqrt(float(a.beta_H.value) * math.log(1 / float(a.delta_beta.value))))   # 30
-    # k rounds of (fixed-point) amplitude amplification call the filter and its inverse once each per round, plus the
+    # k rounds of standard amplitude amplification (the amplitude ~0.1 is taken as known; a fixed-point sequence would need 31 calls, 2026-10-09) call the filter and its inverse once each per round, plus the
     # initial call: 2k + 1 = 17 (verifier 2026-10-04). r25 and the first referee pass charged one call per round.
     n_filter_calls = (2 * int(a.aa_rounds.value) + 1 if a.aa_call_rule.value == "2k+1"
                       else int(a.aa_rounds.value))    # 17 (record 'per_round': 8)

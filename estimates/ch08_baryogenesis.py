@@ -214,6 +214,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, fields, replace
 
+from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
+                              SECONDS_PER_YEAR as _SECONDS_PER_YEAR)   # shared anchors (2026-10-09)
 from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive,
                               CircuitStatus, Result, Published, ERAS,
                               EPS_SYN, EPS_SYN_SRC, SYNTHESIS_SRC, eps_rot_for, t_per_rotation, toffoli_t,
@@ -311,8 +313,8 @@ class Assumptions:
                                                  "scaling, taken as a bound, gives 0.1 > 0.048); recorded only: the "
                                                  "single depth rests on the author prior (c_est), not on a derived bound", "derived here")
     m_max_quoted: Tagged = Stated(33, f"{TEX}:88,166", "'m_max = floor(1e9/3.0e7) = 33' (fixed point)")
-    envelope_2033: Tagged = Cited(1e9, "DOE RFI 2026", f"1e9 hard-op envelope, {TEX}:88,91,166")
-    cap_2028: Tagged = Cited(1e5, "DOE RFI 2026", f"1e5 T cap, {TEX}:128,181")
+    envelope_2033: Tagged = Cited(RFI_T_2033, "DOE RFI 2026", f"1e9 hard-op envelope, {TEX}:88,91,166")
+    cap_2028: Tagged = Cited(RFI_T_2028, "DOE RFI 2026", f"1e5 T cap, {TEX}:128,181")
     accuracy: Tagged = Stated(0.2, f"{TEX}:49,160,201", "20% relative accuracy on Gamma/V")
     fault_budget_per_shot: Tagged = Assumed(0.1, "0.1 expected faults per shot, report-wide",
                                             "main:272 (report-wide)")

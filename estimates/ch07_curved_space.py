@@ -140,6 +140,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, fields
 
+from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
+                              SECONDS_PER_YEAR as _SECONDS_PER_YEAR)   # shared anchors (2026-10-09)
 from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive,
                               CircuitStatus, Result, Published, ERAS,
                               t_per_rotation, eps_rot_for, hwp_group, EPS_SYN, EPS_SYN_SRC,
@@ -147,7 +149,7 @@ from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive
 
 TEX = "app04"
 SECONDS_PER_WEEK = 7 * 86400.0
-SECONDS_PER_YEAR = 365.25 * 86400.0
+SECONDS_PER_YEAR = _SECONDS_PER_YEAR   # common.SECONDS_PER_YEAR
 SRC_LMMS = "arXiv:2210.07985 Sec. III.C (main.tex:338-458)"
 DERIVED = "derived here (app04:84)"
 
@@ -258,7 +260,7 @@ class Assumptions:
         1, "app04", "no commutator lever: the step is set by the U2 accuracy criterion")
     stability_omega_dt: Tagged = Stated(
         2, "app04:81", "Stormer-Verlet map on the quadratic part is stable only for omega dt < 2")
-    hard_op_ceiling_2033: Tagged = Cited(1e9, "DOE RFI 2026", "2033 reference budget; the U2 shot is 14.9x it")
+    hard_op_ceiling_2033: Tagged = Cited(RFI_T_2033, "DOE RFI 2026", "2033 reference budget; the U2 shot is 14.9x it")
     ramp_window_Hinf_2033: Tagged = Stated(
         5, "app04:81", "adiabatic switch-on window 5/H_inf (author ruling R17 (d), 2026-10-01; was 10/m_phi)")
     dt_ramp_Hinf_2033: Tagged = Stated(0.01, "app04 (U2)", "ramp at Delta t = 0.01/H_inf (m_phi dt = 1; phibar = 0 in the ramp, so omega dt <~ 1.4 < 2); "
@@ -387,7 +389,7 @@ class Assumptions:
         0.1, "R3 (2026-09-28): 0.1 expected logical faults per shot in the T gates, report-wide; ~90% of shots "
              "fault-free (exp(-0.1) = 0.905), not a heralded acceptance (G4)", src="TRACKED_CHANGES.md R3")
     survival_target: Tagged = Stated(0.9, "app04", "fault-free fraction ~90%")
-    eps_l_rfi: Tagged = Cited(1e-8, "DOE RFI 2026", "first-generation RFI figure")
+    eps_l_rfi: Tagged = Cited(RFI_EPS_L, "DOE RFI 2026", "first-generation RFI figure")
     idle_cycle_s: Tagged = Stated(1e-5, "main-overview.tex:33", "10 us logical cycle of the reference machine (G4 idle count)")
     site_energy_max_quanta: Tagged = Assumed(
         19.4, "highest level of the K = 16 digitized site oscillator above its ground state (digitized_site(16))",

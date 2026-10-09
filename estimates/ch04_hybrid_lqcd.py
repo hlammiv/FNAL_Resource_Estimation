@@ -179,6 +179,8 @@ import itertools
 import math
 from dataclasses import dataclass
 
+from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
+                              SECONDS_PER_YEAR as _SECONDS_PER_YEAR)   # shared anchors (2026-10-09)
 from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive,
                               CircuitStatus, Result, Published, ERAS, SYNTHESIS_SRC,
                               T_PER_TOFFOLI, mcx_toffoli_count, EPS_SYN, EPS_SYN_SRC, eps_rot_for,
@@ -191,7 +193,7 @@ SYNBUDGET_SRC = ("ruling SYN-BUDGET (H. Lamm, 2026-09-29): EPS_SYN = 1e-2 stays 
                  "polynomial tolerance 1.784e-3 (app12:125)")
 PAPER = "arxiv_2407_13080"
 FJ = "factory.json (T-depth audit, 2026-10-02) ch04"
-SECONDS_PER_YEAR = 365.25 * 86400.0      # 3.15576e7 s (as ch07_curved_space.py)
+SECONDS_PER_YEAR = _SECONDS_PER_YEAR      # common.SECONDS_PER_YEAR, 3.15576e7 s
 
 
 @dataclass(frozen=True)
@@ -286,9 +288,9 @@ class Assumptions:
                                    "per-shot variance of the +-1 Hadamard-test outcome, 1 - mu^2 <= 1; the bound 1 "
                                    "is used. Shots = Var/eps^2 at rms additive eps (the convention of Chs. 3 and 8). "
                                    "Replaces confidence delta = 1e-2 and ln(1/delta)/eps^2")
-    eps_l_2028: Tagged = Cited(1e-8, "DOE_RFI_2026", "app12:26: the RFI's eps_l=1e-8. The box prints the "
+    eps_l_2028: Tagged = Cited(RFI_EPS_L, RFI_SRC, "app12:26: the RFI's eps_l=1e-8. The box prints the "
                                                      "requirement 0.1/T instead (R3)")
-    t_cap_2028: Tagged = Cited(1e5, "DOE_RFI_2026", "app12:26,126: <=1e5 T per circuit")
+    t_cap_2028: Tagged = Cited(RFI_T_2028, RFI_SRC, "app12:26,126: <=1e5 T per circuit")
     t_gate_s: Tagged = Cited(1e-6, "app12:128", "1 us per T-gate; convention in Ch. overview")
     shot_overhead_s: Tagged = Assumed(1e-4, "per-shot overhead t0 ~ 0.1 ms (register init, final readout, decode), "
                                             "report rule, main-overview:48; as Ch. 8 shot_overhead_s. Wall = shots x "
@@ -357,7 +359,7 @@ class Assumptions:
     bc_d_lambda_hi: Tagged = Assumed(430, "simplobs.json ch04 C2: step-filter LP degree at Lambda = 0.15")
     bc_n_cfg: Tagged = Stated(5, "simplobs.json ch04 C2", "5 configurations; gauge variance of nu ~ nu per config")
     eps_l_2033: Tagged = Stated(1e-10, "app12:154", "eps_l ~ 1e-10")
-    t_cap_2033: Tagged = Cited(1e9, "DOE_RFI_2026", "app12:156: ~1e9 hard-op envelope")
+    t_cap_2033: Tagged = Cited(RFI_T_2033, RFI_SRC, "app12:156: ~1e9 hard-op envelope")
     V_16x4: Tagged = Stated(65536, "app12:22", "'88 LQ at V=16^4'")
     V_128x4: Tagged = Stated(2 ** 28, "app12:22", "'100 LQ at V=128^4'")
     # --- 1e4-LQ (codesign) rung ------------------------------------------

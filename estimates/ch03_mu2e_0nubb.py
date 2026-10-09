@@ -217,26 +217,28 @@ import math
 from dataclasses import dataclass, fields
 from functools import lru_cache as _lru_cache
 
+from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
+                              SECONDS_PER_YEAR as _SECONDS_PER_YEAR)   # shared anchors (2026-10-09)
 from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive,
                               CircuitStatus, Result, Published, ERAS, SYNTHESIS_SRC,
                               t_per_rotation, eps_per_rotation, eps_rot_for, EPS_SYN, EPS_SYN_SRC,
                               T_PER_TOFFOLI, depth_exports, REACTION_TIME_S, FACTORY_BASELINE)
 
 TEX = "app11"
-RFI = "DOE_RFI_2026"
+RFI = RFI_SRC
 # record only: the pre-R15 stated jj44 insertion (no derivation found; R14 log section 2)
 INSERTION_JJ44_PRE_R15 = dict(symmetry_restricted=(5.4e7, 5.6e7), dense=(4.4e8, 4.6e8))
 PI = math.pi
-YEAR_S = 365.25 * 86400.0          # Julian year; the campaign horizon is campaign_horizon_yr x YEAR_S (r23)
+YEAR_S = _SECONDS_PER_YEAR          # Julian year; the campaign horizon is campaign_horizon_yr x YEAR_S (r23)
 
 
 @dataclass(frozen=True)
 class Assumptions:
     # ---- RFI anchors -----------------------------------------------------
-    rfi_lq_2028: Tagged = Cited((150, 250), RFI, "2028 register envelope (app11:169)")
-    rfi_t_2028: Tagged = Cited(1e5, RFI, "2028 hard-op cap (app11:169)")
-    rfi_lq_2033: Tagged = Cited(1000, RFI, "2033 '1000+ LQ' (app11:130)")
-    rfi_t_2033: Tagged = Cited(1e9, RFI, "2033 hard-op envelope (app11:130)")
+    rfi_lq_2028: Tagged = Cited(RFI_LQ_2028, RFI, "2028 register envelope (app11:169)")
+    rfi_t_2028: Tagged = Cited(RFI_T_2028, RFI, "2028 hard-op cap (app11:169)")
+    rfi_lq_2033: Tagged = Cited(RFI_LQ_2033, RFI, "2033 '1000+ LQ' (app11:130)")
+    rfi_t_2033: Tagged = Cited(RFI_T_2033, RFI, "2033 hard-op envelope (app11:130)")
 
     # ---- state-prep depth, eq:Ngate11 (app11:82, 87-90) ---------------------
     gap_mev: Tagged = Stated((1.0, 2.0), f"{TEX}:87", "'nuclear gap scales Delta ~ 1-2 MeV'")

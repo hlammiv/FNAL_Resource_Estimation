@@ -241,6 +241,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, fields, replace as _dc_replace
 
+from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
+                              SECONDS_PER_YEAR as _SECONDS_PER_YEAR)   # shared anchors (2026-10-09)
 from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive,
                               CircuitStatus, Result, Published, ERAS,
                               t_per_rotation, eps_per_rotation, toffoli_t,
@@ -252,10 +254,10 @@ from estimates.groups import (GROUPS, PRIMCOST, MAGNETIC, magnetic_per_link, ele
 from estimates import ch09_chiral_gauge as ch9
 
 TEX = "app10"
-RFI = "DOE_RFI_2026"
+RFI = RFI_SRC
 S216 = "arxiv_2511_17437"
 FFT = "arxiv_2408_00075"
-SECONDS_PER_YEAR = 3.156e7
+SECONDS_PER_YEAR = _SECONDS_PER_YEAR   # common.SECONDS_PER_YEAR (was 3.156e7 here until 2026-10-09)
 HBARC_GEV_FM = 0.197327
 STAGE = "r26"
 # DIAGONAL_LINK (D(g) diagonal on the published register: the hop needs no color move) is imported from
@@ -265,11 +267,11 @@ STAGE = "r26"
 @dataclass(frozen=True)
 class Assumptions:
     # ---- RFI anchors ---------------------------------------------------------
-    rfi_lq_2028: Tagged = Cited((150, 250), RFI, "'150--250 envelope' (app10:123)")
-    rfi_t_2028: Tagged = Cited(1e5, RFI, "'the 10^5 first-generation limit' (app10:88,125)")
-    rfi_lq_2033: Tagged = Cited(1000, RFI, "'up to 1.2x the 1000-LQ marker' (app10:90); box 'the 2033 1000-LQ marker' (app10:144)")
-    rfi_t_2033: Tagged = Cited(1e9, RFI, "'the 10^9-T resource limit' (app10:90); box 'the 10^9 limit' (app10:145)")
-    rfi_eps_l: Tagged = Cited(1e-8, RFI, "'At eps_l = 10^-8 the 2+1D shot incurs 23--43 logical faults' (app10:90)")
+    rfi_lq_2028: Tagged = Cited(RFI_LQ_2028, RFI, "'150--250 envelope' (app10:123)")
+    rfi_t_2028: Tagged = Cited(RFI_T_2028, RFI, "'the 10^5 first-generation limit' (app10:88,125)")
+    rfi_lq_2033: Tagged = Cited(RFI_LQ_2033, RFI, "'up to 1.2x the 1000-LQ marker' (app10:90); box 'the 2033 1000-LQ marker' (app10:144)")
+    rfi_t_2033: Tagged = Cited(RFI_T_2033, RFI, "'the 10^9-T resource limit' (app10:90); box 'the 10^9 limit' (app10:145)")
+    rfi_eps_l: Tagged = Cited(RFI_EPS_L, RFI, "'At eps_l = 10^-8 the 2+1D shot incurs 23--43 logical faults' (app10:90)")
     clean_shot_faults: Tagged = Stated(0.1, f"{TEX}:90,128,147", "'the report's criterion of 0.1 expected faults per shot' (ruling R3)")
     seconds_per_year: Tagged = Cited(SECONDS_PER_YEAR, "PDG", "Julian year")
     hbarc_GeV_fm: Tagged = Cited(HBARC_GEV_FM, "PDG", "hbar c")

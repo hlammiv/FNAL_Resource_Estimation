@@ -185,6 +185,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
+                              SECONDS_PER_YEAR as _SECONDS_PER_YEAR)   # shared anchors (2026-10-09)
 from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive,
                               CircuitStatus, Result, Published, ERAS,
                               t_per_rotation, eps_per_rotation, toffoli_t,
@@ -196,7 +198,7 @@ from estimates.groups import (GROUPS, PRIMCOST, MAGNETIC, magnetic_per_link,
 from estimates.common import HWP_SRC, RUS_ANCILLA, hwp_ancilla
 
 TEX = "app07"
-SECONDS_PER_YEAR = 365.25 * 86400.0
+SECONDS_PER_YEAR = _SECONDS_PER_YEAR   # common.SECONDS_PER_YEAR
 SECONDS_PER_MONTH = SECONDS_PER_YEAR / 12.0
 
 # The electric term per link per step of H_KS: nF = PRIMCOST["KS"]["U_F"] Fourier
@@ -256,8 +258,8 @@ class Assumptions:
                                         "groups.PrimitiveCost.t() prices in it; t_papers() is the slope-only legacy record")
     toffoli_convention: Tagged = Cited("textbook", "arxiv_2405_05973",
                                        "7 T per Toffoli, as in the papers' tables (PAPER_COSTS.md Sec. 4)")
-    t_cap_2028: Tagged = Cited(1e5, "DOE_RFI_2026", "2028 per-shot hard-op cap; app07:134,147")
-    t_ref_2033: Tagged = Cited(1e9, "DOE_RFI_2026", "2033 per-shot hard-op reference; app07:105,158,169")
+    t_cap_2028: Tagged = Cited(RFI_T_2028, RFI_SRC, "2028 per-shot hard-op cap; app07:134,147")
+    t_ref_2033: Tagged = Cited(RFI_T_2033, RFI_SRC, "2033 per-shot hard-op reference; app07:105,158,169")
     n_trotter_2028: Tagged = Stated(1, f"{TEX}:103,143",
                                     "one second-order Trotter step is priced; it is 4.0x the 1e5 cap (r19), "
                                     "so floor(cap / c_BE) = 0 and no step fits")
@@ -428,7 +430,7 @@ class Assumptions:
     # ---- logical error ---------------------------------------------------------
     faults_per_shot: Tagged = Assumed(0.1, "R3 ruling: required eps_l = 0.1 expected faults per shot, report-wide",
                                       "TRACKED_CHANGES.md RULINGS round A")
-    eps_l_floor: Tagged = Cited(1e-8, "DOE_RFI_2026", "RFI floor, app07:171")
+    eps_l_floor: Tagged = Cited(RFI_EPS_L, RFI_SRC, "RFI floor, app07:171")
 
     def __post_init__(self):
         for name in ("nc", "d_2028", "L_2028", "n_stag_2028", "n_anc_2028", "d_2033", "L_2033",

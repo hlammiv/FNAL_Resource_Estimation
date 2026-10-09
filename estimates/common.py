@@ -294,7 +294,16 @@ def hwp_group(k: int, eps: float, synthesis: str = "rus",
 REACTION_TIME_S = 10e-6        # t_r: one reaction time per sequential non-Clifford layer, arxiv_1905_09749
 FACTORY_BASELINE = 10          # factories behind the report's 1 us per T convention (10 x one T per 10 us)
 FACTORY_SRC = "arxiv_1905_09749"
-SECONDS_PER_YEAR = 365.25 * 86400.0   # Julian year, as ch03/ch04/ch07/ch10 (chapters may keep their own constant)
+SECONDS_PER_YEAR = 365.25 * 86400.0   # Julian year; every chapter model aliases this (2026-10-09; ch05/ch06 used 3.156e7)
+
+# The DOE 2026 RFI anchors every chapter compares against (main.tex "first-generation" and "next-generation"
+# paragraphs). One home since 2026-10-09; the chapter fields keep their own names and notes and cite RFI_SRC.
+RFI_SRC = "DOE_RFI_2026"
+RFI_LQ_2028 = (150, 250)     # logical qubits, first generation
+RFI_T_2028 = 1e5             # hard (T / Toffoli) operations per circuit, first generation (a minimum capability)
+RFI_LQ_2033 = 1000           # "1000+ logical qubits", next generation
+RFI_T_2033 = 1e9             # ~1e9 hard operations, next generation
+RFI_EPS_L = 1e-8             # per-operation logical error rate
 
 DEPTH_EXPORTS = ("t_per_shot", "t_depth_per_shot", "f_star", "floor_wall_s", "factories_for_1yr",
                  "wall_first_result_s", "wall_campaign_s")

@@ -1042,7 +1042,7 @@ def test_2033_sampling_campaign_on_one_machine(a, r33):
     spacing on the same lattice ... triples the trend; at fixed volume it needs 3.6e3 LQ.' Box: '1.3e4--2.5e4 shots,
     1.7--26 yr'. Smaller ruling (a), 2026-10-05: the check is in the campaign (the trend alone: 9.5e3--1.9e4, 1.5--22 yr)."""
     i = r33.intermediates
-    yr = 3.156e7
+    yr = m.SECONDS_PER_YEAR          # common.SECONDS_PER_YEAR since 2026-10-09 (was 3.156e7 here)
     near(i["trend_delta_per_point"], 0.25 / (3 * math.sqrt(2)), 1e-12)
     near(i["trend_delta_per_point"], 0.0589, 0.002)         # '5.9%'
     near(i["trend_sigma_at_delta"][0.10], 1.768, 1e-3)      # '1.8 sigma'
@@ -1119,8 +1119,8 @@ def test_2033_fragmentation_shots_and_wall_time(r33):
         near(i["ff_cost_reduction_for_horizon"][k], i["wall_ff_yr"][k] / i["campaign_horizon_yr"], 1e-12)
     near(i["ff_cost_reduction_for_horizon"][0], 2.3296, 1e-4)   # '2.3' (r26)
     near(i["ff_cost_reduction_for_horizon"][1], 276.53, 1e-4)   # '280' (r26)
-    near(i["ff_shots_in_horizon"][0], 4339.43, 1e-5)        # '4.3e3' (r26)
-    near(i["ff_shots_in_horizon"][1], 32194.7, 1e-5)        # '3.2e4' (r26)
+    near(i["ff_shots_in_horizon"][0], 4339.10, 1e-5)        # '4.3e3' (r26; 4339.43 at the old 3.156e7 s/yr)
+    near(i["ff_shots_in_horizon"][1], 32192.24, 1e-5)   # 2026-10-09: common.SECONDS_PER_YEAR (was 32194.7 at 3.156e7 s/yr)        # '3.2e4' (r26)
     assert i["ff_shots_in_horizon"][1] < i["shots_ff_from_eq"][0]   # five years do not hold even the low-end budget
     near(i["ff_shots_per_call"][0], 625, 1e-9); near(i["ff_shots_per_call"][1], 1e4, 1e-9)
     near(i["ff_calls_in_horizon"][0], 0.43394, 1e-4)
@@ -1178,7 +1178,7 @@ def test_2033_dipole_rows(a, r33):
     # walls: one temperature at c = 2 .. 2 pi, then three temperatures; each shot at its own time (mean of the two circuits)
     near(ds["wall_first_s"][0] / 86400, 57.19, 1e-3); near(ds["wall_first_s"][1] / 86400, 97.71, 1e-3)   # '57--98 d'
     near(dl["wall_first_s"][0] / 86400, 1.234, 1e-3); near(dl["wall_first_s"][1] / 86400, 2.265, 1e-3)   # '1.2--2.3 d'
-    near(ds["wall_scan_s"][0] / 3.156e7, 0.4697, 2e-3); near(ds["wall_scan_s"][1] / 3.156e7, 0.8025, 2e-3)   # '0.47--0.80 yr'
+    near(ds["wall_scan_s"][0] / m.SECONDS_PER_YEAR, 0.4697, 2e-3); near(ds["wall_scan_s"][1] / 3.156e7, 0.8025, 2e-3)   # '0.47--0.80 yr'
     near(dl["wall_scan_s"][0] / 86400, 3.70, 2e-3); near(dl["wall_scan_s"][1] / 86400, 6.79, 2e-3)           # '3.7--6.8 d'
     per = sum(0.5 * (t * 1e-6 + 1e-4) for t in ds["t_shot_by_c"][0])
     near(ds["wall_first_s"][0], ds["shots_per_T"][0] * per, 1e-12)
