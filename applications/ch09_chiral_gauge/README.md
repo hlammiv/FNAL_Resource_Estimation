@@ -27,7 +27,7 @@ python applications/ch09_chiral_gauge/dump_assumptions.py   # the table in secti
 
 `--chapter ch09` recomputes the model and writes nothing. It prints:
 
-- the 217 assumption fields with value, provenance and source;
+- the 218 assumption fields with value, provenance and source;
 - the two rows this chapter writes to `resources.json`;
 - for each era, the headline against the printed box, shots, wall time, ε_l, and the depth and factory exports;
 - the primitive breakdown (count × T each = T total, with its circuit status);
@@ -35,15 +35,15 @@ python applications/ch09_chiral_gauge/dump_assumptions.py   # the table in secti
 
 The 2033 model computes free-field backgrounds with `numpy` and takes a few seconds.
 
-The test file has 83 tests: 79 pass and 4 skip here (`test_r23_no_machine_count`, `test_r25_chapter_prints_the_model`, `test_utility_box_has_no_dollar_figure`, `test_chapter_open_prints`), because they read the chapter's `.tex` from `../applications/` (the repository's parent directory, `conftest.PAPER_ROOT`); with the paper source there, all four pass. `estimates/tests/test_rhop.py` (26 tests) also concerns this chapter: it pins the Z3 spatial-hop rule `groups.rhop_link` priced in the 2028 step and checks that the Hamming-weight-phasing helpers of this module agree with `common.py` for k = 1-256. `test_fermion_primitives.py` covers `groups.hop_link_cost`, which this chapter uses only in a consistency check of the Z3 hop (lines 1582-1584) and in the second-quantized comparison of section 4.3.
+The test file has 83 tests: 79 pass and 4 skip here (`test_r23_no_machine_count`, `test_r25_chapter_prints_the_model`, `test_utility_box_has_no_dollar_figure`, `test_chapter_open_prints`), because they read the chapter's `.tex` from `../applications/` (the repository's parent directory, `conftest.PAPER_ROOT`); with the paper source there, all four pass. `estimates/tests/test_rhop.py` (26 tests) also concerns this chapter: it pins the Z3 spatial-hop rule `groups.rhop_link` priced in the 2028 step and checks that the Hamming-weight-phasing helpers of this module agree with `common.py` for k = 1-256. `test_fermion_primitives.py` covers `groups.hop_link_cost`, which this chapter uses only in a consistency check of the Z3 hop (lines 1590-1592) and in the second-quantized comparison of section 4.3.
 
 ## 3. Assumptions
 
-The table is printed by `dump_assumptions.py` from `Assumptions()` (lines 874-1432 of the model). Name, value and provenance are the code's. Sources and notes are quoted from the code, whitespace collapsed, notes cut at 150 characters (the full text is in the model). Notes use the code's own labels for report-wide conventions (R-TOL for the synthesis tolerance, R3 for the fault budget, R5 for 7 T per Toffoli, and so on); the conventions themselves are summarized in the top-level README.
+The table is printed by `dump_assumptions.py` from `Assumptions()` (lines 877-1440 of the model). Name, value and provenance are the code's. Sources and notes are quoted from the code, whitespace collapsed, notes cut at 150 characters (the full text is in the model). Notes use the code's own labels for report-wide conventions (R-TOL for the synthesis tolerance, R3 for the fault budget, R5 for 7 T per Toffoli, and so on); the conventions themselves are summarized in the top-level README.
 
 Rows are grouped by instance and by role. *Inputs* are the fields the code does not mark otherwise. Most feed the headline; perturbing each by 20% shows that some feed only the comparisons and sensitivities of section 4.4. These are: the two envelopes, the 1+1D overlap comparison (`kappa_1p1d_*`, `delta_1p1d_a`, `sgn_T_1p1d_*`, `n_sgn_gs_prep`), the worst-case Trotter bound (`casimir_max_2O`, `hop_n_spin`), the Chern-Simons readout and unit checks (`ncs_e_max`, `ncs_b_max`, `tc_ew_gev`, `mr_rate_*`), the thermal-route alternatives (`haar_*`, `gibbs_*`), and `m0_wilson`, `L5_backup`, `kappa_physical`, `dt_empirical_fm`, `shots_2033`, `campaign_yr`, `lever_eps_obs`, `fpaa_reflection_ancilla`, `lcu_strings_per_bilinear`, `hop_mcx`. *Printed figures* are fields named `*_stated`: numbers the chapter prints, which the tests compare with the model's own value (their notes give the printed text and the model value it rounds). *Comparison records* are fields whose source or note carries the code's record marker: inputs of alternative constructions the model evaluates so that their costs can be compared. Perturbing each of them leaves every headline (qubits, T, shots, wall, ε_l) unchanged.
 
-217 fields: Cited 31, Assumed 62, Stated-not-derived 124.
+218 fields: Cited 31, Assumed 63, Stated-not-derived 124.
 
 #### Shared by both instances: inputs (9)
 
@@ -133,7 +133,7 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 | `hop_synthesis_legacy` | rus-slope | Cited | TRACKED_CHANGES.md 'RULING, R-HOP report-wide' (H. Lamm 2026-09-29) | RETIRED by r17 ruling (e): R-HOP's slope-only price, kept so the 2.0e5 record stays reproducible |
 | `c_be_1p1d_sq_stated` | 2200.0 | Stated-not-derived | app06 (r21) | RECORD (second-quantized pricing, r21 e): 'c_be ~ 2.2e3 T per query' (240 Toffolis + 25 rotations) |
 
-#### 2033 target (3D 2O overlap + Higgs): inputs (66)
+#### 2033 target (3D 2O overlap + Higgs): inputs (67)
 
 | name | value | provenance | source | note |
 |---|---|---|---|---|
@@ -199,6 +199,7 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 | `campaign_yr` | 5 | Stated-not-derived | app06 requirements | 'Campaign horizon 5 years' |
 | `lever_eps_obs` | 0.15 | Assumed | - | r24 lever: a 15% statistical target on Gamma_sph (shots sigma^2 / eps^2) |
 | `yukawa_placement` | inside | Stated-not-derived | author ruling r25 (a), H. Lamm 2026-10-02, relaying H. Singh | 'the Ginsparg-Wilson-projected Yukawa is INSIDE': the Yukawa couples the projected fields, whose projector (1 - sgn(H_W))/2 is a second QSVT polynomia ... |
+| `count_gauge_steps_and_reflections` | True | Assumed | - | batch 5 item 12 (H. Lamm 2026-10-09, 'Do 1-13'): the gauge terms of every evolution step (estimated here, KS multiplicities with the group FFT, about ... |
 | `depth_variant_2033` | fanout | Assumed | - | ruling R10 (H. Lamm 2026-10-02): where F* < 10 the box quotes the workspace fix; factory analysis: a CNOT fan-out of the shared control on 5 extra LQ ... |
 | `anc_fanout_2033` | 5 | Assumed | - | r25 R10, factory analysis: ~5 LQ for the CNOT fan-out of the leaf flag (5 copy Toffolis), the orientation and Dirac flags and the mux ANDs |
 | `t_short_fm` | 1.0 | Assumed | - | ruling r25 (e): the first result reads one temperature at 5a and 10a; 5a = 1 fm, priced at its own evolution depth (ruling R4) |
@@ -225,8 +226,8 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 | `n_dov_evolution_stated` | 8600.0 | Stated-not-derived | app06 2033 derivation | 'The evolution is then 8.6e3 applications' (r24: 8550; r22 65,403) |
 | `n_dov_floor_stated` | 4300.0 | Stated-not-derived | app06 2033 derivation | 'no step size takes the evolution below 2Qt = 4320 applications, 4.1e9 T' (r24; r22 21,600) |
 | `t_evolution_stated` | 1.6e+10 | Stated-not-derived | app06 2033 derivation | 'or 1.6e10 T-gates' (r25: 1.5798e10; r24 8.0e9) |
-| `t_shot_range_stated` | (1.3e+10, 2.9e+10) | Stated-not-derived | app06 2033 derivation | 'Over the range above it is 1.1-2.6e10 T' (17 filter calls: 1.3469e10, 2.8708e10; C1 1.2-2.7e10; r25: 1.1115e10, 2.6352e10; r24 5.6e9-1.3e10) |
-| `t_shot_bound_stated` | 8.5e+10 | Stated-not-derived | app06 2033 derivation | 'at the worst-case step ... 8.3e10 T' (17 filter calls: 8.546e10; C1 8.4e10; r25: 8.310e10; r24 4.2e10; r22 1.276e12) |
+| `t_shot_range_stated` | (1.4e+10, 3e+10) | Stated-not-derived | app06 2033 derivation | batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is 1.1-2.6e10 T' (17 f ... |
+| `t_shot_bound_stated` | 9.1e+10 | Stated-not-derived | app06 2033 derivation | batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' (17 filter calls: 8.546e10; C1 8.4e10; ... |
 | `d_beta_stated` | 89 | Stated-not-derived | app06 2033 derivation | referee C1 (2026-10-04): 'degree d_beta = 89' at beta\|\|H\|\| = 2Q / (T a) = 864 (89.2); r25 '~30' at the record 1e2 |
 | `n_dov_tpq_stated` | 1500.0 | Stated-not-derived | app06 2033 derivation | '1.5e3 applications' (89 x 17 = 1513: 2k + 1 filter calls in k = 8 rounds, verifier 2026-10-04; first referee pass 712 = 89 x 8; r25 240) |
 | `t_tpq_stated` | 2.8e+09 | Stated-not-derived | app06 2033 derivation | '2.8e9 T' inside the sphaleron shot (2.796e9 at 17 calls; first referee pass 1.3e9; r25: 4.4346e8; r24 2.3e8; r22 7.3e8) |
@@ -236,27 +237,27 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 | `gibbs_T_central_stated` | 2.5e+13 | Stated-not-derived | app06 route (iv) | '2.5e13 T' (C1 2026-10-04, beta\|\|H\|\| = 864: 2.518e13; r25: 2.914e12; r24 1.5e12; r22 4.8e12) |
 | `gibbs_over_tpq_stated` | 9000.0 | Stated-not-derived | app06 route (iv) | '9.0e3 times' (17 filter calls: 9005; C1 2026-10-04: 1.914e4; r25 6.6e3; both scale with the application price) |
 | `t_physical_stated` | (6.1e+11, 6.1e+12) | Stated-not-derived | app06 2033 derivation | '6.1e11-6.1e12 T' (17 filter calls: 6.107e11, 6.120e12; C1: 5.620e11, 5.632e12; r25: 5.333e11, 5.345e12; r24 2.7e11-2.7e12; r22 2.0e12-2.0e13) |
-| `eps_l_2033_stated` | 5.4e-12 | Stated-not-derived | app06 2033 derivation and box | 'eps_l <~ 5.4e-12' (17 filter calls: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot for the 10a sphaleron shot (R3; r25 6.157e-12; r2 ... |
+| `eps_l_2033_stated` | 5.3e-12 | Stated-not-derived | app06 2033 derivation and box | 'eps_l <~ 5.3e-12' (batch 5 item 12, 2026-10-09: 5.289e-12; 17 filter calls alone: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot for ... |
 | `wall_per_shot_2033_stated` | 19000.0 | Stated-not-derived | app06 requirements and wall-time paragraph | '1.9e4 s' per 10a shot (18,597; C1 17,115) (r25: 16,241.7; r24 8.2e3; r22 2.008e5) |
 | `t_shot_condensate_stated` | 2.8e+09 | Stated-not-derived | app06 2033 box and wall-time paragraph | 'condensate shot 2.8e9 T' (TPQ alone at its own R-TOL, 17 filter calls: 2.7901e9; C1 1.3119e9; r25 4.4166e8, r24 2.2e8) |
 | `eps_l_condensate_stated` | 3.6e-11 | Stated-not-derived | app06 2033 box | 'eps_l <~ 3.6e-11' for the condensate (17 filter calls: 3.584e-11; C1: 7.623e-11; r25 2.264e-10; r24 4.5e-10) |
 | `wall_day_condensate_point_stated` | 32 | Stated-not-derived | app06 wall-time paragraph | '32 days per temperature' (1e3 condensate shots; 32.29; C1 15.18; r25 5.112; r24 2.6 days per coupling point) |
-| `t_shot_kappa_r22_stated` | 6.1e+10 | Stated-not-derived | app06 2033 derivation | 'at kappa ~ 1e2 the same circuit costs 5.3e10 T' (17 filter calls: 6.119e10; C1 5.631e10; r25: 5.344e10; r24 2.7e10) |
+| `t_shot_kappa_r22_stated` | 6.2e+10 | Stated-not-derived | app06 2033 derivation | batch 5 item 12 (2026-10-09): 6.150e10 with the gauge steps (was 6.1e10); 'at kappa ~ 1e2 the same circuit costs 5.3e10 T' (17 filter calls: 6.119e10; ... |
 | `lever_low_step_stated` | 1.4 | Stated-not-derived | app06 wall-time paragraph | 'the low end of the step range (1.5)' (r24) |
 | `lever_eps15_stated` | 2.25 | Stated-not-derived | app06 wall-time paragraph | 'a 15% statistical target (2.25)' (r24) |
 | `wall_yr_lever_low_step_stated` | 1.8 | Stated-not-derived | app06 wall-time paragraph | '1.8 yr' at the low end (r24) |
 | `wall_yr_lever_eps15_stated` | 1.2 | Stated-not-derived | app06 wall-time paragraph | '1.2 yr' at 15% (r24) |
 | `wall_yr_lever_both_stated` | 0.8 | Stated-not-derived | app06 wall-time paragraph | 'together 0.8 yr' (r24) |
-| `t_shot_short_stated` | 9.6e+09 | Stated-not-derived | app06 wall-time paragraph and box | '160 steps of 23 applications ... 9.6e9 T' at 5a (17 filter calls: 9.5897e9; C1 8.109e9; r25: 7.2366e9) |
+| `t_shot_short_stated` | 9.7e+09 | Stated-not-derived | app06 wall-time paragraph and box | batch 5 item 12 (2026-10-09): 9.7007e9 with the gauge steps and reflections (was 9.6e9); '160 steps of 23 applications ... 9.6e9 T' at 5a (17 filter c ... |
 | `eps_l_short_stated` | 1e-11 | Stated-not-derived | app06 2033 box | '1.0e-11 at 5a' (17 filter calls: 1.043e-11; C1: 1.233e-11; r25: 1.382e-11) |
-| `wall_s_short_stated` | 9600.0 | Stated-not-derived | app06 wall-time paragraph | 'or 9.6e3 s' per 5a shot (9589.7; C1 8109; r25 7236.6) |
+| `wall_s_short_stated` | 9700.0 | Stated-not-derived | app06 wall-time paragraph | '9.7e3 s' per 5a shot (batch 5 item 12, 2026-10-09: 9700.7; before 9589.7; C1 8109; r25 7236.6) |
 | `wall_s_condensate_stated` | 2800.0 | Stated-not-derived | app06 wall-time paragraph | '2.8e3 s' per condensate shot (17 filter calls: 2790.1; C1: 1311.9; r25 441.7) |
 | `f_star_register_stated` | (5.6, 6.3) | Stated-not-derived | app06 wall-time paragraph | 'only 5.6-6.3 T gates per reaction layer' as itemized (10a shot: 5.59-6.32) |
 | `slowdown_register_stated` | (1.6, 1.8) | Stated-not-derived | app06 wall-time paragraph | '1.6-1.8 times slower' (10 / F*) |
 | `f_star_2033_stated` | 12 | Stated-not-derived | app06 wall-time paragraph | 'raises this to 12' (12.17-12.54 over the runs) |
 | `shots_first_stated` | (1100.0, 5500.0) | Stated-not-derived | app06 box and wall-time paragraph | '1.1e3 shots at 10a and 5.5e3 at 5a' (1111, 5497; r25 4444 under linear growth) |
-| `wall_yr_first_stated` | 2.3 | Stated-not-derived | app06 box and wall-time paragraph | first result (method test) '2.3 yr' (2.325; before the 2026-10-05 ruling 2.005 with the 5a ratio 4; C1 1.744; r25 1.591) |
-| `wall_yr_campaign_stated` | (2.7, 3.0) | Stated-not-derived | app06 box and wall-time paragraph | campaign '2.7-3.0 yr' (method test + condensate at 4-8 temperatures: 2.679-3.032; the rate campaign before the 2026-10-05 ruling 36.08-60.00, record w ... |
+| `wall_yr_first_stated` | 2.4 | Stated-not-derived | app06 box and wall-time paragraph | first result (method test) '2.4 yr' (batch 5 item 12, 2026-10-09: 2.355; before 2.325; before the 2026-10-05 ruling 2.005 with the 5a ratio 4; C1 1.74 ... |
+| `wall_yr_campaign_stated` | (2.7, 3.1) | Stated-not-derived | app06 box and wall-time paragraph | campaign '2.7-3.1 yr' (batch 5 item 12, 2026-10-09: 2.709-3.063; before 2.7-3.0; method test + condensate at 4-8 temperatures: 2.679-3.032; the rate c ... |
 | `campaign_over_horizon_stated` | (0.54, 0.61) | Stated-not-derived | app06 box and wall-time paragraph | 'inside the 5-year horizon' (0.536-0.606; rate campaign before 2026-10-05: 7-12x) |
 
 #### 2033 target (3D 2O overlap + Higgs): comparison records (38)
@@ -273,9 +274,9 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 | `lcu_terms_stated_pre_r21` | 1700.0 | Stated-not-derived | app06 (pre-r21) | RECORD: '~1.7e3-term LCU', an absolute at V=27. 8Q = 1728 is exactly the 4Q + 4Q selected strings of U_L and U_R in arxiv_2607_28524: the old line was ... |
 | `lcu_terms_per_site_stated` | 72 | Stated-not-derived | app06 (r21) | RECORD (second-quantized construction): '72 Pauli strings per site': 24 hop + 8 on-site + 40 Higgs |
 | `lcu_terms_stated` | 1900.0 | Stated-not-derived | app06 (r21) | RECORD (second-quantized construction): '1944 at V = 27' |
-| `link_frame` | multiplexer | Cited | r21 ruling (1), H. Lamm 2026-10-01 ('promote'); DERIVED HERE r20 (colour_multiplexer_2O; arxiv_2312_10285 ordered-product encoding) | RECORD (second-quantized construction): the link-dressed Fock-space hop as the 2O color multiplexer W and W^dag on the far site plus the draft's spin ... |
-| `hop_frame_undo` | True | Cited | ruling E21 (1), H. Lamm 2026-10-01 (apply_log/r19_core.md); FermionPrimitives_unpub section_hamiltonian.tex:86-91, su2_diag.tex:238, section_resources.tex:15 | RECORD (second-quantized, draft frame). OUR ESTIMATE, ruled in: the color frame V_g is applied AND undone on both sites of every link in every BE que ... |
-| `hop_share` | link | Cited | ruling E21 (1), H. Lamm 2026-10-01 ('make the switch'; apply_log/r19_core.md) | RECORD (second-quantized, draft frame): the color squish and parity flags are computed once per link and held through V(x), V(y), hop, V^dag(x), V^da ... |
+| `link_frame` | multiplexer | Cited | r21 ruling (1), H. Lamm 2026-10-01 ('promote'); DERIVED HERE r20 (colour_multiplexer_2O; arxiv_2312_10285 ordered-product encoding) | RECORD (second-quantized construction): the link-dressed Fock-space hop as the 2O color multiplexer W and W^dag on the far site plus the draft's spino ... |
+| `hop_frame_undo` | True | Cited | ruling E21 (1), H. Lamm 2026-10-01 (apply_log/r19_core.md); FermionPrimitives_unpub section_hamiltonian.tex:86-91, su2_diag.tex:238, section_resources.tex:15 | RECORD (second-quantized, draft frame). OUR ESTIMATE, ruled in: the color frame V_g is applied AND undone on both sites of every link in every BE quer ... |
+| `hop_share` | link | Cited | ruling E21 (1), H. Lamm 2026-10-01 ('make the switch'; apply_log/r19_core.md) | RECORD (second-quantized, draft frame): the color squish and parity flags are computed once per link and held through V(x), V(y), hop, V^dag(x), V^dag ... |
 | `hop_phasing_be` | none | Stated-not-derived | app06 (r21) | RECORD (second-quantized, draft frame): a block-encoding query carries no Trotter phasing |
 | `w2_cs_multiplicity` | 4 | Stated-not-derived | FermionPrimitives_unpub section_resources.tex:50-53 | RECORD (the r17-r20 band top): the draft's 3d/4d Wilson hop 4 C^S + 148 N per link |
 | `w2_spinor_t_per_colour` | 148 | Stated-not-derived | FermionPrimitives_unpub section_resources.tex:50-53 | RECORD: '+148N' |
@@ -306,15 +307,15 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 
 ### 4.1 Rules both instances use
 
-- **Rotations.** Each circuit sets its own per-rotation tolerance from the number N_rot of synthesized rotations in one shot, ε_rot = sqrt(ε_syn / N_rot) with ε_syn = 10⁻² (`common.eps_rot_for`), and prices each rotation at the repeat-until-success (RUS) fit 1.15 log2(1/ε_rot) + 9.2 T (`common.t_per_rotation`). The tolerance depends on the count and the count does not depend on the tolerance, so there is no iteration (`_step_rtol_2028`, lines 1544-1555, asserts this).
+- **Rotations.** Each circuit sets its own per-rotation tolerance from the number N_rot of synthesized rotations in one shot, ε_rot = sqrt(ε_syn / N_rot) with ε_syn = 10⁻² (`common.eps_rot_for`), and prices each rotation at the repeat-until-success (RUS) fit 1.15 log2(1/ε_rot) + 9.2 T (`common.t_per_rotation`). The tolerance depends on the count and the count does not depend on the tolerance, so there is no iteration (`_step_rtol_2028`, lines 1552-1563, asserts this).
 - **Toffolis** cost 7 T. **Logical error rate** ε_l = 0.1 / (T per shot).
 - **Wall time** on one machine: shots × (T per shot × 1 µs + 0.1 ms). Where a circuit cannot feed ten factories (F* = N_T / D_T < 10, with D_T the T-depth and a 10 µs reaction time per layer), each shot is charged the longer of N_T × 1 µs and D_T × 10 µs. The depth exports come from `common.depth_exports`.
 
-### 4.2 2028: Trotter step under Hamming-weight phasing (`_model_2028`, lines 1558-2002)
+### 4.2 2028: Trotter step under Hamming-weight phasing (`_model_2028`, lines 1566-2010)
 
-**Qubits** (lines 1560-1565, 1617-1638). Fermions 2 Dirac components × 3 colors × V = 8 × L5 = 4 = 192; gauge D × V × 2 = 16; ancilla 42; total 250.
+**Qubits** (lines 1568-1573, 1625-1646). Fermions 2 Dirac components × 3 colors × V = 8 × L5 = 4 = 192; gauge D × V × 2 = 16; ancilla 42; total 250.
 
-**Terms and grouping** (`_hwp_groups_2028`, lines 1452-1496). The Pauli rotations of one first-order step are grouped into sets of k equal-angle rotations. Hamming-weight phasing (`hwp_synth_rotations`, `hwp_toffolis`, `hwp_ancilla`, lines 332-349) does a group with floor(log2 k) + 1 synthesized rotations and k − w(k) adder Toffolis, where w(k) is the binary weight of k, and holds k − w(k) ancilla.
+**Terms and grouping** (`_hwp_groups_2028`, lines 1460-1504). The Pauli rotations of one first-order step are grouped into sets of k equal-angle rotations. Hamming-weight phasing (`hwp_synth_rotations`, `hwp_toffolis`, `hwp_ancilla`, lines 335-352) does a group with floor(log2 k) + 1 synthesized rotations and k − w(k) adder Toffolis, where w(k) is the binary weight of k, and holds k − w(k) ancilla.
 
 | term | rotations per step | groups | synthesized per step | Toffolis per step |
 |---|---|---|---|---|
@@ -324,19 +325,19 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 | on-site m + r(1 + d) of the domain-wall kernel: 2N Z rotations per site on 32 sites | 192 | 1 × (k = 192) | 8 | 190 |
 | total | 1128 | | 290 | 991 |
 
-**Step and shot** (`_step_cost_2028`, lines 1499-1541). One shot is 21 steps (20 ramp + 1 probe), so N_rot = 290 × 21 = 6090, ε_rot = 1.2814e-3 and 20.249 T per rotation. One step is 290 × 20.249 + 991 × 7 = 12,809.3 T and the shot 268,994.9 T. The spatial hops are 75% of it (9,663.8 T per step).
+**Step and shot** (`_step_cost_2028`, lines 1507-1549). One shot is 21 steps (20 ramp + 1 probe), so N_rot = 290 × 21 = 6090, ε_rot = 1.2814e-3 and 20.249 T per rotation. One step is 290 × 20.249 + 991 × 7 = 12,809.3 T and the shot 268,994.9 T. The spatial hops are 75% of it (9,663.8 T per step).
 
 **Chunking.** The k = 192 group needs 190 adder ancilla, a register of 399 LQ. Splitting every group to k ≤ 32 (`hwp_chunk_k`; fifth-direction hops 4 × 32 + 2 × 8, on-site 6 × 32) gives 336 synthesized rotations and 985 Toffolis per step; N_rot = 7056, ε_rot = 1.1905e-3, 20.371 T per rotation, 13,739.8 T per step, **288,535.5 T per shot**. This is the circuit the 250-LQ register runs. `hard_ops` is the pair (268,994.9, 288,535.5) and `t_per_shot` is the chunked value.
 
-**Ancilla and depth** (`hwp_step_depth_2028`, lines 847-867). Groups run one slot at a time. Inside a slot every weight-bit rotation runs at once on its own repeat-until-success ancilla, and three spatial-hop groups on mutually non-adjacent links share a slot. The peak is a spatial-hop slot, 3 × (10 adder + 4 RUS) = 42 ancilla. A slot costs one rotation layer plus the adder depth, ceil(2 log2 k) for a carry-save tree (low) or k − w(k) (high). One step is 37 slots, T-depth 1059.7-1318.7; one shot 22,255-27,694; F* = 10.42-12.97.
+**Ancilla and depth** (`hwp_step_depth_2028`, lines 850-870). Groups run one slot at a time. Inside a slot every weight-bit rotation runs at once on its own repeat-until-success ancilla, and three spatial-hop groups on mutually non-adjacent links share a slot. The peak is a spatial-hop slot, 3 × (10 adder + 4 RUS) = 42 ancilla. A slot costs one rotation layer plus the adder depth, ceil(2 log2 k) for a carry-save tree (low) or k − w(k) (high). One step is 37 slots, T-depth 1059.7-1318.7; one shot 22,255-27,694; F* = 10.42-12.97.
 
-**Shots and wall** (lines 1712-1759). The chapter's σ² ≈ 10 is the condensate averaged over the 27 sites of the 2033 lattice. The 2028 estimator averages 3 colors × 8 sites = 24 copies, taken as independent: σ² = 10 × 27 / 24 = 11.25, so 1125 shots at 10% and 125 at 30%. If the sites of a color were fully correlated, σ² = 90 and 9000 shots. First result: 125 × (288,535.5 × 1 µs + 0.1 ms) = 36.1 s. Campaign: L5 = 2, 3, 4 at 1125 shots each, each on its own register (149, 197, 250 LQ) at its own tolerance (1.586e5, 2.391e5, 2.885e5 T). L5 = 2 has F* below 10 and is charged its depth-limited wall. Total 794.2 s. ε_l = 0.1 / T = 3.47e-7 (chunked) to 3.72e-7.
+**Shots and wall** (lines 1720-1767). The chapter's σ² ≈ 10 is the condensate averaged over the 27 sites of the 2033 lattice. The 2028 estimator averages 3 colors × 8 sites = 24 copies, taken as independent: σ² = 10 × 27 / 24 = 11.25, so 1125 shots at 10% and 125 at 30%. If the sites of a color were fully correlated, σ² = 90 and 9000 shots. First result: 125 × (288,535.5 × 1 µs + 0.1 ms) = 36.1 s. Campaign: L5 = 2, 3, 4 at 1125 shots each, each on its own register (149, 197, 250 LQ) at its own tolerance (1.586e5, 2.391e5, 2.885e5 T). L5 = 2 has F* below 10 and is charged its depth-limited wall. Total 794.2 s. ε_l = 0.1 / T = 3.47e-7 (chunked) to 3.72e-7.
 
-**Why not the overlap operator in 1+1D** (lines 1663-1683). The same single-particle architecture as 2033, built for the 1+1D Z3 kernel (`single_particle_query_Z3_1p1d`, `lift_cost`): one query is 40 Toffolis and 6 rotations, 391.6 T. At κ = 30 and δ = 10⁻² (κ the condition number α/Δ of the Wilson kernel, Δ its spectral gap), one application of the overlap Hamiltonian is 140 queries plus the lift, 5.62e4 T, and a ground-state preparation of 10 applications is 5.78e5 T, 2.0 times the domain-wall shot and 5.8 times the 10⁵ budget.
+**Why not the overlap operator in 1+1D** (lines 1671-1691). The same single-particle architecture as 2033, built for the 1+1D Z3 kernel (`single_particle_query_Z3_1p1d`, `lift_cost`): one query is 40 Toffolis and 6 rotations, 391.6 T. At κ = 30 and δ = 10⁻² (κ the condition number α/Δ of the Wilson kernel, Δ its spectral gap), one application of the overlap Hamiltonian is 140 queries plus the lift, 5.62e4 T, and a ground-state preparation of 10 applications is 5.78e5 T, 2.0 times the domain-wall shot and 5.8 times the 10⁵ budget.
 
-### 4.3 2033: overlap fermions by QSP, thermal state by a filter (`_model_2033`, lines 2009-2906)
+### 4.3 2033: overlap fermions by QSP, thermal state by a filter (`_model_2033`, lines 2017-2947)
 
-**Qubits** (lines 2013-2018, 2252-2279). Fermions 4 × 1 × 2 × 27 = 216 (Q = 216 single-particle modes); gauge 3 × 27 × 6 = 486; Higgs 27 × (4 + 6) = 270; ancilla 43. The ancilla are itemized at the peak of the schedule:
+**Qubits** (lines 2021-2026, 2276-2303). Fermions 4 × 1 × 2 × 27 = 216 (Q = 216 single-particle modes); gauge 3 × 27 × 6 = 486; Higgs 27 × (4 + 6) = 270; ancilla 43. The ancilla are itemized at the peak of the schedule:
 
 - 5 held for the whole shot: readout control, QSP signal, amplification marker, and 2 linear-combination-of-unitaries (LCU) qubits over the parts of H;
 - 14 held through one application: 2 lift-type qubits, the 9-qubit index register of color, spin and coordinates, the LCU qubit of h_ov, and the signal and real-part qubits of the sign polynomial;
@@ -344,9 +345,9 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 - 14 inside the link read: 3 direction flags, 6 unary-iteration temporaries, 5 for the copied link;
 - 5 for a CNOT fan-out of the shared control, which lets the link read feed ten factories.
 
-**Sign-function degree** (lines 2049-2061). d_sgn = ceil(κ ln(1/δ_sgn)) = ceil(30 × ln 10³) = 208, with κ = α/Δ and α = 2D + |D − m_0| = 7.5 the normalization of the H_W block encoding.
+**Sign-function degree** (lines 2057-2069). d_sgn = ceil(κ ln(1/δ_sgn)) = ceil(30 × ln 10³) = 208, with κ = α/Δ and α = 2D + |D − m_0| = 7.5 the normalization of the H_W block encoding.
 
-**One query of the single-particle Wilson kernel** (`single_particle_query_2O`, lines 498-539). An LCU of 4D + 1 = 13 unitaries (the on-site term, and a Dirac and a Wilson hop per direction and orientation) on a 5-qubit term register (PREPARE loads the term weights into that register; SELECT applies the chosen term). SELECT walks the sites by unary iteration (`Babbush_PRX_2018`), copies the addressed link, and applies the 2O color rotation to the color qubit of the index register. On a single qubit that multiplexer is 10 T and no Toffoli (`colour_multiplexer_index_2O`, lines 469-483; checked on all 48 elements in `test_2O_index_register_multiplexer_is_10_T`).
+**One query of the single-particle Wilson kernel** (`single_particle_query_2O`, lines 501-542). An LCU of 4D + 1 = 13 unitaries (the on-site term, and a Dirac and a Wilson hop per direction and orientation) on a 5-qubit term register (PREPARE loads the term weights into that register; SELECT applies the chosen term). SELECT walks the sites by unary iteration (`Babbush_PRX_2018`), copies the addressed link, and applies the 2O color rotation to the color qubit of the index register. On a single qubit that multiplexer is 10 T and no Toffoli (`colour_multiplexer_index_2O`, lines 472-486; checked on all 48 elements in `test_2O_index_register_multiplexer_is_10_T`).
 
 | item | Toffolis |
 |---|---|
@@ -362,38 +363,39 @@ Rows are grouped by instance and by role. *Inputs* are the fields the code does 
 
 Plus 24 direct T (multiplexer and inverse 20, controlled-H in PREPARE 4) and 6 rotations (PREPARE and inverse 4, controlled QSP phase 2). The link read (read, copy, fix-up) is 561 of the 598 Toffolis and 90% of the query's T. A gate-level check of SELECT against the covariant Wilson kernel is `test_single_particle_select_reproduces_the_covariant_wilson_kernel`.
 
-**One application** of ψ†h_ov ψ / 2Q (lines 2106-2128, `_price_sp` lines 2130-2153):
+**One application** of ψ†h_ov ψ / 2Q (lines 2114-2136, `_price_sp` lines 2138-2161):
 - 417 queries: 209 for sgn(H_W) in h_ov and 208 for the projector (1 − sgn(H_W))/2 of the projected Yukawa;
-- the lift to Fock space (`lift_cost`, lines 555-563): two selected-Majorana unitaries over 2Q = 432 strings each, 2 × 431 = 862 Toffolis, 12 T and 6 rotations for the uniform preparation over the three coordinates mod 3;
+- the lift to Fock space (`lift_cost`, lines 558-566): two selected-Majorana unitaries over 2Q = 432 strings each, 2 × 431 = 862 Toffolis, 12 T and 6 rotations for the uniform preparation over the three coordinates mod 3;
 - the reflection of the outer QSP on the 19 block-encoding ancilla: 18 Toffolis and 1 rotation;
 - the Higgs vertex, once per application and outside the sign function: 27 group multiplications U_x at 392 T each (56 Toffolis, `GROUPS["2O"].primitives["U_mul"]`, arXiv:2312.10285) and 1080 SELECT Toffolis (40 strings per site: 8 on-site Z strings × the 5-term binary expansion of ρ).
 
-**Step count** (`trotter_state_dependent_steps`, lines 606-641). Second-order Trotter steps. The nested-commutator norms are replaced by their standard deviations in the thermal state (Alves, Lamm, Liu, FERMILAB-PUB-26-0397-T). These are evaluated at weak coupling on the 156 transverse oscillators of 3^3 (3 colors × 2 polarizations × 26 momenta) at T a = 0.5, giving Λ_sd = 20.25 a⁻³ and N = ceil(sqrt(Λ_sd t³ / ε)) = 450 steps for t = 10a, ε = 0.1.
+**Step count** (`trotter_state_dependent_steps`, lines 609-644). Second-order Trotter steps. The nested-commutator norms are replaced by their standard deviations in the thermal state (Alves, Lamm, Liu, FERMILAB-PUB-26-0397-T). These are evaluated at weak coupling on the 156 transverse oscillators of 3^3 (3 colors × 2 polarizations × 26 momenta) at T a = 0.5, giving Λ_sd = 20.25 a⁻³ and N = ceil(sqrt(Λ_sd t³ / ε)) = 450 steps for t = 10a, ε = 0.1.
 
-**Applications per step** (`jacobi_anger_order`, `dov_per_step`, lines 586-603). The Jacobi-Anger order at x = 2Q dt = 432 × 10 / 450 = 9.6 with truncation error 10⁻² / 450 per step: 19. Evolution: 450 × 19 = 8550 applications. This assumes a self-inverse block encoding; otherwise the count doubles.
+**Applications per step** (`jacobi_anger_order`, `dov_per_step`, lines 589-606). The Jacobi-Anger order at x = 2Q dt = 432 × 10 / 450 = 9.6 with truncation error 10⁻² / 450 per step: 19. Evolution: 450 × 19 = 8550 applications. This assumes a self-inverse block encoding; otherwise the count doubles.
 
-**Thermal state** (lines 2089-2104). The filter e^(−βH/2) is a polynomial in H/2Q, so β‖H‖ = 2Q / (T a) = 864 and d_β = round(sqrt(864 ln 10⁴)) = 89 applications per call. Eight rounds of amplitude amplification call the filter 2 × 8 + 1 = 17 times: 1513 applications.
+**Thermal state** (lines 2097-2112). The filter e^(−βH/2) is a polynomial in H/2Q, so β‖H‖ = 2Q / (T a) = 864 and d_β = round(sqrt(864 ln 10⁴)) = 89 applications per call. Eight rounds of amplitude amplification call the filter 2 × 8 + 1 = 17 times: 1513 applications.
 
 **Tolerance and shot.** Each application has 417 × 6 + 6 + 1 = 2509 rotations; over 8550 + 1513 = 10,063 applications that is 25,248,067, so ε_rot = 1.990e-5 and 27.159 T per rotation. Then
 
 - c_sp = 598 × 7 + 24 + 6 × 27.159 = 4,373.0 T per query,
 - application = 417 × 4,373.0 + 6,209.0 (lift) + 153.2 (reflection) + 18,144 (Higgs) = 1,848,028.6 T,
-- **shot = 10,063 × 1,848,028.6 = 1.85967e10 T**, 18.6 times the 10⁹ budget; 85% evolution, 15% thermal state.
+- itemized shot = 10,063 × 1,848,028.6 = 1.85967e10 T; since 2026-10-09 (batch 5 item 12, `count_gauge_steps_and_reflections`) the shot also carries the gauge terms of the 450 steps (6.924e5 T per step: the Kogut-Susskind multiplicities of arXiv:2312.10285 with the group Fourier transform of arXiv:2408.00075, at the shot's own tolerance; 3.116e8 T) and the 16 amplification reflections (2 × 972-controlled NOTs at 2n Toffolis, arXiv:2407.17966; 2.177e5 T),
+- **shot = 1.89085e10 T**, 18.9 times the 10⁹ budget; 84% evolution, 15% thermal state (filter and reflections). The Higgs terms of a step are not estimated.
 
 In the primitive breakdown the query Toffolis are 1.757e10 T (94%), query rotations 6.84e8, the Higgs U_x 1.07e8, direct T 1.01e8, Higgs SELECT 7.6e7, the lift 6.2e7.
 
-**The other two shots.** At t = 5a the same estimate gives 160 steps of 23 applications plus the thermal state, 5193 applications and 9.590e9 T. The condensate is read from the prepared state, so its shot is the 1513 filter applications alone, at its own tolerance (25.587 T per rotation): 2.790e9 T.
+**The other two shots.** At t = 5a the same estimate gives 160 steps of 23 applications plus the thermal state, 5193 applications and 9.701e9 T (itemized 9.590e9 plus the gauge terms of 160 steps and the reflections). The condensate is read from the prepared state, so its shot is the 1513 filter applications alone, at its own tolerance (25.587 T per rotation), plus the reflections: 2.7903e9 T.
 
-**Depth** (`sp_query_depth_2O`, `application_depth_2O`, lines 803-844). T-depth counted in 10 µs reaction layers per item of the query, with the read and fix-up walks serial. With the fan-out the 10a shot has T-depth 1.516e9-1.529e9 and F* = 12.17-12.27; as itemized without it, F* = 5.58-6.32.
+**Depth** (`sp_query_depth_2O`, `application_depth_2O`, lines 806-847). T-depth counted in 10 µs reaction layers per item of the query, with the read and fix-up walks serial. The gauge terms and reflections have no itemized depth and are taken at the itemized circuit's T per layer (the depth scales with the shot). With the fan-out the 10a shot has T-depth 1.541e9-1.554e9 and F* = 12.17-12.27; as itemized without it, F* = 5.58-6.32.
 
-**Shots and wall** (lines 2475-2519). The readout variance σ²_NCS = 10² is assumed, so the 10a test takes 10² / 0.3² = 1111 shots. The 5a signal of the free lattice estimator is smaller, and at fixed absolute readout noise its relative variance is (S_10a / S_5a)² = 4.947 times larger (`ncs_lattice_background`, lines 702-772): 5497 shots. Wall per shot: 18,596.7 s (10a), 9,589.7 s (5a), 2,790.1 s (condensate). First result 7.338e7 s = 2.325 yr (3.156e7 s per year in this module). Campaign: the first result plus 10³ condensate shots at each of 4-8 temperatures, 8.454e7-9.570e7 s = 2.679-3.032 yr, 0.54-0.61 of the five-year horizon. ε_l = 5.38e-12 (10a), 1.04e-11 (5a), 3.58e-11 (condensate).
+**Shots and wall** (lines 2502-2547). The readout variance σ²_NCS = 10² is assumed, so the 10a test takes 10² / 0.3² = 1111 shots. The 5a signal of the free lattice estimator is smaller, and at fixed absolute readout noise its relative variance is (S_10a / S_5a)² = 4.947 times larger (`ncs_lattice_background`, lines 705-775): 5497 shots. Wall per shot: 18,596.7 s (10a), 9,589.7 s (5a), 2,790.1 s (condensate). First result 7.338e7 s = 2.325 yr (3.156e7 s per year in this module). Campaign: the first result plus 10³ condensate shots at each of 4-8 temperatures, 8.454e7-9.570e7 s = 2.679-3.032 yr, 0.54-0.61 of the five-year horizon. ε_l = 5.38e-12 (10a), 1.04e-11 (5a), 3.58e-11 (condensate).
 
 ### 4.4 Sensitivities and comparisons the model also computes
 
 All are in `--intermediates` and none enters a headline.
 
-- Step-count range 107 steps (only the phase of the fastest gauge mode held to ε) to 1274 (mean kept): 1.347e10-2.871e10 T. Worst-case commutator bound (`trotter_bound_steps`, lines 430-462; Λ = 5537 a⁻³ at g² = 1): 7442 steps, 8.546e10 T. Ch. 5's fixed step: 1.499e10 T. No step count brings the evolution below 2Q t = 4320 applications, 7.98e9 T (`n_dov_floor`; `test_2033_trotter_rule_switch_and_records`).
-- Not self-inverse: 3.44e10 T. κ read as ‖H_W‖/Δ: d_sgn = 346, 3.08e10 T. κ = 10²: 6.12e10 T. κ = 10³-10⁴: 6.11e11-6.12e12 T.
+- Step-count range 107 steps (only the phase of the fastest gauge mode held to ε) to 1274 (mean kept): 1.354e10-2.959e10 T. Worst-case commutator bound (`trotter_bound_steps`, lines 433-465; Λ = 5537 a⁻³ at g² = 1): 7442 steps, 9.061e10 T. Ch. 5's fixed step: 1.513e10 T. No step count brings the evolution below 2Q t = 4320 applications, 7.98e9 T (`n_dov_floor`; `test_2033_trotter_rule_switch_and_records`).
+- Not self-inverse: 3.47e10 T. κ read as ‖H_W‖/Δ: d_sgn = 346, 3.11e10 T. κ = 10²: 6.15e10 T. κ = 10³-10⁴: 6.11e11-6.12e12 T.
 - Thermal route: a Gibbs sampler estimated at the same application price, 4.79e12 / 2.52e13 / 1.51e14 T (low / central / high), 9.0e3 times the filter at the center. A typical reference state succeeds with probability e^(−137.9) on the free fermion sector, which would need 7.0e29 amplification rounds (`typical_reference_tpq`).
 - A second-quantized construction (the sign of the many-body operator ψ†H_Wψ rather than of the kernel, so not the chapter's Hamiltonian): 1.809e13 T per shot, recorded as `t_record_second_quantized`.
 - Readout: the Hadamard test of the Kubo form needs relative variance 1.06e14 at 10a on the free-field background, so 1.17e15 shots at 30%, against the assumed 10².
@@ -405,28 +407,28 @@ All are in `--intermediates` and none enters a headline.
 | key | 2028 | 2033 |
 |---|---|---|
 | `lq` | (250, 250) | (1015, 1015) |
-| `t` | (268,994.9, 288,535.5) | (1.85967e10, 1.85967e10) |
+| `t` | (268,994.9, 288,535.5) | (1.89085e10, 1.89085e10) |
 | `t_box` (the box as printed) | (2.7e5, 2.9e5) | (1.9e10, 1.9e10) |
 | `shots` | 1125 | 1111.1 (10a, first result) |
 | `f_star` | (10.42, 12.97) | (12.17, 12.27) |
 | `t_condensate_arm` | | 2.790e9 |
-| `t_short_time` | | 9.590e9 |
-| `t_range_step_count` | | (1.347e10, 2.871e10) |
-| `t_alternative_fixed_step` | | 1.499e10 |
-| `t_alternative_worst_case_bound` | | 8.546e10 |
+| `t_short_time` | | 9.701e9 |
+| `t_range_step_count` | | (1.354e10, 2.959e10) |
+| `t_alternative_fixed_step` | | 1.513e10 |
+| `t_alternative_worst_case_bound` | | 9.061e10 |
 | `t_record_second_quantized` | | 1.809e13 |
-| `wall_first_result_s` | | 7.338e7 |
-| `wall_campaign_s` | | (8.454e7, 9.570e7) |
+| `wall_first_result_s` | | 7.434e7 |
+| `wall_campaign_s` | | (8.550e7, 9.666e7) |
 
-Other exports (`python -m estimates --chapter ch09`): 2028 ε_l 3.47e-7-3.72e-7, wall 36.1 s first result and 794.2 s campaign, T-depth per shot 22,255-27,694, campaign floor wall 653-771 s; 2033 ε_l 5.38e-12, T-depth per 10a shot 1.516e9-1.529e9, campaign floor wall 6.87e7-7.83e7 s, and 26.8-30.3 factories to run the campaign in one year.
+Other exports (`python -m estimates --chapter ch09`): 2028 ε_l 3.47e-7-3.72e-7, wall 36.1 s first result and 794.2 s campaign, T-depth per shot 22,255-27,694, campaign floor wall 653-771 s; 2033 ε_l 5.29e-12, T-depth per 10a shot 1.541e9-1.554e9, campaign floor wall 6.94e7-7.91e7 s, and 27.1-30.6 factories to run the campaign in one year.
 
-Table 1.1 prints, for Ch. 9: 250 LQ and 2.7-2.9e5 T (2028); 1015 LQ and 1.9e10 T (2033). The 2028 box prints 250 = 192 + 16 + 42, 2.7-2.9e5 T, ε_l ≲ 3.5e-7, 1.3e2 and 1.1e3 shots, 36 s and 13 min. The 2033 box prints 1015 = 216 + 486 + 270 + 43, 2.8e9 T (condensate), 1.9e10 T (10a) and 9.6e9 T (5a), ε_l ≲ 3.6e-11 / 5.4e-12 / 1.0e-11, 1.1e3 + 5.5e3 shots, 2.3 yr and 2.7-3.0 yr.
+Table 1.1 prints, for Ch. 9: 250 LQ and 2.7-2.9e5 T (2028); 1015 LQ and 1.9e10 T (2033). The 2028 box prints 250 = 192 + 16 + 42, 2.7-2.9e5 T, ε_l ≲ 3.5e-7, 1.3e2 and 1.1e3 shots, 36 s and 13 min. The 2033 box prints 1015 = 216 + 486 + 270 + 43, 2.8e9 T (condensate), 1.9e10 T (10a) and 9.7e9 T (5a), ε_l ≲ 3.6e-11 / 5.3e-12 / 1.0e-11, 1.1e3 + 5.5e3 shots, 2.4 yr and 2.7-3.1 yr.
 
 Tests that pin them:
 
-- `PUBLISHED` (lines 2939-2962) is the box as printed: `test_published_is_the_box_as_printed`; the model lies within 10% of it: `test_both_boxes_reproduce`, `test_2033_hard_ops_matches_box`.
+- `PUBLISHED` (lines 2980-3003) is the box as printed: `test_published_is_the_box_as_printed`; the model lies within 10% of it: `test_both_boxes_reproduce`, `test_2033_hard_ops_matches_box`.
 - 2028: `test_2028_lq_components_exact`, `test_2028_step_arithmetic_by_hand`, `test_2028_chunked_variant_by_hand`, `test_2028_hard_ops_is_the_printed_range` (268,995 and 288,535 exactly), `test_2028_ancilla_itemized`, `test_2028_shots_and_wall_time`, `test_r25_2028_schedule_tiers_and_exports` (depth, F*, 36 s, 13 min).
-- 2033: `test_2033_lq_components_exact`, `test_2033_single_particle_query_itemized`, `test_2033_one_application_components`, `test_2033_trotter_steps_state_dependent`, `test_2033_jacobi_anger_applications_per_step`, `test_2033_dov_evolution_tpq_total` (1.8596712e10 to 1e-6), `test_2033_eps_l_at_0p1_faults_per_shot`, `test_r24_condensate_arm_is_the_preparation_alone` (2.79010e9), `test_r25_short_time_shot_at_its_own_depth`, `test_r25_exports_2033`, `test_r25_two_tiers_2033` (2.325 yr, 2.679-3.032 yr), `test_2033_trotter_rule_switch_and_records` (the 8.0e9 floor).
+- 2033: `test_2033_lq_components_exact`, `test_2033_single_particle_query_itemized`, `test_2033_one_application_components`, `test_2033_trotter_steps_state_dependent`, `test_2033_jacobi_anger_applications_per_step`, `test_2033_dov_evolution_tpq_total` (1.8908505e10 to 1e-6; itemized 1.8596712e10), `test_2033_eps_l_at_0p1_faults_per_shot`, `test_r24_condensate_arm_is_the_preparation_alone` (2.790318e9), `test_r25_short_time_shot_at_its_own_depth`, `test_r25_exports_2033`, `test_r25_two_tiers_2033` (2.355 yr, 2.709-3.063 yr), `test_2033_trotter_rule_switch_and_records` (the 8.0e9 floor).
 - With the paper source present, `test_r25_chapter_prints_the_model` checks that the chapter's boxes and prose quote these numbers.
 
 ## 6. Circuit status
@@ -435,7 +437,7 @@ From `docs/CIRCUIT_STATUS.md`: 6 COMPILED, 12 SCALING, no CONJECTURE, no UNSOURC
 
 - **COMPILED.** 2028: the Hamming-weight adders of all four term groups (k − w(k) Toffolis per group, arXiv:1709.06648, 1902.10673). 2033: the 598 Toffolis and 24 direct T of the single-particle query, compiled here; the tests simulate SELECT at gate level on the 3^3 lattice and compare sampled columns with the covariant Wilson kernel.
 - **SCALING, 2028.** The synthesized rotations of the four groups (the RUS fit at the circuit's tolerance; the spatial-hop string count comes from the derived Z3 hop rule).
-- **SCALING, 2033.** The query rotations; the lift's Toffolis, direct T and rotations (counts derived here from the construction of arXiv:2607.28524); the outer QSP reflection and its rotation; the Higgs U_x (compiled in arXiv:2312.10285, but no controlled variant is compiled, so one U_x is the price of a controlled 2O action); and the Higgs SELECT Toffolis.
+- **SCALING, 2033.** The query rotations; the lift's Toffolis, direct T and rotations (counts derived here from the construction of arXiv:2607.28524); the outer QSP reflection and its rotation; the Higgs U_x (compiled in arXiv:2312.10285, but no controlled variant is compiled, so one U_x is the price of a controlled 2O action); the Higgs SELECT Toffolis; and, since 2026-10-09, the gauge terms of each Trotter step (Kogut-Susskind multiplicities with the group Fourier transform, estimated here) and the 16 amplification reflections (arXiv:2407.17966).
 
 ## 7. Open items and limitations
 
@@ -444,7 +446,7 @@ From `docs/CIRCUIT_STATUS.md`: 6 COMPILED, 12 SCALING, no CONJECTURE, no UNSOURC
 - **Chern-Simons readout.** The assumed σ²_NCS ≈ 10² needs a readout whose noise is set by ΔN_CS itself. A Hadamard test of the Kubo form against the free-field background has relative variance 1.06e14 at 10a (`ncs_hadamard_rel_var`, with the block-encoding normalization taken at its lower bound 9.23/a). The multiplicative renormalization of the rate operator is open.
 - **Box size.** At g² = 1 and T a = 0.5 the box has L g² T = 1.5, where the classical sphaleron rate is suppressed about 730 times (431-2400 within the quoted errors) relative to large volume. No rate is claimed at 3^3; Higgs-mass matching and the location of T_c are open. The window t = 10a is marginal for the linear regime of Chern-Simons diffusion.
 - **Step count.** 450 steps is the state-dependent estimate; the worst-case bound is 7442. Keeping the common mean of the nested commutators, which only shifts a global phase, gives 1274 (`n_trotter_range`). T a = 0.5 is a choice (the chapter says T ~ T_c; `trotter_state_dependent_steps(3, 3, 10.0, 0.1, T)` gives 448-478 steps for T a = 0.15-1), g² = 1 enters only the worst-case bound, and the Higgs modes are not in the oscillator sum. The chapter estimates that they would add 15–20% and that the fermion terms change the count by about 1%; the model computes neither.
-- **Not priced.** The gauge and Higgs terms of each Trotter step (gauge about 2.0% of a step) and the amplification reflections (2.18e5 T per shot). A self-inverse block encoding is assumed; otherwise the shot is 3.44e10 T.
+- **Counted since 2026-10-09 (author ruling, batch 5 item 12).** The gauge terms of each Trotter step (6.92e5 T, 2.0% of a step, `gauge_step_T`) and the amplification reflections (2.18e5 T per shot, `aa_reflection_T`) are in every current 2033 shot (`count_gauge_steps_and_reflections`; the r22-r25 records keep their totals). The Higgs terms of a step are not estimated. A self-inverse block encoding is assumed; otherwise the shot is 3.47e10 T.
 - **2028 ramp.** The diabatic error of the 20-step ramp is not estimated; the benchmark is meant to measure it. The step is taken first order (the chapter states no order). The quark mass m_f = 0 removes the wall-joining term; m_f ≠ 0 adds two groups of k = 24, +510 T per step (the `fifth_boundary` note), 4% of the unchunked step.
 - **2028 shots.** 1125 shots treat the 24 site-color copies as independent (they share the link); full correlation within a color gives 9000.
 - **Registers.** The 2028 register holds the chunked circuit; the unchunked one needs 399 LQ. F* ≥ 10 at 2028 needs three concurrent spatial-hop groups per slot, and at 2033 the five fan-out qubits; without them F* is 5.6-6.3 and every 2033 wall is 1.6-1.8 times longer.

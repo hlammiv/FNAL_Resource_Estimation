@@ -82,8 +82,11 @@ WHAT IS NOT DERIVED HERE
   the temperature T a = 0.5               Assumed; the chapter says T ~ T_c only
   a self-inverse block encoding           assumed for 'applications per step = Jacobi-Anger order' (the lift admits one at
                                           O(1) cost); otherwise twice the count (record t_per_shot_if_not_self_inverse)
-  the gauge and Higgs terms of a step     NOT PRICED; the gauge part is estimated as a record (about 2% of the step)
-  the amplification reflections           NOT PRICED (record: about 2e5 T per shot, arxiv_2407_17966)
+  the gauge terms of a step               ESTIMATED HERE and counted in every current shot since 2026-10-09 (batch 5
+                                           item 12; about 2% of the step; the records keep the earlier totals). The
+                                           Higgs terms of a step are not estimated
+  the amplification reflections           counted since 2026-10-09 (batch 5 item 12): 2 x 8 n-controlled NOTs at 2n
+                                           Toffolis (arxiv_2407_17966), about 2e5 T per shot
   k - HW(k) Toffolis per HWP group        the count of arXiv:1709.06648 / 1902.10673, whose adders uncompute
                                           by measurement; priced here at 7 T per Toffoli as ruled (R5)
   diabatic error of the 20-step ramp      not estimated anywhere; the chapter flags it as the quantity
@@ -1211,10 +1214,10 @@ class Assumptions:
     n_dov_floor_stated: Tagged = Stated(4.3e3, "app06 2033 derivation", "'no step size takes the evolution below 2Qt = 4320 "
                                                                         "applications, 4.1e9 T' (r24; r22 21,600)")
     t_evolution_stated: Tagged = Stated(1.6e10, "app06 2033 derivation", "'or 1.6e10 T-gates' (r25: 1.5798e10; r24 8.0e9)")
-    t_shot_range_stated: Tagged = Stated((1.3e10, 2.9e10), "app06 2033 derivation", "'Over the range above it is "
+    t_shot_range_stated: Tagged = Stated((1.4e10, 3.0e10), "app06 2033 derivation", "batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is "
                                                                                    "1.1-2.6e10 T' (17 filter calls: 1.3469e10, 2.8708e10; C1 1.2-2.7e10; r25: 1.1115e10, 2.6352e10; "
                                                                                    "r24 5.6e9-1.3e10)")
-    t_shot_bound_stated: Tagged = Stated(8.5e10, "app06 2033 derivation", "'at the worst-case step ... 8.3e10 T' "
+    t_shot_bound_stated: Tagged = Stated(9.1e10, "app06 2033 derivation", "batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' "
                                                                           "(17 filter calls: 8.546e10; C1 8.4e10; r25: 8.310e10; r24 4.2e10; r22 1.276e12)")
     beta_H: Tagged = Assumed(1e2, "RECORD (r25 and earlier): app06 'beta||H|| ~ 1e2'. Referee C1 (2026-10-04): inconsistent "
                                   "with the chapter's own block encoding, whose normalization is 2Q = 432 at beta = 2a")
@@ -1246,7 +1249,7 @@ class Assumptions:
     kappa_physical: Tagged = Stated((1e3, 1e4), "app06 2033 derivation", "'kappa ~ 1e3-1e4 ... near-physical-mass'")
     t_physical_stated: Tagged = Stated((6.1e11, 6.1e12), "app06 2033 derivation", "'6.1e11-6.1e12 T' (17 filter calls: 6.107e11, 6.120e12; C1: 5.620e11, 5.632e12; r25: 5.333e11, 5.345e12; "
                                                                                   "r24 2.7e11-2.7e12; r22 2.0e12-2.0e13)")
-    eps_l_2033_stated: Tagged = Stated(5.4e-12, "app06 2033 derivation and box", "'eps_l <~ 5.4e-12' (17 filter calls: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot "
+    eps_l_2033_stated: Tagged = Stated(5.3e-12, "app06 2033 derivation and box", "'eps_l <~ 5.3e-12' (batch 5 item 12, 2026-10-09: 5.289e-12; 17 filter calls alone: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot "
                                                                                  "for the 10a sphaleron shot (R3; r25 6.157e-12; "
                                                                                  "r24 1.2e-11; r22 5.0e-13)")
     # thermal-state route alternatives (app06 route (iv)), emitted so the prose numbers are checkable
@@ -1313,7 +1316,7 @@ class Assumptions:
                                                       "'32 days per temperature' (1e3 condensate shots; 32.29; C1 15.18; r25 5.112; "
                                                       "r24 2.6 days per coupling point)")
     wall_yr_condensate_scan_stated: Tagged = Stated(0.36, "RECORD (r24 box)", "'0.36 yr for the ~50-point scan'; retired by r25 (e)")
-    t_shot_kappa_r22_stated: Tagged = Stated(6.1e10, "app06 2033 derivation", "'at kappa ~ 1e2 the same circuit costs 5.3e10 T' "
+    t_shot_kappa_r22_stated: Tagged = Stated(6.2e10, "app06 2033 derivation", "batch 5 item 12 (2026-10-09): 6.150e10 with the gauge steps (was 6.1e10); 'at kappa ~ 1e2 the same circuit costs 5.3e10 T' "
                                                                               "(17 filter calls: 6.119e10; C1 5.631e10; r25: 5.344e10; r24 2.7e10)")
     # r24 levers for one sphaleron point under a year; sizes DERIVED HERE; none is applied to the box
     lever_eps_obs: Tagged = Assumed(0.15, "r24 lever: a 15% statistical target on Gamma_sph (shots sigma^2 / eps^2)")
@@ -1327,6 +1330,11 @@ class Assumptions:
                                       "'the Ginsparg-Wilson-projected Yukawa is INSIDE': the Yukawa couples the "
                                       "projected fields, whose projector (1 - sgn(H_W))/2 is a second QSVT polynomial of "
                                       "degree d_sgn on the same block encoding, once per application ('outside': r22-r24)")
+    count_gauge_steps_and_reflections: Tagged = Assumed(
+        True, "batch 5 item 12 (H. Lamm 2026-10-09, 'Do 1-13'): the gauge terms of every evolution step (estimated here, "
+              "KS multiplicities with the group FFT, about 2% of a step) and the 16 amplification reflections "
+              "(arxiv_2407_17966) are counted in every current 2033 shot. False restores the r25-C1 totals (the r24 "
+              "record chain sets it False). The Higgs terms of a step stay not estimated.")
     depth_variant_2033: Tagged = Assumed("fanout", "ruling R10 (H. Lamm 2026-10-02): where F* < 10 the box quotes the "
                                          "workspace fix; factory analysis: a CNOT fan-out of the shared control on "
                                          "5 extra LQ gives F* = 12.3 ('register' = as itemized, F* 5.6-6.4)")
@@ -1346,10 +1354,10 @@ class Assumptions:
     n_temperatures: Tagged = Stated((4, 8), "author ruling r25 (e), H. Lamm 2026-10-02",
                                     "'campaign 4-8 temperatures (not 50 couplings)' on the symmetric / near-T_c side; "
                                     "the two-time linearity check at one of them, 10a only at the rest")
-    t_shot_short_stated: Tagged = Stated(9.6e9, "app06 wall-time paragraph and box", "'160 steps of 23 applications ... "
+    t_shot_short_stated: Tagged = Stated(9.7e9, "app06 wall-time paragraph and box", "batch 5 item 12 (2026-10-09): 9.7007e9 with the gauge steps and reflections (was 9.6e9); '160 steps of 23 applications ... "
                                                                                        "9.6e9 T' at 5a (17 filter calls: 9.5897e9; C1 8.109e9; r25: 7.2366e9)")
     eps_l_short_stated: Tagged = Stated(1.0e-11, "app06 2033 box", "'1.0e-11 at 5a' (17 filter calls: 1.043e-11; C1: 1.233e-11; r25: 1.382e-11)")
-    wall_s_short_stated: Tagged = Stated(9.6e3, "app06 wall-time paragraph", "'or 9.6e3 s' per 5a shot (9589.7; C1 8109; r25 7236.6)")
+    wall_s_short_stated: Tagged = Stated(9.7e3, "app06 wall-time paragraph", "'9.7e3 s' per 5a shot (batch 5 item 12, 2026-10-09: 9700.7; before 9589.7; C1 8109; r25 7236.6)")
     wall_s_condensate_stated: Tagged = Stated(2.8e3, "app06 wall-time paragraph", "'2.8e3 s' per condensate shot (17 filter calls: 2790.1; C1: 1311.9; r25 441.7)")
     f_star_register_stated: Tagged = Stated((5.6, 6.3), "app06 wall-time paragraph", "'only 5.6-6.3 T gates per reaction "
                                                                                   "layer' as itemized (10a shot: 5.59-6.32)")
@@ -1357,9 +1365,9 @@ class Assumptions:
     f_star_2033_stated: Tagged = Stated(12, "app06 wall-time paragraph", "'raises this to 12' (12.17-12.54 over the runs)")
     shots_first_stated: Tagged = Stated((1.1e3, 5.5e3), "app06 box and wall-time paragraph", "'1.1e3 shots at 10a and 5.5e3 "
                                                                                            "at 5a' (1111, 5497; r25 4444 under linear growth)")
-    wall_yr_first_stated: Tagged = Stated(2.3, "app06 box and wall-time paragraph", "first result (method test) '2.3 yr' (2.325; "
+    wall_yr_first_stated: Tagged = Stated(2.4, "app06 box and wall-time paragraph", "first result (method test) '2.4 yr' (batch 5 item 12, 2026-10-09: 2.355; before 2.325; "
                                           "before the 2026-10-05 ruling 2.005 with the 5a ratio 4; C1 1.744; r25 1.591)")
-    wall_yr_campaign_stated: Tagged = Stated((2.7, 3.0), "app06 box and wall-time paragraph", "campaign '2.7-3.0 yr' (method "
+    wall_yr_campaign_stated: Tagged = Stated((2.7, 3.1), "app06 box and wall-time paragraph", "campaign '2.7-3.1 yr' (batch 5 item 12, 2026-10-09: 2.709-3.063; before 2.7-3.0; method "
                                              "test + condensate at 4-8 temperatures: 2.679-3.032; the rate campaign before "
                                              "the 2026-10-05 ruling 36.08-60.00, record wall_yr_campaign_r25_stated)")
     campaign_over_horizon_stated: Tagged = Stated((0.54, 0.61), "app06 box and wall-time paragraph", "'inside the 5-year "
@@ -2180,18 +2188,34 @@ def _model_2033(a: Assumptions) -> Result:
     P_kappa_norm = _price_sp(n_trot, d_=d_sgn_norm_convention)           # kappa read as ||H_W|| / Delta
     link_read_share = toffoli_t(spq["link_read_toffoli"], tc) / c_sp     # 90% of a query
     rot_share = spq["n_rot"] * t_rot / c_sp                              # 4% of a query
-    # NOT PRICED (ESTIMATED HERE, record): the gauge terms of one Trotter step, per link the Kogut-Susskind
-    # multiplicities of arXiv:2312.10285 (groups.PRIMCOST) with the group Fourier transform of arXiv:2408.00075 in place
-    # of U_F, at the headline tolerance. The Higgs terms are not estimated.
+    # ESTIMATED HERE: the gauge terms of one Trotter step, per link the Kogut-Susskind multiplicities of arXiv:2312.10285
+    # (groups.PRIMCOST) with the group Fourier transform of arXiv:2408.00075 in place of U_F, at the headline tolerance.
+    # Counted in every current shot since 2026-10-09 (batch 5 item 12; a record before). The Higgs terms are not estimated.
     t_gauge_link = (PRIMCOST["KS"]["U_F"](D) * g.primitives["U_FFT"].t(eps_rot)
                     + sum(PRIMCOST["KS"][k](D) * g.primitives[k].t(eps_rot) for k in ("U_Tr", "U_inv", "U_mul")))
     t_gauge_step = n_links * t_gauge_link             # 7.1e5 T
     gauge_step_share = t_gauge_step / (per_step * t_dov)                 # about 2% of the step
-    # NOT PRICED (record): the amplification's reflection about the reference state on the whole register, as an
-    # n-controlled NOT at 2n Toffolis on two clean ancilla (arxiv_2407_17966, abstract), twice per round.
+    # The amplification's reflection about the reference state on the whole register, as an n-controlled NOT at 2n
+    # Toffolis on two clean ancilla (arxiv_2407_17966, abstract), twice per round. Counted since 2026-10-09 (batch 5 item 12).
     n_reflect_controls = lq_f + lq_g + lq_h           # 972
     n_reflections = 2 * int(a.aa_rounds.value)        # 16
     t_fpaa_reflections = n_reflections * toffoli_t(2 * n_reflect_controls, tc)       # 2.2e5 T per shot
+
+    def _count(P_):
+        """Batch 5 item 12 (H. Lamm 2026-10-09): add the gauge terms of every evolution step and, where the shot
+        prepares the thermal state by amplification, its 16 reflections. The r22-r25 records above keep their totals."""
+        if not a.count_gauge_steps_and_reflections.value:
+            return dict(P_, t_shot_core=P_["t_shot"], t_gauge_steps=0.0, t_reflections=0.0)
+        t_g = P_["n_trot"] * t_gauge_step
+        t_r = t_fpaa_reflections if P_["n_dov"] > P_["n_dov_evol"] else 0.0
+        return dict(P_, t_shot_core=P_["t_shot"], t_gauge_steps=t_g, t_reflections=t_r, t_shot=P_["t_shot"] + t_g + t_r)
+
+    P = _count(P)
+    by_rule = {k: _count(v) for k, v in by_rule.items()}
+    P_low, P_high, C = _count(P_low), _count(P_high), _count(C)
+    P_not_self_inverse, P_kappa_norm, P_kappa_r22 = _count(P_not_self_inverse), _count(P_kappa_norm), _count(P_kappa_r22)
+    t_shot = P["t_shot"]                              # 1.892e10 (core 1.860e10 + gauge steps 3.1e8 + reflections 2.2e5)
+    t_thermal_prep = n_dov_tpq * t_dov + P["t_reflections"]          # the filter and its reflections, 2.80e9
 
     # ---- RECORD: the retired second-quantized construction (r17-r21). QSVT of sgn on a Jordan-Wigner block encoding of
     # H_W computes the sign of the many-body operator, not the kernel of the chapter's Hamiltonian; kept so every earlier
@@ -2352,7 +2376,7 @@ def _model_2033(a: Assumptions) -> Result:
     ratio_env = t_shot / env                          # 200.8
 
     # R-TOL: each kappa is its own circuit, so its own rotation count sets its own tolerance
-    t_phys = tuple(_price_sp(n_trot, d_=math.ceil(k * math.log(1 / delta)))["t_shot"]
+    t_phys = tuple(_count(_price_sp(n_trot, d_=math.ceil(k * math.log(1 / delta))))["t_shot"]
                    for k in (float(a.kappa_physical.lo), float(a.kappa_physical.hi)))
     faults = float(a.faults_per_shot.value)           # R3: 0.1 expected faults per shot
     eps_l_implied = faults / t_shot                   # 4.98e-13
@@ -2445,7 +2469,7 @@ def _model_2033(a: Assumptions) -> Result:
     shots_sph_lever = float(a.sigma2_ncs.value) / eps_lever ** 2   # 4444
     hold_saved = spq["toffoli_items"]["fixup_iteration"]           # 78
     hold_qubits = n_links - spq["anc_iteration"]                   # 75
-    P_hold = _price_sp(n_trot, toff_saved_=hold_saved)
+    P_hold = _count(_price_sp(n_trot, toff_saved_=hold_saved))
     horizon_levers = {"low_step": t_shot / P_low["t_shot"], "eps15": shots / shots_sph_lever,
                       "hold": t_shot / P_hold["t_shot"]}
     horizon_levers["low_step_and_eps15"] = horizon_levers["low_step"] * horizon_levers["eps15"]
@@ -2459,13 +2483,16 @@ def _model_2033(a: Assumptions) -> Result:
     umult_concurrent = (sum(anc_query.values()) + sum(anc_select.values())) // umult_ancilla        # 19 // 4 = 4
 
     def _depth(P_, variant_=depth_variant):
-        """(lo, hi) T-depth of one shot of the circuit P_ (applications are sequential)."""
+        """(lo, hi) T-depth of one shot of the circuit P_ (applications are sequential). The gauge terms of a step and
+        the reflections (counted since batch 5 item 12) have no itemized depth; they are taken at the itemized circuit's
+        T per reaction layer, so the depth scales with the shot and F* is that of the itemized circuit."""
         lo_, hi_ = application_depth_2O(P_["n_q_per_dov"], P_["t_rot"], variant_, lift, outer, V, higgs_sel_toff,
                                         umult_toffolis, umult_concurrent)
-        return (P_["n_dov"] * lo_, P_["n_dov"] * hi_)
+        scale = P_["t_shot"] / P_["t_shot_core"]
+        return (P_["n_dov"] * lo_ * scale, P_["n_dov"] * hi_ * scale)
     t_short = float(a.t_short_fm.value) / float(a.a_fm.value)                 # 5a
     sd_short = trotter_state_dependent_steps(L, n_adj, t_short, eps_tr, float(a.temp_lat_2033.value), d=D)
-    P5 = _price_sp(sd_short["n_central"], t_=t_short)                        # the 5a shot at its own depth (R4)
+    P5 = _count(_price_sp(sd_short["n_central"], t_=t_short))                # the 5a shot at its own depth (R4)
     runs = {"sph10": P, "sph5": P5, "cond": C}
     depth = {k: _depth(v) for k, v in runs.items()}
     depth_register = {k: _depth(v, "register") for k, v in runs.items()}    # record: as itemized, no fan-out
@@ -2473,6 +2500,7 @@ def _model_2033(a: Assumptions) -> Result:
     f_star_register = {k: (runs[k]["t_shot"] / depth_register[k][1], runs[k]["t_shot"] / depth_register[k][0])
                        for k in runs}
     wall_shot_run = {k: v["t_shot"] * t_gate + t_over for k, v in runs.items()}
+    wall_shot_run_core = {k: v["t_shot_core"] * t_gate + t_over for k, v in runs.items()}   # for the r25 records
 
     # shots. Author ruling 2026-10-05: the 2033 real-time measurement is a METHOD TEST on 3^3, the early growth of the
     # full <dN_CS^2> (background included) at 5a and 10a, one symmetric-side temperature, 30% each, compared with the
@@ -2509,7 +2537,7 @@ def _model_2033(a: Assumptions) -> Result:
     camp_reduction = (camp_yr[0] / horizon_yr, camp_yr[1] / horizon_yr)
     first_yr = wall_first / SEC_PER_YR
     # r25 record: the rate campaign (4-8 temperatures at 10%) and its 30% variant
-    wall_camp_r25_yr = tuple(sum(n * wall_shot_run[k] for k, n in cs.items()) / SEC_PER_YR for cs in camp_shots_r25)
+    wall_camp_r25_yr = tuple(sum(n * wall_shot_run_core[k] for k, n in cs.items()) / SEC_PER_YR for cs in camp_shots_r25)
     # the method test at 10% instead of 30% (a lever, not applied)
     wall_first_at_eps_yr = wall_first * (eps_first / eps) ** 2 / SEC_PER_YR
     tiers = {
@@ -2549,7 +2577,17 @@ def _model_2033(a: Assumptions) -> Result:
         Primitive("higgs_select_toffoli", higgs_sel_toff * n_dov, T_PER_TOFFOLI[tc], CircuitStatus.SCALING,
                   "app06 2033 derivation; Babbush_PRX_2018",
                   f"{lcu['higgs']} Higgs strings per site (r21 c) at one SELECT Toffoli each, once per application"),
-    )
+    ) + (() if not a.count_gauge_steps_and_reflections.value else (
+        Primitive("gauge_step_terms", n_trot * n_links, t_gauge_link, CircuitStatus.SCALING,
+                  "arxiv_2312_10285 (KS multiplicities, groups.PRIMCOST); arxiv_2408_00075 (group FFT); ESTIMATED HERE",
+                  f"the electric and magnetic terms of one Trotter step per link, {t_gauge_link:.0f} T at the headline "
+                  f"tolerance, x {n_links} links x {n_trot} steps; counted since 2026-10-09 (batch 5 item 12). The Higgs "
+                  f"terms of a step are not estimated"),
+        Primitive("aa_reflection_toffoli", n_reflections * 2 * n_reflect_controls, T_PER_TOFFOLI[tc], CircuitStatus.SCALING,
+                  "arxiv_2407_17966", f"{n_reflections} reflections about the reference state per shot (2 per amplification "
+                                      f"round), each an {n_reflect_controls}-controlled NOT at 2n Toffolis on two clean "
+                                      f"ancilla; counted since 2026-10-09 (batch 5 item 12)"),
+    ))
 
     inter = {
         "sgn_architecture": arch,
@@ -2632,11 +2670,13 @@ def _model_2033(a: Assumptions) -> Result:
         "t_per_shot_empirical_step_stated": float(a.t_shot_empirical_step_stated.value),
         "t_per_shot_at_pre_r21_steps": by_rule["stated"]["t_shot"],
         "t_per_shot_if_not_self_inverse": P_not_self_inverse["t_shot"],
-        # not priced (records)
-        "unpriced_gauge_T_per_link_step": t_gauge_link, "unpriced_gauge_T_per_step": t_gauge_step,
-        "unpriced_gauge_share_of_step": gauge_step_share,
-        "unpriced_fpaa_reflections": n_reflections, "unpriced_fpaa_reflection_controls": n_reflect_controls,
-        "unpriced_fpaa_reflection_T": t_fpaa_reflections,
+        # counted since 2026-10-09 (batch 5 item 12): the gauge terms of a step and the amplification reflections
+        "gauge_step_T_per_link": t_gauge_link, "gauge_step_T": t_gauge_step,
+        "gauge_step_share_of_step": gauge_step_share, "t_gauge_steps_per_shot": P["t_gauge_steps"],
+        "aa_reflections": n_reflections, "aa_reflection_controls": n_reflect_controls,
+        "aa_reflection_T": t_fpaa_reflections,
+        "t_per_shot_core": P["t_shot_core"], "t_thermal_prep": t_thermal_prep,
+        "count_gauge_steps_and_reflections": bool(a.count_gauge_steps_and_reflections.value),
         # the shot
         "t_per_dov": t_dov, "t_per_dov_stated": float(a.t_per_dov_stated.value),
         "n_dov_evolution": n_dov_evol, "n_dov_evolution_stated": float(a.n_dov_evolution_stated.value),
@@ -2648,7 +2688,7 @@ def _model_2033(a: Assumptions) -> Result:
         "d_beta_at_delta_beta_1e-3": d_beta_at_1e3,
         "n_dov_tpq": n_dov_tpq, "n_filter_calls": n_filter_calls, "n_dov_tpq_one_call_per_round": n_dov_tpq_one_call_per_round, "n_dov_tpq_stated": float(a.n_dov_tpq_stated.value),
         "t_tpq": t_tpq, "t_tpq_stated": float(a.t_tpq_stated.value),
-        "tpq_dominates": t_tpq > t_evol, "tpq_share_of_shot": t_tpq / t_shot, "evolution_share_of_shot": t_evol / t_shot,
+        "tpq_dominates": t_tpq > t_evol, "tpq_share_of_shot": t_thermal_prep / t_shot, "evolution_share_of_shot": t_evol / t_shot,
         "n_dov_total": n_dov, "n_queries_total": n_queries,
         "t_per_shot": t_shot,
         "t_per_shot_stated": float(a.t_per_shot_2033_stated.value),
@@ -2855,9 +2895,10 @@ def _model_2033(a: Assumptions) -> Result:
         f"{ratio_env:.3g}x the 1e9 envelope; evolution {t_evol / t_shot:.2%}, TPQ {t_tpq / t_shot:.2%}. Range "
         f"{P_low['t_shot']:.4g}-{P_high['t_shot']:.4g}; worst-case step {by_rule['bound']['t_shot']:.4g}; Ch. 5 step "
         f"{by_rule['step']['t_shot']:.4g}.",
-        f"Not priced: the gauge terms of a step, about {t_gauge_step:.3g} T ({gauge_step_share:.1%} of the step; KS "
-        f"multiplicities with the group FFT, estimated here), the Higgs terms, and the amplification reflections "
-        f"({n_reflections} x 2 x {n_reflect_controls} Toffolis = {t_fpaa_reflections:.3g} T per shot, arxiv_2407_17966).",
+        f"Counted since 2026-10-09 (batch 5 item 12): the gauge terms of a step, {t_gauge_step:.3g} T ({gauge_step_share:.1%} "
+        f"of the step; KS multiplicities with the group FFT, estimated here) x {n_trot} steps = {P['t_gauge_steps']:.3g} T, and "
+        f"the amplification reflections ({n_reflections} x 2 x {n_reflect_controls} Toffolis = {t_fpaa_reflections:.3g} T per "
+        f"shot, arxiv_2407_17966); shot core {P['t_shot_core']:.6g} T. The Higgs terms of a step are not estimated.",
         f"Record, second-quantized construction at the worst-case step (r21 box): c_be {SQ['c_be']:.1f}, "
         f"{SQ['t_dov']:.4g} T per D_ov, {SQ['t_shot']:.4g} T per shot, {sq_lq_anc} ancilla, {sq_lq} LQ; "
         f"{SQ['t_dov'] / P_r22_bound['t_dov']:.1f}x the valid application (r22 inputs).",

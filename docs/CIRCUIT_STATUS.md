@@ -236,8 +236,10 @@ COMPILED: 20  SCALING: 0  CONJECTURE: 0  UNSOURCED: 5
 | 2033 | outer_reflection_rotation | 1.01e+04 | 27.2 | 2.73e+05 | **SCALING** | bocharovRoettelerSvore2015,campbell2017 | the QSP phase of the evolution / filter polynomial; R-TOL eps_rot = sqrt(0.01/2.52481e+07) = 1.99e-05, RUS fit 27.159 T |
 | 2033 | higgs_2O_group_action | 2.72e+05 | 392 | 1.07e+08 | **SCALING** | arxiv_2312_10285 | 27 Higgs actions per application at 1 U_x = 392 T (56 Toffoli at 7 T, 4 clean ancilla; tab:tgatecost, COMPILED; no controlled variant, so SCALING); outside sgn |
 | 2033 | higgs_select_toffoli | 1.09e+07 | 7 | 7.61e+07 | **SCALING** | app06 2033 derivation; Babbush_PRX_2018 | 40 Higgs strings per site (r21 c) at one SELECT Toffoli each, once per application |
+| 2033 | gauge_step_terms | 3.64e+04 | 8.55e+03 | 3.12e+08 | **SCALING** | arxiv_2312_10285 (KS multiplicities, groups.PRIMCOST); arxiv_2408_00075 (group FFT); ESTIMATED HERE | the electric and magnetic terms of one Trotter step per link, 8548 T at the headline tolerance, x 81 links x 450 steps; counted since 2026-10-09 (batch 5 item 12). The Higgs terms of a step are not estimated |
+| 2033 | aa_reflection_toffoli | 3.11e+04 | 7 | 2.18e+05 | **SCALING** | arxiv_2407_17966 | 16 reflections about the reference state per shot (2 per amplification round), each an 972-controlled NOT at 2n Toffolis on two clean ancilla; counted since 2026-10-09 (batch 5 item 12) |
 
-COMPILED: 6  SCALING: 12  CONJECTURE: 0  UNSOURCED: 0
+COMPILED: 6  SCALING: 14  CONJECTURE: 0  UNSOURCED: 0
 
 ## Ch. 10 — ch10_finite_density
 
@@ -280,4 +282,4 @@ COMPILED: 16  SCALING: 11  CONJECTURE: 0  UNSOURCED: 0
 
 ## Totals
 
-COMPILED: 124  SCALING: 69  CONJECTURE: 5  UNSOURCED: 5
+COMPILED: 124  SCALING: 71  CONJECTURE: 5  UNSOURCED: 5
