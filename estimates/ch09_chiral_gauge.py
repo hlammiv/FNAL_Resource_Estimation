@@ -605,10 +605,11 @@ def jacobi_anger_order(x: float, eps: float) -> int:
     return R
 
 
-def dov_per_step(n_steps: int, t_lat: float, q_modes: int, eps_qsp: float) -> int:
-    """Applications of the block-encoded overlap Hamiltonian per Trotter step: normalization 2Q in lattice units,
-    QSP error eps_qsp / N per step (eps_qsp over the shot)."""
-    return jacobi_anger_order(2.0 * q_modes * t_lat / n_steps, eps_qsp / n_steps)
+def dov_per_step(n_steps: int, t_lat: float, q_modes: int, eps_qsp: float, norm_factor: float = 1.0) -> int:
+    """Applications of the block-encoded overlap Hamiltonian per Trotter step: normalization 2Q x norm_factor in lattice
+    units (norm_factor = (2 + y rho_max)/2 carries the Yukawa weight since 2026-10-10), QSP error eps_qsp / N per step
+    (eps_qsp over the shot)."""
+    return jacobi_anger_order(2.0 * q_modes * norm_factor * t_lat / n_steps, eps_qsp / n_steps)
 
 
 def trotter_state_dependent_steps(L: int, n_adj: int, t_lat: float, eps: float, temp_lat: float, d: int = 3) -> dict:
@@ -1201,10 +1202,10 @@ class Assumptions:
                                                                         "(5537 at g^2 = 1)")
     dt_empirical_fm: Tagged = Cited(0.01, "app03 2033 box ('2nd-order Trotter at Delta t = a_t/10', a_t = 0.1 fm/c)",
                                     "the fixed step of Ch. 5's 3^3 evolution, the printed comparison")
-    t_shot_empirical_step_stated: Tagged = Stated(1.5e10, "app06 2033 derivation", "'200 steps ... the shot would be "
+    t_shot_empirical_step_stated: Tagged = Stated(2.1e10, "app06 2033 derivation", "'200 steps ... the shot would be "
                                                                                     "1.4e10 T' at the fixed step of Ch. 5 "
                                                                                     "(17 filter calls: 1.4989e10; C1: 1.3508e10; r25: 1.2635e10; r24 6.4e9; 33 per step)")
-    n_dov_per_step_stated: Tagged = Stated(19, "app06 2033 derivation", "'19 applications per step': the Jacobi-Anger order "
+    n_dov_per_step_stated: Tagged = Stated(25, "app06 2033 derivation", "'19 applications per step': the Jacobi-Anger order "
                                                                         "at 2Q dt = 9.6 (r24; r22 13 at 4.3)")
     n_dov_per_step_worst_stated: Tagged = Stated(6, "app06 2033 derivation", "'7.4e3 steps of 6 applications each' at the "
                                                                              "worst-case step (r24)")
@@ -1212,12 +1213,12 @@ class Assumptions:
                                                                              "step (derived there too); also the r21 "
                                                                              "'~5 D_ov applications per step' that the "
                                                                              "second-quantized record keeps")
-    n_dov_evolution_stated: Tagged = Stated(8.6e3, "app06 2033 derivation", "'The evolution is then 8.6e3 applications' "
+    n_dov_evolution_stated: Tagged = Stated(1.1e4, "app06 2033 derivation", "'The evolution is then 8.6e3 applications' "
                                                                             "(r24: 8550; r22 65,403)")
-    n_dov_floor_stated: Tagged = Stated(4.3e3, "app06 2033 derivation", "'no step size takes the evolution below 2Qt = 4320 "
+    n_dov_floor_stated: Tagged = Stated(6.5e3, "app06 2033 derivation", "'no step size takes the evolution below 2Qt = 4320 "
                                                                         "applications, 4.1e9 T' (r24; r22 21,600)")
-    t_evolution_stated: Tagged = Stated(1.6e10, "app06 2033 derivation", "'or 1.6e10 T-gates' (r25: 1.5798e10; r24 8.0e9)")
-    t_shot_range_stated: Tagged = Stated((1.4e10, 3.0e10), "app06 2033 derivation", "batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is "
+    t_evolution_stated: Tagged = Stated(2.1e10, "app06 2033 derivation", "'or 1.6e10 T-gates' (r25: 1.5798e10; r24 8.0e9)")
+    t_shot_range_stated: Tagged = Stated((1.9e10, 3.7e10), "app06 2033 derivation", "batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is "
                                                                                    "1.1-2.6e10 T' (17 filter calls: 1.3469e10, 2.8708e10; C1 1.2-2.7e10; r25: 1.1115e10, 2.6352e10; "
                                                                                    "r24 5.6e9-1.3e10)")
     t_shot_bound_stated: Tagged = Stated(9.1e10, "app06 2033 derivation", "batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' "
@@ -1230,29 +1231,29 @@ class Assumptions:
                                   "1e-4 needs degree 84 (scratch referee/ch09/deg.py); the sqrt formula gives 89.2")
     delta_beta: Tagged = Assumed(1e-4, "app06 'and delta_beta ~ 1e-4' (ch09-delta-beta); "
                                        "sqrt(1e2 ln 1e4) = 30.35 -> d_beta = 30; 1e-3 would give 26.3")
-    d_beta_stated: Tagged = Stated(89, "app06 2033 derivation", "referee C1 (2026-10-04): 'degree d_beta = 89' at beta||H|| = 2Q / (T a) = 864 (89.2); r25 '~30' at the record 1e2")
+    d_beta_stated: Tagged = Stated(109, "app06 2033 derivation", "referee C1 (2026-10-04): 'degree d_beta = 89' at beta||H|| = 2Q / (T a) = 864 (89.2); r25 '~30' at the record 1e2")
     aa_rounds: Tagged = Stated(8, "app06 2033 derivation, route (iv)", "'~8 rounds of fixed-point amplitude amplification'; "
                                                                        "'an estimate rather than a derivation'")
     aa_call_rule: Tagged = Assumed("2k+1", "verifier 2026-10-04: k rounds of amplitude amplification call the filter "
                                    "2k + 1 times (U and U^dag once per round, plus the first call); 'per_round' keeps "
                                    "the r24-r25 and first-referee-pass record of one call per round")
-    n_dov_tpq_stated: Tagged = Stated(1.5e3, "app06 2033 derivation", "'1.5e3 applications' (89 x 17 = 1513: 2k + 1 filter calls in k = 8 rounds, verifier 2026-10-04; first referee pass 712 = 89 x 8; r25 240)")
-    t_tpq_stated: Tagged = Stated(2.8e9, "app06 2033 derivation", "'2.8e9 T' inside the sphaleron shot "
+    n_dov_tpq_stated: Tagged = Stated(1.9e3, "app06 2033 derivation", "'1.5e3 applications' (89 x 17 = 1513: 2k + 1 filter calls in k = 8 rounds, verifier 2026-10-04; first referee pass 712 = 89 x 8; r25 240)")
+    t_tpq_stated: Tagged = Stated(3.4e9, "app06 2033 derivation", "'2.8e9 T' inside the sphaleron shot "
                                                                          "(2.796e9 at 17 calls; first referee pass 1.3e9; r25: 4.4346e8; r24 2.3e8; r22 7.3e8)")
-    t_per_shot_2033_stated: Tagged = Stated(1.9e10, "app06 2033 derivation and box", "'per-shot total over the N_Dov = 8.8e3 "
+    t_per_shot_2033_stated: Tagged = Stated(2.5e10, "app06 2033 derivation and box", "'per-shot total over the N_Dov = 8.8e3 "
                                                                                     "applications is 1.6e10 T-gates' (17 filter calls: 1.8597e10; C1 1.7115e10; r25: "
                                                                                     "1.6242e10; r24 8.2e9; r22 2.008e11)")
-    ratio_representative_stated: Tagged = Stated(19, "app06 2033 derivation", "'a factor 19 above the budget' (17 filter calls: 18.60; C1 2026-10-04: 17.11; r25: 16.24; r24 8.2; r22 2.0e2)")
-    gibbs_T_stated: Tagged = Stated((4.8e12, 1.5e14), "app06 route (iv)", "'The range is 5.5e11-1.7e13' (r25, re-priced at the "
+    ratio_representative_stated: Tagged = Stated(25, "app06 2033 derivation", "'a factor 19 above the budget' (17 filter calls: 18.60; C1 2026-10-04: 17.11; r25: 16.24; r24 8.2; r22 2.0e2)")
+    gibbs_T_stated: Tagged = Stated((7.2e12, 2.3e14), "app06 route (iv)", "'The range is 5.5e11-1.7e13' (r25, re-priced at the "
                                                                           "Yukawa-inside application; r24 2.8e11-8.9e12; "
                                                                           "r22 9.2e11-2.9e13)")
-    gibbs_T_central_stated: Tagged = Stated(2.5e13, "app06 route (iv)", "'2.5e13 T' (C1 2026-10-04, beta||H|| = 864: 2.518e13; r25: 2.914e12; r24 1.5e12; r22 4.8e12)")
-    gibbs_over_tpq_stated: Tagged = Stated(9.0e3, "app06 route (iv)", "'9.0e3 times' (17 filter calls: 9005; C1 2026-10-04: 1.914e4; r25 6.6e3; both scale with "
+    gibbs_T_central_stated: Tagged = Stated(3.8e13, "app06 route (iv)", "'2.5e13 T' (C1 2026-10-04, beta||H|| = 864: 2.518e13; r25: 2.914e12; r24 1.5e12; r22 4.8e12)")
+    gibbs_over_tpq_stated: Tagged = Stated(1.1e4, "app06 route (iv)", "'9.0e3 times' (17 filter calls: 9005; C1 2026-10-04: 1.914e4; r25 6.6e3; both scale with "
                                                                       "the application price)")
     kappa_physical: Tagged = Stated((1e3, 1e4), "app06 2033 derivation", "'kappa ~ 1e3-1e4 ... near-physical-mass'")
-    t_physical_stated: Tagged = Stated((6.1e11, 6.1e12), "app06 2033 derivation", "'6.1e11-6.1e12 T' (17 filter calls: 6.107e11, 6.120e12; C1: 5.620e11, 5.632e12; r25: 5.333e11, 5.345e12; "
+    t_physical_stated: Tagged = Stated((8.0e11, 8.0e12), "app06 2033 derivation", "'6.1e11-6.1e12 T' (17 filter calls: 6.107e11, 6.120e12; C1: 5.620e11, 5.632e12; r25: 5.333e11, 5.345e12; "
                                                                                   "r24 2.7e11-2.7e12; r22 2.0e12-2.0e13)")
-    eps_l_2033_stated: Tagged = Stated(5.3e-12, "app06 2033 derivation and box", "'eps_l <~ 5.3e-12' (batch 5 item 12, 2026-10-09: 5.289e-12; 17 filter calls alone: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot "
+    eps_l_2033_stated: Tagged = Stated(4.1e-12, "app06 2033 derivation and box", "'eps_l <~ 5.3e-12' (batch 5 item 12, 2026-10-09: 5.289e-12; 17 filter calls alone: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot "
                                                                                  "for the 10a sphaleron shot (R3; r25 6.157e-12; "
                                                                                  "r24 1.2e-11; r22 5.0e-13)")
     # thermal-state route alternatives (app06 route (iv)), emitted so the prose numbers are checkable
@@ -1294,7 +1295,7 @@ class Assumptions:
                                      "(suppression 431-2400, quoted ~1e3)")
     eps_obs: Tagged = Assumed(0.1, "app06 'at eps=0.1'; box: '10% statistical'")
     shots_2033: Tagged = Stated(1e4, "app06 2033 box", "'1e4 (psi-bar psi: 1e3/coupling; Gamma_sph: 1e4/coupling)'")
-    wall_per_shot_2033_stated: Tagged = Stated(1.9e4, "app06 requirements and wall-time paragraph", "'1.9e4 s' per 10a shot (18,597; C1 17,115) "
+    wall_per_shot_2033_stated: Tagged = Stated(2.5e4, "app06 requirements and wall-time paragraph", "'1.9e4 s' per 10a shot (18,597; C1 17,115) "
                                                                                                     "(r25: 16,241.7; r24 8.2e3; r22 2.008e5)")
     # r23 (H. Lamm 2026-10-02, apply_log/r23_ch09.md): the report assumes one machine. The Stated n_machines = 6.4e2
     # ("inside the 5-year horizon only on ~6.4e2 machines") is retired with n_machines_needed, wall_yr_parallel and
@@ -1311,15 +1312,15 @@ class Assumptions:
     t_shot_to_fit_scan_stated: Tagged = Stated(3.2e8, "RECORD (r24 wall-time paragraph)", "'a shot of 3.2e8 T' (3.156e8; "
                                                                                    "unchanged: set by the shot count)")
     # r24 (1): the condensate arm at its own shot (the preparation alone)
-    t_shot_condensate_stated: Tagged = Stated(2.8e9, "app06 2033 box and wall-time paragraph",
+    t_shot_condensate_stated: Tagged = Stated(3.4e9, "app06 2033 box and wall-time paragraph",
                                               "'condensate shot 2.8e9 T' (TPQ alone at its own R-TOL, 17 filter calls: 2.7901e9; C1 1.3119e9; r25 4.4166e8, "
                                               "r24 2.2e8)")
-    eps_l_condensate_stated: Tagged = Stated(3.6e-11, "app06 2033 box", "'eps_l <~ 3.6e-11' for the condensate (17 filter calls: 3.584e-11; C1: 7.623e-11; r25 2.264e-10; r24 4.5e-10)")
-    wall_day_condensate_point_stated: Tagged = Stated(32, "app06 wall-time paragraph",
+    eps_l_condensate_stated: Tagged = Stated(2.9e-11, "app06 2033 box", "'eps_l <~ 3.6e-11' for the condensate (17 filter calls: 3.584e-11; C1: 7.623e-11; r25 2.264e-10; r24 4.5e-10)")
+    wall_day_condensate_point_stated: Tagged = Stated(40, "app06 wall-time paragraph",
                                                       "'32 days per temperature' (1e3 condensate shots; 32.29; C1 15.18; r25 5.112; "
                                                       "r24 2.6 days per coupling point)")
     wall_yr_condensate_scan_stated: Tagged = Stated(0.36, "RECORD (r24 box)", "'0.36 yr for the ~50-point scan'; retired by r25 (e)")
-    t_shot_kappa_r22_stated: Tagged = Stated(6.2e10, "app06 2033 derivation", "batch 5 item 12 (2026-10-09): 6.150e10 with the gauge steps (was 6.1e10); 'at kappa ~ 1e2 the same circuit costs 5.3e10 T' "
+    t_shot_kappa_r22_stated: Tagged = Stated(8.0e10, "app06 2033 derivation", "batch 5 item 12 (2026-10-09): 6.150e10 with the gauge steps (was 6.1e10); 'at kappa ~ 1e2 the same circuit costs 5.3e10 T' "
                                                                               "(17 filter calls: 6.119e10; C1 5.631e10; r25: 5.344e10; r24 2.7e10)")
     # r24 levers for one sphaleron point under a year; sizes DERIVED HERE; none is applied to the box
     lever_eps_obs: Tagged = Assumed(0.15, "r24 lever: a 15% statistical target on Gamma_sph (shots sigma^2 / eps^2)")
@@ -1329,6 +1330,23 @@ class Assumptions:
     wall_yr_lever_eps15_stated: Tagged = Stated(1.2, "app06 wall-time paragraph", "'1.2 yr' at 15% (r24)")
     wall_yr_lever_both_stated: Tagged = Stated(0.8, "app06 wall-time paragraph", "'together 0.8 yr' (r24)")
     # ---- r25 (H. Lamm 2026-10-02: rulings R1, R4, R9, R10 and the queued Ch. 9 rulings (a), (e), (f)) ----------------
+    yukawa_coupling_y: Tagged = Assumed(1.0, "author ruling 2026-10-10 ('go for' the Yukawa estimate): the Yukawa of the "
+                                             "vector-like fermion to the digitized doublet, taken at the top-like value "
+                                             "y = sqrt(2) m_t / v ~ 1 (the chapter's model is a rescaled SU(2)-Higgs theory "
+                                             "and fixes no y); band 0.3-1 (yukawa_weight_band)")
+    higgs_rho_max_lat: Tagged = Assumed(1.0, "author ruling 2026-10-10: the top of the N_rho = 16 radial register in lattice "
+                                             "units, rho_max a ~ 1, about twice the zero-temperature <rho> a = v a / sqrt2 = "
+                                             "0.54 at a^-1 ~ 320 GeV (the chapter's T = T_c, T a = 0.5 spacing); band 1-2 "
+                                             "(yukawa_weight_band)")
+    yukawa_weight_band: Tagged = Assumed((0.3, 2.0), "author ruling 2026-10-10: y rho_max between 0.3 x 1 and 1 x 2; the "
+                                                     "normalization factor (2 + y rho_max)/2 runs 1.15-2.0 (central 1.5)")
+    count_yukawa_normalization: Tagged = Assumed(
+        True, "author ruling 2026-10-10 ('the Hersh yukawa go for'): the projected Yukawa's weight y rho_max Q joins the "
+              "fermion kinetic 2Q in the block-encoding normalization, lambda = Q (2 + y rho_max); it enters the "
+              "Jacobi-Anger order (applications per step), the 2 lambda t floor and the thermal filter's beta lambda. "
+              "False restores the r25-C1 normalization 2Q (records)")
+    # 2026-10-10: every *_stated 2033 value below carries the Yukawa normalization (2 + y rho_max)/2 = 1.5; the
+    # pre-10-10 values are in the notes of count_yukawa_normalization and the apply log (batch 5: shot 1.9e10, 19x)
     yukawa_placement: Tagged = Stated("inside", "author ruling r25 (a), H. Lamm 2026-10-02, relaying H. Singh",
                                       "'the Ginsparg-Wilson-projected Yukawa is INSIDE': the Yukawa couples the "
                                       "projected fields, whose projector (1 - sgn(H_W))/2 is a second QSVT polynomial of "
@@ -1357,25 +1375,25 @@ class Assumptions:
     n_temperatures: Tagged = Stated((4, 8), "author ruling r25 (e), H. Lamm 2026-10-02",
                                     "'campaign 4-8 temperatures (not 50 couplings)' on the symmetric / near-T_c side; "
                                     "the two-time linearity check at one of them, 10a only at the rest")
-    t_shot_short_stated: Tagged = Stated(9.7e9, "app06 wall-time paragraph and box", "batch 5 item 12 (2026-10-09): 9.7007e9 with the gauge steps and reflections (was 9.6e9); '160 steps of 23 applications ... "
+    t_shot_short_stated: Tagged = Stated(1.3e10, "app06 wall-time paragraph and box", "batch 5 item 12 (2026-10-09): 9.7007e9 with the gauge steps and reflections (was 9.6e9); '160 steps of 23 applications ... "
                                                                                        "9.6e9 T' at 5a (17 filter calls: 9.5897e9; C1 8.109e9; r25: 7.2366e9)")
-    eps_l_short_stated: Tagged = Stated(1.0e-11, "app06 2033 box", "'1.0e-11 at 5a' (17 filter calls: 1.043e-11; C1: 1.233e-11; r25: 1.382e-11)")
-    wall_s_short_stated: Tagged = Stated(9.7e3, "app06 wall-time paragraph", "'9.7e3 s' per 5a shot (batch 5 item 12, 2026-10-09: 9700.7; before 9589.7; C1 8109; r25 7236.6)")
-    wall_s_condensate_stated: Tagged = Stated(2.8e3, "app06 wall-time paragraph", "'2.8e3 s' per condensate shot (17 filter calls: 2790.1; C1: 1311.9; r25 441.7)")
+    eps_l_short_stated: Tagged = Stated(7.7e-12, "app06 2033 box", "'1.0e-11 at 5a' (17 filter calls: 1.043e-11; C1: 1.233e-11; r25: 1.382e-11)")
+    wall_s_short_stated: Tagged = Stated(1.3e4, "app06 wall-time paragraph", "'9.7e3 s' per 5a shot (batch 5 item 12, 2026-10-09: 9700.7; before 9589.7; C1 8109; r25 7236.6)")
+    wall_s_condensate_stated: Tagged = Stated(3.4e3, "app06 wall-time paragraph", "'2.8e3 s' per condensate shot (17 filter calls: 2790.1; C1: 1311.9; r25 441.7)")
     f_star_register_stated: Tagged = Stated((5.6, 6.3), "app06 wall-time paragraph", "'only 5.6-6.3 T gates per reaction "
                                                                                   "layer' as itemized (10a shot: 5.59-6.32)")
     slowdown_register_stated: Tagged = Stated((1.6, 1.8), "app06 wall-time paragraph", "'1.6-1.8 times slower' (10 / F*)")
     f_star_2033_stated: Tagged = Stated(12, "app06 wall-time paragraph", "'raises this to 12' (12.17-12.54 over the runs)")
     shots_first_stated: Tagged = Stated((1.1e3, 5.5e3), "app06 box and wall-time paragraph", "'1.1e3 shots at 10a and 5.5e3 "
                                                                                            "at 5a' (1111, 5497; r25 4444 under linear growth)")
-    wall_yr_first_stated: Tagged = Stated(2.4, "app06 box and wall-time paragraph", "first result (method test) '2.4 yr' (batch 5 item 12, 2026-10-09: 2.355; before 2.325; "
+    wall_yr_first_stated: Tagged = Stated(3.1, "app06 box and wall-time paragraph", "first result (method test) '2.4 yr' (batch 5 item 12, 2026-10-09: 2.355; before 2.325; "
                                           "before the 2026-10-05 ruling 2.005 with the 5a ratio 4; C1 1.744; r25 1.591)")
-    wall_yr_campaign_stated: Tagged = Stated((2.7, 3.1), "app06 box and wall-time paragraph", "campaign '2.7-3.1 yr' (batch 5 item 12, 2026-10-09: 2.709-3.063; before 2.7-3.0; method "
+    wall_yr_campaign_stated: Tagged = Stated((3.6, 4.0), "app06 box and wall-time paragraph", "campaign '2.7-3.1 yr' (batch 5 item 12, 2026-10-09: 2.709-3.063; before 2.7-3.0; method "
                                              "test + condensate at 4-8 temperatures: 2.679-3.032; the rate campaign before "
                                              "the 2026-10-05 ruling 36.08-60.00, record wall_yr_campaign_r25_stated)")
-    campaign_over_horizon_stated: Tagged = Stated((0.54, 0.61), "app06 box and wall-time paragraph", "'inside the 5-year "
+    campaign_over_horizon_stated: Tagged = Stated((0.71, 0.80), "app06 box and wall-time paragraph", "'inside the 5-year "
                                                   "horizon' (0.536-0.606; rate campaign before 2026-10-05: 7-12x)")
-    wall_yr_campaign_r25_stated: Tagged = Stated((36, 60), "RECORD (app06 before the 2026-10-05 method-test ruling)",
+    wall_yr_campaign_r25_stated: Tagged = Stated((47, 79), "RECORD (app06 before the 2026-10-05 method-test ruling)",
                                                  "'36-60 yr for 4-8 temperatures, 7-12x the 5-year horizon' (rate campaign; "
                                                  "at 30%: '4.0-6.7 yr')")
     wall_s_first_2028_stated: Tagged = Stated(36, "app06 2028 box", "first result '36 s' (125 shots; 36.08)")
@@ -2046,7 +2064,12 @@ def _model_2033(a: Assumptions) -> Result:
     m0 = float(a.m0_wilson.value)
     alpha_hw = 2.0 * D + abs(D - m0)                  # r = 1: hops D (Dirac) + D (Wilson), on-site |D - m_0|: 7.5
     norm_hw_free = 2.0 * D - m0                       # the free-field ||H_W|| (all momenta at pi): 4.5
-    be_norm = 2 * q_modes                             # normalization of the lifted block encoding: Q (lift) x 2 (h_ov)
+    be_norm_kinetic = 2 * q_modes                     # normalization of the lifted fermion block encoding: Q (lift) x 2 (h_ov)
+    # 2026-10-10 (Hersh's r25 (a) item, author estimate): the projected Yukawa's weight y rho_max Q joins the normalization
+    y_rho = float(a.yukawa_coupling_y.value) * float(a.higgs_rho_max_lat.value)            # 1.0
+    yukawa_norm_factor = (2.0 + y_rho) / 2.0 if a.count_yukawa_normalization.value else 1.0   # 1.5
+    yukawa_norm_band = tuple((2.0 + w) / 2.0 for w in (float(a.yukawa_weight_band.lo), float(a.yukawa_weight_band.hi)))  # 1.15-2.0
+    be_norm = be_norm_kinetic * yukawa_norm_factor    # 648 (r25-C1: 432)
 
     # The Higgs vertex's SELECT strings (r21 c): the on-site bilinear (4 N Z strings at d = 3) weighted by rho, whose
     # binary expansion on log2 N_rho qubits has log2 N_rho + 1 terms. The hop and on-site counts of the same function
@@ -2140,7 +2163,7 @@ def _model_2033(a: Assumptions) -> Result:
     higgs_sel_toff = higgs_strings * float(a.lcu_toffoli_per_term.value)       # 1080
     c_higgs_app = c_higgs + toffoli_t(higgs_sel_toff, tc)          # 18,144
 
-    def _price_sp(n_trot_, d_=d_sgn, per_step_=None, t_=t_over_a, toff_saved_=0, n_sgn_=n_sgn, tpq_=n_dov_tpq):
+    def _price_sp(n_trot_, d_=d_sgn, per_step_=None, t_=t_over_a, toff_saved_=0, n_sgn_=n_sgn, tpq_=n_dov_tpq, nf_=None):
         """One shot in the single-particle architecture: n_trot_ steps of r applications (r = the Jacobi-Anger order
         at 2Q dt unless given) + the TPQ applications, each (d_ + 1) queries + lift + reflection + Higgs, at this
         circuit's own R-TOL tolerance. r23 levers: t_ = the evolution time in lattice units, toff_saved_ = Toffolis
@@ -2148,7 +2171,8 @@ def _model_2033(a: Assumptions) -> Result:
         if n_trot_ == 0:                              # r24: preparation only (the condensate arm), no evolution
             r_ = 0
         else:
-            r_ = dov_per_step(n_trot_, t_, q_modes, eps_qsp) if per_step_ is None else int(per_step_)
+            nf = yukawa_norm_factor if nf_ is None else nf_          # records (r22-r25) pass 1.0: the 2Q normalization
+            r_ = dov_per_step(n_trot_, t_, q_modes, eps_qsp, nf) if per_step_ is None else int(per_step_)
         n_dov_ = n_trot_ * r_ + tpq_
         nq_ = (d_ + 1) + (n_sgn_ - 1) * d_
         n_rot_app_ = nq_ * spq["n_rot"] + lift["n_rot"] + outer["n_rot"]
@@ -2176,13 +2200,13 @@ def _model_2033(a: Assumptions) -> Result:
     n_dov_floor = be_norm * t_over_a                  # 2Q t = 4320 applications (r22: 21,600): no step size goes below
     t_shot_floor = n_dov_floor * t_dov                # 4.1e9 T at the headline application price
     # r24 records: the r22-r23 headline (kappa 1e2, t = 50a, 5031 steps) and the worst-case step at those inputs
-    P_r22 = _price_sp(sd_r22["n_central"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25)      # 2.00789e11
-    P_r22_bound = _price_sp(tb_r22["n_steps"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25)  # 1.276e12
+    P_r22 = _price_sp(sd_r22["n_central"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)      # 2.00789e11
+    P_r22_bound = _price_sp(tb_r22["n_steps"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)  # 1.276e12
     # r25 records: the r24 headline (Yukawa outside sgn) and its condensate shot
-    P_r24 = _price_sp(n_trot, n_sgn_=1, tpq_=n_dov_tpq_r25)               # 8.2414e9
-    C_r24 = _price_sp(0, n_sgn_=1, tpq_=n_dov_tpq_r25)                    # 2.2412e8
-    P_r25 = _price_sp(n_trot, tpq_=n_dov_tpq_r25)     # 1.6242e10: the r25 headline (filter at the record 1e2)
-    C_r25 = _price_sp(0, tpq_=n_dov_tpq_r25)          # 4.4166e8: the r25 condensate shot
+    P_r24 = _price_sp(n_trot, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)      # 8.2414e9
+    C_r24 = _price_sp(0, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)           # 2.2412e8
+    P_r25 = _price_sp(n_trot, tpq_=n_dov_tpq_r25, nf_=1.0)     # 1.6242e10: the r25 headline (filter at the record 1e2)
+    C_r25 = _price_sp(0, tpq_=n_dov_tpq_r25, nf_=1.0)          # 4.4166e8: the r25 condensate shot
     P_kappa_r22 = _price_sp(n_trot, d_=d_sgn_r22)     # kappa ~ 1e2 at t = 10a: the sensitivity the prose prints
     # r24 (1): the condensate arm. <psibar psi> is static: measured on the prepared state, no real-time evolution, so its
     # shot is the preparation alone (the TPQ filter, n_dov_tpq applications) at that circuit's own R-TOL tolerance.
@@ -2606,6 +2630,8 @@ def _model_2033(a: Assumptions) -> Result:
         "q_modes": q_modes, "index_register": q_index, "index_register_qubits": n_index,
         "n_lcu_unitaries": spq["n_lcu_unitaries"], "term_register_qubits": spq["term_register"],
         "m0_wilson": m0, "alpha_hw": alpha_hw, "norm_hw_free": norm_hw_free, "be_normalization": be_norm,
+        "be_normalization_kinetic": be_norm_kinetic, "yukawa_weight": y_rho, "yukawa_norm_factor": yukawa_norm_factor,
+        "yukawa_norm_factor_band": yukawa_norm_band,
         "d_sgn_if_kappa_is_norm_over_gap": d_sgn_norm_convention,
         "t_per_shot_if_kappa_is_norm_over_gap": P_kappa_norm["t_shot"],
         "sp_query": spq, "sp_query_toffoli": spq["toffoli"], "sp_query_toffoli_stated": float(a.sp_query_toffoli_stated.value),
@@ -2991,7 +3017,7 @@ PUBLISHED = {
                           "fits the 32 ancilla. r22 (E26): 31 phasing ancilla + 1 RUS (was 37 + 2 = 39, 247 LQ); the T "
                           "count does not move",
                       rel_tol=0.10),
-    "2033": Published(lq=(1015, 1015), hard_ops=(1.9e10, 1.9e10),
+    "2033": Published(lq=(1015, 1015), hard_ops=(2.5e10, 2.5e10),
                       src="app06 2033 box ('1015 = 216 + 486 + 270 + 43', sphaleron shot at 10a '1.9e10'; verifier 2026-10-04: "
                           "17 filter calls in 8 rounds (2k + 1), 1513 applications, 10,063 x t_dov = 1.8597e10; referee C1 "
                           "(2026-10-04): the thermal filter at beta||H|| = 2Q / (T a) = 864, d_beta 89, 712 applications, "
