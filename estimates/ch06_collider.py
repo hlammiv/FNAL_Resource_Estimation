@@ -488,7 +488,10 @@ class Assumptions:
     lightlike_dims: Tagged = Stated((3, 3, 5), f"{TEX}:97", "pure-gauge 2O on 3x3x5: the 5-site (1 fm) axis delays the "
                                                             "self-wake to L ~ 0.5 fm")
     lightlike_src_qubits: Tagged = Stated(2, f"{TEX}:97", "two SU(2) fundamental sources, one qubit each")
-    qhat_GeV2_fm: Tagged = Assumed(2.0, "pure-glue q-hat near 1.5 T_c (simplobs.json; range 1-3)", src=f"{TEX}:97")
+    qhat_GeV2_fm: Tagged = Cited(2.0, "JET_Burke_2014", "quark-jet (fundamental) q-hat: 1.9 +- 0.7 GeV^2/fm in Pb+Pb 2.76 TeV, "
+                                                    "1.2 +- 0.3 at RHIC, JET Collaboration PRC 90 (2014) 014909; the chapter's "
+                                                    "2 GeV^2/fm is that LHC value (was Assumed 'pure-glue q-hat near 1.5 T_c', "
+                                                    "simplobs.json, range 1-3; J4 convention item closed 2026-10-09)")
     kappa_over_T3: Tagged = Assumed(2.5, "quenched heavy-quark kappa/T^3 (simplobs.json; range 1.5-3.5)", src=f"{TEX}:97")
     dipole_T_GeV: Tagged = Assumed(0.44, "aT ~ 0.45 at a = 0.2 fm", src=f"{TEX}:97")
     dipole_P0: Tagged = Assumed(0.9, "singlet survival after the string build, P_d (simplobs.json)", src=f"{TEX}:97")

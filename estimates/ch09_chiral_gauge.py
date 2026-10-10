@@ -80,8 +80,11 @@ WHAT IS NOT DERIVED HERE
   the replacement of norms by state expectation values   Alves, Lamm, Liu (preprint FERMILAB-PUB-26-0397-T): cited, not re-derived; the
                                           constants were checked numerically (tests)
   the temperature T a = 0.5               Assumed; the chapter says T ~ T_c only
-  a self-inverse block encoding           assumed for 'applications per step = Jacobi-Anger order' (the lift admits one at
-                                          O(1) cost); otherwise twice the count (record t_per_shot_if_not_self_inverse)
+  a self-inverse block encoding           DERIVED 2026-10-09: one CNOT (term-type bit -> orientation bit) before SELECT
+                                          swaps each hop term with its Hermitian conjugate, so SELECT is Hermitian and
+                                          the LCU unitary squares to the identity with the same block (checked at gate
+                                          level on 3^3, tests/test_ch09 'self_inverse'); 'applications per step =
+                                          Jacobi-Anger order' holds at zero T. Record: t_per_shot_if_not_self_inverse
   the gauge terms of a step               ESTIMATED HERE and counted in every current shot since 2026-10-09 (batch 5
                                            item 12; about 2% of the step; the records keep the earlier totals). The
                                            Higgs terms of a step are not estimated
@@ -2890,7 +2893,8 @@ def _model_2033(a: Assumptions) -> Result:
         f"Applications per step = Jacobi-Anger order at x = 2Q dt = {P['x']:.3f} with QSP error {eps_qsp:g} over the shot: "
         f"{per_step} (worst-case step {by_rule['bound']['per_step']}, Ch. 5 step {by_rule['step']['per_step']}, 30 steps "
         f"{by_rule['stated']['per_step']}); floor 2Q t = {n_dov_floor:.0f} applications = {t_shot_floor:.3g} T. Assumes a "
-        f"self-inverse block encoding; otherwise {P_not_self_inverse['t_shot']:.3g} T.",
+        f"self-inverse block encoding, which one CNOT on the orientation bit provides (derived 2026-10-09); without it "
+        f"{P_not_self_inverse['t_shot']:.3g} T (record).",
         f"Shot: {n_dov_evol} evolution + {n_dov_tpq} TPQ = {n_dov} applications x {t_dov:.1f} = {t_shot:.6g} T, "
         f"{ratio_env:.3g}x the 1e9 envelope; evolution {t_evol / t_shot:.2%}, TPQ {t_tpq / t_shot:.2%}. Range "
         f"{P_low['t_shot']:.4g}-{P_high['t_shot']:.4g}; worst-case step {by_rule['bound']['t_shot']:.4g}; Ch. 5 step "

@@ -2152,6 +2152,75 @@ def test_single_particle_select_reproduces_the_covariant_wilson_kernel():
     assert q["anc_direction_flags"] + q["anc_iteration"] + q["anc_link_copy"] == 14
 
 
+def test_block_encoding_is_self_inverse_with_one_cnot():
+    """Hersh's r22 item, derived 2026-10-09. The 13-term LCU of h_w / alpha is not self-inverse as built (its hop terms
+    i Gamma^k T_d and -Gamma^0 T_d are not Hermitian), but the two orientations of every hop are Hermitian conjugates.
+    One CNOT from the term-type bit h onto the orientation bit o before SELECT swaps each hop term with its conjugate
+    partner, so SELECT becomes Hermitian; PREPARE weights the two orientations equally, so the block is unchanged and
+    the LCU unitary squares to the identity. Checked as matrices on the full 3^3 lattice with a random 2O configuration."""
+    import itertools
+    import numpy as np
+    rng = np.random.default_rng(11)
+    valid, els = _2o()
+    dec, Ps = _2o_generator_decompositions()
+    I2, X, Y, Z = Ps["I"], Ps["X"], Ps["Y"], Ps["Z"]
+    D = L = 3
+    sites = list(itertools.product(range(L), repeat=D))
+    links = {(k, x): valid[rng.integers(48)] for k in range(D) for x in sites}
+    elem = dict(zip(valid, els))
+    m0, r = 1.5, 1.0
+    Q = 2 * 4 * L ** D
+
+    def idx(color, spin, x):
+        return ((x[0] * L + x[1]) * L + x[2]) * 8 + spin * 2 + color
+    G0 = np.kron(I2, Z)
+    Gk = [np.kron(P, X) for P in (X, Y, Z)]
+
+    def spinop(G):
+        return np.kron(np.eye(L ** D), np.kron(G, np.eye(2)))
+
+    def Tmat(k):
+        T = np.zeros((Q, Q), complex)
+        for x in sites:
+            y = list(x)
+            y[k] = (y[k] + 1) % L
+            U = elem[links[(k, x)]]
+            for sp in range(4):
+                for c1 in range(2):
+                    for c2 in range(2):
+                        T[idx(c2, sp, tuple(y)), idx(c1, sp, x)] += U[c2, c1]
+        return T
+    Ts = [Tmat(k) for k in range(D)]
+    hw = (D * r - m0) * spinop(G0)
+    for k in range(D):
+        hw = hw + 0.5j * spinop(Gk[k]) @ (Ts[k] - Ts[k].conj().T) - 0.5 * r * spinop(G0) @ (Ts[k] + Ts[k].conj().T)
+    alpha = D + D * r + abs(D * r - m0)
+
+    def term_unitary(h, d, o, w):
+        if not h:
+            return spinop(G0)
+        hopU = Ts[d].conj().T if o else Ts[d]
+        return ((-1j if o else 1j) * spinop(Gk[d]) if w else -spinop(G0)) @ hopU
+    # the term register as PREPARE loads it: 24 slots (h, d, o, w); the on-site term fills the 12 h = 0 slots
+    slots = [(h, d, o, w) for h in (0, 1) for d in range(3) for o in (0, 1) for w in (0, 1)]
+    wts = {t: ((abs(D * r - m0) / alpha) if t[0] == 0 else ((D + D * r) / alpha)) / 12 for t in slots}
+    prep = {t: math.sqrt(wts[t]) for t in slots}
+    V = {t: term_unitary(*t) for t in slots}
+    # SELECT has one unitary block per term column: S|t>|psi> = |j(t)> V_t|psi>, j = identity as built, or the
+    # orientation flipped on the hop terms when the CNOT h -> o precedes it. With a real PREPARE, the LCU unitary is
+    # U = (P^dag x I) S (P x I), so U^2 = I iff S^2 = I, and the block <0|U|0> = sum_t,t' prep_t' prep_t <t'|S|t>.
+    def target(t, cnot):
+        h, d, o, w = t
+        return (h, d, 1 - o, w) if (cnot and h) else t
+    for cnot in (False, True):
+        block = sum(prep[target(t, cnot)] * prep[t] * V[t] for t in slots)
+        assert np.allclose(block, hw / alpha), cnot                              # the same block either way
+        hermitian = all(np.allclose(V[t].conj().T, V[target(t, cnot)]) for t in slots)   # <t'|S|t>^dag == <t|S|t'>
+        squares = [V[target(t, cnot)] @ V[t] for t in slots if target(target(t, cnot), cnot) == t]
+        self_inverse = len(squares) == len(slots) and all(np.allclose(M, np.eye(Q)) for M in squares)
+        assert hermitian == self_inverse == cnot                                   # as built: no; with one CNOT: yes
+
+
 def test_overlap_kernel_one_link_dependence_is_not_enhanced():
     """r22 verifier: the worst-case Trotter bound takes the Wilson hop's norm (4) for the kernel's dependence on one
     link. For the overlap kernel the dependence is that of sgn(h_w[U]), which is nonlocal. On seeded random 2O
