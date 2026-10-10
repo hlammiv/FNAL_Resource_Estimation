@@ -36,7 +36,7 @@ GROUPS = (
      ("delta_beta", "filter_success_prob", "aa_call_rule", "ref_rot_per_qubit", "qsvt_query_cost")),
     ("2033 target: grid, accuracy targets and shots",
      ("grid_T_mev", "grid_mu_mev", "n_T", "n_mu", "eps_stat", "eps_chi4_chi2_target", "eps_pressure_target",
-      "eps_first_result", "nb_toy_k2_priced", "nb_toy_k2_band", "nb_toy_k2_mid", "nb_toy_quark_k2", "fr_rw_pairs",
+      "eps_first_result", "nb_toy_k2_priced", "nb_toy_k2_band", "nb_toy_k2_mid", "nb_toy_quark_k2", "nb_model", "m_q_mev", "m_q_mev_sensitivity", "sc_site_degeneracy", "sc_min_events", "fr_chi_target_abs", "fr_rw_pairs",
       "grid_rw_pairs_k2lo", "grid_rw_pairs_k2mid", "campaign_horizon_yr")),
     ("Post-2033 stretch: Sigma(72x3), V = 4^3 (register only)",
      ("group_stretch", "d_stretch", "L_stretch", "n_stag_stretch", "n_anc_stretch")),

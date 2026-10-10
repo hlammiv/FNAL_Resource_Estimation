@@ -458,15 +458,53 @@ def test_2033_c_be_consistent_with_compiled_floor(r33):
 
 
 def test_2033_shots_from_eq_nshot(r33):
-    # referee F1: Eq. Nshot_fd = sum over points of V1/delta^2, V1 the delta-method variance of k4/k2
+    # referee F1: Eq. Nshot_fd = sum over points of V1/delta^2, V1 the delta-method variance of k4/k2; since
+    # 2026-10-10 (author ruling, option (a)) N_B comes from the strong-coupling site model at m_q = 313 MeV
     i = r33.intermediates
     assert i["n_grid_points"] == 25                        # "5x5 points"
-    assert _close(i["shots_total"], 257603.4856, rel=1e-8)  # "2.6e5 over the 5x5 grid"
-    assert round(i["shots_total"], -4) == 2.6e5
-    assert (round(i["shots_per_point_min"], -2), round(i["shots_per_point_max"], -3)) == (3.7e3, 6.1e4)
-    assert i["shots_per_point_by_mu_T"][(100, 600)] == i["shots_per_point_max"]
-    assert _close(i["shots_per_point"] * 25, i["shots_total"], rel=1e-12)
+    assert i["nb_model"] == "strong_coupling" and i["m_q_mev"] == 313.0 and i["m_B_mev"] == 939.0
+    assert _close(i["shots_total_direct"], 118331.21, rel=1e-6)          # "1.2e5 sampling every point"
+    assert round(i["shots_total_direct"], -4) == 1.2e5
+    assert (round(i["shots_per_point_min"], -2), round(i["shots_per_point_max"], -2)) == (2.9e3, 5.7e3)
+    assert i["shots_per_point_by_mu_T"][(100, 300)] == i["shots_per_point_max"]
+    assert i["shots_per_point_by_mu_T"][(125, 0)] == i["shots_per_point_min"]
+    assert i["n_points_event_floor"] == 1 and i["event_floor_binds"][(100, 0)]       # "it binds at (100, 0) MeV"
+    assert _close(i["shots_per_point"] * 25, i["shots_total_direct"], rel=1e-12)
+    # the campaign: two reweighted ensembles per T row, 61% fewer shots than sampling every point
+    assert _close(i["shots_total"], 46491.92, rel=1e-6) and round(i["shots_total"], -3) == 4.6e4   # "4.6e4"
+    assert round(100 * i["reweighting_saving_sc"]) == 61                                            # "61% fewer"
+    assert all(p[1] == 600 and p[0] in (25, 50) for p in i["grid_rw_pairs_sc_mev"].values())      # "mu_B = 25-50 and 600 MeV"
     assert c.close(r33.shots, (i["shots_total"],) * 2, 1e-12)
+    # the Skellam toy at kappa_2(0) = 0.01 is a record
+    assert _close(i["shots_total_skellam_record"], 257603.4856, rel=1e-8)
+    assert (round(i["shots_per_point_skellam_record"][0], -2), round(i["shots_per_point_skellam_record"][1], -3)) == (3.7e3, 6.1e4)
+
+
+def test_strong_coupling_nb_model(a, r33):
+    """2026-10-10: the strong-coupling site model. Degeneracies 1/10/10/1 at n_B = 0..3, energy m_B |n_B|; kappa_2 at
+    mu_B = 0 from 6.7e-3 (100 MeV) to 0.64 (200 MeV); at a m_q = 0.1 (m_q = 99 MeV at a = 0.2 fm) kappa_2 ~ 2."""
+    i = r33.intermediates
+    assert a.sc_site_degeneracy.value == (1, 10, 10, 1) and a.sc_min_events.value == 30
+    xs, lt = m.nb_sc_logpmf(939.0 / 100.0, 0.0)
+    assert _close(sum(math.exp(x) for x in lt), 1.0, rel=1e-12) and xs[0] == -12.0 and xs[-1] == 12.0
+    # one site at mu = 0: Var(n) = sum g_k k^2 e^{-k m/T} / Z, the box is 8 such sites
+    mT = 939.0 / 100.0
+    z = sum(g * math.exp(-k * mT) for k, g in enumerate((1, 10, 10, 1)))
+    var1 = sum(g * k * k * math.exp(-k * mT) for k, g in enumerate((1, 10, 10, 1))) / z
+    mean1 = sum(g * k * math.exp(-k * mT) for k, g in enumerate((1, 10, 10, 1))) / z
+    assert _close(i["kappa2_mu0_by_T"][100], 8 * (var1 - mean1 ** 2), rel=1e-9)
+    k2 = i["kappa2_mu0_by_T"]
+    assert _close(k2[100], 6.68e-3, rel=0.01) and _close(k2[200], 0.636, rel=0.01)   # "6.7e-3 ... 0.64"
+    assert _close(i["kappa2_by_point"][(200, 600)], 1.56, rel=0.01)                   # "1.6 at (200, 600) MeV"
+    light = m.grid_shots_sc(a, 99.0, 0.1, 30.0)
+    assert all(1.5 < v < 3.5 for v in light["kappa2_mu0"].values())                   # "a light quark ... kappa_2 ~ 2"
+    # sensitivity: heavier quarks starve the T = 100 MeV points of baryon events
+    sens = i["grid_shots_sc_by_m_q"]
+    assert round(sens[400.0], -4) == 2.0e5 and round(sens[500.0], -5) == 2.1e6         # "2.0e5 ... 2.1e6"
+    # the delta-method V1 reduces to the Skellam formula on a Skellam pmf
+    xs, lt = m.nb_toy_logpmf("baryon", 0.05, 0.0)
+    v = m.ratio_variance_from_pmf(xs, lt)
+    assert _close(v["v1"], 36 + 72 * 0.05 + 24 * 0.05 ** 2, rel=1e-6) and _close(v["p_nonzero"], 1 - math.exp(lt[xs.index(0.0)]), rel=1e-12)
 
 
 def test_f1_delta_method_variance():
@@ -487,16 +525,17 @@ def test_f1_delta_method_variance():
 
 def test_f1_kappa2_records(r33):
     i = r33.intermediates
-    assert round(i["grid_shots_k2_mid"], -4) == 9.1e5                    # "9.1e5 at kappa_2 = 0.05"
-    assert round(i["grid_shots_k2_hi"], -5) == 2.2e6                     # "2.2e6 at 0.1"
+    # Skellam records (the chapter printed these before 2026-10-10)
+    assert round(i["grid_shots_k2_mid"], -4) == 9.1e5                    # 9.1e5 at kappa_2 = 0.05 (record)
+    assert round(i["grid_shots_k2_hi"], -5) == 2.2e6                     # 2.2e6 at 0.1 (record)
     lo, hi = i["grid_wall_k2_mid_yr"]
-    assert (round(lo, -1), round(hi, -1)) == (80, 160)                   # "(80--160 yr)"
+    assert (round(lo, -1), round(hi, -1)) == (80, 160)
     lo, hi = i["grid_wall_k2_hi_yr"]
-    assert (round(lo, -2), round(hi, -2)) == (200, 400)                  # "(200--400 yr)"
-    assert round(i["grid_shots_quark_abs"], -2) == 4.8e3                 # "4.8e3 at delta = 0.1"
-    assert round(i["grid_shots_quark_rel"], -4) == 3.9e5                 # "3.9e5 for 10% relative"
-    assert round(100 * i["reweighting_saving_k2_lo"]) == 11               # "saves 11% at kappa_2 = 0.01"
-    assert i["reweighting_ratio_k2_mid"] > 1                              # "and loses at 0.05"
+    assert (round(lo, -2), round(hi, -2)) == (200, 400)
+    assert round(i["grid_shots_quark_abs"], -2) == 4.8e3
+    assert round(i["grid_shots_quark_rel"], -4) == 3.9e5
+    assert round(100 * i["reweighting_saving_k2_lo"]) == 11               # Skellam: reweighting saved 11% at 0.01 (record)
+    assert i["reweighting_ratio_k2_mid"] > 1
     assert i["hard_ops_is_lower_bound"] is False and i["hsim_bound_is_lower_bound"] is True
 
 
@@ -509,16 +548,18 @@ def test_2033_wall_time_chain(r33):
     assert (round(w[0], -2), round(w[1], -2)) == (2.8e3, 5.6e3)          # "2.8--5.6e3 s"
     assert [round(x) for x in i["wall_per_shot_min"]] == [46, 94]        # "(46--94 min)"
     lo, hi = i["wall_campaign_yr"]
-    assert (round(lo), round(hi)) == (23, 46)                            # "23--46 years of serial running"
+    assert (round(lo, 1), round(hi, 1)) == (4.1, 8.3)                    # "4.1--8.3 yr of serial running" (2026-10-10; Skellam 23-46)
     assert _close(r33.wall_time_s[0], i["shots_total"] * w[0], rel=1e-12)
+    dlo, dhi = i["wall_campaign_direct_yr"]
+    assert (round(dlo), round(dhi)) == (10, 21)                          # every point sampled
     plo, phi = i["wall_single_point_yr"]
-    assert (round(plo, 2), round(phi, 1)) == (0.91, 1.8)                 # "0.91--1.8 yr for an average point"
+    assert (round(plo, 2), round(phi, 2)) == (0.42, 0.85)                # "0.42--0.85 yr per directly sampled point"
     flo, fhi = i["floor_wall_campaign_yr"]
-    assert (round(flo, 1), round(fhi)) == (4.0, 26)                      # "depth limit is 4.0--26 yr"
+    assert (round(flo, 2), round(fhi, 1)) == (0.73, 4.7)                 # "depth limit 0.73--4.7 yr"
     assert i["campaign_horizon_yr"] == 5
     hlo, hhi = i["horizon_reduction_needed"]
-    assert (round(hlo, 1), round(hhi, 1)) == (4.5, 9.2)                  # "falls by 4.5--9.2"
-    assert _close(i["t_per_shot_to_fit_horizon"], 6.1e8, rel=0.01)       # "6.1e8-T shot at the same shot count"
+    assert hlo < 1 < hhi and round(hhi, 1) == 1.7                        # "at the high end ... a 1.7x cut"
+    assert _close(i["t_per_shot_to_fit_horizon"], 3.4e9, rel=0.01)       # "3.4e9-T shot at the same shot count"
     assert i["fr_fits_horizon"] is True                                  # "Five years hold the first result"
 
 
@@ -623,9 +664,9 @@ def test_instance_rows(a, r28, r33, rcd):
 
 
 def test_requirements_summary_row(r33):
-    # requirements: "2.6e5 over the 25 grid points"; "2.8--5.6e3 s (46--94 min) per QSVT shot"
+    # requirements: 1.2e5 over the 25 grid points sampled directly (2026-10-10; Skellam 2.6e5); "2.8--5.6e3 s (46--94 min) per QSVT shot"
     i = r33.intermediates
-    assert round(i["n_grid_points"] * i["shots_per_point"], -4) == 2.6e5
+    assert round(i["n_grid_points"] * i["shots_per_point"], -4) == 1.2e5
     assert [round(x, -2) for x in i["wall_per_shot_s"]] == [2.8e3, 5.6e3]
 
 
@@ -721,37 +762,40 @@ def test_r25_2033_exports(a, r33):
     xlo, xhi = i["f_star"]                                                # cross-paired export (record)
     assert round(xlo, 1) == 8.6 and round(xhi) == 114
     assert i["wall_campaign_s"] == r33.wall_time_s
-    assert i["fits_1yr"] == (False, False)
+    assert i["fits_1yr"] == (False, True)                                 # 4.6e4 shots: the low end fits a year (2026-10-10)
     # matched ends (what the chapter quotes): the 10-factory baseline holds at both ends
     assert i["baseline_ok_matched"] == (True, True) and i["baseline_ok"] == (False, True)
-    assert i["fits_1yr_matched"] == (False, False)
+    assert i["fits_1yr_matched"] == (False, True)                         # 2026-10-10: 4.6e4 shots fit a year at the low end
 
 
 def test_r25_2033_first_result(a, r33):
     i = r33.intermediates
-    assert i["eps_first_result"] == 0.30
-    assert i["fr_samples"] == (2926.0, 15861.0)                           # "2.9e3 ... and 1.6e4"
+    assert i["eps_first_result"] == 0.30 and i["fr_chi_target_abs"] == 0.3
+    # 2026-10-10: the strong-coupling row at chi4/chi2 +-0.3 absolute, n_B 30%: reweighted from (50, 600) MeV
+    assert i["fr_samples"] == (1007.0, 1007.0) and i["fr_sc_pair_mev"] == (50, 600)   # "1.0e3 samples"
+    assert _close(i["fr_sc_direct"], 2525.9, rel=1e-3) and i["fr_sc_reweighted"] < i["fr_sc_direct"]
+    assert i["fr_samples_skellam_record"] == (2926.0, 15861.0)            # record: "2.9e3 ... 1.6e4"
     by = i["fr_by_toy"]
     assert by[("baryon", 0.01)]["best"] == by[("baryon", 0.01)]["reweighted"]
     assert by[("baryon", 0.1)]["best"] == by[("baryon", 0.1)]["direct"]
-    y_lo, y_hi = i["wall_first_result_yr"]
-    assert (round(y_lo, 2), round(y_hi, 1)) == (0.26, 2.8)               # "0.26--2.8 yr on one machine"
-    assert _close(i["wall_first_result_s"][0], 2926 * i["wall_per_shot_s"][0], rel=1e-12)
-    assert _close(i["wall_first_result_s"][1], 15861 * i["wall_per_shot_s"][1], rel=1e-12)
+    d_lo, d_hi = i["wall_first_result_d"]
+    assert (round(d_lo), round(d_hi)) == (32, 66)                        # "32--66 d on one machine"
+    assert _close(i["wall_first_result_s"][0], 1007 * i["wall_per_shot_s"][0], rel=1e-12)
+    assert _close(i["wall_first_result_s"][1], 1007 * i["wall_per_shot_s"][1], rel=1e-12)
     assert i["wall_first_result_yr"][1] < 5
 
 
 def test_r25_tex_prints_the_new_numbers():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app07_finite_density.tex").read_text()
-    for s in (r"$\sim 13.5\,$min per sector", r"$27$--$40\,$min", r"$2.2\%$", r"$2.9\times 10^{3}$--$1.6\times 10^{4}$",
-              r"$9.9$--$15$", r"$2.7$--$4.0\times 10^{4}$", r"$9.1\times 10^{5}$",
-              r"$2.2\times 10^{6}$", r"$2.6\times 10^{5}$",
-              r"$3.7\times 10^{3}$", r"$6.1\times 10^{4}$", r"$6.1\times 10^{8}$",
+    for s in (r"$\sim 13.5\,$min per sector", r"$27$--$40\,$min", r"$2.2\%$", r"$1.0\times 10^{3}$ (one $T$ row, two reweighted ensembles)",
+              r"$9.9$--$15$", r"$2.7$--$4.0\times 10^{4}$", r"$4.6\times 10^{4}$", r"$1.2\times 10^{5}$",
+              r"$2.9\times 10^{3}$--$5.7\times 10^{3}$ per grid point", r"$3.4\times 10^{9}$-T shot",
+              r"$m_q=313$~MeV", r"$m_B=940$~MeV", r"$6.7\times 10^{-3}$", r"$61\%$ fewer", r"$2.0\times 10^{5}$ shots at $m_q=400$~MeV",
               r"$\gtrsim 4.0\times 10^{5}$", r"$4.2\times 10^{6}$", r"$3.2\%$",
               # author ruling 2026-10-05: the QSVT/TPQ headline
               r"$2.8$--$5.6\times 10^{9}$", r"$d_\beta=30$", r"$2m+1=17$", r"$510$ block-encoding queries",
-              r"$0.26$--$2.8$~yr", r"$23$--$46$", r"$0.91$--$1.8$~yr", r"$4.0$--$26$~yr", r"$80$--$160$~yr",
-              r"$200$--$400$~yr", r"$4.5$--$9.2", r"$17$--$56$", r"$46$--$94$~min", r"\lesssim 1.8\times 10^{-11}$",
+              r"$32$--$66$~d", r"$4.1$--$8.3$~yr", r"$0.42$--$0.85$~yr", r"$0.73$--$4.7$~yr", r"$1.7\times$ cut",
+              r"$17$--$56$", r"$46$--$94$~min", r"\lesssim 1.8\times 10^{-11}$",
               r"$3.6\times 10^{-11}$", r"$280$--$560", r"$28$--$56$ faults", r"$4.7$--$9.6\times 10^{8}$ T",
               r"$1.8$--$3.7\times 10^{10}$", r"$d_\beta=56$",
               r"$9.6\times 10^{6}$-T step", r"$\sim 8\times 10^{13}$--$4\times 10^{14}$ T per shot",
@@ -789,7 +833,7 @@ def test_r25_depth_bands_and_t_per_shot_scalar(r28, r33):
 
 def test_e29_tex_wording_fixes():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app07_finite_density.tex").read_text()
-    for s in (r"$n_B$ for $\mu_B\ge 150$~MeV and $\chi_4/\chi_2$ at all five $\mu_B$",
+    for s in (r"$n_B$ for $\mu_B\ge 150$~MeV to $30\%$ and $\chi_4/\chi_2$ at all five $\mu_B$ to $\pm 0.3$",
               r"$\Delta p=p(T,\mu_B)-p(T,0)$ from the same samples",
               r"($2.2\%$ of $\lambda$ per sector, absolute)", r"(depth-limited at the as-compiled end)"):
         assert s in tex, s

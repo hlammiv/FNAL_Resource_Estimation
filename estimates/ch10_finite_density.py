@@ -343,6 +343,30 @@ class Assumptions:
     nb_toy_k2_mid: Tagged = Assumed(0.05, "middle of the band", "referee F1")
     nb_toy_quark_k2: Tagged = Assumed(0.05, "quark-Skellam toy, kappa_2(N_B) at mu_B = 0 (chi4/chi2 = 1/9)",
                                       "referee F1")
+    # ---- 2026-10-10, author ruling (option (a) on the kappa_2 item): the N_B distribution from the Hamiltonian
+    # strong-coupling site model at a heavier quark mass, with its hadron-gas T dependence; the Skellam toys are records
+    nb_model: Tagged = Assumed("strong_coupling", "author ruling 2026-10-10 ('For 10, do a'): N_B of the 2^3 box from the "
+                                                  "Hamiltonian strong-coupling site model (nb_sc_logpmf) at m_q_mev; "
+                                                  "'skellam' restores the referee-F1 toy at nb_toy_k2_priced (record)")
+    m_q_mev: Tagged = Assumed(313.0, "constituent-quark mass, so the strong-coupling baryon m_B = 3 m_q = 940 MeV is the "
+                                     "nucleon mass; a m_q = 0.32 at a = 0.2 fm (inside the 0.3-0.7 of the ruling). "
+                                     "Lighter quarks (the a m_q = 0.1 of the G6 phase check) give kappa_2 ~ 2 and no "
+                                     "campaign; heavier ones starve the T = 100 MeV points of baryon events "
+                                     "(m_q_mev_sensitivity)")
+    m_q_mev_sensitivity: Tagged = Assumed((400.0, 500.0), "the grid total is also quoted at m_q = 400 and 500 MeV "
+                                                          "(m_B = 1.2 and 1.5 GeV; a m_q = 0.41, 0.51 at a = 0.2 fm)")
+    sc_site_degeneracy: Tagged = Assumed((1, 10, 10, 1), "DERIVED (Hamiltonian strong coupling, Banks-Susskind-Kogut "
+                                                          "1976 / Smit 1980 at leading order): colour-singlet states of a "
+                                                          "site with 3 staggered fields x 3 colours hold 0, 3, 6 or 9 "
+                                                          "quarks (flavour decuplets at 3 and 6), n_B = 0..3 on an even "
+                                                          "site and 0..-3 on an odd site relative to the staggered vacuum, "
+                                                          "at energy m_B |n_B| with m_B = 3 m_q and no flux")
+    sc_min_events: Tagged = Assumed(30, "the delta-method variance of k4/k2 presumes non-zero N_B samples; Monte Carlo "
+                                        "of the estimator reproduces it at 36 events (the Skellam check at kappa_2 = 0.01, "
+                                        "3.7e3 shots), so every point takes at least 30 events: N >= 30 / P(N_B != 0)")
+    fr_chi_target_abs: Tagged = Assumed(0.3, "first result: chi4/chi2 to +-0.3 absolute (3x the campaign's 0.1), because "
+                                             "the ratio crosses zero along the T = 150 MeV row at m_B = 940 MeV and a "
+                                             "relative target is undefined there; n_B stays at eps_first_result relative")
     fr_rw_pairs: Tagged = Assumed((("baryon", 0.01, (125, 600)), ("baryon", 0.05, (175, 600)),
                                    ("baryon", 0.1, (175, 600)), ("quark", 0.05, (200, 600))),
                                   "best two-ensemble pair (mu_B in MeV) for the T = 150 MeV first-result row, found on a "
@@ -816,6 +840,114 @@ def nb_toy_logpmf(kind: str, k2: float, u: float) -> tuple[list[float], list[flo
     return xs, [x - lz for x in lp]
 
 
+def _logsumexp(vals):
+    mx = max(vals)
+    return mx + math.log(sum(math.exp(v - mx) for v in vals))
+
+
+def nb_sc_logpmf(mb_over_t: float, u: float, n_even: int = 4, n_odd: int = 4,
+                 degeneracy: tuple = (1, 10, 10, 1)) -> tuple[list[float], list[float]]:
+    """(N_B values, log-probabilities) of the strong-coupling site model (2026-10-10): each site holds n_B = 0..3
+    (even) or 0..-3 (odd) colour-singlet quark clusters with degeneracies `degeneracy` at energy m_B |n_B|, weight
+    g exp(-(m_B |n_B| - mu_B n_B)/T) = g exp(-mb_over_t |n_B| + u n_B); the box is the convolution of the sites."""
+    pmf = {0: 0.0}
+    for sign, cnt in ((1, n_even), (-1, n_odd)):
+        w = {sign * k: math.log(degeneracy[k]) - mb_over_t * k + u * sign * k for k in range(4)}
+        for _ in range(cnt):
+            new: dict = {}
+            for n0, l0 in pmf.items():
+                for k, lk in w.items():
+                    new.setdefault(n0 + k, []).append(l0 + lk)
+            pmf = {n: _logsumexp(ls) for n, ls in new.items()}
+    lz = _logsumexp(list(pmf.values()))
+    xs = sorted(pmf)
+    return [float(x) for x in xs], [pmf[x] - lz for x in xs]
+
+
+def _mixture_weights(lt: list, lens: list) -> list:
+    """p_target x (p_target / p_mixture) for an equal mixture of source ensembles (in logs)."""
+    pw = []
+    for i, l_t in enumerate(lt):
+        ls = [le[i] for le in lens]
+        lmix = _logsumexp(ls) - math.log(len(ls))
+        e = 2.0 * l_t - lmix
+        pw.append(math.exp(e) if e > -700.0 else 0.0)
+    return pw
+
+
+def ratio_variance_from_pmf(xs: list, lt: list, pw: list | None = None) -> dict:
+    """The delta-method per-sample variance V1 of r = k4/k2 for a given N_B pmf (and the relative per-sample
+    variance of n_B); pw = p_target (p_target / p_sample) for reweighted samples, None for direct ones."""
+    pt = [math.exp(x) for x in lt]
+    m = sum(p * x for p, x in zip(pt, xs))
+    y = [x - m for x in xs]
+    mu = [sum(p * yy ** k for p, yy in zip(pt, y)) for k in range(5)]
+    kap2, kap4 = mu[2], mu[4] - 3 * mu[2] ** 2
+    r = kap4 / kap2
+    if pw is None:
+        pw = pt
+    v1 = 0.0
+    vnb = 0.0
+    for q, yy in zip(pw, y):
+        if q == 0.0:
+            continue
+        i2 = yy ** 2 - mu[2]
+        i4 = yy ** 4 - mu[4] - 4 * mu[3] * yy - 6 * mu[2] * i2
+        v1 += q * ((i4 - r * i2) / kap2) ** 2
+        vnb += q * yy ** 2
+    p_nonzero = 1.0 - sum(p for p, x in zip(pt, xs) if x == 0.0)
+    return dict(v1=v1, r=r, kappa2=kap2, kappa4=kap4, mean=m, p_nonzero=p_nonzero,
+                v1_nb_rel=(vnb / m ** 2) if m != 0 else math.inf)
+
+
+def sc_point(a: "Assumptions", m_q_mev: float, T: float, mu: float, ens_mu: tuple | None = None) -> dict:
+    """The strong-coupling N_B statistics at one (T, mu_B) in MeV, direct or reweighted from ensembles at ens_mu."""
+    mb = 3.0 * m_q_mev
+    deg = tuple(int(x) for x in a.sc_site_degeneracy.value)
+    xs, lt = nb_sc_logpmf(mb / T, mu / T, degeneracy=deg)
+    pw = None
+    p_nz_source = None
+    if ens_mu is not None:
+        lens = [nb_sc_logpmf(mb / T, e / T, degeneracy=deg)[1] for e in ens_mu]
+        pw = _mixture_weights(lt, lens)
+        p_nz_source = min(1.0 - math.exp(le[xs.index(0.0)]) for le in lens)
+    v = ratio_variance_from_pmf(xs, lt, pw)
+    v["p_nonzero_source"] = p_nz_source if p_nz_source is not None else v["p_nonzero"]
+    return v
+
+
+def grid_shots_sc(a: "Assumptions", m_q_mev: float, delta_abs: float, n_min: float) -> dict:
+    """Shots per grid point at |delta(chi4/chi2)| <= delta_abs, sampled directly, with the event floor
+    N >= n_min / P(N_B != 0) (the delta method needs non-zero samples)."""
+    per, floor_binds, k2 = {}, {}, {}
+    for T, mu in _grid_mu_T(a):
+        v = sc_point(a, m_q_mev, T, mu)
+        n_formula = v["v1"] / delta_abs ** 2
+        n_events = n_min / v["p_nonzero"]
+        per[(T, mu)] = max(n_formula, n_events)
+        floor_binds[(T, mu)] = n_events > n_formula
+        k2[(T, mu)] = v["kappa2"]
+    return dict(per_point=per, total=sum(per.values()), min=min(per.values()), max=max(per.values()),
+                event_floor_binds=floor_binds, kappa2=k2,
+                kappa2_mu0={T: k2[(T, 0)] for T in a.grid_T_mev.value})
+
+
+def row_samples_sc(a: "Assumptions", m_q_mev: float, T: float, delta_abs_chi: float, delta_rel_nb: float,
+                   n_min: float, ens_mu: tuple | None = None) -> float:
+    """Samples for one T row of the strong-coupling model: chi4/chi2 to delta_abs_chi at every mu point and n_B to
+    delta_rel_nb relative for mu_B > 0, with the event floor on the sampled (source) ensembles; direct = sum over
+    points, reweighted from the two ensembles = max over points."""
+    need = []
+    for mu in a.grid_mu_mev.value:
+        v = sc_point(a, m_q_mev, T, mu, ens_mu)
+        n = v["v1"] / delta_abs_chi ** 2
+        if mu > 0:
+            n = max(n, v["v1_nb_rel"] / delta_rel_nb ** 2)
+        n = max(n, (len(ens_mu) if ens_mu else 1) * n_min / v["p_nonzero_source"])
+        need.append(n)
+    return sum(need) if ens_mu is None else max(need)
+
+
 def ratio_variance_per_sample(kind: str, k2: float, u: float, ens_u: tuple | None = None) -> dict:
     """V1 for r = k4/k2 (and the relative per-sample variance of n_B) at mu_B/T = u, sampled directly
     (ens_u None) or reweighted from an equal mixture of ensembles at mu_B/T in ens_u."""
@@ -1103,9 +1235,24 @@ def _model_2033(a: Assumptions) -> Result:
     # variance of k4/k2 for the priced toy (baryon Skellam, kappa_2(0) = 0.01), delta = 0.1 absolute
     n_grid = a.n_T.lo * a.n_mu.lo                                  # 25
     k2_lo, k2_hi = _rng(a.nb_toy_k2_band)
-    g_pr = grid_shots_direct(a, "baryon", a.nb_toy_k2_priced.lo, delta_abs=a.eps_stat.lo)
-    shots = g_pr["total"]                                          # 2.576e5
-    shots_point = shots / n_grid                                   # 1.03e4 average per point
+    g_sk = grid_shots_direct(a, "baryon", a.nb_toy_k2_priced.lo, delta_abs=a.eps_stat.lo)   # 2.576e5: Skellam record
+    # 2026-10-10 (author ruling, option (a)): the strong-coupling site model at m_q_mev with the event floor
+    mq = float(a.m_q_mev.lo)
+    g_sc = grid_shots_sc(a, mq, a.eps_stat.lo, float(a.sc_min_events.lo))                   # 1.18e5 at 313 MeV
+    g_sc_sens = {float(x): grid_shots_sc(a, float(x), a.eps_stat.lo, float(a.sc_min_events.lo))["total"]
+                 for x in a.m_q_mev_sensitivity.value}                                      # 2.0e5 (400), 2.1e6 (500)
+    g_pr = g_sc if a.nb_model.value == "strong_coupling" else g_sk
+    shots_direct = g_pr["total"]                                   # every point sampled: 1.18e5 (Skellam 2.58e5)
+    # campaign reweighting under the strong-coupling model: per T row the best pair of sampled ensembles on the
+    # 25-MeV grid (exact positive weights, N_B commutes with H), with the event floor on the sampled ensembles
+    n_min = float(a.sc_min_events.lo)
+    def _best_pair(T, delta_abs_chi, delta_rel_nb):
+        return min((row_samples_sc(a, mq, T, delta_abs_chi, delta_rel_nb, n_min, (e1, e2)), (e1, e2))
+                   for e1 in range(0, 601, 25) for e2 in range(e1 + 25, 601, 25))
+    g_sc_rw_rows = {T: _best_pair(T, a.eps_stat.lo, a.eps_chi4_chi2_target.lo) for T in a.grid_T_mev.value}
+    g_sc_rw = sum(v[0] for v in g_sc_rw_rows.values())           # 4.65e4
+    shots = min(shots_direct, g_sc_rw) if a.nb_model.value == "strong_coupling" else shots_direct   # the campaign
+    shots_point = shots_direct / n_grid                            # average per point, every point sampled
     g_mid = grid_shots_direct(a, "baryon", a.nb_toy_k2_mid.lo, delta_abs=a.eps_stat.lo)     # 9.08e5
     g_hi = grid_shots_direct(a, "baryon", k2_hi, delta_abs=a.eps_stat.lo)                 # 2.24e6
     g_q_rel = grid_shots_direct(a, "quark", a.nb_toy_quark_k2.lo, rel=a.eps_chi4_chi2_target.lo)   # 3.88e5
@@ -1120,8 +1267,15 @@ def _model_2033(a: Assumptions) -> Result:
         direct = row_samples(a, kind, k2, 150.0, a.eps_first_result.lo, None)
         rw = row_samples(a, kind, k2, 150.0, a.eps_first_result.lo, pr)
         fr_by_toy[(kind, k2)] = dict(direct=direct, reweighted=rw, best=min(direct, rw))
-    fr_exact = (min(v["best"] for v in fr_by_toy.values()), max(v["best"] for v in fr_by_toy.values()))
-    fr_n = tuple(float(math.ceil(x)) for x in fr_exact)            # 2,926, 15,861 whole samples
+    fr_exact_sk = (min(v["best"] for v in fr_by_toy.values()), max(v["best"] for v in fr_by_toy.values()))   # record
+    # 2026-10-10: the strong-coupling row at chi4/chi2 +-0.3 absolute and n_B 30% relative, event floor on the sampled
+    # ensembles; direct, or reweighted from the best pair of ensembles on the 25-MeV grid
+    fr_sc_direct = row_samples_sc(a, mq, 150.0, a.fr_chi_target_abs.lo, a.eps_first_result.lo, n_min)
+    fr_sc_rw = _best_pair(150.0, a.fr_chi_target_abs.lo, a.eps_first_result.lo)
+    fr_sc_best = min(fr_sc_direct, fr_sc_rw[0])
+    fr_exact = (fr_sc_best, fr_sc_best) if a.nb_model.value == "strong_coupling" else fr_exact_sk
+    fr_n = tuple(float(math.ceil(x)) for x in fr_exact)            # whole samples
+
 
     # R9 depth: the factory.json band was for the 2e3-step circuit; the QSVT queries repeat the same step, so each end's
     # T-depth is that band scaled by its own T ratio (F* = 17.5-56 carried at either end, Assumed). The exports pair
@@ -1292,13 +1446,26 @@ def _model_2033(a: Assumptions) -> Result:
         wall_first_result_d=tuple(x / 86400.0 for x in wall_fr), wall_first_result_yr=tuple(x / SECONDS_PER_YEAR for x in wall_fr),
         # referee F1: shots from the delta-method variance of k4/k2 (toy N_B), priced at kappa_2(0) = 0.01
         delta_chi4_chi2_abs=a.eps_stat.lo, nb_toy_k2_priced=a.nb_toy_k2_priced.lo,
+        # 2026-10-10: the strong-coupling N_B model (option (a)); the Skellam grid is a record
+        nb_model=a.nb_model.value, m_q_mev=mq, m_B_mev=3.0 * mq, sc_min_events=n_min,
+        kappa2_mu0_by_T=g_sc["kappa2_mu0"], kappa2_by_point=g_sc["kappa2"], event_floor_binds=g_sc["event_floor_binds"],
+        n_points_event_floor=sum(1 for v in g_sc["event_floor_binds"].values() if v),
+        shots_total_sc=g_sc["total"], shots_total_direct=shots_direct, shots_total_skellam_record=g_sk["total"],
+        grid_shots_sc_reweighted_rows={T: v[0] for T, v in g_sc_rw_rows.items()},
+        grid_rw_pairs_sc_mev={T: v[1] for T, v in g_sc_rw_rows.items()},
+        reweighting_saving_sc=1.0 - g_sc_rw / g_sc["total"],
+        wall_campaign_direct_yr=tuple(shots_direct * w / SECONDS_PER_YEAR for w in wall_shot_rng),
+        shots_per_point_skellam_record=(g_sk["min"], g_sk["max"]),
+        grid_shots_sc_by_m_q=g_sc_sens, grid_shots_sc_reweighted=g_sc_rw,
+        fr_chi_target_abs=a.fr_chi_target_abs.lo, fr_sc_direct=fr_sc_direct, fr_sc_reweighted=fr_sc_rw[0],
+        fr_sc_pair_mev=fr_sc_rw[1], fr_samples_skellam_record=tuple(float(math.ceil(x)) for x in fr_exact_sk),
         shots_per_point_by_mu_T=g_pr["per_point"], shots_per_point_min=g_pr["min"], shots_per_point_max=g_pr["max"],
         grid_shots_k2_mid=g_mid["total"], grid_shots_k2_hi=g_hi["total"],
         grid_wall_k2_mid_yr=tuple(g_mid["total"] * w / SECONDS_PER_YEAR for w in wall_shot_rng),
         grid_wall_k2_hi_yr=tuple(g_hi["total"] * w / SECONDS_PER_YEAR for w in wall_shot_rng),
         grid_shots_quark_rel=g_q_rel["total"], grid_shots_quark_abs=g_q_abs["total"],
         grid_shots_reweighted_k2_lo=g_rw_lo, grid_shots_reweighted_k2_mid=g_rw_mid,
-        reweighting_saving_k2_lo=1.0 - g_rw_lo / shots, reweighting_ratio_k2_mid=g_rw_mid / g_mid["total"],
+        reweighting_saving_k2_lo=1.0 - g_rw_lo / g_sk["total"], reweighting_ratio_k2_mid=g_rw_mid / g_mid["total"],   # Skellam records
     )
     return Result(
         era="2033", lq=lq, hard_ops=t_range, breakdown=prims, intermediates=inter,
