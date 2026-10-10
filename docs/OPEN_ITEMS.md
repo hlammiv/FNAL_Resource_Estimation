@@ -37,12 +37,12 @@ Chapters 11 and 12 have no model in this package and are not listed.
 
 - The polynomial degrees d (84 and the other rungs) and d_inv come from a linear program that needs scipy; they are carried `Assumed` and reproduced by `apply_log/ch04_roundB_lp_degree.py` and `apply_log/ch04_r11_lp_odd.py`, and at kappa = 1e3 the degree 5e3 is the fitted law extrapolated.
 - The gauged-circuit prefactor of one T per unit of D^2 V log2 V is uncited (`scaling_prefactor`); every gauged block-encoding query is a SCALING primitive.
-- The interacting condensate c lies between the free value 0.0275 (computed, `condensate_free`) and an estimate 0.08 (`condensate_interacting`); it sets the 2033 shot band, and an ensemble value at am = 0.04 on 8^3x16 would pin it.
+- The interacting condensate c lies between the free value 0.0275 (computed, `condensate_free`) and an estimate 0.08 (`condensate_interacting`); it sets the 2033 shot band, which is printed as such (author ruling 2026-10-09: bands, no ensemble value sought).
 - The box checks P against a classical evaluation of the same polynomial (d_inv = 500); calling the result Tr M^-1 needs d_inv about 700 and 1.4 times the per-shot T.
 - The 2033 walls are depth-bound (F* = 1-4, 530-2100 s per shot, `wall_per_shot_s`); three parallel unary-iteration subtrees on about 100 idle logical qubits would give F* about 12 (`subtree_f_star`, `wall_campaign_unary_iteration_yr`) and are not adopted in the box.
-- The Banks-Casher inputs (Sigma^(1/3) = 270 MeV, 4 tastes, 5 configurations, step-filter degrees 430/640) come from a simplified-observable pass; P is uncertain by about 2x in a 1.2 fm box.
+- The Banks-Casher inputs (Sigma^(1/3) = 270 MeV, 4 tastes, 5 configurations, step-filter degrees 430/640) come from a simplified-observable pass; the 2x uncertainty on P in the 1.2 fm box is printed as a band on the row's shots and walls, 29 d-3.0 yr (`bc_p_uncertainty`, `bc_wall_band_yr`; author ruling 2026-10-09).
 - The post-2033 rung is priced at D V log2 V with the 2033 block encoding; D^2 V log2 V applies only if the D^2 there is meant to carry link loading.
-- The disconnected-HVP plan needs 1.5e12 noise-matched shots per configuration at 24^3x48 (`hvp_noise_matched_shots_per_cfg_24c48`); `hvp_site_variance = 1` is assumed and is not conservative, and no coherent variance-reducing estimator is costed.
+- The disconnected-HVP plan needs 0.75-3.0e12 noise-matched shots per configuration at 24^3x48 for a site variance between 2 and 1/2 (`hvp_site_variance_band`, printed as a band since the 2026-10-09 ruling; central `hvp_noise_matched_shots_per_cfg_24c48` at variance 1), and no coherent variance-reducing estimator is costed.
 - Finite-density reweighting is not a deliverable: a phase estimator for arg det M to absolute error well below pi on an extensive quantity is not costed.
 - The 2028 sampling target is 1% (3.1e5 shots); 2% rms would be 7.4e4 shots, and MLAE with k = 2 fits the cap only at the low end of the T band.
 

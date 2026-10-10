@@ -353,6 +353,10 @@ class Assumptions:
     bc_sigma_third_gev: Tagged = Assumed(0.270, "simplobs.json ch04 C2: Sigma^(1/3) = 270 MeV; P uncertain by ~2x in "
                                                 "the small box")
     bc_tastes: Tagged = Stated(4, "simplobs.json ch04 C2", "4 staggered tastes")
+    bc_p_uncertainty: Tagged = Assumed(2.0, "app12 Banks-Casher paragraph: 'P is uncertain by about 2x' in the 1.2 fm box "
+                                            "(epsilon-regime, random-matrix matching). Author ruling 2026-10-09 ('put some "
+                                            "bands'): printed as a band on the row's shots and walls, which scale as 1/P; "
+                                            "no ensemble value is sought")
     bc_lambda_lo: Tagged = Stated(0.10, "simplobs.json ch04 C2", "Lambda = 0.10 (lattice units), d = 640")
     bc_lambda_hi: Tagged = Stated(0.15, "simplobs.json ch04 C2", "Lambda = 0.15 (lattice units, 197 MeV), d = 430")
     bc_d_lambda_lo: Tagged = Assumed(640, "simplobs.json ch04 C2: step-filter LP degree at Lambda = 0.10")
@@ -385,8 +389,11 @@ class Assumptions:
     subroutine_calls_box_1e4: Tagged = Stated(1e7, "app12:197",
                                               "'~1e7' (1e4 shots/cfg x 1e3 production cfg); R16 rms, was 4.6e7")
     hvp_site_variance: Tagged = Assumed(1.0, "referee H2 (2026-10-04): gauge variance per site of the local one-link "
-                                             "current term <x|Gamma M^-1|x>, order one; not measured (NEEDS_AUTHOR, "
-                                             "George). Sets the noise-matched disconnected-HVP shot count")
+                                             "current term <x|Gamma M^-1|x>, order one; not measured. Sets the "
+                                             "noise-matched disconnected-HVP shot count (central value)")
+    hvp_site_variance_band: Tagged = Assumed((0.5, 2.0), "author ruling 2026-10-09 ('put some bands'): the site variance "
+                                                        "is printed as a band 1/2-2 about the order-one central value; the "
+                                                        "shot count scales as 1/variance. No ensemble value is sought")
     n_qpe_codesign: Tagged = Stated(12, "app12:180", "'12 QPE', carried from the 1000-LQ box (app12:152)")
     n_anc_codesign: Tagged = Stated(50, "app12:180", "'~50 ancilla', carried from the 1000-LQ box (app12:152)")
     # --- informational only: QSP phase loader synthesis ------------------
@@ -1015,6 +1022,10 @@ def _model_2033(a: Assumptions) -> Result:
     bc_wall = (bc_shots[0] * corrected_shot_s(bc_t[0], bc_t[0] / par.hi, tg, t0),
                bc_shots[1] * corrected_shot_s(bc_t[1], bc_t[1] / par.lo, tg, t0))   # (5.0e6, 4.7e7) s
     bc_wall_base = tuple(n * (t * tg + t0) for n, t in zip(bc_shots, bc_t))
+    # 2026-10-09 ('put some bands'): P uncertain by bc_p_uncertainty in the 1.2 fm box; shots and walls scale as 1/P
+    f_p = float(a.bc_p_uncertainty.lo)
+    bc_shots_band = (bc_shots[0] / f_p, bc_shots[1] * f_p)         # (5.5e3, 3.5e4)
+    bc_wall_band = (bc_wall[0] / f_p, bc_wall[1] * f_p)            # (29 d, 3.0 yr)
 
     n_phase = int(d_inv) + 1
     t_phase = n_phase * t_per_rotation(a.qsp_phase_eps.lo)
@@ -1079,6 +1090,9 @@ def _model_2033(a: Assumptions) -> Result:
         "bc_t_per_shot": bc_t, "bc_shots": bc_shots, "bc_wall_s": bc_wall,
         "bc_wall_days": tuple(w / 86400.0 for w in bc_wall), "bc_wall_yr": tuple(w / yr for w in bc_wall),
         "bc_wall_baseline_days": tuple(w / 86400.0 for w in bc_wall_base),
+        "bc_p_uncertainty": f_p, "bc_shots_band": bc_shots_band, "bc_wall_band_s": bc_wall_band,
+        "bc_wall_band_days": (bc_wall_band[0] / 86400.0, bc_wall_band[1] / 86400.0),
+        "bc_wall_band_yr": (bc_wall_band[0] / yr, bc_wall_band[1] / yr),
         # QME and synthesis (unchanged rules)
         "t_per_shot_qme_coherent": t_shot / a.eps_2033.lo,                          # 2.1e10: ~1e2 QETs in one circuit
         "qsp_phase_rotations": n_phase, "qsp_phase_rotations_t": t_phase,
@@ -1165,6 +1179,11 @@ def _model_codesign(a: Assumptions) -> Result:
     hvp_shots_cfg = vf_prod / (a.hvp_site_variance.lo * (p0 * am_prod) ** 2)    # 7.95e12 at var = 1
     hvp_shots_cfg_cd = vf_cd / (a.hvp_site_variance.lo * (p0 * am_prod) ** 2)   # 4.97e11 at var = 1 (24^3x48)
     hvp_current_dirs = 3                                        # spatial Gamma_mu, one insertion per shot
+    # 2026-10-09 ('put some bands'): the site variance between hvp_site_variance_band; shots scale as 1/variance
+    v_lo, v_hi = float(a.hvp_site_variance_band.lo), float(a.hvp_site_variance_band.hi)
+    hvp_band = lambda n: (n * float(a.hvp_site_variance.lo) / v_hi, n * float(a.hvp_site_variance.lo) / v_lo)
+    hvp_shots_cfg_all_dirs_band = hvp_band(hvp_current_dirs * hvp_shots_cfg)             # (1.2e13, 4.8e13)
+    hvp_shots_cfg_all_dirs_cd_band = hvp_band(hvp_current_dirs * hvp_shots_cfg_cd)       # (7.5e11, 3.0e12)
     # referee H2 mapping (2026-10-05; scratch chopen/ch04_h2_hvp/hvp_map.py). C_disc(t) ~ <(L_l-L_s)(t)(L_l-L_s)(0)>/9
     # from the loops L_k(t) = Tr(Gamma_{k,t} M^-1); staggered eps-symmetry makes them purely imaginary (Im Hadamard
     # test). Gamma_k = two signed shifts on loaded links, BE at alpha = 1, one query against d_inv queries of M:
@@ -1238,6 +1257,9 @@ def _model_codesign(a: Assumptions) -> Result:
         "hvp_noise_matched_shots_per_cfg_all_dirs": hvp_current_dirs * hvp_shots_cfg,   # 2.4e13 at 48^3x96
         "hvp_noise_matched_shots_per_cfg_all_dirs_24c48": hvp_current_dirs * hvp_shots_cfg_cd,  # 1.5e12
         "hvp_noise_matched_over_box_all_dirs_24c48": hvp_current_dirs * hvp_shots_cfg_cd / shots_cfg,  # 1.5e8
+        "hvp_site_variance_band": (v_lo, v_hi),
+        "hvp_noise_matched_shots_per_cfg_all_dirs_band": hvp_shots_cfg_all_dirs_band,          # 1.2e13-4.8e13
+        "hvp_noise_matched_shots_per_cfg_all_dirs_24c48_band": hvp_shots_cfg_all_dirs_cd_band,  # 7.5e11-3.0e12
         "hvp_insertion_share_of_shot": hvp_insertion_share,                              # 5e-5
         "hvp_shot_vs_noise_vector_variance_ratio_lb_24c48": hvp_var_ratio_lb_cd,         # 1.66e5
         "hvp_qme_calls_per_cfg_24c48": hvp_qme_calls_cfg_cd,                             # 1.46e7

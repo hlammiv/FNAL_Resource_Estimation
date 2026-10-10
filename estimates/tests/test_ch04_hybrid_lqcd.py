@@ -735,9 +735,14 @@ def test_2033_banks_casher_demonstration():
     n = I33["bc_shots"]
     assert near(n[0], 1.1e4, 0.002) and near(n[1], 1.7e4, 0.015)              # simplobs: 1.1e4, 1.7e4
     assert round(I33["bc_wall_days"][0]) == 58 and round(I33["bc_wall_yr"][1], 1) == 1.5
+    # 2026-10-09 ('put some bands'): the 2x on P in the 1.2 fm box, printed as a band on shots and walls
+    assert I33["bc_p_uncertainty"] == 2.0
+    assert near(I33["bc_shots_band"][0], n[0] / 2, 1e-12) and near(I33["bc_shots_band"][1], 2 * n[1], 1e-12)
+    assert round(I33["bc_wall_band_days"][0]) == 29 and round(I33["bc_wall_band_yr"][1], 1) == 3.0
     rows = m.INSTANCE_ROWS(A, "2033", R33)
     assert rows[1][2] == t and "Banks-Casher" in rows[1][0]
-    assert "$1.8$--$2.7\\times 10^{8}$ T-gates per shot, $1.1$--$1.7\\times 10^{4}$ shots; $58\\,$d--$1.5$ yr" in TEX
+    assert ("$1.8$--$2.7\\times 10^{8}$ T-gates per shot, $1.1$--$1.7\\times 10^{4}$ shots; $58\\,$d--$1.5$ yr "
+            "($29\\,$d--$3.0$ yr within the $2\\times$ on $P$)") in TEX
     assert "there are 18--27 modes below $\\Lambda$" in TEX and "$\\sin(\\pi/16)=0.195$" in TEX
     assert abs(math.sin(math.pi / 16) - 0.195) < 5e-4
 
@@ -1029,13 +1034,19 @@ def test_referee_h2_svt_readout_identity_and_hvp_estimate():
     assert near(ICD["am_production"], 4 / 999, 1e-12) and ICD["v_f_production"] == 3 * 48 ** 3 * 96
     assert near(ICD["hvp_noise_matched_shots_per_cfg"], 7.95e12, 0.001)
     assert ICD["hvp_noise_matched_over_box"] > 1e8
-    assert "$1.5\\times 10^{12}$ at $24^3{\\times}48$ and $2.4\\times 10^{13}$ at $48^3{\\times}96$" in TEX
-    assert "a smaller site variance raises it proportionally" in TEX
+    assert "$0.75$--$3.0\\times 10^{12}$ at $24^3{\\times}48$ and $1.2$--$4.8\\times 10^{13}$ at $48^3{\\times}96$" in TEX
+    assert "between $2$ and $1/2$" in TEX and "the count scales as $1/\\sigma^2_{\\rm site}$" in TEX
+    # 2026-10-09 ('put some bands'): the site-variance band 1/2-2 about the order-one central value
+    assert ICD["hvp_site_variance_band"] == (0.5, 2.0)
+    b = ICD["hvp_noise_matched_shots_per_cfg_all_dirs_24c48_band"]
+    assert near(b[0], 0.745e12, 0.002) and near(b[1], 2.98e12, 0.002)
+    b = ICD["hvp_noise_matched_shots_per_cfg_all_dirs_band"]
+    assert near(b[0], 1.192e13, 0.002) and near(b[1], 4.77e13, 0.002)
     # verifier (2026-10-04): N = V_F / (var (p0 am)^2) scales inversely with the site variance
     assert ICD["v_f_codesign"] == 3 * 24 ** 3 * 48
     assert near(ICD["hvp_noise_matched_shots_per_cfg_24c48"], 4.967e11, 0.001)
     assert 4e7 < ICD["hvp_noise_matched_over_box_24c48"] < 6e7
-    assert "noise-matched HVP loops need $1.5\\times 10^{12}$ shots per cfg at $24^3{\\times}48$" in TEX
+    assert "noise-matched HVP loops need $0.75$--$3.0\\times 10^{12}$ shots per cfg at $24^3{\\times}48$" in TEX
     assert ICD["hvp_current_directions"] == 3
     half = m.model(replace(A, hvp_site_variance=m.Assumed(0.5, "x")), "codesign").intermediates
     assert near(half["hvp_noise_matched_shots_per_cfg"], 2 * ICD["hvp_noise_matched_shots_per_cfg"], 1e-12)
@@ -1095,7 +1106,7 @@ def test_referee_h2_hvp_mapping_and_error_budget():
     for s_ in ("1.5\\times 10^{7}$ calls", "$\\le 9\\times 10^{6}$ classical vectors", "$1.7\\times 10^{5}$ at $24^3$",
                "=5\\times 10^{-5}$ of the per-shot T", "by at most $1.3$--$1.4{\\times}$", "$25$--$30{\\times}$ below",
                "which the disconnected errors already meet",
-               "at most a $1.3$--$1.4{\\times}$ cut", "($1$--$5\\times 10^{10}$ yr each)",
+               "at most a $1.3$--$1.4{\\times}$ cut", "($0.6$--$9\\times 10^{10}$ yr each)",
                "purely imaginary", "no $0.3\\%$ target"):
         assert s_ in TEX, s_
     assert "uncosted HVP estimator" not in TEX and "not yet costed" not in TEX

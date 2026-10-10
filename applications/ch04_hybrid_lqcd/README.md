@@ -31,7 +31,7 @@ The tests need `numpy` and `scipy` for the dense cross-check of the spectrum and
 
 Output of `python applications/ch04_hybrid_lqcd/dump_assumptions.py`:
 
-95 fields: stated-not-derived 45, uncited 2, cited 18, assumed 30
+97 fields: stated-not-derived 45, uncited 2, cited 18, assumed 32
 
 #### Shared: lattice and formulation
 
@@ -123,6 +123,7 @@ Output of `python applications/ch04_hybrid_lqcd/dump_assumptions.py`:
 | `bc_hbarc_gev_fm` | 0.1973 | cited | 2033 | PDG | hbar c = 0.1973 GeV fm |
 | `bc_sigma_third_gev` | 0.27 | assumed | 2033 | - | simplobs.json ch04 C2: Sigma^(1/3) = 270 MeV; P uncertain by ~2x in the small box |
 | `bc_tastes` | 4 | stated-not-derived | 2033 | simplobs.json ch04 C2 | 4 staggered tastes |
+| `bc_p_uncertainty` | 2.0 | assumed | 2033 | - | app12 Banks-Casher paragraph: 'P is uncertain by about 2x' in the 1.2 fm box (epsilon-regime, random-matrix matching). Author ruling 2026-10-09 ('put some bands'): printed as a band on the row's shots and walls, which scale as 1/P; no ensemble value is sought |
 | `bc_lambda_lo` | 0.1 | stated-not-derived | 2033 | simplobs.json ch04 C2 | Lambda = 0.10 (lattice units), d = 640 |
 | `bc_lambda_hi` | 0.15 | stated-not-derived | 2033 | simplobs.json ch04 C2 | Lambda = 0.15 (lattice units, 197 MeV), d = 430 |
 | `bc_d_lambda_lo` | 640 | assumed | 2033 | - | simplobs.json ch04 C2: step-filter LP degree at Lambda = 0.10 |
@@ -148,7 +149,8 @@ Output of `python applications/ch04_hybrid_lqcd/dump_assumptions.py`:
 | `V_production` | 10616832 | stated-not-derived | codesign | app12:180 | physical-mass 48^3x96 |
 | `n_cfg_production` | 1000.0 | stated-not-derived | codesign | app12:196 | 'x 1e3 production cfg' |
 | `subroutine_calls_box_1e4` | 10000000.0 | stated-not-derived | codesign | app12:197 | '~1e7' (1e4 shots/cfg x 1e3 production cfg); R16 rms, was 4.6e7 |
-| `hvp_site_variance` | 1.0 | assumed | codesign | - | referee H2 (2026-10-04): gauge variance per site of the local one-link current term <x\|Gamma M^-1\|x>, order one; not measured (NEEDS_AUTHOR, George). Sets the noise-matched disconnected-HVP shot count |
+| `hvp_site_variance` | 1.0 | assumed | codesign | - | referee H2 (2026-10-04): gauge variance per site of the local one-link current term <x\|Gamma M^-1\|x>, order one; not measured. Sets the noise-matched disconnected-HVP shot count (central value) |
+| `hvp_site_variance_band` | (0.5, 2.0) | assumed | codesign | - | author ruling 2026-10-09 ('put some bands'): the site variance is printed as a band 1/2-2 about the order-one central value; the shot count scales as 1/variance. No ensemble value is sought |
 | `n_qpe_codesign` | 12 | stated-not-derived | codesign | app12:180 | '12 QPE', carried from the 1000-LQ box (app12:152) |
 | `n_anc_codesign` | 50 | stated-not-derived | codesign | app12:180 | '~50 ancilla', carried from the 1000-LQ box (app12:152) |
 
@@ -162,13 +164,13 @@ Output of `python applications/ch04_hybrid_lqcd/dump_assumptions.py`:
 
 All line numbers refer to `estimates/ch04_hybrid_lqcd.py`. Values below are the model's own outputs (`python -m estimates --chapter ch04 --intermediates`), shown to four figures.
 
-### 4.1 2028: $\log\det W$, free staggered, $V = 4^4$ (`_model_2028`, lines 664-928)
+### 4.1 2028: $\log\det W$, free staggered, $V = 4^4$ (`_model_2028`, lines 671-935)
 
-**The matrix (lines 673-683).** `free_W_spectrum` (605-614) diagonalizes Eq. 24 of arXiv:2407.13080 by plane waves, $\lambda = m_0^2 + K^2\sum_\mu \sin^2(2\pi n_\mu/L)$. It gives $\lambda_\mathrm{min} = 0.16$, $\lambda_\mathrm{max} = 4.16$, $\kappa = 26$ and $\log\det W = \sum \log\lambda = 150.5528$. The tests rebuild $M$ and $W$ from plain lists, independently of the model, and check the sparsity, the spectrum and this value (with a dense numpy cross-check). The circuit block-encodes $W/s$, and `be_subnormalization` (617-623) takes the smallest $s$ for which the $O_A$ angles of Eqs. 25-26 exist, $s = \max(2(m_0^2 + DK^2/2),\ 2^c K^2/4) = 4.32$. The QET therefore sees $\lambda_\mathrm{min}/s = 0.0370$. Two terms are restored classically: $V\log s = 374.59$ is added back, and the shift term $V\log(s/\lambda_\mathrm{min})\times\tfrac12 = 421.87$ is subtracted.
+**The matrix (lines 680-690).** `free_W_spectrum` (605-614) diagonalizes Eq. 24 of arXiv:2407.13080 by plane waves, $\lambda = m_0^2 + K^2\sum_\mu \sin^2(2\pi n_\mu/L)$. It gives $\lambda_\mathrm{min} = 0.16$, $\lambda_\mathrm{max} = 4.16$, $\kappa = 26$ and $\log\det W = \sum \log\lambda = 150.5528$. The tests rebuild $M$ and $W$ from plain lists, independently of the model, and check the sparsity, the spectrum and this value (with a dense numpy cross-check). The circuit block-encodes $W/s$, and `be_subnormalization` (617-623) takes the smallest $s$ for which the $O_A$ angles of Eqs. 25-26 exist, $s = \max(2(m_0^2 + DK^2/2),\ 2^c K^2/4) = 4.32$. The QET therefore sees $\lambda_\mathrm{min}/s = 0.0370$. Two terms are restored classically: $V\log s = 374.59$ is added back, and the shift term $V\log(s/\lambda_\mathrm{min})\times\tfrac12 = 421.87$ is subtracted.
 
-**Register (685-692).** 8 site + 4 column + 1 flag + 1 QET signal + 3 workspace + 1 Hadamard-test ancilla = **18 LQ**. The workspace is what the 5-control projector AND needs ($5 - 2 = 3$). On the QME route the Hadamard ancilla is replaced by a copy of the site register (8), an 8-qubit QPE register and one sign qubit, which gives 34.
+**Register (692-699).** 8 site + 4 column + 1 flag + 1 QET signal + 3 workspace + 1 Hadamard-test ancilla = **18 LQ**. The workspace is what the 5-control projector AND needs ($5 - 2 = 3$). On the QME route the Hadamard ancilla is replaced by a copy of the site register (8), an 8-qubit QPE register and one sign qubit, which gives 34.
 
-**Accuracy target (695-700, 744-756).** The polynomial tolerance is the one that guarantees 1% on $\log\det W$:
+**Accuracy target (702-707, 751-763).** The polynomial tolerance is the one that guarantees 1% on $\log\det W$:
 
 $$\mathrm{tol} = \frac{0.01\,|\log\det W|}{V\log(s/\lambda_\mathrm{min})} = 1.784\times10^{-3}.$$
 
@@ -199,21 +201,21 @@ which is 2.82-5.27x below the $10^5$ cap. The primitive breakdown is the literal
 | `projector_phase_toffolis` | 680 | 7 | 4760 | SCALING |
 | `projector_phase_rotations` | 170 | 21.19 | 3602 | SCALING |
 
-**Shots, $\epsilon_l$ and wall time (758-771).** The shot count is $\mathrm{Var}/\varepsilon^2$ at Var = 1 and $\varepsilon = \mathrm{tol}$, giving $3.1408\times10^5$ shots (`shots_incoherent`). The required logical error rate is $p_f/N_T$ with $p_f = 0.1$, i.e. $2.821\times10^{-6}$ at the literal end, which binds, and $5.269\times10^{-6}$ at the other. For the T-depth, the $O_A$ and phase rotations form one sequential chain on the flag and signal qubits, and $O_c$ runs underneath:
+**Shots, $\epsilon_l$ and wall time (765-778).** The shot count is $\mathrm{Var}/\varepsilon^2$ at Var = 1 and $\varepsilon = \mathrm{tol}$, giving $3.1408\times10^5$ shots (`shots_incoherent`). The required logical error rate is $p_f/N_T$ with $p_f = 0.1$, i.e. $2.821\times10^{-6}$ at the literal end, which binds, and $5.269\times10^{-6}$ at the other. For the T-depth, the $O_A$ and phase rotations form one sequential chain on the flag and signal qubits, and $O_c$ runs underneath:
 
 $$D_T = d\,(2t_\mathrm{rot}) + (d+1)(3 + 2t_\mathrm{rot}) = 84\times42.38 + 85\times45.38 = 7417,$$
 
 where 3 is the depth of the AND tree. $F^* = N_T/D_T = 2.56$-$4.78 < 10$, so the 10 factories behind 1 µs per T cannot be fed. Each shot is charged `corrected_shot_s` (538-540), $\max(N_T\cdot 1\,\mu\mathrm s,\ D_T\cdot 10\,\mu\mathrm s) + t_0 = 74.27$ ms. The run is $2.333\times10^4$ s = 6.48 h, against 1.66-3.10 h at the 1 µs-per-T baseline. The total T is $5.961\times10^9$-$1.113\times10^{10}$. The 6.48 h assumes the 2.6-4.8 factories a shot can feed. On one factory a shot is $N_T\times10\,\mu$s, and the demo takes 16.6-30.9 h (`test_2028_depth_and_factories`). Either way it finishes far inside a year (`factories_for_1yr` < $4\times10^{-3}$).
 
-**The gauged $V = 4^4$ comparison (773-781).** This is a different circuit. Loading links costs $D^2V\log_2V = 32768$ units per query at one T per unit (`scaling_prefactor`, uncited), so the shot is $84\times 32768 = 2.753\times10^6$ T, 27.5x the cap. The two levers are LCU compression (3-10x) and block-encoding one sublattice (2x), together 6-20x. At the top of that range the shot is still $1.376\times10^5$ T, 1.38x the cap.
+**The gauged $V = 4^4$ comparison (780-788).** This is a different circuit. Loading links costs $D^2V\log_2V = 32768$ units per query at one T per unit (`scaling_prefactor`, uncited), so the shot is $84\times 32768 = 2.753\times10^6$ T, 27.5x the cap. The two levers are LCU compression (3-10x) and block-encoding one sublattice (2x), together 6-20x. At the top of that range the shot is still $1.376\times10^5$ T, 1.38x the cap.
 
-### 4.2 2033: $\mathrm{Tr}\,M^{-1}$ on $8^3\times16$, and the Banks-Casher row (`_model_2033`, lines 931-1109)
+### 4.2 2033: $\mathrm{Tr}\,M^{-1}$ on $8^3\times16$, and the Banks-Casher row (`_model_2033`, lines 938-1123)
 
-**Register (943-952).** `register_M` (510-512): $\lceil\log_2 V\rceil$ site + $\lceil\log_2(2D+1)\rceil$ column + $\lceil\log_2 N_c^2\rceil$ color + 12 QPE + 50 ancilla = 13 + 4 + 4 + 12 + 50 = **83 LQ**. Without the QPE register the count is 71. Because the register grows as $\log_2 V$, the same formula gives 86 at $16^4$ and 98 at $128^4$.
+**Register (950-959).** `register_M` (510-512): $\lceil\log_2 V\rceil$ site + $\lceil\log_2(2D+1)\rceil$ column + $\lceil\log_2 N_c^2\rceil$ color + 12 QPE + 50 ancilla = 13 + 4 + 4 + 12 + 50 = **83 LQ**. Without the QPE register the count is 71. Because the register grows as $\log_2 V$, the same formula gives 86 at $16^4$ and 98 at $128^4$.
 
-**Per-shot T (954-965).** $N_T = d_\mathrm{inv}\cdot D V\log_2 V$ with a unit prefactor (`scaling_units_M`, 515-518). $d_\mathrm{inv} = \kappa\ln(1/\varepsilon_\mathrm{rel}) = 100\times5 = 500$ at $\varepsilon_\mathrm{rel} = e^{-5}$ of the peak of $1/x$ (`d_inv_lp`, 569-572; the LP law is checked at $\kappa = 30$ by `test_d_inv_lp_law_odd`). One query is $4\times8192\times13 = 4.260\times10^5$ T, and the shot is $500\times4.260\times10^5 = 2.130\times10^8$ T. The required $\epsilon_l = 0.1/N_T = 4.695\times10^{-10}$.
+**Per-shot T (961-972).** $N_T = d_\mathrm{inv}\cdot D V\log_2 V$ with a unit prefactor (`scaling_units_M`, 515-518). $d_\mathrm{inv} = \kappa\ln(1/\varepsilon_\mathrm{rel}) = 100\times5 = 500$ at $\varepsilon_\mathrm{rel} = e^{-5}$ of the peak of $1/x$ (`d_inv_lp`, 569-572; the LP law is checked at $\kappa = 30$ by `test_d_inv_lp_law_odd`). One query is $4\times8192\times13 = 4.260\times10^5$ T, and the shot is $500\times4.260\times10^5 = 2.130\times10^8$ T. The required $\epsilon_l = 0.1/N_T = 4.695\times10^{-10}$.
 
-**Readout (967-982).** The observable is the block-encoding success probability $P = p_0^2\,am\,c$, with $p_0 = 1/2$ the polynomial's value at $\sigma_\mathrm{min}$ (`peak_norm_2033`) and $am = 0.04$. $c$ runs from the free value 0.02749 (`free_condensate`, 521-530, $8^3\times16$, antiperiodic in time; the function is checked against a direct CG solve on $4^3\times4$, and the $8^3\times16$ value is pinned at 0.0275 by `test_free_condensate_matches_a_direct_solve`) to the interacting estimate 0.08. That gives $P = 2.749\times10^{-4}$-$8.0\times10^{-4}$. The shots per configuration at relative error $r$ are $(1-P)/(P r^2)$ (`shots_success_probability`, 533-535):
+**Readout (974-989).** The observable is the block-encoding success probability $P = p_0^2\,am\,c$, with $p_0 = 1/2$ the polynomial's value at $\sigma_\mathrm{min}$ (`peak_norm_2033`) and $am = 0.04$. $c$ runs from the free value 0.02749 (`free_condensate`, 521-530, $8^3\times16$, antiperiodic in time; the function is checked against a direct CG solve on $4^3\times4$, and the $8^3\times16$ value is pinned at 0.0275 by `test_free_condensate_matches_a_direct_solve`) to the interacting estimate 0.08. That gives $P = 2.749\times10^{-4}$-$8.0\times10^{-4}$. The shots per configuration at relative error $r$ are $(1-P)/(P r^2)$ (`shots_success_probability`, 533-535):
 
 | tier | configurations, $r$ | shots | T total |
 |---|---|---|---|
@@ -222,17 +224,17 @@ where 3 is the depth of the AND tree. $F^* = N_T/D_T = 2.56$-$4.78 < 10$, so the
 
 A Hadamard test of the same trace has mean $am\,c/2$ and would need $4.340\times10^6$-$3.675\times10^7$ shots for the first result.
 
-**Depth and walls (984-997).** No link-loading circuit is compiled, so the T-depth is carried as a ratio, $D_T = N_T/F^*$. $F^* = 1$ for a multiplexed rotation on the flag qubit and 4 for a unary-iteration load (`parallelism_2033`). A shot takes $\max(N_T\cdot1\,\mu\mathrm s,\ D_T\cdot10\,\mu\mathrm s) + t_0$ = 532.5 s ($F^* = 4$) to 2129.9 s ($F^* = 1$), against 213.0 s at the baseline. The band pairs the cheap ends ($c = 0.08$, $F^* = 4$) and the expensive ends ($c = 0.0275$, $F^* = 1$). The first result takes 85.5 d to 2.727 yr. The campaign takes 1.581-18.41 yr, which is 0.32-3.68x the 5-year horizon; with $F^* = 4$ throughout it is 1.581-4.601 yr. Three parallel unary-iteration subtrees on about 102 idle LQ would give $F^* = 12$ and restore the baseline, 0.632-1.841 yr. This lever is computed but not adopted in the box.
+**Depth and walls (991-1004).** No link-loading circuit is compiled, so the T-depth is carried as a ratio, $D_T = N_T/F^*$. $F^* = 1$ for a multiplexed rotation on the flag qubit and 4 for a unary-iteration load (`parallelism_2033`). A shot takes $\max(N_T\cdot1\,\mu\mathrm s,\ D_T\cdot10\,\mu\mathrm s) + t_0$ = 532.5 s ($F^* = 4$) to 2129.9 s ($F^* = 1$), against 213.0 s at the baseline. The band pairs the cheap ends ($c = 0.08$, $F^* = 4$) and the expensive ends ($c = 0.0275$, $F^* = 1$). The first result takes 85.5 d to 2.727 yr. The campaign takes 1.581-18.41 yr, which is 0.32-3.68x the 5-year horizon; with $F^* = 4$ throughout it is 1.581-4.601 yr. Three parallel unary-iteration subtrees on about 102 idle LQ would give $F^* = 12$ and restore the baseline, 0.632-1.841 yr. This lever is computed but not adopted in the box.
 
-**Banks-Casher row (999-1015).** With $a^{-1} = 0.1973/0.15 = 1.315$ GeV, $\Sigma^{1/3} = 270$ MeV and 4 tastes, $P = 2\Lambda\,(4\,a^3\Sigma)/(\pi N_c)$. The modes per configuration are $\nu = P\cdot V_F = 27.1$ ($\Lambda = 0.15$) and 18.0 ($\Lambda = 0.10$), with $V_F = 24576$ per flavor. The shots are $(1-P)/\big(P\,(0.3^2 - 1/(5\nu))\big)$ over 5 configurations: $1.098\times10^4$-$1.725\times10^4$. The T per shot is the filter degree times one query: $430\times4.26\times10^5 = 1.832\times10^8$ to $640\times4.26\times10^5 = 2.726\times10^8$. The wall time is 58.2 d to 1.490 yr, and the required $\epsilon_l$ is $3.668\times10^{-10}$.
+**Banks-Casher row (1006-1022).** With $a^{-1} = 0.1973/0.15 = 1.315$ GeV, $\Sigma^{1/3} = 270$ MeV and 4 tastes, $P = 2\Lambda\,(4\,a^3\Sigma)/(\pi N_c)$. The modes per configuration are $\nu = P\cdot V_F = 27.1$ ($\Lambda = 0.15$) and 18.0 ($\Lambda = 0.10$), with $V_F = 24576$ per flavor. The shots are $(1-P)/\big(P\,(0.3^2 - 1/(5\nu))\big)$ over 5 configurations: $1.098\times10^4$-$1.725\times10^4$. The T per shot is the filter degree times one query: $430\times4.26\times10^5 = 1.832\times10^8$ to $640\times4.26\times10^5 = 2.726\times10^8$. The wall time is 58.2 d to 1.490 yr, and the required $\epsilon_l$ is $3.668\times10^{-10}$.
 
-### 4.3 Co-design row: $24^3\times48$, $\kappa \approx 10^3$ (`_model_codesign`, lines 1112-1273)
+### 4.3 Co-design row: $24^3\times48$, $\kappa \approx 10^3$ (`_model_codesign`, lines 1126-1295)
 
 The same formulas give 20 + 4 + 4 + 12 + 50 = **90 LQ** and $N_T = 5000\times 4\times663552\times\log_2 663552 = 5000\times5.133\times10^7 = 2.567\times10^{11}$ T. At $\epsilon_l = 10^{-12}$ the per-shot budget is $p_f/\epsilon_l = 10^{11}$, so the row is 2.57x over it. A 2.6x reduction (`per_shot_reduction`) leaves $9.872\times10^{10}$. LCU alone (3x) closes the gap and the even-odd split alone (2x) does not. The production lattice $48^3\times96$ needs 94 LQ and $4.956\times10^{12}$ T, 49.6x the budget, beyond the 20x the levers reach. The campaign figures are intermediates only; the row exports no shots or wall time. $10^4$ shots per configuration ($\mathrm{Var}/\varepsilon^2$ at $\varepsilon = 10^{-2}$) on $10^3$ configurations make $10^7$ shots. At 2.86-11.4 days per shot that is $7.820\times10^4$-$3.128\times10^5$ yr, and five years hold 160-640 shots. Lines 1153-1179 cost the disconnected HVP itself. Noise-matching the current loops needs $4.967\times10^{11}$ shots per configuration per flavor and current direction at $24^3\times48$ ($1.490\times10^{12}$ for the three spatial currents), and $7.947\times10^{12}$ per direction at $48^3\times96$ ($2.384\times10^{13}$ for the three currents), at order-one site variance.
 
 ## 5. What the paper prints
 
-`resources.json` holds four rows for this chapter (written by `INSTANCE_ROWS`, lines 1310-1330). The paper's `scripts/resources.py` reads them.
+`resources.json` holds four rows for this chapter (written by `INSTANCE_ROWS`, lines 1332-1352). The paper's `scripts/resources.py` reads them.
 
 | era | label | LQ | T per shot | other keys |
 |---|---|---|---|---|
@@ -241,7 +243,7 @@ The same formulas give 20 + 4 + 4 + 12 + 50 = **90 LQ** and $N_T = 5000\times 4\
 | 2033 | Banks-Casher mode number, V=8^3x16, a=0.15 fm (demonstration) | 83 | 183173120-272629760 | eps_l 3.668e-10, shots 10979.8-17247.1 |
 | codesign | Tr M^-1, V=24^3x48, kappa~1e3, d_inv~5e3 (before reduction) | 90 | 256659922982.3 | eps_l 1e-12, codesign true |
 
-Table 1.1 of the paper (the chapter list in the overview) prints "18 LQ, 1.9-3.5e4 T" for 2028 and "83 LQ, 2.1e8 T" for 2033. `PUBLISHED` (lines 1287-1307) holds the box values the model is checked against at a 2% tolerance: (18, 1.9e4-3.5e4), (83, 2.1e8) and (90, 2.6e11).
+Table 1.1 of the paper (the chapter list in the overview) prints "18 LQ, 1.9-3.5e4 T" for 2028 and "83 LQ, 2.1e8 T" for 2033. `PUBLISHED` (lines 1309-1329) holds the box values the model is checked against at a 2% tolerance: (18, 1.9e4-3.5e4), (83, 2.1e8) and (90, 2.6e11).
 
 Two sets of tests pin these numbers. The first runs in every layout:
 
@@ -265,7 +267,7 @@ The second set checks the model's numbers and then the chapter's printed strings
 - `test_2033_per_shot_t`: $2.1\times10^8$, $\epsilon_l \lesssim 4.7\times10^{-10}$ and $3.7\times10^{-10}$.
 - `test_2033_p_readout_two_tiers`: $P$, $1.4$-$4.0\times10^4$ and $0.94$-$2.7\times10^5$ shots, $3.0$-$8.6\times10^{12}$ and $2.0$-$5.8\times10^{13}$ T.
 - `test_2033_depth_factories_and_walls`: 530-2100 s, 86 d-2.7 yr, 1.6-18 yr.
-- `test_2033_banks_casher_demonstration`: $1.8$-$2.7\times10^8$ T, $1.1$-$1.7\times10^4$ shots, 58 d-1.5 yr.
+- `test_2033_banks_casher_demonstration`: $1.8$-$2.7\times10^8$ T, $1.1$-$1.7\times10^4$ shots, 58 d-1.5 yr, and the 2x band on $P$ (29 d-3.0 yr).
 - `test_codesign_24x48_instance`, `test_codesign_production_48x96_after_reduction`, `test_codesign_one_machine_campaign_horizon`: 90 LQ, $2.6\times10^{11}$, 2.6x, $5.0\times10^{12}$, ~50x, 2.9-11 days per shot, $7.8\times10^4$-$3.1\times10^5$ yr.
 
 ## 6. Circuit status
@@ -291,9 +293,9 @@ The 2028 count is therefore gate-level throughout, with assumptions stated per p
 - **The condensate $c$ sets the 2033 shot band.** It lies between the free value 0.0275 and an estimate of 0.08. An ensemble value at $am = 0.04$ on $8^3\times16$ would pin it.
 - **What the 2033 result validates.** $P$ is compared with a classical evaluation of the same polynomial on the same configurations. Calling the result $\mathrm{Tr}\,M^{-1}$ itself would need $d_\mathrm{inv} \approx 700$ and 1.4x the per-shot T (`docs/OPEN_ITEMS.md`). Continuum and finite-volume effects are not addressed at this stage.
 - **The 2033 walls are depth-bound** at 530-2100 s per shot. The three-subtree layout ($F^* \approx 12$ on about 102 idle LQ) and one step of amplitude amplification are levers that are computed but not adopted. Amplitude amplification would make a $6.4\times10^8$-T shot at $\epsilon_l \approx 1.6\times10^{-10}$ (`test_2033_per_shot_t`, checked in the paper tree).
-- **The Banks-Casher inputs** ($\Sigma^{1/3} = 270$ MeV, 4 tastes, 5 configurations, filter degrees 430/640) come from a simplified-observable study. In a 1.2 fm box $P$ is uncertain by about 2x, and the physics is in the $\epsilon$ regime.
+- **The Banks-Casher inputs** ($\Sigma^{1/3} = 270$ MeV, 4 tastes, 5 configurations, filter degrees 430/640) come from a simplified-observable study. In a 1.2 fm box $P$ is uncertain by about 2x, and the physics is in the $\epsilon$ regime; since the 2026-10-09 ruling that 2x is printed as a band on the row's shots and walls, 29 d-3.0 yr (`bc_p_uncertainty`, `bc_wall_band_yr`), and no ensemble value is sought.
 - **The post-2033 row is priced at $D V\log_2 V$** with the 2033 block encoding. If link loading needs the extra factor $D$, the cost is $D^2 V\log_2 V$ instead.
-- **The disconnected HVP needs far more shots than the row prices.** The $10^4$ shots per configuration price $\mathrm{Tr}\,M^{-1}$ and are a lower bound for the HVP. Noise-matched loops need $1.5\times10^{12}$ per configuration at $24^3\times48$. That count assumes `hvp_site_variance` = 1, which is not conservative, and no coherent variance-reducing estimator is costed.
+- **The disconnected HVP needs far more shots than the row prices.** The $10^4$ shots per configuration price $\mathrm{Tr}\,M^{-1}$ and are a lower bound for the HVP. Noise-matched loops need $0.75$-$3.0\times10^{12}$ per configuration at $24^3\times48$ for a site variance between 2 and 1/2 (`hvp_site_variance_band`, printed as a band since the 2026-10-09 ruling; the central $1.5\times10^{12}$ is at variance 1), and no coherent variance-reducing estimator is costed.
 - **The co-design campaign does not fit the horizon on one machine** even after the 2.6x reduction: $7.8\times10^4$-$3.1\times10^5$ yr. QME would cut the calls 100x, but each circuit would then be 100x deeper.
 - **Finite-density reweighting is not a deliverable.** A phase estimator for $\arg\det M$ is not costed.
 - **Synthesis of the 2033 phase loader** (`qsp_phase_eps`) is informational and outside every per-shot T.
