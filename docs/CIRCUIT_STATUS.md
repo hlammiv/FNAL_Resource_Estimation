@@ -186,11 +186,11 @@ COMPILED: 16  SCALING: 2  CONJECTURE: 0  UNSOURCED: 0
 
 | era | primitive | count | T each | T total | status | source | note |
 |---|---|---|---|---|---|---|---|
-| 2028 | scalar_onsite_polynomial | 6.48e+03 | 6.48 | 4.2e+04 | **COMPILED** | arxiv_2407_13819 Eq. rzTrotter (:1756-1762); arxiv_2210_07985 Eqs. trdispl-trphi4 (:374-435) | 15 R_Z/site/step at eps_rot=0.000649 (21.379 T each), / banked 3.3x (uncited development target) |
-| 2028 | scalar_gradient_links | 1.38e+04 | 6.48 | 8.96e+04 | **COMPILED** | arxiv_2407_13819 Eq. rzTrotter (:1756-1762); arxiv_2210_07985 Eqs. trdispl-trphi4 (:374-435) | 32 R_Z/site/step at eps_rot=0.000649 (21.379 T each), / banked 3.3x (uncited development target) |
-| 2028 | scalar_kinetic_pi2_zz | 2.59e+03 | 6.48 | 1.68e+04 | **COMPILED** | arxiv_2210_07985 Eqs. fftqft, trpi2 (:350-356, :397-407) | 6 R_Z/site/step at eps_rot=0.000649 (21.379 T each), / banked 3.3x (uncited development target) |
-| 2028 | scalar_qft_controlled_phase | 864 | 6.48 | 5.6e+03 | **COMPILED** | derived here (R12 item 14) | 2 R_Z/site/step at eps_rot=0.000649 (21.379 T each), / banked 3.3x (uncited development target) |
-| 2028 | scalar_qft_exact | 432 | 19.4 | 8.38e+03 | **COMPILED** | derived here (R12 item 14) | 64 exact T/site/step (Toffoli = 7 T), / banked 3.3x |
+| 2028 | scalar_onsite_polynomial | 1.08e+04 | 6.61 | 7.14e+04 | **COMPILED** | arxiv_2407_13819 Eq. rzTrotter (:1756-1762); arxiv_2210_07985 Eqs. trdispl-trphi4 (:374-435) | 15 R_Z/site/step at eps_rot=0.000503 (21.802 T each), / banked 3.3x (uncited development target) |
+| 2028 | scalar_gradient_links | 2.3e+04 | 6.61 | 1.52e+05 | **COMPILED** | arxiv_2407_13819 Eq. rzTrotter (:1756-1762); arxiv_2210_07985 Eqs. trdispl-trphi4 (:374-435) | 32 R_Z/site/step at eps_rot=0.000503 (21.802 T each), / banked 3.3x (uncited development target) |
+| 2028 | scalar_kinetic_pi2_zz | 4.32e+03 | 6.61 | 2.85e+04 | **COMPILED** | arxiv_2210_07985 Eqs. fftqft, trpi2 (:350-356, :397-407) | 6 R_Z/site/step at eps_rot=0.000503 (21.802 T each), / banked 3.3x (uncited development target) |
+| 2028 | scalar_qft_controlled_phase | 1.44e+03 | 6.61 | 9.51e+03 | **COMPILED** | derived here (R12 item 14) | 2 R_Z/site/step at eps_rot=0.000503 (21.802 T each), / banked 3.3x (uncited development target) |
+| 2028 | scalar_qft_exact | 720 | 19.4 | 1.4e+04 | **COMPILED** | derived here (R12 item 14) | 64 exact T/site/step (Toffoli = 7 T), / banked 3.3x |
 | 2028 | adiabatic_state_prep | 1 | 0 | 0 | **UNSOURCED** | app05:65,107,123 | adiabatic ramp to the false vacuum; not priced in the chapter |
 | 2028 | basin_projector_and_readout | 1 | 0 | 0 | **UNSOURCED** | app05:127 | metastable-basin projector; direct-sampling readout; not priced |
 | 2033 | scalar_onsite_polynomial | 5.94e+06 | 27.4 | 1.63e+08 | **COMPILED** | arxiv_2407_13819 Eq. rzTrotter (:1756-1762); arxiv_2210_07985 Eqs. trdispl-trphi4 (:374-435) | 15 R_Z/site/step at eps_rot=1.69e-05 (27.430 T each), synthesized to the 33-application circuit's budget; x 33 applications of A (deepest MLAE circuit, G2) |

@@ -101,15 +101,15 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - The free part of the Delta-n state preparation is priced (4.6e5 T per application, 1.6% of the evolution, `free_prep`); the interacting dressing ramp is not, and any ramp lowers the MLAE depth (`prep_sensitivity`: r = 0.2 gives depth 27 and 9.7 yr per campaign point, r = 1 gives depth 15 and 29 yr); a static wall needs a degenerate well or a pinning term.
 - The flag contrast p0 = 0.66 at a m_f = 0.5 on the free vacuum, 0.60-0.65 on the wall background (`flag_contrast`), multiplies the queries by about 2.3; the chapter does not fix a m_f.
 - By an exact charge-conjugation-plus-flavor-swap symmetry (`c_prime_residual` = 0) the flavor-summed asymmetry vanishes identically, so Delta n is flavor-resolved.
-- The bath for the nucleation circuits is estimated, not priced: one unit of Lindblad time is about 5.5e5 T (`bath_sweep_t`), one application of each of the 240 scalar jumps is 1.3e8 T (five nucleation circuits), and the sweeps needed to mix and the dissipator rate during the evolution are open; the Gibbs preparation and the basin projector are carried at 0 T, UNSOURCED.
-- The 2028 count 1.6e5 T includes an unbanked 3.3x reduction of c_T that is an assumed development target (`ct_reduction_banked`) and omits the adiabatic preparation and basin projector, so it is neither a lower nor an upper bound.
+- The bath for the nucleation circuits is estimated, not priced: one unit of Lindblad time is about 5.5e5 T (`bath_sweep_t`), one application of each of the 240 scalar jumps is 1.3e8 T (five nucleation circuits), a dynamic-exponent heuristic puts the sweeps needed to mix at 3-20 (`bath_mixing_sweeps`, words only in the chapter; at any value the preparation, 0.4-2.7e9 T per nucleation shot, dominates and the scan would be 78-500 yr), the dissipator rate during the evolution is open; the Gibbs preparation and the basin projector are carried at 0 T, UNSOURCED.
+- The 2028 count 2.8e5 T (20 steps, slope at 10 and 20 steps since 2026-10-11) includes an unbanked 3.3x reduction of c_T that is an assumed development target (`ct_reduction_banked`) and omits the adiabatic preparation and basin projector, so it is neither a lower nor an upper bound.
 - The integrated asymmetry S_int is not computed; the first result takes 1e-3 (`s_int_taken`) and its wall scales as (1e-3/S_int)^2.
-- The 2028 slope uses times 0.4 and 1.2/m_phi, and 0.4/m_phi may sit in the Zeno regime; a shorter lever arm costs 5-6 times the shots.
-- At T = T_c the nucleation rate vanishes in infinite volume; the finite-volume decrement on 15x8 may be far below 2.5e-3, so that point may cost more than the 12 d priced.
-- The scan over N_bin = 100 exceeds what a 15x8 lattice resolves; a scan over temperature alone would cut it from 3.3 yr to about 0.3 yr.
+- The 2028 slope uses times 1.0 and 2.0/m_phi (both in the chapter's exponential window; `slope_shots` gives 1.8e4 shots per time at r = 1/2); the expected decrement (5e-3 at 1.2/m_phi from the r23 count) is the chapter author's to confirm.
+- The decrement 2.5e-3 at T_c is the wall-pair saddle at the stated sigma = 1.32 m_phi^2 (`slab_saddle`, `sigma_over_mphi2`); no critical bubble fits 15x8, so Gamma/V is finite at T_c, and the 0.9 T_c point costs 2x (24 d).
+- The campaign uses the 8 momentum bins the 15-site axis resolves (ruling 3b, 2026-10-11; campaign 8.6 yr, 1.7x the window); a scan over temperature alone would cut the nucleation scan from 3.3 yr to about 0.3 yr and stays the chapter author's option.
 - At the 0.1-fault budget the deepest circuit has p_f = 0.095 (`fault_prob_per_circuit`), which shifts A_R by up to 4.4e-3 (`fault_bias_worst_A_R`), above the per-bin 1e-3; a null circuit quadruples the first-result queries (`null_control_query_factor`), and idle locations would need about 1e-12 per location.
 - The tensor-network cost of the 2+1D quantum-scalar comparator is not estimated.
-- If the 3.3x cut applies to T-count but not depth, F* = 7-9 and the 2028 wall is depth-bound at 1.1-1.4 times the quoted 54 min.
+- If the 3.3x cut applies to T-count but not depth, F* = 7-9 and the 2028 wall is depth-bound at 1.1-1.4 times the quoted 2.1 h.
 
 ## Ch. 9, chiral lattice fermions for real-time gauge dynamics (`ch09_chiral_gauge.py`)
 

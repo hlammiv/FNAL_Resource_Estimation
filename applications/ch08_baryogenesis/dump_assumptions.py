@@ -34,6 +34,7 @@ TITLES = (
     ("wall time and campaign", "Wall time and campaign"),
     ("two-tier schedule", "Two-tier schedule (first result and campaign) and T-depth"),
     ("state preparation", "State preparation, flag contrast, bath and fault model"),
+    ("finite-volume saddle", "Finite-volume saddle behind the nucleation decrement"),
     ("interim variant", "Interim scalar+Wilson variant (printed values)"),
     ("utility box", "Utility box"),
 )

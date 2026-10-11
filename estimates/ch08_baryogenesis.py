@@ -235,8 +235,10 @@ _POSITIVE = ("v_2028", "n_phi", "n_phi_small", "spinor_components", "lz_sites", 
              "t_max_2033", "dt", "fault_budget_per_shot",
              "shots_2028", "shots_nucleation_2033", "eps_c", "n_bin", "envelope_2033", "cap_2028",
              "accuracy", "t_gate_s", "n_scan_points", "n_dn_points",
-             "slope_times", "slope_shot_factor", "slope_early_fraction", "detection_sigma", "n_points_first",
-             "s_int", "t_depth_2028", "t_depth_2033", "t_depth_2033_first",
+             "slope_times", "slope_early_fraction_2028", "slope_early_fraction_2033", "decrement_ref_time_2028",
+             "detection_sigma", "n_points_first",
+             "s_int", "t_depth_2028", "t_depth_2028_ref_steps", "t_depth_2033", "t_depth_2033_first",
+             "sigma_over_mphi2", "bath_mixing_sweeps", "bath_mixing_sweeps_central", "n_trot_family",
              "horizon_yr", "t_2028_box", "am_f", "beta_mphi", "lr_patch_radius", "idle_cycle_s")
 
 
@@ -274,7 +276,8 @@ class Assumptions:
     rot_synthesis: Tagged = Cited("rus", SYNTHESIS_SRC, "report-wide: 1.15 log2(1/eps_rot) + 9.2 T per rotation")
     toffoli_convention: Tagged = Cited("textbook", "main-overview:47 (report-wide)", "7 T per Toffoli everywhere")
     # printed c_T values (echoes of the derived numbers; checked against the model in the tests)
-    c_t_2028_quoted: Tagged = Stated(1.24e3, f"{TEX}:91,129", "'c_T ~ 1.24e3 T/site/step, derived here'")
+    c_t_2028_quoted: Tagged = Stated(1.26e3, "r12 record", "c_T 1263.1 T/site/step at 20 steps (the rotations of a longer shot "
+                                     "are synthesized tighter; 1239.8 at 12 steps); derived here, no longer printed since the Oct 6 cut")
     c_t_2033_quoted: Tagged = Stated(2.5e3, f"{TEX}:91,165", "'c_T ~ 2.5e3 (1.6e3 scalar, 8.9e2 fermion)' at the deepest circuit's budget")
     c_t_range_quoted: Tagged = Stated((2.5e2, 2.5e3), f"{TEX}:85", "'c_T runs from 2.5e2 to 2.5e3 across the instances below'")
     ct_reduction: Tagged = Assumed((3, 4), "model-internal sanity span for the banked ~3.3x (not printed in the chapter); "
@@ -283,24 +286,33 @@ class Assumptions:
                                           "'divided by an assumed ~3.3x reduction that is a development target, not derived "
                                           "or cited'; carried exactly, printed results rounded once",
                                           f"{TEX}:91,126,162,163,179")
-    t_2028_box: Tagged = Stated(1.6e5, f"{TEX}:128", "'~1.6e5 T-gates, i.e. ~1.6x the 1e5 cap': 5.356e5/3.3 = 1.623e5")
+    t_2028_box: Tagged = Stated(2.8e5, f"{TEX}:94", "'2.8e5 (9.1e5 before the assumed 3.3x step reduction)': 9.095e5/3.3 "
+                                "= 2.756e5 at 20 steps (ruling 2026-10-11; was 1.6e5 at 12 steps)")
     t_with_fermions_6x6_raw_quoted: Tagged = Stated(8.5e5, f"{TEX}:91", "'8.5e5 T raw': 1973.0 x 36 x 12 = 8.523e5")
     t_with_fermions_6x6_quoted: Tagged = Stated(2.6e5, f"{TEX}:91", "'~2.6e5 T with the same reduction applied to every sector'")
     c_t_with_fermions_6x6_quoted: Tagged = Stated(2.0e3, f"{TEX}:91", "'c_T ~ 2.0e3'")
     system_qubits_with_fermions_6x6_quoted: Tagged = Stated(288, f"{TEX}:91", "'288 system qubits' = 36 x (4 + 4)")
 
     # ---- Trotter --------------------------------------------------------------
-    n_trot_2028: Tagged = Stated(12, f"{TEX}:82,91,129,133", "'12 first-order Trotter steps of dt = 0.1/m_phi to t ~ 1.2/m_phi'")
+    n_trot_2028: Tagged = Stated(20, f"{TEX}:59,97", "'20 steps at the same delta t', to t = 2/m_phi: both slope times "
+                                 "(10 and 20 steps) inside the chapter's 1-2/m_phi exponential window (ruling "
+                                 "2026-10-11, was 12 steps with the early time 0.4/m_phi in the Zeno regime)")
+    n_trot_family: Tagged = Stated(12, "r16 record", "the 8^2 family rows and the interim 4^2 variant (no longer printed) "
+                                   "were set at 12 steps to t = 1.2/m_phi; kept there as records")
     t_max_2033: Tagged = Stated(10.0, f"{TEX}:82,100", "t_max = 10/m_phi (units of 1/m_phi)")
     dt: Tagged = Stated(0.1, f"{TEX}:82,91", "'delta t = 0.1/m_phi'")
     t_window_2028: Tagged = Stated((1.0, 2.0), f"{TEX}:91,101,142", "'t ~ 1-2/m_phi', Zeno-to-exponential crossover")
 
     # ---- shots and readout ----------------------------------------------------
-    shots_2028: Tagged = Stated(5e3, f"{TEX}:132", "'5e3 (rare-event nucleation statistics)'")
+    shots_2028: Tagged = Stated(5e3, "r23 record", "single-time 20% count at t = 1.2/m_phi (r23 box '5e3'); it fixes the "
+                                "ln P_FV decrement there, delta = 1/(N eps^2) = 5e-3, from which the slope shots follow")
+    decrement_ref_time_2028: Tagged = Assumed(1.2, "time (1/m_phi) at which shots_2028 set the decrement; in the exponential "
+                                              "regime the decrement grows linearly with t", "derived here 2026-10-11")
     n_rare_range: Tagged = Stated((1e3, 1e4), f"{TEX}:83", "N_rare ~ 1e3-1e4 in Eq. Nshot_baryo")
     shots_nucleation_2033: Tagged = Stated(1e4, f"{TEX}:169", "nucleation arm '1e4 shots' per grid point")
     eps_c: Tagged = Stated(1e-3, f"{TEX}:88,160", "reflection asymmetry ~1e-3 at Delta theta_C = 0.1")
-    n_bin: Tagged = Stated(100, f"{TEX}:89,168", "'N_bin ~ 1e2 kinematic bins'")
+    n_bin: Tagged = Stated(8, f"{TEX}:63,115", "'the 8 bins the 15-site axis resolves': floor(15/2) + 1 distinct |k_z| "
+                           "(ruling 2026-10-11, batch 4 item 3b; was 'N_bin ~ 1e2', which the lattice cannot resolve)")
     mlae_queries_per_bin_quoted: Tagged = Stated(7.0e4, f"{TEX}:83", "'~7.0e4 base-circuit queries per kinematic bin' (C_est = 1, "
                                                  "x 1/p0^2 flag contrast)")
     c_est: Tagged = Stated(1.0, f"{TEX}:88", "author-adopted branch prior |A_R| < sin(pi/66) = 0.048: "
@@ -318,7 +330,8 @@ class Assumptions:
     accuracy: Tagged = Stated(0.2, f"{TEX}:49,160,201", "20% relative accuracy on Gamma/V")
     fault_budget_per_shot: Tagged = Assumed(0.1, "0.1 expected faults per shot, report-wide",
                                             "main:272 (report-wide)")
-    eps_l_2028_quoted: Tagged = Stated(6e-7, f"{TEX}:131", "'Required epsilon_l <~ 6e-7 (0.1 expected faults per 1.6e5-T shot)'")
+    eps_l_2028_quoted: Tagged = Stated(4e-7, f"{TEX}:96", "'Required epsilon_l <~ 4e-7' (0.1 expected faults per 2.7e5-T shot; "
+                                       "was 6e-7 at 12 steps)")
     eps_l_2033_deepest_quoted: Tagged = Stated(1e-10, f"{TEX}:167", "'<~ 1e-10 for the deepest MLAE circuit (33 x 3.0e7 T)'")
     eps_l_2033_base_quoted: Tagged = Stated(3e-9, f"{TEX}:167", "'<~ 3e-9 for the base circuit'")
 
@@ -332,19 +345,23 @@ class Assumptions:
     # ---- two-tier schedule (shot audit and factory analysis) ----------------
     slope_times: Tagged = Assumed(2, "Gamma/V is the slope of ln P_FV past the Zeno time, so two times (t/3 and t), "
                                   "not one", "shot_audit.json ch8 (1)")
-    slope_shot_factor: Tagged = Assumed(3, "a 20% slope from t/3 and t needs ~3x the single-time count at each time "
-                                        "(binomial var(ln P) ~ delta/((1-delta) N))", "shot_audit.json ch8 (1)")
-    slope_early_fraction: Tagged = Assumed(1 / 3, "early time t/3: 4 of 12 steps (2028), 33 of 100 (2033); a long lever "
-                                           "arm is ~5x cheaper than t/1.5", "shot_audit.json ch8 lever (5)")
+    slope_early_fraction_2028: Tagged = Assumed(0.5, "2028 early time t/2: 10 of 20 steps (1.0 and 2.0/m_phi), both in the "
+                                                "chapter's exponential window; shots per time follow from slope_shots "
+                                                "(was t/3, 4 of 12 steps, with 0.4/m_phi in the Zeno regime)",
+                                                "ruling 2026-10-11")
+    slope_early_fraction_2033: Tagged = Assumed(1 / 3, "2033 early time t/3: 33 of 100 steps; a long lever arm is ~5x "
+                                                "cheaper than t/1.5", "shot_audit.json ch8 lever (5)")
     detection_sigma: Tagged = Assumed(3, "the 2033 first result is a 3-sigma detection of Delta n", "H. Lamm 2026-10-02")
     n_points_first: Tagged = Stated(2, f"{TEX}:143", "first result at T = T_c and 0.9 T_c (the box's two temperatures)")
     s_int: Tagged = Assumed(1e-3, "f_eq-weighted integrated asymmetry; NOT computed; taken at the per-k estimate "
                             "(app05:88); the first-result Delta-n wall scales as (1e-3/S_int)^2", "NEEDS_AUTHOR")
     label_register_first: Tagged = Assumed(7, "packet-label register of the f_eq-weighted packet superposition, "
                                            "taken from the 10-qubit workspace", "shot_audit.json ch8 lever (1)")
-    t_depth_2028: Tagged = Assumed((5.4e3, 7.0e3), "T-depth per shot, banked: ceil(1980/29) x 21.38 + ... per step "
-                                   "(A = 29-30 RUS ancillas) to the serial structural schedule, x 12 / 3.3",
-                                   "factory.json ch08 run 1")
+    t_depth_2028: Tagged = Assumed((5.4e3, 7.0e3), "T-depth per 12-step shot, banked: ceil(1980/29) x 21.38 + ... per step "
+                                   "(A = 29-30 RUS ancillas) to the serial structural schedule, x 12 / 3.3; the model "
+                                   "scales it by n_trot_2028 / t_depth_2028_ref_steps", "factory.json ch08 run 1")
+    t_depth_2028_ref_steps: Tagged = Assumed(12, "step count of the factory.json run behind t_depth_2028; depth is "
+                                             "proportional to the step count", "factory.json ch08 run 1")
     t_depth_2033: Tagged = Assumed((7.2e5, 2.87e6), "T-depth per base circuit: A = 40 (bath ancillas borrowed during "
                                    "the closed scattering segments) to A = 10 (workspace only)", "factory.json ch08 runs 2-5")
     t_depth_2033_first: Tagged = Assumed((8.7e5, 9.6e6), "T-depth per first-result Delta-n base circuit: the 7-qubit "
@@ -370,6 +387,24 @@ class Assumptions:
                                      "v_LR beta; jumps normalized ||sum_a A^a+ A^a|| <= 1 (main.tex:346), adjoints included")
     idle_cycle_s: Tagged = Assumed(1e-5, "one logical cycle ~10 us (as in shot_overhead_s); idle qubit-cycles = "
                                       "LQ x circuit time / cycle", "derived here")
+    bath_mixing_sweeps: Tagged = Assumed((3, 20), "sweeps of the filtered dissipator to mix the Gibbs state, a dynamic-"
+                                         "exponent heuristic (not measured): relaxation time tau = xi^z = 4-4.5 sweeps at "
+                                         "xi = 1/m_phi = 2a and z = 2-2.17 (model A); warm start from a mean-field thermal "
+                                         "state 2-3 tau = 3-14 sweeps, cold start to 1% local accuracy 7-21; printed as "
+                                         "words only, the nucleation walls stay unpriced lower bounds (ruling 2026-10-11)",
+                                         "estimate 2026-10-10 (scratch ch8_heur)")
+    bath_mixing_sweeps_central: Tagged = Assumed(8, "central value of bath_mixing_sweeps (record; nothing printed uses it)",
+                                                 "estimate 2026-10-10")
+
+    # ---- finite-volume saddle behind the nucleation decrement (ruling 2026-10-11) --------------
+    sigma_over_mphi2: Tagged = Assumed(1.32, "wall tension sigma / m_phi^2 of the 2033 scalar potential, chosen so that the "
+                                       "wall-pair (slab) saddle on the 15x8 cylinder reproduces the decrement 2.5e-3 at "
+                                       "t = 10/m_phi behind the printed 1e4 single-time shots; thin-wall phi^4: "
+                                       "sigma = m^3/(3 lambda), so lambda/m_phi = 0.25. The chapter never fixed sigma or "
+                                       "lambda; this is the stated assumption", "derived here 2026-10-10 (scratch ch8_heur)")
+    latent_heat_ell: Tagged = Assumed(1.0, "free-energy difference Delta F = ell m_phi^3 (1 - T/T_c) between the wells "
+                                      "(thin wall, T_c = m_phi from beta_mphi); lowers the slab action by ell (1 - T/T_c) "
+                                      "L_perp over a strip of width 1/m_phi", "assumed 2026-10-10")
 
     # ---- interim variant (printed echoes) ------------------------------------------
     t_interim_quoted: Tagged = Stated(1.4e5, f"{TEX}:178,181", "'~1.4e5 T raw (c_T ~ 7.5e2: 2.5e2 + 5.0e2, x 16 x 12)'")
@@ -410,10 +445,16 @@ class Assumptions:
                              f"{self.ct_reduction.value} span the box quotes")
         if not (0 < self.fault_budget_per_shot.lo < 1):
             raise ValueError("fault_budget_per_shot is an expected fault count per shot, in (0, 1)")
-        if not (0 < self.slope_early_fraction.lo < 1):
-            raise ValueError("slope_early_fraction is the early time over the late time, in (0, 1)")
+        for name in ("slope_early_fraction_2028", "slope_early_fraction_2033"):
+            if not (0 < getattr(self, name).lo < 1):
+                raise ValueError(f"{name} is the early time over the late time, in (0, 1)")
         if int(self.slope_times.lo) != 2:
-            raise ValueError("the slope is priced from exactly two times (t/3 and t)")
+            raise ValueError("the slope is priced from exactly two times")
+        if int(self.n_bin.lo) > int(self.lz_sites.lo) // 2 + 1:
+            raise ValueError(f"n_bin={int(self.n_bin.lo)} exceeds the {int(self.lz_sites.lo) // 2 + 1} distinct |k_z| "
+                             "the scattering axis resolves")
+        if not (self.bath_mixing_sweeps.lo <= self.bath_mixing_sweeps_central.lo <= self.bath_mixing_sweeps.hi):
+            raise ValueError("bath_mixing_sweeps_central is outside bath_mixing_sweeps")
         if self.label_register_first.lo > self.n_anc_2033.lo - self.n_bath_anc_2033.lo:
             raise ValueError("the packet-label register does not fit in the 2033 workspace")
 
@@ -530,6 +571,58 @@ def price_instance(a: Assumptions, v: int, n_steps: int, n_phi: int, n_f: int, c
     }
 
 
+def slope_shots(eps: float, delta_late: float, r: float) -> float:
+    """Shots at EACH of two times t1 = r t2 and t2 for a relative accuracy eps on the slope of ln P_FV.
+
+    Binomial statistics at small decrement: var(ln P_i) = delta_i / N with delta_1 = r delta_2 (the decrement grows
+    linearly with t in the exponential regime). The slope estimate (ln P_1 - ln P_2) / (t_2 - t_1) then has
+    relative variance (1 + r) / (N delta_2 (1 - r)^2), so N = (1 + r) / (eps^2 delta_2 (1 - r)^2).
+    At r = 1/3 this is 3x the single-time count 1 / (eps^2 delta_2) (the r25 'slope_shot_factor = 3');
+    at r = 1/2 it is 6x. Derived here 2026-10-11."""
+    if not (0 < r < 1) or not (0 < delta_late < 1) or eps <= 0:
+        raise ValueError("need 0 < r < 1, 0 < delta_late < 1, eps > 0")
+    return (1.0 + r) / (eps ** 2 * delta_late * (1.0 - r) ** 2)
+
+
+def slab_saddle(a: "Assumptions", t_over_tc: float, t_mphi: float, sigma: float | None = None) -> dict:
+    """Finite-volume nucleation on the 15 x 8 cylinder from a wall-pair (slab) saddle (heuristic, derived here
+    2026-10-10). A thin-wall bubble of tension s = sigma/m^2 against Delta F = ell m^3 x, x = 1 - T/T_c, has
+    S_2/T >= 4 pi s^2 / (ell T) (at x = 1/2) and a radius s/(ell x) that must fit in L_perp/2 = 2/m_phi; on this
+    lattice it never does, and the saddle is a pair of walls wrapping the L_perp = 8a direction with barrier
+    2 s L_perp, lowered by ell x L_perp over a strip of width 1/m. Prefactor: translational zero mode along L_z and
+    the Gaussian factor sqrt(S/2 pi) at scale m_phi. Everything in units of m_phi (T_c = m_phi, beta_mphi = 1).
+    Returns the action over T, the decrement Gamma t over the window t_mphi (in 1/m_phi), and the bubble bound."""
+    s = float(a.sigma_over_mphi2.lo) if sigma is None else float(sigma)
+    ell = float(a.latent_heat_ell.lo)
+    am = float(a.a_mphi.lo)
+    lperp = int(a.lperp_sites.lo) * am                        # 4.0 / m_phi
+    lz = int(a.lz_sites.lo) * am                              # 7.5 / m_phi
+    x = 1.0 - t_over_tc
+    action_over_t = (2.0 * s * lperp - ell * x * lperp) / t_over_tc
+    rate = lz * math.sqrt(action_over_t / (2.0 * math.pi)) * math.exp(-action_over_t)   # per unit 1/m_phi time
+    bubble_min_action_over_t = 4.0 * math.pi * s ** 2 / (ell * t_over_tc)
+    return {"action_over_t": action_over_t, "decrement": rate * t_mphi,
+            "bubble_min_action_over_t": bubble_min_action_over_t,
+            "slab_dominates": action_over_t < bubble_min_action_over_t,
+            "lambda_over_mphi_thin_wall": 1.0 / (3.0 * s)}
+
+
+def bounce_action_implied(gamma_over_area: float) -> float:
+    """Vacuum (2+1D, three Euclidean dimensions) S_E with (S/2 pi)^{3/2} e^{-S} = Gamma/A in units of m_phi;
+    bisection on [1, 60] (record for the 2028 benchmark; derived here 2026-10-10)."""
+    f = lambda x: (x / (2 * math.pi)) ** 1.5 * math.exp(-x) - gamma_over_area
+    lo, hi = 1.0, 60.0
+    if f(lo) < 0 or f(hi) > 0:
+        raise ValueError("Gamma/A outside the bracket")
+    for _ in range(200):
+        mid = 0.5 * (lo + hi)
+        if f(mid) > 0:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
 def _banked(raw: float, red: Tagged) -> tuple[float, float]:
     """The 3-4x span the 2028 box quotes, applied to a raw count: (raw/4, raw/3)."""
     return (raw / red.hi, raw / red.lo)
@@ -557,9 +650,9 @@ def _model_2028(a: Assumptions) -> Result:
     n_trot = int(a.n_trot_2028.lo)
     red = float(a.ct_reduction_banked.lo)                   # 3.3, the one factor the box banks
     p = price_instance(a, v, n_trot, n_phi, 0, 2, reduction=red)
-    c_t = p["c_t"]                                          # 1239.8
+    c_t = p["c_t"]                                          # 1263.1 at 20 steps (1239.8 at 12)
     site_steps = p["site_steps"]
-    raw = p["t_raw"]                                        # 5.356e5
+    raw = p["t_raw"]                                        # 9.095e5 (5.356e5 at 12 steps)
     t_point = raw / red                                     # 1.623e5 -> '~1.6e5'
     banked = _banked(raw, a.ct_reduction)                   # (1.34e5, 1.79e5)
     cap = float(a.cap_2028.lo)
@@ -576,30 +669,44 @@ def _model_2028(a: Assumptions) -> Result:
     wall_s = shots * (t_point * gt + t0)                    # 812.0 s = 13.5 min -> '~14 min'
     wall_raw_s = shots * (raw * gt + t0)                    # 2678.5 s = 44.6 min -> '~45 min at the unreduced c_T'
 
-    # R25 (R2 + shot audit): the slope of ln P_FV from two times, t/3 and t, 3x the single-time shots at each.
-    # Each circuit at its own depth and its own synthesis budget.
-    n_early = int(round(n_trot * float(a.slope_early_fraction.lo)))          # 4 steps
+    # R25 (R2 + shot audit), re-timed 2026-10-11: the slope of ln P_FV from two times t/2 and t = 2/m_phi (10 and
+    # 20 steps), both inside the chapter's 1-2/m_phi exponential window (the r25 schedule, 0.4 and 1.2/m_phi, put the
+    # early time in the Zeno regime). Shots per time from slope_shots at the decrement the r23 single-time count
+    # fixed: delta(1.2/m_phi) = 1/(5e3 x 0.2^2) = 5e-3, growing linearly with t. Each circuit at its own depth and
+    # its own synthesis budget.
+    eps = float(a.accuracy.lo)
+    n_early = int(round(n_trot * float(a.slope_early_fraction_2028.lo)))     # 10 steps
+    r_times = n_early / n_trot                                              # 0.5
+    delta_ref = 1.0 / (shots * eps ** 2)                                    # 5e-3 at 1.2/m_phi
+    delta_late = delta_ref * t_window / float(a.decrement_ref_time_2028.lo)  # 8.33e-3 at 2.0/m_phi
     p_early = price_instance(a, v, n_early, n_phi, 0, 2, reduction=red)
-    t_early = p_early["t_raw"] / red                                        # 5.19e4
-    shots_per_time = float(a.slope_shot_factor.lo) * shots                  # 1.5e4
-    slope_wall_s = shots_per_time * ((t_point + t_early) * gt + 2 * t0)      # 3216 s = 53.6 min -> '~54 min'
-    slope_wall_raw_s = shots_per_time * ((raw + p_early["t_raw"]) * gt + 2 * t0)   # 1.06e4 s = 177 min -> '~2.9 h'
+    t_early = p_early["t_raw"] / red                                        # 1.34e5
+    shots_per_time = slope_shots(eps, delta_late, r_times)                  # 1.8e4
+    slope_shot_factor = shots_per_time * eps ** 2 * delta_late              # 6 (was 3 at r = 1/3)
+    slope_wall_s = shots_per_time * ((t_point + t_early) * gt + 2 * t0)      # 7.29e3 s = 2.0 h
+    slope_wall_raw_s = shots_per_time * ((raw + p_early["t_raw"]) * gt + 2 * t0)   # 2.4e4 s = 6.7 h
     shots_equiv = shots_per_time * (1 + t_early / t_point)                  # full-circuit equivalents for depth_exports
-    dx = depth_exports(t_point, a.t_depth_2028, shots_equiv, a.t_gate_s, a.shot_overhead_s)
+    depth_scale = n_trot / float(a.t_depth_2028_ref_steps.lo)               # 20 / 12: depth grows with the steps
+    t_depth = (float(a.t_depth_2028.lo) * depth_scale, float(a.t_depth_2028.hi) * depth_scale)   # 9.0e3-1.17e4
+    dx = depth_exports(t_point, t_depth, shots_equiv, a.t_gate_s, a.shot_overhead_s)
+    # record: the vacuum bounce action the decrement implies on 6^2 (A = 36 a^2 = 9/m^2): Gamma/A = delta/(A t)
+    area_2028 = v * float(a.a_mphi.lo) ** 2
+    bounce_action = bounce_action_implied(delta_late / (area_2028 * t_window))   # ~8.0
 
-    # family rows at fixed 12 steps
+    # family rows at the r16 record's 12 steps (n_trot_family; no longer printed)
     vf = int(a.v_family.lo)
     n_small = int(a.n_phi_small.lo)
-    fam4 = price_instance(a, vf, n_trot, n_small, 0, 2)
-    fam16 = price_instance(a, vf, n_trot, n_phi, 0, 2)
+    n_fam = int(a.n_trot_family.lo)
+    fam4 = price_instance(a, vf, n_fam, n_small, 0, 2)
+    fam16 = price_instance(a, vf, n_fam, n_phi, 0, 2)
     fam4_lq = vf * qubits_per_site(n_small, 0) + int(a.n_anc_2028.lo)
     fam16_lq = vf * qps + int(a.n_anc_2028.lo)
 
     # the fermion arm at N_phi=16 on 6^2 (app05:91): a fact, not the reason it waits
     n_f = int(a.n_f_2033.lo)
     comp = int(a.spinor_components.lo)
-    wf = price_instance(a, v, n_trot, n_phi, n_f, comp)
-    with_f_raw = wf["t_raw"]                                # 8.523e5
+    wf = price_instance(a, v, n_fam, n_phi, n_f, comp)
+    with_f_raw = wf["t_raw"]                                # 8.523e5 (12-step record)
     with_f_banked_all_point = with_f_raw / red              # 2.583e5 -> '~2.6e5'
     with_f_system = v * qubits_per_site(n_phi, n_f, comp)   # 288
 
@@ -612,8 +719,8 @@ def _model_2028(a: Assumptions) -> Result:
     interim_lq = interim_system + int(a.workspace_interim.lo)  # 113 -> '~115'
     interim_lq_with_trotter_anc = interim_lq + int(a.n_anc_2028.lo)
     two_register_candidates = (interim_system + interim_system, interim_system + 2 * int(a.workspace_interim.lo))
-    ip = price_instance(a, vi, n_trot, n_small, n_f, comp)
-    interim_t = ip["t_raw"]                                  # 1.449e5 -> '~1.4e5'
+    ip = price_instance(a, vi, n_fam, n_small, n_f, comp)
+    interim_t = ip["t_raw"]                                  # 1.449e5 -> '~1.4e5' (12-step record)
     interim_t_banked_all = interim_t / red                   # 4.39e4 -> '~4.4e4'
     interim_t_banked_scalar_only = (ip["c_t_scalar"] / red + ip["c_t_fermion"]) * ip["site_steps"]   # 1.114e5
     gap = interim_t / cap                                    # 1.449 -> '~1.4'
@@ -676,7 +783,12 @@ def _model_2028(a: Assumptions) -> Result:
         # R25 slope run (single tier) and R9 exports
         "wall_min_single_time_r23": wall_s / 60.0, "wall_min_raw_single_time_r23": wall_raw_s / 60.0,
         "slope_early_steps": n_early, "slope_t_early": t_early, "slope_t_early_over_late": t_early / t_point,
+        "slope_time_ratio": r_times, "slope_decrement_ref": delta_ref, "slope_decrement_late": delta_late,
+        "slope_shot_factor": slope_shot_factor,
         "slope_shots_per_time": shots_per_time, "slope_shots_total": 2 * shots_per_time,
+        "slope_both_times_in_window": a.t_window_2028.lo <= n_early * dt and t_window <= a.t_window_2028.hi,
+        "n_trot_family_record": n_fam, "t_depth_scaled": t_depth,
+        "bounce_action_implied_2028": bounce_action, "area_2028_over_mphi2": area_2028,
         "slope_shots_full_equiv": shots_equiv,
         "slope_wall_min": slope_wall_s / 60.0, "slope_wall_min_raw": slope_wall_raw_s / 60.0,
         "slope_wall_over_single_time": slope_wall_s / wall_s,
@@ -689,17 +801,18 @@ def _model_2028(a: Assumptions) -> Result:
     notes = (
         f"c_T derived here: 55 R_Z + 64 T per site-step for the N_phi=16 scalar; N_rot = 55 x 432 = "
         f"{p['n_rot_shot']}; eps_rot = sqrt(1e-2/N_rot) = {p['eps_rot']:.3e}; {p['t_rot']:.3f} T/rotation; "
-        f"c_T = {c_t:.1f}; raw {raw:.4g}; / banked 3.3 = {t_point:.4g} printed '~1.6e5'.",
+        f"c_T = {c_t:.1f}; raw {raw:.4g}; / banked 3.3 = {t_point:.4g} printed '2.8e5' (20 steps; was 1.6e5 at 12).",
         "The banked 3.3x is the uncited development target; each primitive's t_each is divided by it.",
-        f"0.1 expected faults per shot gives epsilon_l = {eps_l:.2e}; the box prints '<~6e-7'.",
+        f"0.1 expected faults per shot gives epsilon_l = {eps_l:.2e}; the box prints '<~4e-7'.",
         "State prep (adiabatic ramp) and the basin projector are not priced; carried at 0 T UNSOURCED.",
         "The 2028 run drops the fermion arm for resolution: N_phi=4 cannot resolve the biased well and the fermion "
         "arm enters at N_phi=16 (288 system qubits, c_T 1973, 8.5e5 raw, 2.6e5 with 3.3x), which waits for 2033.",
     )
     notes = notes + (
-        f"Slope: P_FV at {n_early} and {n_trot} steps, {shots_per_time:.3g} shots each ({t_early:.4g} and "
-        f"{t_point:.4g} T); {slope_wall_s / 60:.1f} min per point ({slope_wall_raw_s / 60:.0f} min raw). "
-        f"T-depth {a.t_depth_2028.value} (factory.json), F* {dx['f_star'][0]:.1f}-{dx['f_star'][1]:.1f}; if the 3.3x "
+        f"Slope: P_FV at {n_early} and {n_trot} steps (both in the 1-2/m_phi window), {shots_per_time:.3g} shots each "
+        f"({t_early:.4g} and {t_point:.4g} T; decrement {delta_late:.3g} at the late time, {slope_shot_factor:.1f}x the "
+        f"single-time count); {slope_wall_s / 3600:.1f} h per point ({slope_wall_raw_s / 3600:.1f} h raw). "
+        f"T-depth {t_depth[0]:.3g}-{t_depth[1]:.3g} (factory.json x 20/12), F* {dx['f_star'][0]:.1f}-{dx['f_star'][1]:.1f}; if the 3.3x "
         "cut T-count but not depth, F* = 7-9 and the depth floor would be ~1.1-1.4x the quoted wall (not taken).",
     )
     return Result(era="2028", lq=(lq, lq), hard_ops=(t_point, t_point), breakdown=breakdown,
@@ -1074,8 +1187,9 @@ def _model_2033(a: Assumptions) -> Result:
     n_per_depth = per_bin_mlae / sum(depths)                   # 918.3 circuits per depth per bin
     circuits_per_bin = n_per_depth * len(depths)               # 918.3
     lis_n_per_depth = per_bin_lis / sum(mlae_depths(m_top))    # 152.8 (sensitivity)
-    n_bin = int(a.n_bin.lo)
-    queries = per_bin_mlae * n_bin                             # 3.03e6
+    n_bin = int(a.n_bin.lo)                                    # 8 distinct |k_z| (ruling 2026-10-11; was 100)
+    n_bin_distinct_kz = int(a.lz_sites.lo) // 2 + 1            # 8
+    queries = per_bin_mlae * n_bin                             # 5.6e5 (was 7.0e6 at 100 bins)
     queries_heisenberg = per_bin_heisenberg * n_bin
     overhead = per_bin_mlae / per_bin_heisenberg               # 30.3
 
@@ -1093,11 +1207,21 @@ def _model_2033(a: Assumptions) -> Result:
     # R25 (R2 + shot audit): the nucleation slope from t/3 and t, 3x the single-time count at each time. These are
     # single circuits (no MLAE), so each is synthesized to its own budget (R-TOL per circuit) at its own depth.
     gt = float(a.t_gate_s.lo)
-    n_early = int(round(n_trot * float(a.slope_early_fraction.lo)))           # 33 steps
+    n_early = int(round(n_trot * float(a.slope_early_fraction_2033.lo)))      # 33 steps
     t_nucl_late = p_base_budget["t_raw"]                                       # 2.6555e7 (own budget)
     t_nucl_early = price_instance(a, v, n_early, n_phi, n_f, comp)["t_raw"]    # 8.446e6
-    nucl_shots_per_time = float(a.slope_shot_factor.lo) * float(a.shots_nucleation_2033.lo)   # 3e4
-    nucl_s = nucl_shots_per_time * ((t_nucl_late + t_nucl_early) * gt + 2 * t0)   # 1.050e6 s = 12.15 d
+    acc = float(a.accuracy.lo)
+    delta_2033 = 1.0 / (float(a.shots_nucleation_2033.lo) * acc ** 2)         # 2.5e-3 at t = 10/m_phi (box 1e4 shots)
+    nucl_shots_per_time = slope_shots(acc, delta_2033, n_early / n_trot)      # 2.96e4 -> '3e4'
+    nucl_s = nucl_shots_per_time * ((t_nucl_late + t_nucl_early) * gt + 2 * t0)   # 1.04e6 s = 12.0 d
+    # Finite-volume saddle (ruling 2026-10-11, words in the chapter): on 15 x 8 no critical bubble fits and the
+    # saddle is a wall pair wrapping L_perp; the decrement 2.5e-3 corresponds to sigma = 1.32 m_phi^2, Gamma/V is finite
+    # at T_c, and at 0.9 T_c the action over T grows so the decrement roughly halves (2x the shots at that point).
+    slab_tc = slab_saddle(a, 1.0, float(a.t_max_2033.lo))
+    slab_09 = slab_saddle(a, 0.9, float(a.t_max_2033.lo))
+    decrement_ratio_09 = slab_09["decrement"] / slab_tc["decrement"]          # 0.50
+    nucl_shots_per_time_09 = nucl_shots_per_time / decrement_ratio_09         # 5.9e4
+    nucl_s_09 = nucl_s / decrement_ratio_09                                   # 24 d
     n_dn = int(a.n_dn_points.lo)
     dn_point_yr = dn_arm_s / SEC_PER_YR                        # 2.84
     dn_campaign_yr = n_dn * dn_point_yr                        # 28.4 yr serial
@@ -1117,7 +1241,7 @@ def _model_2033(a: Assumptions) -> Result:
     first_queries = c_est * n_sig ** 2 / (p0 ** 2 * s_int ** 2 * m_first)   # 6.7e5 per point
     first_circuits = first_queries / m_first                   # 2.2e4 per point
     first_dn_s = first_circuits * circuit_s(a, sched_first)    # 2.2e7 s = 2.5e2 d
-    first_s = n_first * (first_dn_s + nucl_s)                  # 1.824e7 s = 211 d = 0.578 yr
+    first_s = n_first * first_dn_s + nucl_s + nucl_s_09        # 4.6e7 s = 528 d = 1.45 yr (T_c and 0.9 T_c slopes)
     # what fits in the horizon on one machine: the nucleation scan (which contains the two first-result
     # temperatures) plus the first-result Delta-n points, then whole campaign Delta-n points
     scan_plus_first_yr = nucl_scan_yr + n_first * first_dn_s / SEC_PER_YR   # 3.84 yr
@@ -1129,8 +1253,8 @@ def _model_2033(a: Assumptions) -> Result:
     # (equivalents in units of the evolution, whose T-depth factory.json gives; the preparation and reflections add
     # 1.6% and 0.25% and are carried in the T total, at the same T per layer)
     campaign_equiv = (n_dn * n_circuits * deepest_t_pre + n_scan * nucl_shots_per_time * (t_nucl_late + t_nucl_early)) / t_per_shot
-    first_equiv = n_first * (first_circuits * sched_first["deepest"]
-                             + nucl_shots_per_time * (t_nucl_late + t_nucl_early)) / t_per_shot
+    first_equiv = (n_first * first_circuits * sched_first["deepest"]
+                   + (nucl_shots_per_time + nucl_shots_per_time_09) * (t_nucl_late + t_nucl_early)) / t_per_shot
     dx = depth_exports(t_per_shot, a.t_depth_2033, campaign_equiv, a.t_gate_s, a.shot_overhead_s)
     # The first-result Delta-n circuits carry the 7-qubit label, so they use t_depth_2033_first (A = 33 borrowed to
     # A = 3 not). The nucleation circuits in first_equiv carry no label; pricing them at this band too is conservative.
@@ -1139,7 +1263,7 @@ def _model_2033(a: Assumptions) -> Result:
     first_base_unborrowed_s = max(t_per_shot * gt, float(a.t_depth_2033_first.hi) * REACTION_TIME_S)   # 95.7 s per evolution
     first_dn_unborrowed_s = (first_circuits * sched_first["deepest"] / t_per_shot * first_base_unborrowed_s
                              + first_circuits * t0)   # 2.61e7 s = 302 d
-    first_unborrowed_yr = n_first * (first_dn_unborrowed_s + nucl_s) / SEC_PER_YR            # 1.72 yr
+    first_unborrowed_yr = (n_first * first_dn_unborrowed_s + nucl_s + nucl_s_09) / SEC_PER_YR   # 4.4 yr
     dx_dn_point = depth_exports(t_per_shot, a.t_depth_2033, n_circuits * deepest_t_pre / t_per_shot, a.t_gate_s,
                                 a.shot_overhead_s)
 
@@ -1185,7 +1309,7 @@ def _model_2033(a: Assumptions) -> Result:
     null_control_factor = 4.0                                  # equal-split difference of two equal-precision estimates
     # verifier 2026-10-05: the null route costed. It removes only the bias common to the signal and null circuits
     # (different circuits). Delta-n queries x 4 at each first-result point; nucleation unchanged.
-    first_null_yr = n_first * (null_control_factor * first_dn_s + nucl_s) / SEC_PER_YR          # ~5.5 yr
+    first_null_yr = (n_first * null_control_factor * first_dn_s + nucl_s + nucl_s_09) / SEC_PER_YR   # ~5.5 yr
     scan_plus_first_null_yr = nucl_scan_yr + n_first * null_control_factor * first_dn_s / SEC_PER_YR   # ~8.7 yr
     # B5 (derived here from the arxiv_2311_09207 cost model): one unit of Lindblad time = one filtered jump on a
     # patch; ||sum A+ A|| <= 1 with adjoints included means a sweep over >= 2V scalar jumps (a_x and a_x^dag) is 2V
@@ -1194,6 +1318,22 @@ def _model_2033(a: Assumptions) -> Result:
     n_jumps_min = 2 * v                                        # 240
     sweep_t = n_jumps_min * jump_t                             # 1.3e8
     sweeps_in_envelope = (envelope - t_nucl_late) / sweep_t    # 7.3
+    # Mixing-time band (words only in the chapter; ruling 2026-10-11): if every nucleation shot paid n sweeps of
+    # Gibbs preparation (each shot ends in a projective measurement), the shot, the point, the scan and the first
+    # result would be:
+    def _with_prep(n_sweeps: float) -> dict:
+        t_prep = n_sweeps * sweep_t
+        shot_late = t_nucl_late + t_prep
+        point_s = nucl_shots_per_time * ((shot_late + t_nucl_early + t_prep) * gt + 2 * t0)
+        return {"sweeps": n_sweeps, "prep_t": t_prep, "nucleation_shot_t": shot_late,
+                "fits_envelope": shot_late <= envelope,
+                "nucleation_point_days": point_s / SEC_PER_DAY,
+                "nucleation_scan_yr": n_scan * point_s / SEC_PER_YR,
+                "first_result_yr": (n_first * first_dn_s + point_s * (1 + 1 / decrement_ratio_09)) / SEC_PER_YR,
+                "campaign_yr": dn_campaign_yr + n_scan * point_s / SEC_PER_YR}
+    mixing = {k: _with_prep(n) for k, n in (("lo", float(a.bath_mixing_sweeps.lo)),
+                                            ("central", float(a.bath_mixing_sweeps_central.lo)),
+                                            ("hi", float(a.bath_mixing_sweeps.hi)))}
     # G2: the headline is the deepest executed circuit: m_top applications of A plus (m_top - 1)/2 reflection pairs.
     deep_prims = tuple(replace(q, count=q.count * m_top,
                                note=q.note + f"; x {m_top} applications of A (deepest MLAE circuit, G2)")
@@ -1250,6 +1390,7 @@ def _model_2033(a: Assumptions) -> Result:
         "mlae_lis_dn_arm_yr": lis_dn_arm_s / SEC_PER_YR, "mlae_lis_campaign_serial_yr": lis_campaign_yr,
         "mlae_lis_campaign_over_horizon": lis_campaign_yr / horizon,
         "mlae_derived_bound_ok": derived_bound_ok, "mlae_author_prior_ok": prior_ok,
+        "n_bin": n_bin, "n_bin_distinct_kz": n_bin_distinct_kz,
         "per_bin_single_depth_r13": per_bin_single_depth, "queries_total_single_depth_r13": per_bin_single_depth * n_bin,
         "mlae_overhead_vs_heisenberg": overhead, "queries_heisenberg_total": queries_heisenberg,
         "queries_total": queries, "base_circuit_s": base_circuit_s,
@@ -1262,6 +1403,21 @@ def _model_2033(a: Assumptions) -> Result:
         # R25 slope, tiers and R9 exports
         "nucleation_point_days_single_time_r23": nucl_single_time_s / SEC_PER_DAY,
         "nucleation_shots_per_time": nucl_shots_per_time, "nucleation_early_steps": n_early,
+        "nucleation_decrement_late": delta_2033, "nucleation_slope_shot_factor": nucl_shots_per_time * acc ** 2 * delta_2033,
+        # finite-volume saddle (slab_saddle), ruling 2026-10-11
+        "slab_action_over_t_tc": slab_tc["action_over_t"], "slab_decrement_tc": slab_tc["decrement"],
+        "slab_reproduces_assumed_decrement": math.isclose(slab_tc["decrement"], delta_2033, rel_tol=0.02),
+        "bubble_min_action_over_t_tc": slab_tc["bubble_min_action_over_t"], "slab_dominates": slab_tc["slab_dominates"],
+        "lambda_over_mphi_thin_wall": slab_tc["lambda_over_mphi_thin_wall"],
+        "slab_action_over_t_0p9tc": slab_09["action_over_t"], "decrement_ratio_0p9tc": decrement_ratio_09,
+        "nucleation_shots_per_time_0p9tc": nucl_shots_per_time_09, "nucleation_point_days_0p9tc": nucl_s_09 / SEC_PER_DAY,
+        # bath mixing band (words only)
+        "bath_mixing_sweeps": (float(a.bath_mixing_sweeps.lo), float(a.bath_mixing_sweeps.hi)),
+        "bath_mixing_sensitivity": mixing,
+        "bath_prep_dominates_nucleation_shot": mixing["lo"]["prep_t"] > t_nucl_late,
+        "nucleation_shot_t_with_prep_band": (mixing["lo"]["nucleation_shot_t"], mixing["hi"]["nucleation_shot_t"]),
+        "nucleation_scan_yr_with_prep_band": (mixing["lo"]["nucleation_scan_yr"], mixing["hi"]["nucleation_scan_yr"]),
+        "first_result_yr_with_prep_band": (mixing["lo"]["first_result_yr"], mixing["hi"]["first_result_yr"]),
         "nucleation_t_late_own_budget": t_nucl_late, "nucleation_t_early": t_nucl_early,
         "s_int_taken": s_int, "first_detection_sigma": n_sig, "first_points": n_first,
         "first_queries_per_point": first_queries, "first_circuits_per_point": first_circuits,
@@ -1334,7 +1490,8 @@ def _model_2033(a: Assumptions) -> Result:
         f"m_max = {m_max}; estimator constant {c_est:.5g} ({'single depth' if single_depth else 'Suzuki LIS 1..' + str(m_top)}; "
         f"|Delta| < {branch_bound:.4f} needed for a single depth: author-adopted prior; no derived bound; "
         f"LIS sensitivity {c_lis:.5g}); "
-        f"{per_bin_mlae:.4g}/bin; {queries:.4g} total; cited to arxiv_1904_10246 and arxiv_2012_03348.",
+        f"{per_bin_mlae:.4g}/bin; {queries:.4g} total over {n_bin} bins (the distinct |k_z| on the 15-site axis; "
+        f"ruling 2026-10-11, was 100); cited to arxiv_1904_10246 and arxiv_2012_03348.",
         "Gibbs prep and the Lindblad dissipator (nucleation circuits) and the Delta-n dressing ramp are not priced; "
         f"headline = deepest circuit {deepest_t:.4g} T, a lower bound (printed '>~9.9e8').",
         f"A = U_evo U_pk U_vac; priced free preparation {sched['t_prep']:.3g} T per application (r_free "
@@ -1343,14 +1500,23 @@ def _model_2033(a: Assumptions) -> Result:
         f"{c_prime:.1e}; at r = 1, m_max {sens_r1['m_max']} (odd {sens_r1['m_top']}), "
         f"{sens_r1['dn_point_yr']:.3g} yr per campaign Delta-n point.",
         f"Bath: filtered jump {jump_t:.3g} T per unit Lindblad time; sweep over {n_jumps_min} jumps {sweep_t:.3g} T "
-        f"({sweep_t / t_nucl_late:.2g} nucleation circuits); {sweeps_in_envelope:.2g} sweeps fit 1e9.",
+        f"({sweep_t / t_nucl_late:.2g} nucleation circuits); {sweeps_in_envelope:.2g} sweeps fit 1e9. Mixing band "
+        f"{a.bath_mixing_sweeps.value} sweeps (heuristic): a nucleation shot would be {mixing['lo']['nucleation_shot_t']:.2g}-"
+        f"{mixing['hi']['nucleation_shot_t']:.2g} T, the scan {mixing['lo']['nucleation_scan_yr']:.0f}-"
+        f"{mixing['hi']['nucleation_scan_yr']:.0f} yr, the first result {mixing['lo']['first_result_yr']:.1f}-"
+        f"{mixing['hi']['first_result_yr']:.0f} yr; words only, not priced.",
+        f"Saddle on 15x8 (slab_saddle): wall pair, S/T = {slab_tc['action_over_t']:.1f} at sigma = "
+        f"{float(a.sigma_over_mphi2.lo)} m^2 reproduces the decrement {slab_tc['decrement']:.2e} (assumed {delta_2033:.1e}); "
+        f"bubble minimum S/T {slab_tc['bubble_min_action_over_t']:.1f}; at 0.9 T_c the decrement is x{decrement_ratio_09:.2f}, "
+        f"{nucl_s_09 / SEC_PER_DAY:.0f} d for that point.",
         f"Fault model: p_f {p_fault:.3f}; worst bias {bias_worst:.2g} in A_R; eps_l for bias < first-result sigma "
         f"{eps_l_bias_first:.2g} per T; idle qubit-cycles {qubit_cycles:.3g} -> {lam_idle_at_box:.3g} faults at the box "
         f"eps_l; {eps_l_with_idle:.2g} per location for 0.1 faults.",
         f"epsilon_l = {eps_l_base:.2e} base circuit, {eps_l_deepest:.2e} deepest MLAE circuit "
         f"({deepest_t:.3g} T); printed '<~3e-9' and '<~1e-10'.",
         f"Tiers: first result {first_s / SEC_PER_DAY:.0f} d (2 x 3-sigma Delta n at {first_dn_s / SEC_PER_DAY:.1f} d, "
-        f"S_int = {s_int:g} taken, not computed; 2 nucleation slopes at {nucl_s / SEC_PER_DAY:.2f} d); campaign "
+        f"S_int = {s_int:g} taken, not computed; nucleation slopes {nucl_s / SEC_PER_DAY:.1f} d at T_c and "
+        f"{nucl_s_09 / SEC_PER_DAY:.0f} d at 0.9 T_c); campaign "
         f"{campaign_serial_yr:.2f} yr, {campaign_over_horizon:.2f}x the horizon; scan + first result {scan_plus_first_yr:.2f} yr fits.",
         f"T-depth {a.t_depth_2033.value} per base circuit (factory.json), F* {dx['f_star'][0]:.1f}-{dx['f_star'][1]:.1f}: "
         "the 10-factory baseline is just fed at A = 10. The first result's ~7-qubit packet label comes from the "
@@ -1376,9 +1542,9 @@ def model(a: Assumptions, era: str) -> Result:
 
 
 PUBLISHED = {
-    "2028": Published(lq=(174, 174), hard_ops=(1.6e5, 1.6e5),
-                      src=f"{TEX}:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, "
-                          "x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
+    "2028": Published(lq=(174, 174), hard_ops=(2.8e5, 2.8e5),
+                      src=f"{TEX}:2028 box ('174', '2.8e5 (9.1e5 before the assumed 3.3x step reduction)'): c_T 1239.8 "
+                          "x 36 x 20 = 9.095e5 raw / 3.3 = 2.756e5 (c_T 1263.1 at the 20-step budget; ruling 2026-10-11; was 1.623e5 at 12)",
                       rel_tol=0.05),
     "2033": Published(lq=(1000, 1000), hard_ops=(9.9e8, 9.9e8),
                       src=f"{TEX}:2033 box ('1000', 'Deepest circuit >~9.9e8 T at depth 33 (MLAE), dressing ramp unpriced'). "
@@ -1396,11 +1562,12 @@ def INSTANCE_ROWS(a, era, r):
         return [
             (r"scalar bubble $6^2$", r.lq, r.hard_ops,
              dict(base, reconciled=True,
-                  note=f"{TEX}:128-130 prints ~1.6e5 = 5.356e5/3.3 (c_T 1239.8 derived here, R12)")),
+                  note=f"{TEX}:94 prints 2.8e5 = 9.095e5/3.3 at 20 steps (c_T 1263.1 derived here, R12; "
+                       "slope times 10 and 20 steps, ruling 2026-10-11)")),
             (r"family $8^2$, $N_\phi{=}4$", (i["family_8x8_nphi4_lq"],) * 2,
-             (i["family_8x8_nphi4_t_banked"],) * 2, dict(base, note=f"{TEX}:134 quotes 158 LQ, 5.9e4 T (1.944e5/3.3)")),
+             (i["family_8x8_nphi4_t_banked"],) * 2, dict(base, note="r16 record (no longer printed): 158 LQ, 5.9e4 T (1.944e5/3.3) at 12 steps")),
             (r"family $8^2$, $N_\phi{=}16$", (i["family_8x8_nphi16_lq"],) * 2,
-             (i["family_8x8_nphi16_t_banked"],) * 2, dict(base, note=f"{TEX}:134 quotes 286 LQ, 2.9e5 T (9.723e5/3.3)")),
+             (i["family_8x8_nphi16_t_banked"],) * 2, dict(base, note="r16 record (no longer printed): 286 LQ, 2.9e5 T (9.723e5/3.3) at 12 steps")),
             # the interim 4^2 scalar+Wilson variant was removed from the chapter text (2026-10-08);
             # its intermediates are kept below as a record and are no longer published
         ]

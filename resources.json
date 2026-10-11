@@ -550,15 +550,15 @@
     174
    ],
    "t": [
-    162303.809916798,
-    162303.809916798
+    275591.41246107686,
+    275591.41246107686
    ],
    "codesign": false,
-   "src": "app05:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
+   "src": "app05:2028 box ('174', '2.8e5 (9.1e5 before the assumed 3.3x step reduction)'): c_T 1239.8 x 36 x 20 = 9.095e5 raw / 3.3 = 2.756e5 (c_T 1263.1 at the 20-step budget; ruling 2026-10-11; was 1.623e5 at 12)",
    "t_bound": null,
    "conditional": false,
    "reconciled": true,
-   "note": "app05:128-130 prints ~1.6e5 = 5.356e5/3.3 (c_T 1239.8 derived here, R12)"
+   "note": "app05:94 prints 2.8e5 = 9.095e5/3.3 at 20 steps (c_T 1263.1 derived here, R12; slope times 10 and 20 steps, ruling 2026-10-11)"
   },
   {
    "ch": 8,
@@ -573,11 +573,11 @@
     58906.78463287797
    ],
    "codesign": false,
-   "src": "app05:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
+   "src": "app05:2028 box ('174', '2.8e5 (9.1e5 before the assumed 3.3x step reduction)'): c_T 1239.8 x 36 x 20 = 9.095e5 raw / 3.3 = 2.756e5 (c_T 1263.1 at the 20-step budget; ruling 2026-10-11; was 1.623e5 at 12)",
    "t_bound": null,
    "conditional": false,
    "reconciled": false,
-   "note": "app05:134 quotes 158 LQ, 5.9e4 T (1.944e5/3.3)"
+   "note": "r16 record (no longer printed): 158 LQ, 5.9e4 T (1.944e5/3.3) at 12 steps"
   },
   {
    "ch": 8,
@@ -592,11 +592,11 @@
     294649.4585081366
    ],
    "codesign": false,
-   "src": "app05:2028 box, lines 126-130 ('174', '~1.6e5 T-gates ... c_T ~ 1.24e3, derived here, x 36 x 12 = 5.4e5 raw, with a ~3.3x c_T reduction ...'). Exact 5.356e5/3.3 = 1.623e5 (R12)",
+   "src": "app05:2028 box ('174', '2.8e5 (9.1e5 before the assumed 3.3x step reduction)'): c_T 1239.8 x 36 x 20 = 9.095e5 raw / 3.3 = 2.756e5 (c_T 1263.1 at the 20-step budget; ruling 2026-10-11; was 1.623e5 at 12)",
    "t_bound": null,
    "conditional": false,
    "reconciled": false,
-   "note": "app05:134 quotes 286 LQ, 2.9e5 T (9.723e5/3.3)"
+   "note": "r16 record (no longer printed): 286 LQ, 2.9e5 T (9.723e5/3.3) at 12 steps"
   },
   {
    "ch": 8,
