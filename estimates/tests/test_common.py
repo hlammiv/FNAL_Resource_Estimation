@@ -376,6 +376,13 @@ def test_model_exports_depth(ch):
         i = m.model(a, era).intermediates
         missing = [k for k in c.DEPTH_EXPORTS if k not in i]
         assert not missing, f"Ch{ch} {era}: missing exports {missing}"
+        if i.get("depth_status") == "serial_t_count_bound":
+            # Ch. 2 (ruling 2026-10-12): walls are serial T-count bounds on one machine; no depth schedule.
+            assert ch == 2
+            assert i["t_per_shot"][0] > 0 and c._band(i["wall_campaign_s"])[0] > 0
+            assert m.model(a, era).wall_time_s == i["wall_campaign_s"]
+            assert all(i[k] is None for k in ("t_depth_per_shot", "f_star", "floor_wall_s", "factories_for_1yr"))
+            continue
         if i.get("depth_status") == "not_established":
             # Accepted Ch. 2 studies establish counts, not a device schedule.
             assert ch == 2

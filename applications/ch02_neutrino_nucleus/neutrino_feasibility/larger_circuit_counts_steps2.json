@@ -1,0 +1,33 @@
+{
+  "preparation_layers": 8,
+  "evolution_steps": 2,
+  "tau_MeV_inv": 0.01,
+  "qubits": 36,
+  "initial_counts": {
+    "rotations": 12,
+    "fixed_T": 24,
+    "Toffoli": 0
+  },
+  "after_preparation": {
+    "rotations": 572,
+    "fixed_T": 408,
+    "Toffoli": 1184
+  },
+  "complete_counts": {
+    "rotations": 828,
+    "fixed_T": 552,
+    "Toffoli": 1552
+  },
+  "arbitrary_rotation_tolerance": 6.038647342995169e-06,
+  "T_RS_leading_estimate": 54481.96037782874,
+  "T_RS_plus10_per_rotation": 62761.96037782874,
+  "T_RUS_expected": 26811.809072417174,
+  "checks": {
+    "uniform3_error": 2.482534153247273e-16,
+    "kinetic_error": 5.87332921719229e-16,
+    "controlled_kinetic_error": 4.001262823983916e-16,
+    "control_off_error": 3.284083995358298e-16,
+    "work_leakage": 0.0
+  },
+  "rotation_synthesis_pending": true
+}

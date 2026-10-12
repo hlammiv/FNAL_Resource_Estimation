@@ -1,0 +1,28 @@
+[
+  {
+    "steps": 2,
+    "compact_qubits": 36,
+    "compact_T_leading": 54481.96037782874,
+    "compact_T_plus10": 62761.96037782874,
+    "compact_arbitrary_rotations_checked": 828,
+    "compact_exact_T_checked": 11416,
+    "occupation_qubits": 109,
+    "occupation_rotations": 11342,
+    "occupation_exact_T": 4856,
+    "occupation_T_leading": 723255.2277795277,
+    "occupation_T_report_RUS": 240373.93532440945
+  },
+  {
+    "steps": 6,
+    "compact_qubits": 36,
+    "compact_T_leading": 80302.17636380711,
+    "compact_T_plus10": 92222.1763638071,
+    "compact_arbitrary_rotations_checked": 1192,
+    "compact_exact_T_checked": 16424,
+    "occupation_qubits": 109,
+    "occupation_rotations": 17398,
+    "occupation_exact_T": 6584,
+    "occupation_T_leading": 1140785.1970877873,
+    "occupation_T_report_RUS": 374030.3127751592
+  }
+]

@@ -12,9 +12,9 @@ Chapters 11 and 12 have no model in this package and are not listed.
 
 ## Ch. 2, neutrino-nucleus response (`ch02_nu_nucleus.py`)
 
-- No T-depth or device schedule is derived for the two benchmarks: the depth, factory and wall-time exports are `None` with `depth_status = "not_established"`; shot counts and gate volumes are reported instead.
+- No T-depth or device schedule is derived for the two benchmarks: the depth and factory exports are `None` with `depth_status = "serial_t_count_bound"`, and the printed walls (1.8 h for the 2028 campaign; 9.4 d first result and 250 d campaign in 2033) are serial T-count lower bounds that a depth-bound circuit on 44 workspace qubits could exceed several times.
 - The 2033 primitive counts (`counts("2033", steps)`) are constructive allowances for the 908-qubit construction, not a compiled full-register circuit.
-- Rotation synthesis is priced at the leading Ross-Selinger term, 3 log2(N_R / 0.005) T per rotation (`coherent_synthesis_allowance`, `exact_synthesis = False`); the subleading term is pending.
+- Rotation synthesis follows the report convention since the 2026-10-12 ruling (randomized BRS fit at eps_syn = 1e-2 per circuit, `exact_synthesis = False`); the chapter authors' study files price the same rotations coherently at the leading Ross-Selinger term (`circuit(..., convention="study")`, 2.06x and 3.49x the headline, quoted in parentheses in the chapter), and coherent accumulation under the BRS fit would give 5.1e4 and 3.4e8 T (`coherent_T_per_shot`).
 - Physical accuracy of the finite-volume correlators and the logical-noise behavior of the circuits are not derived.
 - The longer-term 12C row is an evolution-scaling estimate on the legacy assumptions, not a complete response shot, with no step-error validation.
 

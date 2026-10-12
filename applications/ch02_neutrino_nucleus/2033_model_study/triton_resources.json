@@ -1,0 +1,150 @@
+{
+  "allocated_qubits": {
+    "occupation": 864,
+    "coordinates": 27,
+    "spin_labels_and_decode": 5,
+    "clean_arithmetic_scratch": 10,
+    "neutron_sort_flag": 1,
+    "hadamard": 1
+  },
+  "total_qubits": 908,
+  "loader_rotations": 1048596,
+  "current_rotations": 432,
+  "preparation_toffoli_allowances": {
+    "translations": 29106,
+    "occupation_write": 22032,
+    "neutron_label_erase": 8640,
+    "neutron_sort": 256,
+    "spin_decode": 32
+  },
+  "total_toffoli_allowance": 60066,
+  "kinetic_rotations_per_step": 58752,
+  "contact_rotations_per_layer": 9504,
+  "onsite_nonidentity_paulis": [
+    [
+      "IIIZ",
+      18.325436450749123
+    ],
+    [
+      "IIZI",
+      18.325436450749113
+    ],
+    [
+      "IIZZ",
+      11.18955155760882
+    ],
+    [
+      "IZII",
+      18.325436450749116
+    ],
+    [
+      "IZIZ",
+      8.332012989235416
+    ],
+    [
+      "IZZI",
+      9.76078227342212
+    ],
+    [
+      "IZZZ",
+      -15.869261090338487
+    ],
+    [
+      "XXXX",
+      -0.7143846420933517
+    ],
+    [
+      "XXYY",
+      -0.7143846420933517
+    ],
+    [
+      "XYXY",
+      -0.7143846420933517
+    ],
+    [
+      "XYYX",
+      0.7143846420933517
+    ],
+    [
+      "YXXY",
+      0.7143846420933517
+    ],
+    [
+      "YXYX",
+      -0.7143846420933517
+    ],
+    [
+      "YYXX",
+      -0.7143846420933517
+    ],
+    [
+      "YYYY",
+      -0.7143846420933517
+    ],
+    [
+      "ZIII",
+      18.325436450749116
+    ],
+    [
+      "ZIIZ",
+      9.760782273422116
+    ],
+    [
+      "ZIZI",
+      8.332012989235416
+    ],
+    [
+      "ZIZZ",
+      -15.86926109033849
+    ],
+    [
+      "ZZII",
+      11.189551557608821
+    ],
+    [
+      "ZZIZ",
+      -15.869261090338492
+    ],
+    [
+      "ZZZI",
+      -15.86926109033849
+    ]
+  ],
+  "rows": [
+    {
+      "steps": 25,
+      "tau_at_dt002": 0.05,
+      "rotations": 2764933,
+      "leading_T": 241323566.1053989,
+      "plus_10_per_rotation_T": 268972896.1053989
+    },
+    {
+      "steps": 50,
+      "tau_at_dt002": 0.1,
+      "rotations": 4471333,
+      "leading_T": 399300876.76898885,
+      "plus_10_per_rotation_T": 444014206.76898885
+    },
+    {
+      "steps": 100,
+      "tau_at_dt002": 0.2,
+      "rotations": 7884133,
+      "leading_T": 723104774.9960183,
+      "plus_10_per_rotation_T": 801946104.9960183
+    },
+    {
+      "steps": 200,
+      "tau_at_dt002": 0.4,
+      "rotations": 14709733,
+      "leading_T": 1388465755.5760808,
+      "plus_10_per_rotation_T": 1535563085.5760808
+    }
+  ],
+  "validation": {
+    "loader_amplitude_error": 3.483813977143254e-16,
+    "neutron_exchange_error": 0.0,
+    "spin_three_halves_component": 2.9987323032317845e-16,
+    "fourier_QR_error": 1.3897382307926615e-15,
+    "finite_volume_dn_threshold_at_q": 1.3006898936020308
+  }
+}

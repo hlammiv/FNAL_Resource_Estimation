@@ -9,13 +9,13 @@
     36
    ],
    "t": [
-    80302.17636380711,
-    80302.17636380711
+    38948.317136396356,
+    38948.317136396356
    ],
    "codesign": false,
-   "src": "app01:2028 complete four-nucleon correlator box",
+   "src": "app01:2028 complete four-nucleon correlator box (report synthesis convention, ruling 2026-10-12; study convention 8.03e4)",
    "nucleus": "4N",
-   "t_note": "Leading synthesis estimate; complete circuit, no hardware schedule"
+   "t_note": "Randomized BRS synthesis at eps_syn 1e-2 (report convention); complete circuit; walls are serial T-count bounds, no depth schedule"
   },
   {
    "ch": 2,
@@ -26,13 +26,13 @@
     908
    ],
    "t": [
-    723104774.9960183,
-    723104774.9960183
+    206935602.44923684,
+    206935602.44923684
    ],
    "codesign": false,
-   "src": "app01:2033 complete mobile-triton correlator box",
+   "src": "app01:2033 complete mobile-triton correlator box (report synthesis convention, ruling 2026-10-12; study convention 7.23e8)",
    "nucleus": "3H",
-   "t_note": "Leading synthesis estimate; complete circuit, no hardware schedule"
+   "t_note": "Randomized BRS synthesis at eps_syn 1e-2 (report convention); complete circuit; walls are serial T-count bounds, no depth schedule"
   },
   {
    "ch": 2,

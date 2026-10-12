@@ -1,0 +1,90 @@
+{
+  "system_qubits": 864,
+  "position_loader_qubits": 16,
+  "loader_scratch": 6,
+  "hadamard_ancilla": 1,
+  "conservative_peak_qubits": 887,
+  "steps": 200,
+  "tau": 0.5,
+  "onsite_pauli_terms": [
+    [
+      "IIIZ",
+      65.93321972176457
+    ],
+    [
+      "IIZI",
+      65.93321972176459
+    ],
+    [
+      "IIZZ",
+      -20.548970623068158
+    ],
+    [
+      "IZII",
+      65.93321972176459
+    ],
+    [
+      "IZIZ",
+      -23.40650919144157
+    ],
+    [
+      "IZZI",
+      -21.977739907254854
+    ],
+    [
+      "XXXX",
+      -0.7143846420933517
+    ],
+    [
+      "XXYY",
+      -0.7143846420933517
+    ],
+    [
+      "XYXY",
+      -0.7143846420933517
+    ],
+    [
+      "XYYX",
+      0.7143846420933517
+    ],
+    [
+      "YXXY",
+      0.7143846420933517
+    ],
+    [
+      "YXYX",
+      -0.7143846420933517
+    ],
+    [
+      "YYXX",
+      -0.7143846420933517
+    ],
+    [
+      "YYYY",
+      -0.7143846420933517
+    ],
+    [
+      "ZIII",
+      65.9332197217646
+    ],
+    [
+      "ZIIZ",
+      -21.977739907254865
+    ],
+    [
+      "ZIZI",
+      -23.406509191441568
+    ],
+    [
+      "ZZII",
+      -20.54897062306816
+    ]
+  ],
+  "kinetic_rotations_per_step": 20736,
+  "contact_rotations_per_step": 7776,
+  "preparation_rotations": 65535,
+  "total_rotations": 5767936,
+  "toffolis": 5616,
+  "leading_T": 520944148.5961893,
+  "illustrative_plus_10_T_per_rotation": 578623508.5961893
+}

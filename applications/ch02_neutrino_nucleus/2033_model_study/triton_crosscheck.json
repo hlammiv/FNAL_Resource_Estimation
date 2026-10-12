@@ -1,0 +1,13 @@
+{
+  "full_occupation_dimension": 736,
+  "relative_working_dimension": 192,
+  "ground_energy_full": -49.749217385091285,
+  "ground_energy_relative": -49.7492173850913,
+  "energy_error": 1.4210854715202004e-14,
+  "correlator_errors": [
+    7.108895957933346e-16,
+    3.1264164235997256e-15,
+    5.1849465674886706e-15,
+    1.2643944248558106e-14
+  ]
+}

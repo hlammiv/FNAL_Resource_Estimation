@@ -1,0 +1,16 @@
+{
+  "loader_statevector_error": 3.350952366483979e-15,
+  "full_Hadamard_vs_split_error": 2.0056068316717246e-14,
+  "normalized_correlator": [
+    0.5936461090428217,
+    -0.18529014651618275
+  ],
+  "decomposed_gate_counts": {
+    "cx": 4625,
+    "rz": 915,
+    "ry": 511,
+    "h": 80
+  },
+  "qubits": 13,
+  "arbitrary_rotations_not_Clifford_T_synthesized": true
+}

@@ -11,10 +11,10 @@ tool such as QLX.
 
 | era | primitive | count | T each | T total | status | source | note |
 |---|---|---|---|---|---|---|---|
-| 2028 | rotations | 1.19e+03 | 53.6 | 6.39e+04 | **COMPILED** | editorial_review/neutrino_feasibility/LARGER_BOX.md | leading synthesis estimate, subleading term pending |
+| 2028 | rotations | 1.19e+03 | 18.9 | 2.25e+04 | **COMPILED** | editorial_review/neutrino_feasibility/LARGER_BOX.md | randomized BRS synthesis at eps_R = sqrt(1e-2/N_R) (ruling 2026-10-12); the study files price the same rotations coherently at 3 log2(N_R/0.005) |
 | 2028 | Toffoli | 2.24e+03 | 7 | 1.57e+04 | **COMPILED** | editorial_review/neutrino_feasibility/LARGER_BOX.md |  |
 | 2028 | fixed_T | 744 | 1 | 744 | **COMPILED** | editorial_review/neutrino_feasibility/LARGER_BOX.md |  |
-| 2033 | rotations | 7.88e+06 | 91.7 | 7.23e+08 | **SCALING** | editorial_review/2033_model_study/TRITON.md | leading synthesis estimate, subleading term pending |
+| 2033 | rotations | 7.88e+06 | 26.2 | 2.07e+08 | **SCALING** | editorial_review/2033_model_study/TRITON.md | randomized BRS synthesis at eps_R = sqrt(1e-2/N_R) (ruling 2026-10-12); the study files price the same rotations coherently at 3 log2(N_R/0.005) |
 | 2033 | Toffoli | 6.01e+04 | 7 | 4.2e+05 | **SCALING** | editorial_review/2033_model_study/TRITON.md |  |
 | 2033 | fixed_T | 0 | 1 | 0 | **SCALING** | editorial_review/2033_model_study/TRITON.md |  |
 | codesign | rot_synth | 5.06e+10 | 33.5 | 1.69e+12 | **SCALING** | arxiv_2312_05344;bocharovRoettelerSvore2015,campbell2017 | N_orb=150: N_orb^4/2 strings x N_Trotter=200; R-TOL eps_rot=4.444e-07, RUS fit 33.467 T; lo end of 150-200 |
