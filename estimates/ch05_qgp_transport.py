@@ -410,6 +410,42 @@ class Assumptions:
     trotter_n_adj: Tagged = Assumed(8, "G7: weak-coupling (free-field) evaluation treats Sigma(72x3) as SU(3): 8 color "
                                        "copies of each transverse gauge oscillator; a discrete group has no such expansion")
     campaign_horizon_yr: Tagged = Stated(5, f"{TEX}:196", "Campaign horizon 5 years")
+    # ---- systematics: literature-scaled model differences (author decision 2026-10-12, option 1) --------------------
+    # The box prints three systematic differences, scaled from Euclidean lattice results to the chapter's a_s T =
+    # 0.23-0.30 and LT = 0.68-0.91, as model differences, not error bars. Sources are the chapter's citations; the
+    # literature pass is recorded in NEEDS_AUTHOR.md (Ch. 5, systematics rows). None is an a^2 or 1/L extrapolation.
+    sys_discretization_0p2fm: Tagged = Assumed((0.50, 1.00), "discretization difference on the correlator at a_s = 0.2 fm "
+                                               "for H_I with one-link staggered quarks: (pi a_s T)^2 = 0.5-0.9; the "
+                                               "anisotropic SU(3) shear correlator has a 17-21% tree-level cutoff effect "
+                                               "at a_s T = 0.2 (arxiv_1802_07718), Meyer bounds aT = 1/8 at 20% "
+                                               "(arxiv_0805_4567); (a_s T)^2 scaling with the temporal share removed "
+                                               "(arxiv_hep-lat_0105012) gives 25-50% for a fully improved action; the "
+                                               "unimproved taste sector adds splittings of (600-800 MeV)^2 "
+                                               "(arxiv_hep-lat_9805009, arxiv_0903_3598)",
+                                               "arxiv_1802_07718,arxiv_0805_4567,arxiv_hep-lat_0105012,arxiv_1407_6387")
+    sys_discretization_0p15fm: Tagged = Assumed((0.35, 0.70), "the same at the second spacing a_s = 0.15 fm "
+                                                "(a_s T = 0.17-0.23)", "arxiv_1802_07718,arxiv_hep-lat_0105012")
+    sys_discretization_improved_0p2fm: Tagged = Assumed((0.30, 0.60), "record: the 0.2 fm difference if the taste sector "
+                                                        "were improved (fat links); 0.15 fm would be 20-40%",
+                                                        "arxiv_1802_07718,arxiv_hep-lat_0105012")
+    sys_finite_volume_floor: Tagged = Assumed(0.50, "finite volume at LT = 0.68-0.91 is order one and not quantified; "
+                                                    "0.5 is the floor if a number is forced. Euclidean thermal "
+                                                    "observables converge only for LT >= 4 (arxiv_hep-lat_0105012, "
+                                                    "arxiv_1007_2580, arxiv_2401_01169); 5-10% shifts at LT = 2-3 "
+                                                    "(arxiv_hep-lat_0701020, arxiv_0704_1801, arxiv_1802_07718, "
+                                                    "arxiv_1012_4963); T_c moved > 12% at LT = 1.5-1.7 "
+                                                    "(arxiv_2401_01169); the e^{-mL} expansion (arxiv_0905_1663, "
+                                                    "arxiv_hep-lat_0503014) has mL = 1-2.6 here",
+                                              "arxiv_2401_01169,arxiv_1802_07718,arxiv_0905_1663")
+    sys_subgroup: Tagged = Assumed((0.05, 0.10), "subgroup difference on eta/s, conditional on H_I keeping Sigma(216x3) "
+                                                 "in the scaling regime at a_s = 0.2 fm (otherwise uncontrolled): "
+                                                 "Sigma(360x3) with the two-coupling action reproduces T_c sqrt(t0), "
+                                                 "glueballs and Casimir scaling to 0.5-5% at a = 0.08-0.16 fm "
+                                                 "(arxiv_1906_11213, arxiv_2112_08482, arxiv_2405_12204); SU(2) "
+                                                 "projected onto its 120-element subgroup: ~10% plaquette-scale, ~2% "
+                                                 "long-distance (arxiv_1811_03629); no number exists for Sigma(216x3) "
+                                                 "(Bhanot_1982_S648 did not reach scaling with an adjoint term)",
+                                   "arxiv_1906_11213,arxiv_2112_08482,arxiv_2405_12204,arxiv_1811_03629,Bhanot_1982_S648")
     # ---- r25: each shot at its own depth (R4), two tiers (R1), Gibbs cut required (R5) ----------------------
     cbar: Tagged = Stated(0.16, f"{TEX}:78", "normalized correlator Cbar ~ 0.16 of the +/-1 Hadamard-test estimator "
                                              "(the old variance factor ~40 = 1/Cbar^2); not derived (NEEDS_AUTHOR)")
@@ -1254,6 +1290,14 @@ def _intermediates_2033(a: Assumptions, c: dict) -> dict:
         "T_2033_MeV": c["Ts"],                                           # (225, 300)
         "T_a_s_2033": tuple(T * a.a_s_fm.lo / a.hbarc.lo for T in c["Ts"]),   # 0.228, 0.304 (was 0.162)
         "LT_2033": c["LT"],                                              # 0.68, 0.91 -> "LT ~ 0.7-0.9", below 1 (was 0.49)
+        # systematics row (2026-10-12): literature-scaled model differences, printed in the 2033 box and app03:71,77,92
+        "pi_a_s_T_sq_2033": tuple((math.pi * T * a.a_s_fm.lo / a.hbarc.lo) ** 2 for T in c["Ts"]),   # 0.51, 0.91
+        "systematics_2033": {"discretization_0p2fm": (a.sys_discretization_0p2fm.lo, a.sys_discretization_0p2fm.hi),
+                             "discretization_0p15fm": (a.sys_discretization_0p15fm.lo, a.sys_discretization_0p15fm.hi),
+                             "discretization_improved_0p2fm": (a.sys_discretization_improved_0p2fm.lo,
+                                                               a.sys_discretization_improved_0p2fm.hi),
+                             "finite_volume_floor": a.sys_finite_volume_floor.lo,
+                             "subgroup": (a.sys_subgroup.lo, a.sys_subgroup.hi)},
         "k_min_over_T_2033": tuple(c["kmin"] / T for T in c["Ts"]),      # 9.2, 6.9 -> "k_min ~ 7-9 T" (was 12.9)
         "eta_s_assumed": a.eta_s_assumed.lo,                             # 0.15 (app03:79, record)
         "tau_decay_at_eta_s_assumed_fm": c["tau_at_eta_s"],              # 0.069, 0.092 -> "~0.07-0.09 fm/c" (record)

@@ -43,6 +43,7 @@ GROUPS = (
     ("2033 temperature", "2033 target: temperature and the in-situ T_c diagnostic"),
     ("thermal state by quench", "2033 target: quench preparation, budgets and campaign grid"),
     ("referee G7", "2033 target: Trotter step rule"),
+    ("systematics", "Systematics: literature-scaled model differences (2033 box)"),
     ("r25", "Shots, fit design, decay band, volume extensions and utility"),
 )
 ERA_ROOTS = (("2028", "_model_2028"), ("2033", "_model_2033"), ("codesign", "_model_codesign"))

@@ -1203,3 +1203,32 @@ def test_quench_shot_is_one_circuit(a, r33):
     tex = TEX.read_text()
     assert "E$\\rho$OQ" in tex and tex.count("E$\\rho$OQ") == 1       # one sentence names the method (ruling (A))
     assert tex.count("KMS") == 1
+
+
+def test_systematics_row_2026_10_12(a):
+    """Author decision 2026-10-12 (option 1): the three systematics the referee pass removed come back as model
+    differences scaled from Euclidean lattice results, in the 2033 box and the text, with citations."""
+    import math
+    i = m.model(a, "2033").intermediates
+    s = i["systematics_2033"]
+    assert s["discretization_0p2fm"] == (0.5, 1.0) and s["discretization_0p15fm"] == (0.35, 0.7)
+    assert s["discretization_improved_0p2fm"] == (0.3, 0.6)
+    assert s["finite_volume_floor"] == 0.5 and s["subgroup"] == (0.05, 0.1)
+    lo, hi = i["pi_a_s_T_sq_2033"]
+    assert math.isclose(lo, 0.51, rel_tol=0.02) and math.isclose(hi, 0.91, rel_tol=0.02)     # "(pi a_s T)^2 = 0.5-0.9"
+    for lo_, hi_ in (s["discretization_0p2fm"], s["discretization_0p15fm"], s["subgroup"]):
+        assert 0 < lo_ < hi_ <= 1
+    if not TEX.exists():
+        pytest.skip("chapter .tex not on disk")
+    tex = TEX.read_text()
+    for frag in ("Systematics (model differences, not error bars; scaled from Euclidean results) & discretization "
+                 "$50$--$100\\%$ at $a_s=0.2$ fm, $35$--$70\\%$ at $0.15$ fm (outside the $a^2$ window); finite volume "
+                 "order one at $LT<1$, not quantified; subgroup $5$--$10\\%$ if $H_I$ keeps $\\Sigma(216\\times 3)$ "
+                 "unfrozen, else uncontrolled",
+                 "Neither spacing is in the $a^2$ scaling regime: $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm.",
+                 "We carry $50$--$100\\%$ at $0.2$ fm and $35$--$70\\%$ at $0.15$ fm as the discretization difference",
+                 "its relation to the infinite-volume $\\eta/s$ is uncontrolled at order one; we assign it no percentage",
+                 "We carry $5$--$10\\%$ on $\\eta/s$ as the subgroup difference, conditional on $H_I$",
+                 "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648}"):
+        assert frag in tex, frag
+
