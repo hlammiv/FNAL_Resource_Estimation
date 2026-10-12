@@ -392,11 +392,11 @@
    "observable": "B/M, kaon rates (sampling; V/PS conditional); D_pi^q(z) (FCC era)",
    "T_priced_at_V": 32,
    "shots_first_result": [
-    122,
+    233,
     244
    ],
    "shots_campaign": [
-    12672,
+    24192,
     25344
    ],
    "shots_fragmentation": [
@@ -404,11 +404,11 @@
     1200000.0
    ],
    "wall_time_s_first_result": [
-    599064,
+    1143667,
     8889027
    ],
    "wall_time_s_campaign": [
-    54227833,
+    103525862,
     814795173
    ],
    "wall_time_s_fragmentation": [

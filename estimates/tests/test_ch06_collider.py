@@ -1013,8 +1013,8 @@ def test_2033_sampling_shots_and_wall_time(a, r33):
     and a 10% ratio 1.1--2.2e3'. R10/R9: per shot max(N_T t_gate, D_T t_r) + t0 = '4.9e3--3.6e4 s' (requirements; r26), up
     to '1.43x' the T-count time. R1 box: 'First result ... one configuration at 30%: 120--240 shots, 6.9--103 d' (r26)."""
     i = r33.intermediates
-    near(i["ratio_shots_at_10pct"][0], 1.1e3, 1e-9); near(i["ratio_shots_at_10pct"][1], 2.2e3, 1e-9)
-    near(i["shots_first_2033"][0], 122.22, 1e-4); near(i["shots_first_2033"][1], 244.44, 1e-4)   # '120--240'
+    near(i["ratio_shots_at_10pct"][0], 2.1e3, 1e-9); near(i["ratio_shots_at_10pct"][1], 2.2e3, 1e-9)   # c = 2 since 2026-10-12 (was 1.1e3 at c = 1)
+    near(i["shots_first_2033"][0], 233.33, 1e-4); near(i["shots_first_2033"][1], 244.44, 1e-4)   # '~240' (was 120--240)
     assert i["delta_first_2033"] == 0.30
     near(i["wall_per_shot_serial_2033_s"][0], r33.hard_ops[0] * 1e-6 + 1e-4, 1e-12)
     near(i["wall_per_shot_serial_2033_s"][1], i["t_total_2033"][1] * 1e-6 + 1e-4, 1e-12)
@@ -1026,7 +1026,7 @@ def test_2033_sampling_shots_and_wall_time(a, r33):
     assert i["depth_penalty_2033"][0] == 1.0
     for k in (0, 1):
         near(i["wall_first_2033_s"][k], i["shots_first_2033"][k] * i["wall_per_shot_2033_s"][k], 1e-12)
-    near(i["wall_first_2033_days"][0], 6.934, 1e-3)         # '6.9 d'
+    near(i["wall_first_2033_days"][0], 13.24, 1e-3)         # '13 d' (was 6.9)
     near(i["wall_first_2033_days"][1], 102.9, 1e-3)         # '103 d'
     assert i["wall_first_result_s"] == i["wall_first_2033_s"]
     # the r23 accounting is kept as the record
@@ -1047,14 +1047,14 @@ def test_2033_sampling_campaign_on_one_machine(a, r33):
     near(i["trend_delta_per_point"], 0.0589, 0.002)         # '5.9%'
     near(i["trend_sigma_at_delta"][0.10], 1.768, 1e-3)      # '1.8 sigma'
     near(i["trend_sigma_at_delta"][0.05], 3.536, 1e-3)
-    near(i["shots_per_configuration_campaign"][0], 3168, 1e-9); near(i["shots_per_configuration_campaign"][1], 6336, 1e-9)
-    near(i["shots_trend_2033"][0], 9504, 1e-9); near(i["shots_trend_2033"][1], 19008, 1e-9)   # the trend: 9.5e3--1.9e4
+    near(i["shots_per_configuration_campaign"][0], 6048, 1e-9); near(i["shots_per_configuration_campaign"][1], 6336, 1e-9)   # 6.0--6.3e3
+    near(i["shots_trend_2033"][0], 18144, 1e-9); near(i["shots_trend_2033"][1], 19008, 1e-9)   # the trend: 1.8--1.9e4
     assert i["n_sampling_configurations"] == 3 and i["campaign_horizon_yr"] == 5
     near(i["wall_trend_2033_s"][0], i["shots_trend_2033"][0] * i["wall_per_shot_2033_s"][0], 1e-12)
     # step rule: one of the three momenta (4.65 GeV) runs its 575-step shot at the high end
     near(i["wall_trend_2033_s"][1], i["shots_trend_2033"][1] * (2 * i["wall_per_shot_2033_s"][1]
                                                                   + i["wall_shot_top_mode_2033_s"]) / 3, 1e-12)
-    near(i["wall_trend_2033_yr"][0], 1.476, 1e-4)          # the trend alone, 1.5--22 yr (r26/r27 campaign)
+    near(i["wall_trend_2033_yr"][0], 2.818, 1e-4)          # the trend alone, 2.8--22 yr (c = 2 since 2026-10-12; was 1.5)
     near(i["wall_trend_2033_yr"][1], 22.126, 1e-4)
     near(i["trend_over_horizon"][1], 4.425, 1e-3)
     # smaller ruling (a), 2026-10-05: campaign = trend + one configuration at L_par = 4 at the trend precision
@@ -1062,11 +1062,11 @@ def test_2033_sampling_campaign_on_one_machine(a, r33):
     for k in (0, 1):
         near(i["shots_campaign_2033"][k], i["shots_trend_2033"][k] + i["shots_per_configuration_campaign"][k], 1e-12)
         near(i["wall_campaign_2033_s"][k], i["wall_trend_2033_s"][k] + i["wall_box_check_one_mode_s"][k], 1e-12)
-    near(i["shots_campaign_2033"][0], 12672, 1e-9); near(i["shots_campaign_2033"][1], 25344, 1e-9)   # '1.3e4--2.5e4'
-    assert (round(i["shots_campaign_2033"][0] / 1e4, 1), round(i["shots_campaign_2033"][1] / 1e4, 1)) == (1.3, 2.5)
-    near(i["wall_campaign_2033_yr"][0], 1.7180, 1e-3)       # '1.7'
+    near(i["shots_campaign_2033"][0], 24192, 1e-9); near(i["shots_campaign_2033"][1], 25344, 1e-9)   # '2.4e4--2.5e4'
+    assert (round(i["shots_campaign_2033"][0] / 1e4, 1), round(i["shots_campaign_2033"][1] / 1e4, 1)) == (2.4, 2.5)   # was (1.3, 2.5) at c = 1
+    near(i["wall_campaign_2033_yr"][0], 3.2805, 1e-3)       # '3.3' (was 1.7)
     near(i["wall_campaign_2033_yr"][1], 25.817, 1e-3)       # '26'
-    assert (round(i["wall_campaign_2033_yr"][0], 1), round(i["wall_campaign_2033_yr"][1])) == (1.7, 26)
+    assert (round(i["wall_campaign_2033_yr"][0], 1), round(i["wall_campaign_2033_yr"][1])) == (3.3, 26)
     near(i["campaign_over_horizon"][1], 5.163, 1e-3)        # '5.2x cut'
     assert round(i["campaign_over_horizon"][1], 1) == 5.2
     near(i["configurations_in_horizon"][0], 0.6779, 1e-3)    # "0.68 of the three" trend configurations
@@ -1096,7 +1096,7 @@ def test_2033_depth_exports(a, r33):
     for k in ("t_per_shot", "t_depth_per_shot", "f_star", "floor_wall_s", "factories_for_1yr"):
         assert i[k] == dx[k], k
     assert i["baseline_ok"] == (False, True)
-    near(i["factories_for_1yr"][0], 14.761, 1e-4); near(i["factories_for_1yr"][1], 154.44, 1e-4)   # step rule (was 152.88)
+    near(i["factories_for_1yr"][0], 28.181, 1e-4); near(i["factories_for_1yr"][1], 154.44, 1e-4)   # step rule; low end 14.76 at c = 1
     near(i["floor_wall_s"][1] + 19008 * 1e-4, i["wall_trend_2033_s"][1], 1e-9)   # the trend's high end at the depth floor
     near(i["wall_trend_2033_s"][0], i["wall_serial_s"][0], 1e-12)                 # the low end at the T-count
 
@@ -1400,8 +1400,8 @@ def test_instance_rows_describe_the_rewrite(a):
     assert "readout map" in l33[3]["note"] and "quench-prepared" in rows["2033"][1][3]["note"]
     assert "once per link (E21)" in l33[3]["note"] and "1.1e5 T per link, 72% of the step" in l33[3]["note"]
     r33 = m.model(a, "2033")
-    assert l33[3]["shots_campaign"] == [12672, 25344] == [round(x) for x in r33.shots]   # trend + L_par = 4 check
-    assert l33[3]["shots_first_result"] == [122, 244]
+    assert l33[3]["shots_campaign"] == [24192, 25344] == [round(x) for x in r33.shots]   # trend + L_par = 4 check
+    assert l33[3]["shots_first_result"] == [233, 244]
     assert l33[3]["shots_fragmentation"] == [7.5e4, 1.2e6]
     assert l33[3]["wall_time_s_campaign"] == [round(x) for x in r33.wall_time_s]
     assert [rows["2033"][k][1] for k in (1, 2)] == [(995, 995), (912, 912)]
@@ -1449,7 +1449,6 @@ def test_assumption_guards(a):
         dict(delta_rel_2033=S(0.05, "app10:80")),
         dict(t_gate_s=S(1.0, "app10:128")),
         dict(window_over_a=S((50, 30), "app10:74")),
-        dict(pair_clustering=S(2, "app10:80")),
         dict(delta_first_2033=S(1.5, "app10:135")),
         dict(workspace_links_2028=S(0, "app10:88")),
         dict(hamiltonian=S("Wilson", "app10:56")),
@@ -1532,8 +1531,8 @@ PHRASES = [
     r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # R16 sweep: the 2033 step breakdown moved from the box to the plug-in prose
     # E27 (2026-10-02): one machine, shots in series; the horizon gap is a cost reduction, not a machine count
-    r"First result & $120$--$240$ shots, $6.9$--$103$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"Campaign & trend $+\,L_\parallel{=}4$ check: $1.3$--$2.5\times 10^{4}$ shots, $1.7$--$26$ yr (on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview}; high end $5.2\times$ the five-year window) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"First result & $\approx 240$ shots, $13$--$103$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Campaign & trend $+\,L_\parallel{=}4$ check: $2.4$--$2.5\times 10^{4}$ shots, $3.3$--$26$ yr (on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview}; high end $5.2\times$ the five-year window) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # cut pass 2026-10-06: the gap paragraph's one-machine sentence restated the campaign box row (pinned above) and is cut
     # requirements
     r"Number of subroutine calls & $\sim 130$",
@@ -1993,7 +1992,7 @@ def test_r27_j2_box_term_and_check(r33):
     assert i["box_check_L_par_all_modes"] == 16 and i["lq_box_check_all_modes"] == 1828
     assert i["box_check_L_par_one_mode"] == 4 and i["box_check_shared_modes_one"] == (2,) and i["lq_box_check_one_mode"] == 532
     near(i["t_total_box_check_one_mode"][0], 2.413e9, 1e-3); near(i["t_total_box_check_one_mode"][1], 1.250e10, 1e-3)
-    near(i["wall_box_check_one_mode_yr"][0], 0.242, 1e-2); near(i["wall_box_check_one_mode_yr"][1], 3.69, 1e-2)
+    near(i["wall_box_check_one_mode_yr"][0], 0.4625, 1e-2); near(i["wall_box_check_one_mode_yr"][1], 3.69, 1e-2)
     assert 0.16 < i["box_check_over_campaign"][0] < 0.17 and 0.16 < i["box_check_over_campaign"][1] < 0.17
     near(i["wall_trend_2033_yr"][1], 22.13, 1e-3)                       # the trend alone
     near(i["wall_campaign_2033_yr"][1], 22.13 + 3.69, 2e-3)             # the campaign includes the check (ruling 2026-10-05)
@@ -2041,3 +2040,22 @@ def test_s648_improved_free_dispersion():
     T = 0.44 * 0.2 / 0.1973269804
     near(m.sd_lambda_h((3, 3, 3), 8, T, "KS"), ch5.trotter_state_dependent((3, 3, 3), 8, T, 1, 1, 0.1)["lambda"], 1e-12)
     near(m.sd_lambda_h((3, 3, 3), 8, T, "I"), 45.9006, 1e-5)                    # 32.92 at KS
+
+
+def test_pair_convention_and_baseline_2026_10_12(a, r33):
+    """Author decisions 2026-10-12: n_s counts B + Bbar (c = 2), so the shot bands collapse to the n_M band; the
+    vacuum-baseline subtraction factor (sqrt(1 + r) + sqrt(r))^2 at r = 0.002-0.04 is stated as not included; the
+    FCC-era row notes about 3 resolvable z-bins at L_par = 8."""
+    assert a.pair_clustering.value == 2 and not a.pair_clustering.is_range
+    i = r33.intermediates
+    near(i["baseline_subtraction_factor"][0], 1.0935, 1e-3); near(i["baseline_subtraction_factor"][1], 1.4879, 1e-3)
+    assert i["z_bins_resolvable_Lpar8"] == 3
+    near(i["shots_campaign_2033"][0], 24192, 1e-9); near(i["shots_campaign_2033"][1], 25344, 1e-9)   # '2.4--2.5e4'
+    if TEX.exists():
+        tex = TEX.read_text()
+        for frag in ("after $\\big(2/\\bar n_s+1/\\bar n_M\\big)/\\delta_{\\rm rel}^2$ shots, where $\\bar n_s$ counts $B+\\bar B$",
+                     "$1.1$--$1.5$ for $b/\\bar n_s=0.002$--$0.04$; it is not included below.",
+                     "($6.0$--$6.3\\times 10^{3}$ shots each)", "First result & $\\approx 240$ shots, $13$--$103$ d",
+                     "$2.4$--$2.5\\times 10^{4}$ shots, $3.3$--$26$ yr", "10 bins (about 3 resolvable at $L_\\parallel=8$)"):
+            assert frag in tex, frag
+

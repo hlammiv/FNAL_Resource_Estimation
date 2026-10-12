@@ -118,7 +118,8 @@ SECTIONS = [
     ("2033 shots and campaign", [
         ("n_s", "mean multiplicity of a species class per event"),
         ("n_meson", "mesons per event in the ratio's denominator"),
-        ("pair_clustering", "c in (c / n_s + 1 / n_M) / delta^2: 1 if n_s counts pairs, 2 if B + Bbar"),
+        ("pair_clustering", "c in (c / n_s + 1 / n_M) / delta^2: 2, since n_s counts B + Bbar"),
+        ("fake_rate_over_n_s", "vacuum fake rate of the source-free circuit over n_s; the subtraction multiplies the species shots by (sqrt(1 + r) + sqrt(r))^2, stated as not included"),
         ("delta_first_2033", "relative error of the first result"),
         ("trend_size", "end-to-end change of B/M across the three source momenta"),
         ("trend_sigma", "significance required of that trend"),
@@ -172,9 +173,6 @@ SECTIONS = [
         ("n_z_fcc", "Z bosons at FCC-ee Tera-Z"),
         ("n_z_lep", "Z bosons at LEP"),
         ("lep_error_divisor", "FCC-ee statistical gain over LEP"),
-        ("utility_share", "share of the capital anchor assigned to the program"),
-        ("cms_capital_musd", "U.S. CMS detector capital, $M"),
-        ("n_instances_utility", "application instances sharing the value"),
     ]),
     ("Comparison values (read only by comparison intermediates)", [
         ("retired_hop_2028", "a hand-carried 2028 hop figure per step that the derived hop replaces"),

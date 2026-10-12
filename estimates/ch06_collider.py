@@ -457,15 +457,21 @@ class Assumptions:
                                                           "Steps = window / Delta t at the chapter's Delta t = 0.1 a")
     delta_first_2033: Tagged = Stated(0.30, f"{TEX}:135", "R1: the minimal first result at 30% statistical error (one "
                                                           "sampling configuration)")
-    pair_clustering: Tagged = Stated((1, 2), f"{TEX}:80", "R2: baryon number and strangeness are conserved, so B and Bbar "
-                                                          "arrive in pairs: c = 1 if n_s is the pair rate, 2 if it is the "
-                                                          "B + Bbar multiplicity (shot audit)")
+    pair_clustering: Tagged = Stated(2, f"{TEX}:65", "R2: baryon number and strangeness are conserved, so B and Bbar "
+                                                     "arrive in pairs; n_s counts B + Bbar, what the species-number "
+                                                     "operator tallies, so c = 2 (author decision 2026-10-12; the "
+                                                     "chapter carried c = 1-2 and a 120-240 / 3.2-6.3e3 shot band)")
     n_meson: Tagged = Assumed((0.5, 1.0), "mesons per event in the ratio's denominator; the shot audit's range, giving "
                                           "(c / n_s + 1 / n_M) / delta^2 = 1.1e3-2.2e3 at 10%", src=f"{TEX}:80")
     trend_size: Tagged = Assumed(0.25, "the size of the B/M change across the three source momenta the campaign must "
                                        "resolve (shot audit's reference trend)", src=f"{TEX}:80")
     trend_sigma: Tagged = Stated(3, f"{TEX}:80", "R2: the campaign states N-sigma on the 3-momentum trend; N = 3. The "
                                                  "end-to-end change carries sqrt(2) x the per-point error")
+    fake_rate_over_n_s: Tagged = Assumed((0.002, 0.04), "vacuum fake rate b of the source-free circuit (the leak of U|0> out "
+                                                        "of the vacuum label under the window) over n_s; the subtraction's "
+                                                        "optimal split multiplies the species shots by (sqrt(1 + r) + "
+                                                        "sqrt(r))^2 = 1.09-1.49, stated in the chapter as not included "
+                                                        "(author decision 2026-10-12)", src=f"{TEX}:65")
 
     # ---- r25 R7: 2033 first-result dipole rows (simplobs.json, Ch. 6 candidates C' and E) ----------
     dipole_a_fm: Tagged = Stated(0.2, f"{TEX}:97", "r = a = 0.2 fm, Ch. 5's 2033 spacing; aT ~ 0.45")
@@ -571,7 +577,7 @@ class Assumptions:
 
     def __post_init__(self):
         may_be_zero = {"ramp_steps_2033", "n_pauli_mass", "trotter_temp_lat"}
-        for name in ("window_over_a", "pair_clustering", "n_meson", "dipole_times_fm", "thermal_variance_factor"):
+        for name in ("window_over_a", "n_meson", "dipole_times_fm", "thermal_variance_factor"):
             v = getattr(self, name)
             if not (v.is_range and 0 < v.lo <= v.hi):
                 raise ValueError(f"{name} must be a positive (lo, hi) range")
@@ -996,7 +1002,7 @@ def wall_corrected(shots: float, n_t: float, d_t: float, t_gate: float, t0: floa
 
 def ratio_shots(a: Assumptions, delta: float) -> tuple[float, float]:
     """R2: shots for a species ratio at relative error delta, conserved pairs counted:
-    (c / n_s + 1 / n_M) / delta^2, low end c = 1 and n_M = 1, high end c = 2 and n_M = 0.5."""
+    (c / n_s + 1 / n_M) / delta^2 with c = 2 (n_s counts B + Bbar), low end n_M = 1, high end n_M = 0.5."""
     n_s = float(a.n_s)
     return ((a.pair_clustering.lo / n_s + 1 / a.n_meson.hi) / delta ** 2,
             (a.pair_clustering.hi / n_s + 1 / a.n_meson.lo) / delta ** 2)
@@ -2078,6 +2084,12 @@ def _model_2033(a: Assumptions) -> Result:
         "wall_first_2033_days": (wall_first[0] / day, wall_first[1] / day),
         # R2 campaign: the 3-momentum trend at 3 sigma, one spacing
         "ratio_shots_at_10pct": ratio_10,                                 # (1.1e3, 2.2e3), pair clustering (R2)
+        # 2026-10-12: vacuum-baseline subtraction (not in any printed shot count): x(sqrt(1 + r) + sqrt(r))^2 at
+        # r = b / n_s = 0.002-0.04 -> 1.09-1.49 ("+9-50%"); the FCC-era row's resolvable z-bins at L_par = 8: the
+        # hadron momentum quantum is 1.55 GeV and the source carries at most three box modes, so about 3 bins
+        "baseline_subtraction_factor": tuple((math.sqrt(1 + r) + math.sqrt(r)) ** 2
+                                             for r in (a.fake_rate_over_n_s.lo, a.fake_rate_over_n_s.hi)),
+        "z_bins_resolvable_Lpar8": n_mom,                                 # 3 (box modes 1.55, 3.10, 4.65 GeV)
         "trend_delta_per_point": delta_tr,                                # 0.0589
         "trend_sigma_at_delta": sigma_at,                                 # {0.05: 3.5, 0.10: 1.8, 0.30: 0.59}
         "shots_per_configuration_campaign": shots_pt,                     # (3.17e3, 6.34e3)
