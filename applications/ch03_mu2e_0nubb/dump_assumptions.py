@@ -56,7 +56,7 @@ GROUPS = [
         "gap_0plus_ensdf_ca48_mev", "gap_0plus_ensdf_ti48_mev", "eps_simplified", "lam_over_m_f7p3",
         "p_ref_f7p3", "lam_over_m_f7p3p1", "lam_over_m_pf", "p_ref_f7p3p1_record", "p_ref_pf_record",
         "lam_over_m_toy_f7p3_record", "lam_over_m_toy_f7p3p1_record", "lam_over_m_toy_pf_record",
-        "rabi_bias_kb3g_f7p3", "rabi_drive_mev", "qdrift_eps", "rabi_shots"]),
+        "rabi_bias_kb3g_f7p3", "rabi_bias_kb3g_f7p3p1", "rabi_drive_mev", "qdrift_eps", "rabi_shots"]),
     ("External comparison points and the utility box (not used in any T-count)", [
         "fq_light_nucleus_t", "ext_qubitization_sd_toffoli", "ext_qubitization_pb208_toffoli",
         "nme_spread"]),

@@ -1,0 +1,4 @@
+kb3g f7p3p1: dims 325 24453, H built 9353.4s
+  M -0.10663 lambda/|M| 445.4 p_ref 0.9709 gs share 0.0146 Ei [-75.463 -71.229 -71.151] Ef [-89.592 -88.987 -88.052 -88.036] gap_f(0+) 
+  theta|M| = 0.3 MeV: resonance offset +0.600 MeV, P_daughter(t_pi/2) 0.966 (gs 0.873); Rabi fit |M|_fit/|M| = 0.961, amplitude 1.003; t_pi/2 = 5.24 MeV^-1  (9616s)
+  theta|M| = 0.5 MeV: resonance offset +2.000 MeV, P_daughter(t_pi/2) 0.959 (gs 0.740); Rabi fit |M|_fit/|M| = 0.901, amplitude 1.030; t_pi/2 = 3.14 MeV^-1  (9818s)

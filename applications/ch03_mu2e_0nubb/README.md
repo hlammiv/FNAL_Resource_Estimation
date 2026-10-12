@@ -31,7 +31,7 @@ The test file runs 58 tests and skips 15 in this repository. The skips are the p
 
 ## 3. Assumptions
 
-`Assumptions` (lines 233-546) is one frozen dataclass of 103 `Tagged` fields:
+`Assumptions` (lines 233-546) is one frozen dataclass of 104 `Tagged` fields:
 
 - 23 Cited: a published source gives the value, and the source column is its bibliography key.
 - 33 Assumed: a working assumption the chapter declares.
@@ -176,6 +176,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `lam_over_m_toy_f7p3p1_record` | 164.0 | Assumed | simplobs adv/j0_big.out | record: the toy's lambda/\|M\| in f7/2 p3/2 p1/2 (p_ref 0.90), printed until 2026-10-12 |
 | `lam_over_m_toy_pf_record` | (600.0, 720.0) | Assumed | simplobs | record: the toy's lambda/\|M\| in full pf (lambda 208.4 over an extrapolated \|M\| 0.29-0.35), printed until 2026-10-12 |
 | `rabi_bias_kb3g_f7p3` | (0.074, 0.154) | Assumed | kb3g/rabi_kb3g_f7p3.log | COMPUTED record: 1 - \|M\|_fit/\|M\| at the ends of the drive band theta\|M\| = 0.3-0.5 MeV, KB3G in f7/2 p3/2 (0.009 at 0.1 MeV, 0.036 at 0.2 MeV); the toy gave <= 0.06 |
+| `rabi_bias_kb3g_f7p3p1` | (0.039, 0.099) | Assumed | kb3g/rabi_kb3g_f7p3p1.log | COMPUTED record: the same check in f7/2 p3/2 p1/2 (the printed row's space): 1 - \|M\|_fit/\|M\| at theta\|M\| = 0.3 and 0.5 MeV; resonance shifted by 0.60 and 2.00 MeV |
 | `rabi_drive_mev` | (0.3, 0.5) | Assumed | app11:163 | theta\|M\|, the Rabi frequency of the resonant drive; across the 0.3-0.5 MeV band the KB3G fit bias is 7-15% (rabi_bias_kb3g_f7p3) |
 | `qdrift_eps` | 0.1 | Assumed | Campbell_qDRIFT_2019 | qDRIFT error on the drive term; N_q = 2 (lambda/M)^2 (pi/2)^2 / eps_q |
 | `rabi_shots` | (250, 1000) | Assumed | app11:163 | Rabi-readout shots including a 5-10-detuning resonance scan; 250 give ~5% on \|M\| at t_pi/2 (schematic interaction) |
@@ -189,7 +190,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `ext_qubitization_pb208_toffoli` | 30000000000.0 | Cited | arxiv_2607_21563 | '~3e10 ... 102-orbital 208Pb-core space' |
 | `nme_spread` | 3 | Cited | arxiv_2308_15634 | 'factor-three spread across nuclear models' |
 
-103 fields: Cited 22, Stated-not-derived 42, Assumed 39
+104 fields: Cited 22, Stated-not-derived 42, Assumed 40
 
 ## 4. How the numbers are built
 
@@ -356,7 +357,7 @@ From `docs/OPEN_ITEMS.md` and the model's own notes:
 - **The 2033 readout covers only the spin-dependent element.** If the deliverable is the VS-IMSRG-evolved operators, the readout of their two-body parts is not priced. ⟨S_p⟩ = 0.30-0.34 and the per-shot variance of about one are estimates (the worst-case variance is about 8 times larger); a shell-model value would replace both.
 - **Projection success p = 0.274 for 27Al** is the overlap of the 0d5/2 filling with the USDB ground state (computed 2026-10-09); a reference of the ten largest configurations would reach 0.38.
 - **Gaps.** The 27Al and survey cells use a generic 1-2 MeV band, while the 48Ca/48Ti ladder uses the KB3G 0+ gaps of each truncated space. The USDB gap that an M = 5/2 reference can reach in 27Al is 2.33 MeV and would lower the 27Al preparation to 8.9e7-1.8e8 T (`al27_prep_t_at_usdb_gap`); the band is kept. The daughter projection is priced at the parent's gap; a daughter with a smaller gap raises the cost in proportion to 1/Δ.
-- **The resonant-drive readout is checked only in f7/2 p3/2, and the operator is a proxy.** λ/|M| = 197, 445 and 1404 and p_ref = 0.98 are computed with KB3G ground states (GXPF1A: -26% / -20% / +18%), but for the schematic two-body operator of the companion study, not the light-neutrino exchange operator. With KB3G the resonant-drive fit recovers |M| to 7% at θ|M| = 0.3 MeV and 15% at 0.5 MeV (the toy's 6% at <= 0.5 MeV had a 2.9 times weaker drive at the same θ|M|); resonance identification and the Trotter and qDRIFT errors are not simulated, so its shot counts and walls are conditional.
+- **The resonant-drive readout is checked only in f7/2 p3/2, and the operator is a proxy.** λ/|M| = 197, 445 and 1404 and p_ref = 0.98 are computed with KB3G ground states (GXPF1A: -26% / -20% / +18%), but for the schematic two-body operator of the companion study, not the light-neutrino exchange operator. With KB3G the resonant-drive fit recovers |M| to 7% (4% with p1/2) at θ|M| = 0.3 MeV and 15% (10%) at 0.5 MeV (the toy's 6% at <= 0.5 MeV had a 2.9 times weaker drive at the same θ|M|); resonance identification and the Trotter and qDRIFT errors are not simulated, so its shot counts and walls are conditional.
 - **Depth.** The resonant-drive walls are depth-limited (qDRIFT samples run one at a time, F* 1.6-2.9). The 2033 27Al walls assume 12 commuting rotations in flight; gate by gate the campaign floor is 135 days to 3.0 years.
 - **Cancellations not taken.** PREPARE trees that cancel or act on unused amplitudes in the 2028 shot are kept as priced, so the insertion count is an upper bound for its construction. The 2033 27Al shot also keeps the operator query (about 1% of its T), which the direct readout does not use.
 - **Category separation** needs targets with different Z, N/Z and spin; a second target such as 48Ti in pf is not priced.

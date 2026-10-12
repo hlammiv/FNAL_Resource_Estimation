@@ -22,7 +22,9 @@ Rabi-readout check (`rabi_kb3g.py`, the toy's protocol: evolve the reference und
 theta (O + O^dag) for a quarter period, scan the detuning, fit P_daughter = A sin^2(W t)): with KB3G in f7/2 p3/2 the
 fit recovers |M| to 1 / 4 / 7 / 15 % at theta|M| = 0.1 / 0.2 / 0.3 / 0.5 MeV, the resonance shifted by 0.10 / 0.40 /
 0.75 / 2.25 MeV. The toy's "6% at <= 0.5 MeV" had |M| 2.9 times larger, so the same theta|M| was a 2.9 times weaker
-drive. The chapter keeps the 0.3-0.5 MeV band and prints the bias.
+drive. In f7/2 p3/2 p1/2 (the printed row's space) the same check gives 4% and 10% at 0.3 and 0.5 MeV (resonance
+shifted by 0.60 and 2.00 MeV; `rabi_kb3g_f7p3p1.log`, 2.7 h of which 2.6 h built the sparse Hamiltonian column by
+column). The chapter keeps the 0.3-0.5 MeV band and prints both.
 
 ## Files
 

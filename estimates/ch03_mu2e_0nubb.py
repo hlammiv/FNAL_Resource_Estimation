@@ -207,7 +207,8 @@ WALL TIME AND FACTORIES (r25: rulings R1, R7, R9, R10, H. Lamm 2026-10-02; log a
     3.0e8-3.3e8, F* 2.3-2.9, wall 8.7-38 d (T supply alone 2.0-11 d). pf: D_T 2.9e9-3.1e9, F* 1.6-1.9, wall
     85-354 d. pf projection at p_ref = 1: 5.5e6 shots, 128-260 yr.
     eps_l (0.1 faults per shot): f7p3 5.4e-10-1.1e-9, f7p3p1 Rabi 1.0e-10-1.5e-10, pf Rabi 1.7e-11-2.2e-11.
-    Rabi check with KB3G in f7p3: |M| recovered to 1/4/7/15% at theta|M| = 0.1/0.2/0.3/0.5 MeV (toy: 6% at <= 0.5).
+    Rabi check with KB3G: |M| recovered to 1/4/7/15% at theta|M| = 0.1/0.2/0.3/0.5 MeV in f7p3, 4/10% at 0.3/0.5 in
+    f7p3p1 (toy: 6% at <= 0.5).
     All classically tractable validations. 76Ge stays past 2033 (no simplification that keeps its physics fits).
   The 2033 27Al per-shot T keeps the BE insertion (~1% of N_T), which the direct readout does not use:
     conservative, left in.
@@ -532,6 +533,10 @@ class Assumptions:
                                                           "band theta|M| = 0.3-0.5 MeV, KB3G in f7/2 p3/2 (0.009 at "
                                                           "0.1 MeV, 0.036 at 0.2 MeV); the toy gave <= 0.06",
                                           "kb3g/rabi_kb3g_f7p3.log")
+    rabi_bias_kb3g_f7p3p1: Tagged = Assumed((0.039, 0.099), "COMPUTED record: the same check in f7/2 p3/2 p1/2 (the "
+                                                            "printed row's space): 1 - |M|_fit/|M| at theta|M| = 0.3 "
+                                                            "and 0.5 MeV; resonance shifted by 0.60 and 2.00 MeV",
+                                            "kb3g/rabi_kb3g_f7p3p1.log")
     rabi_drive_mev: Tagged = Assumed((0.3, 0.5), "theta|M|, the Rabi frequency of the resonant drive; band kept "
                                                  "by the 2026-10-12 ruling; with KB3G the fit bias is 7-15% across "
                                                  "it (rabi_bias_kb3g_f7p3), below the tier's 30% target", f"{TEX}:163")

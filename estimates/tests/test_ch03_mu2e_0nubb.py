@@ -1018,7 +1018,7 @@ def test_simplified_0nubb_rows(a, r33, tex):
                  "The qDRIFT samples run one at a time, so these circuits keep only $2$--$3$ factories busy.",
                  "accidental resonances between excited parent and daughter $0^+$ states",
                  "$1.0\\times 10^{-10}$--$1.1\\times 10^{-9}$ ($0\\nu\\beta\\beta$ validation stage)",
-                 "recovers $|M|$ to within $7\\%$ at $\\theta|M|=0.3$ MeV and $15\\%$ at $0.5$ MeV",   # KB3G 2026-10-12
+                 "recovers $|M|$ to within $7\\%$ and $4\\%$ at $\\theta|M|=0.3$ MeV and $15\\%$ and $10\\%$ at $0.5$ MeV",   # KB3G 2026-10-12
                  "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$", "raises $\\lambda/|M|$ to $445$",
                  "$\\lambda/|M|\\approx 1.4\\times 10^{3}$, so $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ projection shots, $130$--$260$ years",
                  "with per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
