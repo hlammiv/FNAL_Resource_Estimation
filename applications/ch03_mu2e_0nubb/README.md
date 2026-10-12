@@ -31,7 +31,7 @@ The test file runs 58 tests and skips 15 in this repository. The skips are the p
 
 ## 3. Assumptions
 
-`Assumptions` (lines 233-546) is one frozen dataclass of 99 `Tagged` fields:
+`Assumptions` (lines 233-546) is one frozen dataclass of 103 `Tagged` fields:
 
 - 23 Cited: a published source gives the value, and the source column is its bibliography key.
 - 33 Assumed: a working assumption the chapter declares.
@@ -144,10 +144,10 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `mass_number_al27` | 27 | Stated-not-derived | app11:6 | 27Al |
 | `z_core_al27` | 8 | Stated-not-derived | app11:44 | sd valence space: 16O core, 8 core protons (0s^2 0p^6) |
 | `trotter_concurrency` | 12 | Assumed | arxiv_1905_09749 | commuting Trotter rotations in flight at once (12-24 of the 50-150 ancillas); G >= 10 keeps the 10-factory baseline fed |
-| `sd_spin_expectation` | 0.3262 | Assumed | app11:151 | COMPUTED: <S_p> in the USDB sd ground state (2026-10-09); a record, `sd_element_expectation` carries the shots |
-| `sd_element_expectation` | 0.36681 | Assumed | app11:151 | COMPUTED: <O_SD> in the USDB sd ground state (2026-10-09); 2 <S_p> o_0d = 0.3646 is 0.6% lower |
-| `direct_readout_variance` | 0.45116 | Assumed | app11:151 | COMPUTED: Var(O_SD) in the USDB ground state (2026-10-09; was the audit's estimate 1.0) |
-| `projection_success` | 0.27359 | Assumed | app11:151 | COMPUTED: overlap of the 0d5/2 filling with the USDB ground state (2026-10-09; was 0.5) |
+| `sd_spin_expectation` | 0.3262 | Assumed | app11:151 | <S_p>(27Al) in sd, an estimate pending a shell-model value |
+| `sd_element_expectation` | 0.36681 | Assumed | app11:151 | COMPUTED: <O_SD> = <sum_p o_l(q) sigma_z> in the USDB sd ground state with o_0d, o_1s from al27_dipole_sd; 2 <S_p> o_0d = 0.3646 is 0.6% lower (0d3/2-0d5/2 mixing and the 1s modes) |
+| `direct_readout_variance` | 0.45116 | Assumed | app11:151 | per-shot variance of the direct (basis-rotated Z) readout of the SD one-body operator, ~1 (estimate); worst case x8.3 (Popoviciu bound) |
+| `projection_success` | 0.27359 | Assumed | app11:151 | heralded ground-state projection success p for deformed 27Al (estimate; computable exactly in sd); sensitivity band 0.1-0.9 |
 | `first_result_scans` | 1 | Stated-not-derived | app11:153 | the first result uses one Hamiltonian (one basis-cutoff scan) |
 | `eps_first_generic` | 0.3 | Assumed | app11:151 | report-wide first-result statistical error, quoted for comparison only |
 | `gap_al27_usdb_mev` | 2.327866 | Assumed | scratchpad chopen/app11/gap_usdb_sd_27Al_J-1.0.json | COMPUTED: first excited state reachable from an M = 5/2 reference (J >= 5/2; the 7/2+), USDB in sd |
@@ -166,15 +166,21 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `gap_0plus_ensdf_ca48_mev` | 4.283 | Cited | ENSDF | 48Ca first excited 0+ (4283 keV); comparison only, the priced gaps are KB3G |
 | `gap_0plus_ensdf_ti48_mev` | 2.997 | Cited | ENSDF | 48Ti first excited 0+ (2997 keV); comparison only, the priced gaps are KB3G |
 | `eps_simplified` | 0.3 | Assumed | app11:161 | 30% statistical error on \|M\| for the 0nubb first light |
-| `lam_over_m_f7p3` | 69.1 | Assumed | app11:161 | lambda/\|M\| in f7/2 p3/2 from a schematic interaction; not derived here |
-| `p_ref_f7p3` | 0.93 | Assumed | app11:161 | closed-f7/2 reference overlap in f7/2 p3/2 (schematic interaction) |
-| `lam_over_m_f7p3p1` | 164.0 | Assumed | app11:161,163 | lambda/\|M\| in f7/2 p3/2 p1/2 (schematic interaction); enters the qDRIFT count |
-| `lam_over_m_pf` | (600.0, 720.0) | Assumed | app11:161 | lambda/\|M\| in full pf: Pauli-LCU lambda 208.4 over \|M\| ~ 0.29-0.35 (schematic interaction) |
-| `rabi_drive_mev` | (0.3, 0.5) | Assumed | app11:163 | theta\|M\|, the Rabi frequency of the resonant drive; kept <= 0.5 MeV for a <~6% Stark bias (schematic interaction) |
+| `lam_over_m_f7p3` | 197.0375 | Assumed | kb3g/lam_kb3g_f7p3.json | lambda/\|M\| in f7/2 p3/2, computed with KB3G ground states for the companion study's two-body operator (GXPF1A 145.7; the schematic toy gave 69.1) |
+| `p_ref_f7p3` | 0.98249 | Assumed | kb3g/lam_kb3g_f7p3.json | closed-f7/2 reference overlap \|<ref\|48Ca gs>\|^2 in f7/2 p3/2, KB3G (GXPF1A 0.983; the toy gave 0.93) |
+| `lam_over_m_f7p3p1` | 445.4389 | Assumed | kb3g/lam_kb3g_f7p3p1.json | lambda/\|M\| in f7/2 p3/2 p1/2, KB3G (GXPF1A 355.3; toy 164); enters the qDRIFT count |
+| `lam_over_m_pf` | 1403.879 | Assumed | kb3g/lam_kb3g_pf.json | lambda/\|M\| in full pf, KB3G (lambda 208.36, \|M\| 0.148; GXPF1A 1650; the toy gave 600-720 from an extrapolated \|M\|) |
+| `p_ref_f7p3p1_record` | 0.97093 | Assumed | kb3g/lam_kb3g_f7p3p1.json | COMPUTED record: closed-f7/2 overlap in f7/2 p3/2 p1/2, KB3G (GXPF1A 0.9773; toy 0.90); not used (Rabi readout) |
+| `p_ref_pf_record` | 0.9022 | Assumed | kb3g/lam_kb3g_pf.json | COMPUTED record: closed-f7/2 overlap in full pf, KB3G (GXPF1A 0.9474); not used |
+| `lam_over_m_toy_f7p3_record` | 69.1 | Assumed | simplobs adv/j0_big.out | record: the schematic toy's lambda/\|M\| in f7/2 p3/2 (p_ref 0.93), printed until 2026-10-12 |
+| `lam_over_m_toy_f7p3p1_record` | 164.0 | Assumed | simplobs adv/j0_big.out | record: the toy's lambda/\|M\| in f7/2 p3/2 p1/2 (p_ref 0.90), printed until 2026-10-12 |
+| `lam_over_m_toy_pf_record` | (600.0, 720.0) | Assumed | simplobs | record: the toy's lambda/\|M\| in full pf (lambda 208.4 over an extrapolated \|M\| 0.29-0.35), printed until 2026-10-12 |
+| `rabi_bias_kb3g_f7p3` | (0.074, 0.154) | Assumed | kb3g/rabi_kb3g_f7p3.log | COMPUTED record: 1 - \|M\|_fit/\|M\| at the ends of the drive band theta\|M\| = 0.3-0.5 MeV, KB3G in f7/2 p3/2 (0.009 at 0.1 MeV, 0.036 at 0.2 MeV); the toy gave <= 0.06 |
+| `rabi_drive_mev` | (0.3, 0.5) | Assumed | app11:163 | theta\|M\|, the Rabi frequency of the resonant drive; across the 0.3-0.5 MeV band the KB3G fit bias is 7-15% (rabi_bias_kb3g_f7p3) |
 | `qdrift_eps` | 0.1 | Assumed | Campbell_qDRIFT_2019 | qDRIFT error on the drive term; N_q = 2 (lambda/M)^2 (pi/2)^2 / eps_q |
 | `rabi_shots` | (250, 1000) | Assumed | app11:163 | Rabi-readout shots including a 5-10-detuning resonance scan; 250 give ~5% on \|M\| at t_pi/2 (schematic interaction) |
 
-#### External comparison points (not used in any T-count)
+#### External comparison points and the utility box (not used in any T-count)
 
 | field | value | provenance | source | note |
 |---|---|---|---|---|
@@ -183,7 +189,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `ext_qubitization_pb208_toffoli` | 30000000000.0 | Cited | arxiv_2607_21563 | '~3e10 ... 102-orbital 208Pb-core space' |
 | `nme_spread` | 3 | Cited | arxiv_2308_15634 | 'factor-three spread across nuclear models' |
 
-97 fields: Cited 22, Stated-not-derived 42, Assumed 33
+103 fields: Cited 22, Stated-not-derived 42, Assumed 39
 
 ## 4. How the numbers are built
 
@@ -272,10 +278,10 @@ The 27Al shot is then the whole circuit at the shared tolerance: N_T = (N_rot,pr
 
 `simplified_0nubb` (lines 1366-1417) prices 48Ca → 48Ti in truncated pf spaces at the 0+ gaps of the KB3G interaction restricted to the kept orbits, which the model carries as computed inputs (section 3). For a scalar operator each projection only has to resolve the next 0+ state, so the pair cost is Σ_i c_proj (1/Δ_i)/δt Trotter steps over parent and daughter (`_pair_prep_two_gaps`, lines 1328-1342).
 
-- f7/2 p3/2 (24 modes, 74-174 LQ), projection readout: 9.10e7-1.86e8 T per shot; (λ/|M|)²/(4ε²p_ref) = 69.1² / (4 × 0.09 × 0.93) = 14262 shots at 30% on |M|; 15-31 days, F* 11.9.
-- f7/2 p3/2 p1/2 (28 modes, 78-178 LQ), resonant-drive readout (`_rabi_cost`, lines 1345-1363): evolve under H + μN_p + θ(O + O†) for a quarter Rabi period and measure proton number. Steps (π/2)/(θ|M|)/δt at N_orb^4 rotations each, plus the qDRIFT-sampled drive, 2(λ/|M|)²(π/2)²/ε_qD = 1.33e6 single-Pauli rotations. 4.40e8-7.20e8 T, 250-1000 shots, 2.0-11 days. The qDRIFT samples run one at a time, so D_T = N_Trotter-rot c_T/12 + N_qD c_T and F* = 6.4-7.7.
-- Full pf by the same readout: 2.27e9-3.72e9 T (2.3-3.7x the budget), F* 3.5-3.8, 19-110 days.
-- Full pf by projection at its 0+ gaps: 7.35e8-1.50e9 T, but at λ/|M| = 600-720 at least 1.0e6-1.44e6 shots, 23-68 years.
+- f7/2 p3/2 (24 modes, 74-174 LQ), projection readout: 9.10e7-1.86e8 T per shot; (λ/|M|)²/(4ε²p_ref) = 197.0² / (4 × 0.09 × 0.982) = 109766 shots at 30% on |M|; 116-236 days, F* 11.9. λ/|M| and p_ref are computed with KB3G ground states since 2026-10-12 (`kb3g/`; the schematic toy gave 69.1 and 0.93, 14262 shots, 15-31 days).
+- f7/2 p3/2 p1/2 (28 modes, 78-178 LQ), resonant-drive readout (`_rabi_cost`, lines 1345-1363): evolve under H + μN_p + θ(O + O†) for a quarter Rabi period and measure proton number. Steps (π/2)/(θ|M|)/δt at N_orb^4 rotations each, plus the qDRIFT-sampled drive, 2(λ/|M|)²(π/2)²/ε_qD = 9.79e6 single-Pauli rotations at λ/|M| = 445.4 (KB3G; toy 164, 1.33e6). 6.75e8-9.58e8 T, 250-1000 shots, 8.7-38 days. The qDRIFT samples run one at a time, so D_T = N_Trotter-rot c_T/12 + N_qD c_T and F* = 6.4-7.7.
+- Full pf by the same readout at λ/|M| = 1404 (KB3G; toy 600-720): 4.59e9-5.83e9 T (4.6-5.8x the budget), F* 1.6-1.9, 85-354 days.
+- Full pf by projection at its 0+ gaps: 7.35e8-1.50e9 T, but at λ/|M| = 1404 at least 5.47e6 shots, 128-260 years.
 
 ### 4.7 What goes where
 
@@ -314,7 +320,7 @@ The boxes, as `PUBLISHED` holds them and as the model computes them:
 | 2033 time per shot | 1.8-7.3 min | 105.4-440.4 s | `test_2033_shots_wall_time_campaign` |
 | 0νββ near miss (pf) | x1.8-7.3 | 1.75-7.30 | `test_2033_valence_pairs` |
 | co-design pairs | x2.6-11 (jj44), x12-50 (jj55), x6-25 (Mo/Ru) | as in section 4.3 | `test_2033_valence_pairs`, `test_2033_jj55_codesign_pairs`, `test_2033_mo_ru_generic_gap` |
-| validation ladder | f7p3 0.91-1.9e8 T, 15-31 days; f7p3p1 4.4-7.2e8 T, 2.0-11 days; pf x2.3-3.7, 19-110 days | as in section 4.6 | `test_simplified_0nubb_rows` |
+| validation ladder | f7p3 0.91-1.9e8 T, 120-240 days; f7p3p1 6.8-9.6e8 T, 8.7-38 days; pf x4.6-5.8, 85-350 days | as in section 4.6 | `test_simplified_0nubb_rows` |
 | co-design LQ | ~700-1100 | 660-1144 | `test_codesign_flagship`, `test_codesign_flagship_fits_1000_lq_as_printed` |
 | co-design T | 8.5e13-3.3e15 | 8.532e13-3.331e15 | `test_codesign_flagship` |
 
@@ -350,8 +356,8 @@ From `docs/OPEN_ITEMS.md` and the model's own notes:
 - **The 2033 readout covers only the spin-dependent element.** If the deliverable is the VS-IMSRG-evolved operators, the readout of their two-body parts is not priced. ⟨S_p⟩ = 0.30-0.34 and the per-shot variance of about one are estimates (the worst-case variance is about 8 times larger); a shell-model value would replace both.
 - **Projection success p = 0.274 for 27Al** is the overlap of the 0d5/2 filling with the USDB ground state (computed 2026-10-09); a reference of the ten largest configurations would reach 0.38.
 - **Gaps.** The 27Al and survey cells use a generic 1-2 MeV band, while the 48Ca/48Ti ladder uses the KB3G 0+ gaps of each truncated space. The USDB gap that an M = 5/2 reference can reach in 27Al is 2.33 MeV and would lower the 27Al preparation to 8.9e7-1.8e8 T (`al27_prep_t_at_usdb_gap`); the band is kept. The daughter projection is priced at the parent's gap; a daughter with a smaller gap raises the cost in proportion to 1/Δ.
-- **The resonant-drive readout is checked only on a schematic interaction.** λ/|M| = 69, 164 and 600-720 and p_ref = 0.93 come from that interaction; Stark bias, resonance identification and the Trotter and qDRIFT errors are not simulated, so its shot counts and walls are conditional.
-- **Depth.** The resonant-drive walls are depth-limited (qDRIFT samples run one at a time, F* 3.5-7.7). The 2033 27Al walls assume 12 commuting rotations in flight; gate by gate the campaign floor is 135 days to 3.0 years.
+- **The resonant-drive readout is checked only in f7/2 p3/2, and the operator is a proxy.** λ/|M| = 197, 445 and 1404 and p_ref = 0.98 are computed with KB3G ground states (GXPF1A: -26% / -20% / +18%), but for the schematic two-body operator of the companion study, not the light-neutrino exchange operator. With KB3G the resonant-drive fit recovers |M| to 7% at θ|M| = 0.3 MeV and 15% at 0.5 MeV (the toy's 6% at <= 0.5 MeV had a 2.9 times weaker drive at the same θ|M|); resonance identification and the Trotter and qDRIFT errors are not simulated, so its shot counts and walls are conditional.
+- **Depth.** The resonant-drive walls are depth-limited (qDRIFT samples run one at a time, F* 1.6-2.9). The 2033 27Al walls assume 12 commuting rotations in flight; gate by gate the campaign floor is 135 days to 3.0 years.
 - **Cancellations not taken.** PREPARE trees that cancel or act on unused amplitudes in the 2028 shot are kept as priced, so the insertion count is an upper bound for its construction. The 2033 27Al shot also keeps the operator query (about 1% of its T), which the direct readout does not use.
 - **Category separation** needs targets with different Z, N/Z and spin; a second target such as 48Ti in pf is not priced.
 - **Fault model.** ε_l = 0.1/N_T counts T gates only; Clifford, idle, measurement and injection faults are not modeled.

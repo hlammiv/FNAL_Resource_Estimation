@@ -196,15 +196,18 @@ WALL TIME AND FACTORIES (r25: rulings R1, R7, R9, R10, H. Lamm 2026-10-02; log a
   Campaign (2-3 basis-cutoff scans, six categories at ~10% on CR): 1.1e4-2.1e4 shots -> wall_campaign_s
     1.17e6-9.40e6 s = 13.5 d-3.6 mo, at most 6.0% of the 5-year horizon; p over 0.1-0.9: 7.5 d-1.5 yr.
     Exports (campaign run): floor 11-92 d, factories_for_1yr 0.37-3.0.
-  R7 rows (simplobs.json; gaps superseded by the referee M3 KB3G gaps, see above): 48Ca/48Ti first light in
-    f7/2 p3/2 (24 modes, 74-174 LQ) at the 0+ gaps 4.283 / 2.997 MeV, projection readout, 30% on |M| (lambda/|M| = 69.1, p_ref 0.93, toy): 1.2e8-2.4e8 T, 1.4e4 shots, 20-40 d
-    (G = 12 in flight: D_T 1.0e7-2.0e7, F* 11.9-12, so the T-supply wall stands).
-    Then f7/2 p3/2 p1/2 (28 modes, 78-178 LQ) with the resonant-drive (Rabi) readout: 4.4e8-7.2e8 T, 250-1000
-    shots. Full pf by Rabi: 2.3e9-3.7e9 T (x2.3-3.7, near miss). Rabi T-depth (R10 verifier fix):
-    D_T = N_trotter_rot c_T / G + N_qdrift c_T, since the qDRIFT samples are random, mostly non-commuting
-    single-Pauli rotations, one sequential layer each. f7p3p1: D_T 6.9e7-9.3e7, F* 6.4-7.7, wall 2.0-11 d
-    (T supply alone 1.3-8.3 d). pf: D_T 6.5e8-9.8e8, F* 3.5-3.8, wall 19-110 d (T supply alone 6.6-43 d).
-    eps_l (0.1 faults per shot): f7p3 4.1e-10-8.4e-10, f7p3p1 Rabi 1.4e-10-2.3e-10, pf Rabi 2.7e-11-4.4e-11.
+  R7 rows (simplobs.json; gaps by referee M3, lambda/|M| and p_ref by the 2026-10-12 KB3G ruling): 48Ca/48Ti
+    first light in f7/2 p3/2 (24 modes, 74-174 LQ) at the KB3G 0+ gaps 6.100 / 3.685 MeV, projection readout, 30%
+    on |M| (lambda/|M| = 197.0, p_ref 0.982, KB3G; the toy gave 69.1 / 0.93): 0.91e8-1.9e8 T, 1.1e5 shots, 116-236 d
+    (G = 12 in flight, F* 11.9-12, so the T-supply wall stands).
+    Then f7/2 p3/2 p1/2 (28 modes, 78-178 LQ) with the resonant-drive (Rabi) readout at lambda/|M| = 445.4 (toy
+    164): 6.8e8-9.6e8 T, 250-1000 shots. Full pf by Rabi at lambda/|M| = 1404 (toy 600-720): 4.6e9-5.8e9 T
+    (x4.6-5.8). Rabi T-depth (R10 verifier fix): D_T = N_trotter_rot c_T / G + N_qdrift c_T, since the qDRIFT
+    samples are random, mostly non-commuting single-Pauli rotations, one sequential layer each. f7p3p1: D_T
+    3.0e8-3.3e8, F* 2.3-2.9, wall 8.7-38 d (T supply alone 2.0-11 d). pf: D_T 2.9e9-3.1e9, F* 1.6-1.9, wall
+    85-354 d. pf projection at p_ref = 1: 5.5e6 shots, 128-260 yr.
+    eps_l (0.1 faults per shot): f7p3 5.4e-10-1.1e-9, f7p3p1 Rabi 1.0e-10-1.5e-10, pf Rabi 1.7e-11-2.2e-11.
+    Rabi check with KB3G in f7p3: |M| recovered to 1/4/7/15% at theta|M| = 0.1/0.2/0.3/0.5 MeV (toy: 6% at <= 0.5).
     All classically tractable validations. 76Ge stays past 2033 (no simplification that keeps its physics fits).
   The 2033 27Al per-shot T keeps the BE insertion (~1% of N_T), which the direct readout does not use:
     conservative, left in.
@@ -492,15 +495,46 @@ class Assumptions:
     gap_0plus_ensdf_ti48_mev: Tagged = Cited(2.997, "ENSDF", "48Ti first excited 0+ (2997 keV); record")
     eps_simplified: Tagged = Assumed(0.3, "R1: 30% statistical error on |M| for the 0nubb first light",
                                      f"{TEX}:161")
-    lam_over_m_f7p3: Tagged = Assumed(69.1, "lambda/|M| in f7/2 p3/2, schematic-interaction toy "
-                                            "(simplobs adv/j0_big.out); not derived here", f"{TEX}:161")
-    p_ref_f7p3: Tagged = Assumed(0.93, "closed-f7/2 reference overlap in f7/2 p3/2 (toy)", f"{TEX}:161")
-    lam_over_m_f7p3p1: Tagged = Assumed(164.0, "lambda/|M| in f7/2 p3/2 p1/2 (toy); enters the qDRIFT count",
-                                        f"{TEX}:161,163")
-    lam_over_m_pf: Tagged = Assumed((600.0, 720.0), "lambda/|M| in full pf: Pauli-LCU lambda 208.4 over "
-                                                    "|M| ~ 0.29-0.35 (simplobs)", f"{TEX}:161")
-    rabi_drive_mev: Tagged = Assumed((0.3, 0.5), "theta|M|, the Rabi frequency of the resonant drive; kept "
-                                                 "<= 0.5 MeV for a <~6% Stark bias (toy)", f"{TEX}:163")
+    # Ruling 2026-10-12 (Ch. 3 item 1, option 1): lambda/|M| and p_ref are computed with KB3G (the interaction that
+    # prices the gaps) between the exact M-scheme ground states of 48Ca and 48Ti in each kept space; the operator is
+    # still the simplobs toy's (sigma.sigma tau+ tau+ with a 1/r12 radial form, HO b from hw = 41 A^-1/3), so its
+    # Pauli-LCU 1-norm lambda is unchanged (19.05 / 47.50 / 208.36). GXPF1A is the record (interaction spread:
+    # -26% / -20% / +18% on lambda/|M| in f7p3 / f7p3p1 / pf).
+    # The schematic-interaction values (69.1 / 0.93, 164, 600-720; simplobs adv/j0_big.out) are kept as records.
+    # Scratch: repo applications/ch03_mu2e_0nubb/kb3g/ (kb3g_lam.py, lam_*.json).
+    lam_over_m_f7p3: Tagged = Assumed(197.0375, "COMPUTED: lambda/|M| in f7/2 p3/2, KB3G ground states (lambda "
+                                                "19.047, M 0.09667; GXPF1A 145.69); was the schematic toy's 69.1",
+                                      "kb3g/lam_kb3g_f7p3.json")
+    p_ref_f7p3: Tagged = Assumed(0.98249, "COMPUTED: closed-f7/2 reference overlap |<ref|48Ca gs>|^2 in f7/2 p3/2, "
+                                          "KB3G (GXPF1A 0.9830); was the toy's 0.93", "kb3g/lam_kb3g_f7p3.json")
+    lam_over_m_f7p3p1: Tagged = Assumed(445.4389, "COMPUTED: lambda/|M| in f7/2 p3/2 p1/2, KB3G (lambda 47.496, M "
+                                                  "0.10663; GXPF1A 355.34); enters the qDRIFT count; was the toy's 164",
+                                        "kb3g/lam_kb3g_f7p3p1.json")
+    lam_over_m_pf: Tagged = Assumed(1403.879, "COMPUTED: lambda/|M| in full pf, KB3G (lambda 208.355, M 0.14841, "
+                                              "48Ti M-dim 634744; GXPF1A 1650.14, M 0.12627); was the toy's 600-720 "
+                                              "(lambda 208.4 over an extrapolated |M| 0.29-0.35)", "kb3g/lam_kb3g_pf.json")
+    p_ref_f7p3p1_record: Tagged = Assumed(0.97093, "COMPUTED record: closed-f7/2 overlap in f7/2 p3/2 p1/2, KB3G "
+                                                   "(GXPF1A 0.9773; toy 0.90); not used (Rabi readout)",
+                                          "kb3g/lam_kb3g_f7p3p1.json")
+    p_ref_pf_record: Tagged = Assumed(0.90220, "COMPUTED record: closed-f7/2 overlap in full pf, KB3G (GXPF1A 0.9474); not used",
+                                      "kb3g/lam_kb3g_pf.json")
+    lam_over_m_toy_f7p3_record: Tagged = Assumed(69.1, "record: the schematic toy's lambda/|M| in f7/2 p3/2 (p_ref "
+                                                      "0.93), printed until 2026-10-12", "simplobs adv/j0_big.out")
+    lam_over_m_toy_f7p3p1_record: Tagged = Assumed(164.0, "record: the toy's lambda/|M| in f7/2 p3/2 p1/2 (p_ref "
+                                                          "0.90), printed until 2026-10-12", "simplobs adv/j0_big.out")
+    lam_over_m_toy_pf_record: Tagged = Assumed((600.0, 720.0), "record: the toy's lambda/|M| in full pf (lambda 208.4 "
+                                                               "over an extrapolated |M| 0.29-0.35), printed until "
+                                                               "2026-10-12", "simplobs")
+    # Rabi-readout check rerun with KB3G in f7/2 p3/2 (kb3g/rabi_kb3g.py): the fit recovers |M| to 1 / 4 / 7 / 15 %
+    # at theta|M| = 0.1 / 0.2 / 0.3 / 0.5 MeV (resonance shifted by 0.10 / 0.40 / 0.75 / 2.25 MeV). The toy's 6 % at
+    # <= 0.5 MeV had |M| 2.9x larger, so the same theta|M| was a 2.9x weaker drive and an ~8x smaller Stark shift.
+    rabi_bias_kb3g_f7p3: Tagged = Assumed((0.074, 0.154), "COMPUTED record: 1 - |M|_fit/|M| at the ends of the drive "
+                                                          "band theta|M| = 0.3-0.5 MeV, KB3G in f7/2 p3/2 (0.009 at "
+                                                          "0.1 MeV, 0.036 at 0.2 MeV); the toy gave <= 0.06",
+                                          "kb3g/rabi_kb3g_f7p3.log")
+    rabi_drive_mev: Tagged = Assumed((0.3, 0.5), "theta|M|, the Rabi frequency of the resonant drive; band kept "
+                                                 "by the 2026-10-12 ruling; with KB3G the fit bias is 7-15% across "
+                                                 "it (rabi_bias_kb3g_f7p3), below the tier's 30% target", f"{TEX}:163")
     qdrift_eps: Tagged = Assumed(0.1, "qDRIFT error on the drive term; N_q = 2 (lambda/M)^2 (pi/2)^2 / eps_q",
                                  "Campbell_qDRIFT_2019")
     rabi_shots: Tagged = Assumed((250, 1000), "Rabi-readout shots incl. a 5-10-detuning resonance scan; 250 "
@@ -2173,10 +2207,10 @@ def printed_r25(a: Assumptions) -> dict:
         "first_30pct_2033:151": f"${round_sig(w30[0] / 3600, 2):.1f}$--${g2(w30[1] / 3600)}$ hours",
         # R7 first light (app11:156-158 and the box)
         "pf_0plus_t:156": f"${round_sig(apf['t'][0] / 1e9, 2):.2f}$--${round_sig(apf['t'][1] / 1e9, 2):.1f}\\times 10^{{9}}$ T",
-        "pf_0plus_shots:156": fact(apf["shots_lower_bound"], 6) + " projection shots",
+        "pf_0plus_shots:156": f"${g2(apf['shots_lower_bound'][0] / 1e6)}\\times 10^{{6}}$ projection shots",   # single value since 2026-10-12
         "pf_0plus_years:156": f"${g2(apf['wall_s'][0] / yr)}$--${g2(apf['wall_s'][1] / yr)}$ years",
         "f7p3_t:156,box": fact(b["t"], 8),
-        "f7p3_shots:156": f"${g2(b['shots'][0] / 1e4)}\\times 10^{{4}}$ shots",
+        "f7p3_shots:156": f"${g2(b['shots'][0] / 1e5)}\\times 10^{{5}}$ shots",
         "f7p3_wall:156,box": f"${g2(b['wall_s'][0] / day)}$--${g2(b['wall_s'][1] / day)}$ days",
         "f7p3p1_t:157,box": fact(bp["t"], 8),
         "f7p3p1_wall:157,box": f"${g2(bp['wall_s'][0] / day)}$--${g2(bp['wall_s'][1] / day)}$ days",

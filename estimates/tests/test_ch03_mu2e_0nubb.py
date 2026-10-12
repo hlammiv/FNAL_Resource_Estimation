@@ -979,31 +979,31 @@ def test_simplified_0nubb_rows(a, r33, tex):
     _rng(b["n_trotter"], (2735.2, 5470.4), 1e-4)
     _rng(b["t"], (9.098e7, 1.856e8), 2e-3)
     _rng(b["t_at_ensdf_gaps"], (1.194e8, 2.436e8), 2e-3)
-    assert round(b["shots"][0]) == 14262 and round(b["wall_s"][0] / day) == 15 and round(b["wall_s"][1] / day) == 31
-    _rng(bp["t"], (4.399e8, 7.200e8), 2e-3)
-    assert round(bp["n_qdrift"][0], -4) == 1.33e6
+    assert round(b["shots"][0]) == 109766 and round(b["wall_s"][0] / day) == 116 and round(b["wall_s"][1] / day) == 236   # KB3G 2026-10-12 (were 14262, 15-31 d)
+    _rng(bp["t"], (6.753e8, 9.582e8), 2e-3)                     # were 4.399-7.200e8 (toy lambda/|M| 164)
+    assert round(bp["n_qdrift"][0], -4) == 9.79e6                   # was 1.33e6
     # E29 (verifier, R10): the qDRIFT samples run one at a time, D_T = N_trot c_T / 12 + N_q c_T
     for r_ in (b, bp, h):
         for e in (0, 1):
             assert r_["wall_s"][e] >= r_["wall_t_supply_s"][e] * (1 - 1e-12)
             assert r_["f_star_per_end"][e] == pytest.approx(r_["t"][e] / r_["t_depth"][e])
-    _rng(bp["t_depth"], (6.9e7, 9.3e7), 1e-2)
-    assert (round(bp["f_star_per_end"][0], 1), round(bp["f_star_per_end"][1], 1)) == (6.4, 7.7)
-    assert (round(bp["wall_s"][0] / day, 1), round(bp["wall_s"][1] / day)) == (2.0, 11)
-    assert (round(bp["wall_t_supply_s"][0] / day, 1), round(bp["wall_t_supply_s"][1] / day, 1)) == (1.3, 8.3)
-    _rng(h["t"], (2.267e9, 3.716e9), 2e-3)
-    _rng(h["t_depth"], (6.5e8, 9.8e8), 1e-2)
-    assert (round(h["f_star_per_end"][0], 1), round(h["f_star_per_end"][1], 1)) == (3.5, 3.8)
-    assert (round(h["wall_s"][0] / day), round(h["wall_s"][1] / day, -1)) == (19, 110)
+    _rng(bp["t_depth"], (3.0e8, 3.26e8), 1e-2)
+    assert (round(bp["f_star_per_end"][0], 1), round(bp["f_star_per_end"][1], 1)) == (2.3, 2.9)   # were 6.4, 7.7
+    assert (round(bp["wall_s"][0] / day, 1), round(bp["wall_s"][1] / day)) == (8.7, 38)          # were 2.0, 11
+    assert (round(bp["wall_t_supply_s"][0] / day, 1), round(bp["wall_t_supply_s"][1] / day, 1)) == (2.0, 11.1)
+    _rng(h["t"], (4.593e9, 5.834e9), 2e-3)                     # were 2.267-3.716e9 (toy 600-720)
+    _rng(h["t_depth"], (2.94e9, 3.06e9), 1e-2)
+    assert (round(h["f_star_per_end"][0], 1), round(h["f_star_per_end"][1], 1)) == (1.6, 1.9)
+    assert (round(h["wall_s"][0] / day), round(h["wall_s"][1] / day, -1)) == (85, 350)          # were 19, 110
     assert b["f_star_per_end"][0] > 10 and b["wall_s"] == b["wall_t_supply_s"]   # 12 in flight, F* ~ 12
     _rng(b["eps_l"], (5.39e-10, 1.10e-9), 1e-2)
-    _rng(bp["eps_l"], (1.4e-10, 2.3e-10), 2e-2)
-    _rng(h["eps_l"], (2.7e-11, 4.4e-11), 1e-2)
+    _rng(bp["eps_l"], (1.04e-10, 1.48e-10), 2e-2)
+    _rng(h["eps_l"], (1.71e-11, 2.18e-11), 1e-2)
     assert 1.5 < h["multiple"][0] and h["multiple"][1] < 10        # a near miss, not co-design
     _rng(apf["t"], (7.354e8, 1.498e9), 2e-3)
     _rng(apf["t_at_ensdf_gaps"], (9.821e8, 2.001e9), 2e-3)
-    assert apf["shots_lower_bound"] == (1.0e6, 1.44e6)
-    assert (round(apf["wall_s"][0] / yr), round(apf["wall_s"][1] / yr)) == (23, 68)
+    assert round(apf["shots_lower_bound"][0]) == 5474656 and apf["shots_lower_bound"][0] == apf["shots_lower_bound"][1]   # KB3G lambda/|M| 1404 (was 1.0-1.44e6 at 600-720)
+    assert (round(apf["wall_s"][0] / yr), round(apf["wall_s"][1] / yr)) == (128, 260)                     # were 23, 68
     assert all(g < e for g, e in zip(bp["projection_gaps"], (6.100132, 3.684720)))   # p1/2 lowers both gaps
     if tex is None:
         pytest.skip("chapter .tex not on disk")
@@ -1011,13 +1011,16 @@ def test_simplified_0nubb_rows(a, r33, tex):
     # follow the vocabulary of rule 12 (readout -> estimate, resonant drive -> resonant transition); numbers unchanged
     for frag in ("are $5.17$ and $4.26$ MeV ($4.28$ and $3.00$ MeV measured~\\cite{ENSDF})",
                  "so KB3G is the conservative choice", "\\cite{arxiv_nucl-th_0012077}",
-                 "$74$--$174$ LQ, $0.91$--$1.9\\times 10^{8}$ T, projection estimate: $15$--$31$ days",
-                 "$78$--$178$ LQ, $4.4$--$7.2\\times 10^{8}$ T, resonant-transition estimate: $2.0$--$11$ days",
-                 "full $pf$ by resonant transition $\\times 2.3$--$3.7$, $19$--$110$ days",
+                 "$74$--$174$ LQ, $0.91$--$1.9\\times 10^{8}$ T, projection estimate: $120$--$240$ days",
+                 "$78$--$178$ LQ, $6.8$--$9.6\\times 10^{8}$ T, resonant-transition estimate: $8.7$--$38$ days",
+                 "full $pf$ by resonant transition $\\times 4.6$--$5.8$, $85$--$350$ days",
                  "($\\times 0.74$--$1.5$ at the model $0^+$ gaps)",
-                 "The qDRIFT samples run one at a time, so these circuits keep only $4$--$8$ factories busy.",
+                 "The qDRIFT samples run one at a time, so these circuits keep only $2$--$3$ factories busy.",
                  "accidental resonances between excited parent and daughter $0^+$ states",
-                 "$1.4\\times 10^{-10}$--$1.1\\times 10^{-9}$ ($0\\nu\\beta\\beta$ validation stage)",
+                 "$1.0\\times 10^{-10}$--$1.1\\times 10^{-9}$ ($0\\nu\\beta\\beta$ validation stage)",
+                 "recovers $|M|$ to within $7\\%$ at $\\theta|M|=0.3$ MeV and $15\\%$ at $0.5$ MeV",   # KB3G 2026-10-12
+                 "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$", "raises $\\lambda/|M|$ to $445$",
+                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$, so $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ projection shots, $130$--$260$ years",
                  "with per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
                  "\\cite{Campbell_qDRIFT_2019}", "It stays past 2033.",
                  "We take the daughter projection at the parent's cost; a daughter with a smaller gap raises it"):
@@ -1465,12 +1468,12 @@ def test_referee_max_subroutine_time(a, tex):
     i33 = ch3.model(a, "2033").intermediates
     rabi = i33["simplified_0nubb"]["f7p3p1_rabi"]
     per_shot = [w / n for w, n in zip(rabi["wall_s"], rabi["shots"])]
-    assert round(max(per_shot) / 60) == 16                                          # "~16 min per shot"
+    assert round(max(per_shot) / 60) == 54                                          # "~54 min per shot" (KB3G; was 16)
     assert (round(i33["t_shot_s"][0] / 60, 1), round(i33["t_shot_s"][1] / 60, 1)) == (1.8, 7.3)
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     assert "Maximum subroutine time & N/A" not in tex
-    assert ("Maximum subroutine time & $\\sim 16$ min per shot ($0\\nu\\beta\\beta$ validation stage, resonant "
+    assert ("Maximum subroutine time & $\\sim 54$ min per shot ($0\\nu\\beta\\beta$ validation stage, resonant "
             "transition); $1.8$--$7.3$ min ($^{27}$Al, 2033); $0.10$\\,s (2028)") in tex
 
 

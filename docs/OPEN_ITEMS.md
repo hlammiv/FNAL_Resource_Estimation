@@ -26,8 +26,8 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - The 27Al readout inputs (`sd_element_expectation`, `direct_readout_variance`, `projection_success`) are computed in USDB, a stand-in for the VS-IMSRG sd Hamiltonians; the values would move with the actual Hamiltonian.
 - The 27Al survey cells use a generic 1-2 MeV gap band while the 48Ca/48Ti cells use the KB3G 0+ gaps of each truncated space; per-nucleus model gaps everywhere would move the 2033 cell.
 - The daughter projection is priced at the parent's gap band; a daughter with a smaller gap raises the cost in proportion to 1/Delta.
-- The resonant-drive (Rabi) readout is toy-checked only: lambda/|M| = 69, 164 and 600-720 and p_ref = 0.93 come from a schematic interaction, and Stark bias and Trotter/qDRIFT errors are not simulated.
-- The Rabi walls are depth-limited (qDRIFT samples run one at a time, F* 3.5-7.7, `f_star_per_end`); a drive that groups commuting samples would recover the factories.
+- The resonant-drive (Rabi) readout is checked only in f7/2 p3/2, and the two-body operator is the companion study's proxy: lambda/|M| = 197, 445 and 1404 and p_ref = 0.98 are KB3G values for that operator (`lam_over_m_*`, computed 2026-10-12; GXPF1A -26% to +18%), the fit bias is 7-15% across the 0.3-0.5 MeV drive band (`rabi_bias_kb3g_f7p3`), and resonance identification and Trotter/qDRIFT errors are not simulated.
+- The Rabi walls are depth-limited (qDRIFT samples run one at a time, F* 1.6-2.9, `f_star_per_end`); a drive that groups commuting samples would recover the factories.
 - The 2033 walls assume 12 commuting Trotter rotations in flight (`trotter_concurrency`, F* = 11.8); gate by gate the campaign floor is 135 d to 3.0 yr (`floor_wall_gate_by_gate_s`).
 - Dead and cancelling PREPARE trees would remove about 2.2e3 T from the 2028 Hadamard-test shot (42% of the insertion); the count is kept as priced.
 - Separating operator classes needs targets with different Z, N/Z and spin; a second target such as 48Ti in pf is not priced.

@@ -48,16 +48,18 @@ GROUPS = [
         "mass_number_he4"]),
     ("2033 deliverable: 27Al dipole factor, readout and T-depth", [
         "al27_charge_radius_fm", "z_al27", "mass_number_al27", "z_core_al27", "trotter_concurrency",
-        "sd_spin_expectation", "direct_readout_variance", "projection_success", "projection_success_band",
+        "sd_spin_expectation", "sd_element_expectation", "direct_readout_variance", "projection_success",
         "first_result_scans", "eps_first_generic", "gap_al27_usdb_mev", "gap_al27_usdb_same_j_mev"]),
     ("2033 0nubb validation stage: 48Ca/48Ti truncation ladder and resonant-drive readout", [
         "gap_0plus_f7p3_ca48_mev", "gap_0plus_f7p3_ti48_mev", "gap_0plus_f7p3p1_ca48_mev",
         "gap_0plus_f7p3p1_ti48_mev", "gap_0plus_pf_ca48_mev", "gap_0plus_pf_ti48_mev",
         "gap_0plus_ensdf_ca48_mev", "gap_0plus_ensdf_ti48_mev", "eps_simplified", "lam_over_m_f7p3",
-        "p_ref_f7p3", "lam_over_m_f7p3p1", "lam_over_m_pf", "rabi_drive_mev", "qdrift_eps", "rabi_shots"]),
+        "p_ref_f7p3", "lam_over_m_f7p3p1", "lam_over_m_pf", "p_ref_f7p3p1_record", "p_ref_pf_record",
+        "lam_over_m_toy_f7p3_record", "lam_over_m_toy_f7p3p1_record", "lam_over_m_toy_pf_record",
+        "rabi_bias_kb3g_f7p3", "rabi_drive_mev", "qdrift_eps", "rabi_shots"]),
     ("External comparison points and the utility box (not used in any T-count)", [
         "fq_light_nucleus_t", "ext_qubitization_sd_toffoli", "ext_qubitization_pb208_toffoli",
-        "mu2e_tpc_musd", "utility_fraction", "nme_spread"]),
+        "nme_spread"]),
 ]
 
 # Notes whose text in the code is mostly edit history; these one-line readings replace them in the
@@ -86,12 +88,11 @@ NOTE_OVERRIDES = {
     "gap_0plus_ensdf_ca48_mev": "48Ca first excited 0+ (4283 keV); comparison only, the priced gaps are KB3G",
     "gap_0plus_ensdf_ti48_mev": "48Ti first excited 0+ (2997 keV); comparison only, the priced gaps are KB3G",
     "gap_al27_usdb_same_j_mev": "COMPUTED: 5/2+_2 - 5/2+_1, USDB in sd (comparison only)",
-    "lam_over_m_f7p3": "lambda/|M| in f7/2 p3/2 from a schematic interaction; not derived here",
-    "lam_over_m_f7p3p1": "lambda/|M| in f7/2 p3/2 p1/2 (schematic interaction); enters the qDRIFT count",
-    "lam_over_m_pf": "lambda/|M| in full pf: Pauli-LCU lambda 208.4 over |M| ~ 0.29-0.35 (schematic interaction)",
-    "p_ref_f7p3": "closed-f7/2 reference overlap in f7/2 p3/2 (schematic interaction)",
-    "rabi_drive_mev": "theta|M|, the Rabi frequency of the resonant drive; kept <= 0.5 MeV for a <~6% Stark "
-                      "bias (schematic interaction)",
+    "lam_over_m_f7p3": "lambda/|M| in f7/2 p3/2, computed with KB3G ground states for the companion study's two-body operator (GXPF1A 145.7; the schematic toy gave 69.1)",
+    "lam_over_m_f7p3p1": "lambda/|M| in f7/2 p3/2 p1/2, KB3G (GXPF1A 355.3; toy 164); enters the qDRIFT count",
+    "lam_over_m_pf": "lambda/|M| in full pf, KB3G (lambda 208.36, |M| 0.148; GXPF1A 1650; the toy gave 600-720 from an extrapolated |M|)",
+    "p_ref_f7p3": "closed-f7/2 reference overlap |<ref|48Ca gs>|^2 in f7/2 p3/2, KB3G (GXPF1A 0.983; the toy gave 0.93)",
+    "rabi_drive_mev": "theta|M|, the Rabi frequency of the resonant drive; across the 0.3-0.5 MeV band the KB3G fit bias is 7-15% (rabi_bias_kb3g_f7p3)",
     "rabi_shots": "Rabi-readout shots including a 5-10-detuning resonance scan; 250 give ~5% on |M| at "
                   "t_pi/2 (schematic interaction)",
     "utility_fraction": "'about 60% of the $315.7M Mu2e total project cost ... The fraction is not derived.' "
