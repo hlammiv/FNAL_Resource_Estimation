@@ -249,8 +249,8 @@ def test_interim_variant(r28):
     i = r28.intermediates
     assert i["interim_qubits_per_site"] == 6
     assert i["interim_system_qubits"] == 96
-    assert i["interim_phase_register_bits"] == 13
-    assert i["interim_workspace"] == 17 == i["interim_workspace_from_prior"]
+    assert i["interim_phase_register_bits"] == 11       # eps_c 3e-3 since 2026-10-12 (13 at 1e-3)
+    assert i["interim_workspace"] == 17 and i["interim_workspace_from_prior"] == 19   # the record keeps 17; the prior-derived value follows the 11-bit register at eps_c 3e-3
     assert i["interim_lq"] == 113 and i["interim_lq_quoted"] == 115
     assert i["interim_lq_with_2028_ancilla"] == 143
     assert i["interim_two_register_lq_quoted"] == 190
@@ -355,21 +355,21 @@ def test_2033_mlae_schedule(r33):
     assert i["m_max"] == 33 == i["m_max_quoted"]                # 'm_max = floor(1e9/3.0e7) = 33'
     assert math.floor(1e9 / 2.9583e7) == 33
     assert i["mlae_depths"] == (33,)                           # R16: every circuit at depth 33
-    assert sci(i["per_bin_mlae"]) == ("7", 4)                 # '~7.0e4 base-circuit queries per kinematic bin'
+    assert sci(i["per_bin_mlae"]) == ("7.8", 3)               # '~8e3 queries per momentum bin' (eps_c 3e-3; was 7.0e4)
     _close(i["per_bin_mlae"], i["per_bin_mlae_quoted"], 0.02)
-    _close(i["per_bin_mlae"], 1e6 / (33 * i["flag_contrast_p0"] ** 2), 1e-12)   # B2 flag contrast
-    _close(i["per_bin_unit_contrast_r26"], 1e6 / 33, 1e-12)
+    _close(i["per_bin_mlae"], 1 / (9e-6 * 33 * i["flag_contrast_p0"] ** 2), 1e-12)   # B2 flag contrast, eps_c = 3e-3
+    _close(i["per_bin_unit_contrast_r26"], (1 / 9e-6) / 33, 1e-12)
     # ruling 2026-10-11 (batch 4 item 3b): 8 bins, the distinct |k_z| on the 15-site axis (was 100)
     assert i["n_bin"] == 8 == i["n_bin_distinct_kz"] == 15 // 2 + 1
-    assert sci(i["queries_total"]) == ("5.6", 5)              # box, Eq. (Nshot_baryo) and :63: 5.6e5
-    assert sci(i["mlae_circuits_per_bin"]) == ("2.1", 3)      # 918 circuits per bin at depth 33 (record)
-    assert sci(i["mlae_circuits_per_bin"] * i_bins(i)) == ("1.7", 4)   # 1.7e4 circuits per campaign point (2.1e5 at 100 bins)
+    assert sci(i["queries_total"]) == ("6.2", 4)              # box and :63: 6.2e4 (was 5.6e5 at eps_c = 1e-3)
+    assert sci(i["mlae_circuits_per_bin"]) == ("2.4", 2)      # 235 circuits per bin at depth 33 (was 2.1e3 at eps_c = 1e-3)
+    assert sci(i["mlae_circuits_per_bin"] * i_bins(i)) == ("1.9", 3)   # 1.9e3 circuits per campaign point (1.7e4 at eps_c = 1e-3)
     with pytest.raises(ValueError):
         m.Assumptions(n_bin=Stated(100, "test"))                 # more bins than the axis resolves
-    assert round(i["mlae_overhead_vs_heisenberg"]) == 70
-    _close(i["per_bin_shot_noise"], 1e6, 1e-9)
-    _close(i["per_bin_heisenberg"], 1e3, 1e-9)
-    _close(i["queries_heisenberg_total"], 8e3, 1e-9)                # eps_C^-1 N_bin, prose "~1e4" (1e5 at 100 bins)
+    assert round(i["mlae_overhead_vs_heisenberg"]) == 23    # was 70 at eps_c = 1e-3
+    _close(i["per_bin_shot_noise"], 1 / 9e-6, 1e-9)    # eps_c 3e-3 (1e6 at 1e-3)
+    _close(i["per_bin_heisenberg"], 1 / 3e-3, 1e-9)    # eps_c 3e-3 (1e3 at 1e-3)
+    _close(i["queries_heisenberg_total"], 8 / 3e-3, 1e-9)    # eps_c 3e-3 (8e3 at 1e-3)                # eps_C^-1 N_bin, prose "~1e4" (1e5 at 100 bins)
     _close(r33.shots[0], i["mlae_circuits_total"], 1e-9)          # G2: shots are depth-33 circuits
     _close(i["queries_total"] * i["flag_contrast_p0"] ** 2, i["queries_total_single_depth_r13"], 1e-12)
     # LIS sensitivity (not priced): 1.46x the queries
@@ -425,7 +425,7 @@ def test_branch_condition_and_author_prior(a, r33):
     assert a.c_est.prov is Provenance.STATED and a.c_est.lo == 1.0
     assert a.dn_branch_prior.prov is Provenance.STATED and f"{b:.3f}" == f"{a.dn_branch_prior.lo:.3f}"
     assert i["mlae_single_depth"] is True and i["mlae_estimator_constant"] == 1.0
-    assert round(i["dn_estimate_headroom"]) == 48              # 'sits 48 times inside it'
+    assert round(i["dn_estimate_headroom"], 1) == 1.4           # 'p0 A_R = 0.033 is 1.4 times below it' (comparator bin 0.05)
     # without the prior: 'below Delta theta_C' taken as a bound (0.1) is ~2x the branch condition, so LIS
     no_prior = replace(a, mlae_schedule=m.Cited("LIS", "test"), c_est=Stated(m.lis_query_constant(33), "test"))
     r01 = m.model(replace(no_prior, dn_state_independent_bound=Stated(0.1, "test", "test")), "2033").intermediates
@@ -436,16 +436,16 @@ def test_branch_condition_and_author_prior(a, r33):
     # a derived bound under 0.048 would also give constant one
     r1 = m.model(replace(no_prior, dn_state_independent_bound=Stated(0.01, "test", "test")), "2033").intermediates
     assert r1["mlae_single_depth"] is True and r1["mlae_estimator_constant"] == 1.0
-    _close(r1["per_bin_mlae"], 1e6 / (33 * i["flag_contrast_p0"] ** 2), 1e-12)
+    _close(r1["per_bin_mlae"], 1 / (9e-6 * 33 * i["flag_contrast_p0"] ** 2), 1e-12)
 
 
 def test_lis_resolves_the_branch(r33):
     i = r33.intermediates
     # LIS sensitivity (R15 record; 6.5x before the B2 flag contrast): the ladder resolves the branch with ~9.8x margin
-    assert round(i["mlae_lis_branch_margin_sigma"], 1) == 9.8
+    assert round(i["mlae_lis_branch_margin_sigma"], 1) == 3.3   # was 9.8 at eps_c = 1e-3
     # the binding step is the first one: m = 1 shots, next depth 3
     n = i["mlae_lis_circuits_per_depth_per_bin"]
-    assert round(n, -1) == 350
+    assert round(n) == 39      # was 350 at eps_c = 1e-3
     _close(i["mlae_lis_branch_margin_sigma"], (math.pi / 12) * 2 * math.sqrt(n), 1e-12)
 
 
@@ -459,7 +459,7 @@ def test_2033_wall_time_and_campaign(r33):
     _close(r33.wall_time_s[0], wall, 1e-12)
     _close(i["dn_arm_yr"] * 365.25 * 86400, wall, 1e-12)
     assert i["mlae_circuits_total"] * 1e-4 / wall < 1e-6        # 'the ~0.1 ms per-shot overhead is negligible'
-    assert round(i["dn_arm_yr"], 2) == 0.53                     # 0.53 yr per campaign Delta-n point (8 bins)
+    assert round(i["dn_arm_yr"], 2) == 0.06                     # 0.06 yr per campaign Delta-n point (8 bins; was 0.53)
     # r23 single-time nucleation record (no longer printed): 1e4 x 29.6 s = 3.4 d
     _close(i["nucleation_point_days_single_time_r23"] * 86400, 1e4 * (i["base_circuit_t"] * 1e-6 + 1e-4), 1e-12)
     # R25 slope at 33 and 100 steps, shots from slope_shots at the decrement the box's 1e4 single-time count fixes
@@ -473,44 +473,44 @@ def test_2033_wall_time_and_campaign(r33):
            i["nucleation_shots_per_time"] * ((i["nucleation_t_late_own_budget"] + i["nucleation_t_early"]) * 1e-6 + 2e-4), 1e-12)
     assert round(i["nucleation_point_days"]) == 12              # '~12 days per nucleation point' (T_c)
     _close(i["dn_campaign_serial_yr"], 10 * i["dn_arm_yr"], 1e-12)
-    assert round(i["dn_campaign_serial_yr"], 1) == 5.3          # the ten Delta-n points at 8 bins
+    assert round(i["dn_campaign_serial_yr"], 1) == 0.6          # the ten Delta-n points at 8 bins (was 5.3)
     _close(i["nucleation_scan_serial_yr"], 100 * i["nucleation_point_days"] / 365.25, 1e-12)
     assert round(i["nucleation_scan_serial_yr"], 1) == 3.3      # 'the nucleation scan ~3.3 yr'
     _close(i["campaign_serial_yr"], i["dn_campaign_serial_yr"] + i["nucleation_scan_serial_yr"], 1e-12)
-    assert round(i["campaign_serial_yr"], 1) == 8.6             # box and :65: 'campaign >~8.6 yr'
+    assert round(i["campaign_serial_yr"], 1) == 3.9             # box and :65: 'campaign >~3.9 yr' (was 8.6)
     assert i["horizon_yr"] == 5
     _close(i["campaign_over_horizon"], i["campaign_serial_yr"] / 5, 1e-12)
-    assert round(i["campaign_over_horizon"], 1) == 1.7          # '1.7 times the five-year window'
+    assert round(i["campaign_over_horizon"], 1) == 0.8          # inside the five-year window (was 1.7 times)
     # what fits in 5 years on one machine: the scan, the first result and three campaign Delta-n points
-    assert i["dn_points_in_horizon"] == 3
+    assert i["dn_points_in_horizon"] == 10     # was 3 at eps_c = 1e-3
     _close(i["fits_in_horizon_yr"], i["nucleation_scan_serial_yr"] + 2 * i["first_dn_point_days"] / 365.25, 1e-12)
-    assert round(i["fits_in_horizon_yr"], 1) == 4.6             # box: 'nucleation scan and first result >~4.6 yr'
-    assert i["nucleation_scan_serial_yr"] + 10 * i["dn_arm_yr"] > 5
+    assert round(i["fits_in_horizon_yr"], 1) == 3.3             # box: 'nucleation scan and first result >~3.3 yr' (was 4.6)
+    assert i["nucleation_scan_serial_yr"] + 10 * i["dn_arm_yr"] < 5      # inside the window since 2026-10-12
     # LIS sensitivity (not printed): 0.78 yr per point, 11 yr serial, 2.2x the horizon
-    assert round(i["mlae_lis_dn_arm_yr"], 2) == 0.78
-    assert round(i["mlae_lis_campaign_serial_yr"]) == 11
-    assert round(i["mlae_lis_campaign_over_horizon"], 1) == 2.2
+    assert round(i["mlae_lis_dn_arm_yr"], 2) == 0.09
+    assert round(i["mlae_lis_campaign_serial_yr"], 1) == 4.1
+    assert round(i["mlae_lis_campaign_over_horizon"], 1) == 0.8   # was 2.2 at eps_c = 1e-3
 
 
 def test_2033_first_result_tier(a, r33):
     # R1/R2: 3-sigma detection of Delta n at T_c and 0.9 T_c, plus the nucleation slope at both temperatures
     i = r33.intermediates
     assert i["first_points"] == 2 and i["first_detection_sigma"] == 3
-    assert i["s_int_taken"] == 1e-3 and a.s_int.prov is Provenance.ASSUMED      # not computed (NEEDS_AUTHOR)
+    assert i["s_int_taken"] == 1.33e-2 and a.s_int.prov is Provenance.ASSUMED   # computed 2026-10-12 (sint/scatter.py)
     # B2: label-controlled packets lengthen A, so the first-result circuits run at depth 31; queries x 1/p0^2
     assert i["first_m_top"] == 31 and sci(i["label_packets_t"]) == ("1.7", 6)
-    _close(i["first_queries_per_point"], 9 / (1e-6 * 31 * i["flag_contrast_p0"] ** 2), 1e-12)
-    assert sci(i["first_queries_per_point"]) == ("6.7", 5)      # '6.7e5 queries'
-    assert sci(i["first_circuits_per_point"]) == ("2.2", 4)
-    assert round(i["first_dn_point_days"], -1) == 250           # '~250 days'
+    _close(i["first_queries_per_point"], 9 / (1.33e-2 ** 2 * 31 * i["flag_contrast_p0"] ** 2), 1e-12)
+    assert sci(i["first_queries_per_point"]) == ("3.8", 3)      # '3.8e3 queries' (was 6.7e5)
+    assert sci(i["first_circuits_per_point"]) == ("1.2", 2)      # was 2.2e4
+    assert round(i["first_dn_point_days"], 1) == 1.4            # 1.4 days (was ~250)
     # the 0.9 T_c nucleation point costs twice the T_c one (slab saddle, decrement x 0.50): 12 + 24 d
     _close(i["first_result_days"], 2 * i["first_dn_point_days"] + i["nucleation_point_days"]
            + i["nucleation_point_days_0p9tc"], 1e-12)
     assert round(i["nucleation_point_days_0p9tc"]) == 24
-    assert round(i["first_result_yr"], 1) == 1.4                # '>~1.4 yr' (528 d)
+    assert round(i["first_result_days"]) == 39                  # '>~39 d' (was 1.4 yr, 528 d)
     _close(i["wall_first_result_s"], i["first_result_days"] * 86400, 1e-12)
     # the Delta-n wall scales as (1e-3 / S_int)^2
-    half = m.model(replace(a, s_int=Stated(5e-4, "test")), "2033").intermediates
+    half = m.model(replace(a, s_int=Stated(6.65e-3, "test")), "2033").intermediates
     _close(half["first_dn_point_days"], 4 * i["first_dn_point_days"], 1e-6)
     assert i["first_label_register"] == 7 and i["first_workspace_left"] == 3
 
@@ -524,9 +524,9 @@ def test_2033_depth_exports(r33):
     _close(i["wall_campaign_s"], i["campaign_serial_yr"] * 365.25 * 86400, 1e-12)
     _close(i["campaign_serial_yr_check"][0], i["campaign_serial_yr"], 1e-4)   # full-circuit equivalents agree
     _close(i["floor_wall_s"][1], i["campaign_shots_full_equiv"] * 2.87e6 * 1e-5, 1e-12)
-    assert round(i["factories_for_1yr"][0]) == 86 > i["f_star"][1]           # a 1-yr campaign is out of reach
+    assert round(i["factories_for_1yr"][0]) == 39 < i["f_star"][1]           # a 1-yr campaign is within the depth-allowed factories since 2026-10-12 (was 86 > F*)
     # a campaign Delta-n point at 8 bins: 5.3 factories for a year, depth floor 0.52 yr at A = 10
-    assert round(i["dn_point_factories_for_1yr"][0], 1) == 5.3
+    assert round(i["dn_point_factories_for_1yr"][0], 1) == 0.6
     _close(i["dn_point_floor_wall_s"][1],
            i["mlae_circuits_total"] * i["deepest_mlae_circuit_t"] / i["t_per_shot"][0] * 2.87e6 * 1e-5, 1e-9)
 
@@ -539,7 +539,7 @@ def test_2033_first_result_depth(r33):
     _close(9.6e6, 2.87e6 * 3480 / 1044, 0.01)                             # ceil(10440/3) / ceil(10440/10)
     assert round(i["first_f_star"][1]) == 34                              # 'F* ~ 34'
     assert round(i["first_f_star"][0], 1) == 3.1 and i["first_baseline_ok"] == (False, True)
-    assert round(i["first_result_yr_unborrowed"], 1) == 4.5              # 'about three times longer' without borrowing
+    assert round(i["first_result_yr_unborrowed"] / i["first_result_yr"], 2) == 1.16   # 'about 15% longer' without borrowing (was ~3x)
     import pathlib
 
 
@@ -720,7 +720,7 @@ def test_b3_preparation_sensitivity(a, r33):
     _close(s0["first_dn_point_days"], i["first_dn_point_days"], 1e-12)
     _close(s0["deepest_t"], r33.hard_ops[0], 1e-12)
     assert (i["prep_r1_m_max"], i["prep_r1_m_top"]) == (16, 15)
-    assert round(i["prep_r1_dn_point_yr"], 1) == 2.3           # 29 yr at 100 bins; 8 bins since 2026-10-11
+    assert round(i["prep_r1_dn_point_yr"], 2) == 0.26          # 8 bins at eps_c 3e-3 (was 2.3)
     assert i["prep_r02_m_top"] == 27
     # walls grow roughly as (1 + r)^2
     assert 3.5 < i["prep_r1_dn_wall_ratio"] < 5
@@ -764,18 +764,18 @@ def test_g4_fault_bias_model(a, r33):
     _close(i["fault_prob_per_circuit"], 1 - math.exp(-0.1), 1e-12)
     _close(i["fault_bias_worst_A_R"], i["fault_prob_per_circuit"] / (33 * i["flag_contrast_p0"]), 1e-12)
     assert sci(i["fault_bias_worst_A_R"], 0) == ("4", -3)
-    _close(i["fault_prob_for_bias_below_first_sigma"], 31 * i["flag_contrast_p0"] * 1e-3 / 3, 1e-12)
-    assert sci(i["epsilon_l_bias_first"], 0) == ("7", -12)
-    assert sci(i["epsilon_l_bias_bin"], 0) == ("2", -11)
+    _close(i["fault_prob_for_bias_below_first_sigma"], 31 * i["flag_contrast_p0"] * 1.33e-2 / 3, 1e-12)
+    assert sci(i["epsilon_l_bias_first"], 0) == ("1", -10)      # bias budget at S_int 1.33e-2 (was 7e-12 at 1e-3)
+    assert sci(i["epsilon_l_bias_bin"], 0) == ("7", -11)      # eps_c 3e-3 (2e-11 at 1e-3)
     _close(i["idle_qubit_cycles_deepest"], 1000 * r33.hard_ops[0] * 1e-6 / 1e-5, 1e-12)
     assert sci(i["idle_qubit_cycles_deepest"]) == ("9.9", 10)
     assert round(i["idle_faults_at_box_epsilon_l"]) == 10
     assert sci(i["epsilon_l_with_idle"], 0) == ("1", -12)
-    assert sci(i["epsilon_l_with_idle_first_bias"], 0) == ("7", -14)
+    assert sci(i["epsilon_l_with_idle_first_bias"], 0) == ("1", -12)   # S_int 1.33e-2 (7e-14 at 1e-3)
     assert i["null_control_query_factor"] == 4.0
     # null route costed (verifier 2026-10-05): first result ~5.5 yr, ~8.7 yr with the scan, past the horizon
-    assert round(i["first_result_null_yr"], 1) == 5.5 and round(i["scan_plus_first_null_yr"], 1) == 8.7
-    assert i["scan_plus_first_null_yr"] > i["horizon_yr"]
+    assert round(i["first_result_null_yr"], 2) == 0.13 and round(i["scan_plus_first_null_yr"], 1) == 3.3
+    assert i["scan_plus_first_null_yr"] < i["horizon_yr"]
     tex = TEX.read_text()
     assert "$\\lesssim 7\\times 10^{-14}$ per location" in tex and "7\\times 10^{-12}" not in tex
     box = tex.split("2033 target: wall scattering")[1].split("end{benchmarkbox}")[0]
@@ -856,7 +856,7 @@ def test_bath_mixing_band_is_words_only(a, r33):
     s_lo, s_hi = i["nucleation_scan_yr_with_prep_band"]
     assert round(s_lo) == 78 and round(s_hi, -1) == 500          # omission sentence: '78-500 yr'
     f_lo, f_hi = i["first_result_yr_with_prep_band"]
-    assert round(f_lo, 1) == 3.7 and round(f_hi) == 16
+    assert round(f_lo, 1) == 2.4 and round(f_hi) == 15
     # the printed walls do not carry the preparation
     assert r33.hard_ops[0] < 1e9 and round(i["nucleation_point_days"]) == 12
     with pytest.raises(ValueError):
@@ -872,7 +872,7 @@ def test_ruling_2026_10_11_text_hooks():
     assert r"$1.8\times 10^{4}$ at each of two times" in box28 and r"$\lesssim 4\times 10^{-7}$" in box28
     assert r"$\sim 2.1$ h per parameter point ($6.8$ h" in box28
     assert "the 2028 benchmark takes $20$ steps" in tex
-    assert r"$5.6\times 10^{5}$ over the $8$ bins" in tex and r"in $8$ bins at $10$ points" in tex
-    assert r"campaign ${\gtrsim}\,8.6$ yr, $1.7$ times" in tex and "$70$ yr" not in tex and "$14$ times" not in tex
+    assert r"$6.2\times 10^{4}$ over the $8$ bins" in tex and r"in $8$ bins at $10$ points" in tex
+    assert r"campaign ${\gtrsim}\,3.9$ yr, inside the five-year window" in tex and "$70$ yr" not in tex and "$14$ times" not in tex
     assert r"\sigma\approx 1.3\,m_\phi^2" in tex and "stays finite at $T_c$" in tex
     assert "$3$--$20$ sweeps" in tex and "the mixing time is unknown" not in tex

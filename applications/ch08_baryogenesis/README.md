@@ -34,7 +34,7 @@ Test status in this repository: 48 passed, 4 skipped. The four skipped tests als
 
 Output of `dump_assumptions.py`, generated from the live `Assumptions` dataclass (lines 243-460). The model has a single dataclass. The rows are grouped by its section comments, and each row states which instance it serves. The provenance tags are the code's own. **Cited** means a published source or report-wide ruling gives the value. **Assumed** means a working assumption the model declares. **Stated-not-derived** means a chapter value taken without a derivation; many of these are printed values the tests compare against the model. Source tags of the form `app05:NN` name the chapter; their line numbers do not match the current file, so find the passage by the quoted phrase. Some quoted phrases (for example in `c_t_2028_quoted`, `eps_l_2033_base_quoted`, `lq_two_register_quoted`, `shots_2028`, `t_gate_s`) are not in the current chapter text; those values are model inputs the chapter uses without printing them.
 
-90 fields: Cited 9, Assumed 25, Stated-not-derived 56
+92 fields: Cited 9, Assumed 27, Stated-not-derived 56
 
 **Lattice and registers**
 
@@ -98,13 +98,14 @@ Output of `dump_assumptions.py`, generated from the live `Assumptions` dataclass
 | `decrement_ref_time_2028` | 1.2 | Assumed | derived here 2026-10-11 | time (1/m_phi) at which shots_2028 set the decrement; in the exponential regime the decrement grows linearly with t |
 | `n_rare_range` | (1000, 10000) | Stated-not-derived | app05:83 | N_rare ~ 1e3-1e4 in Eq. Nshot_baryo |
 | `shots_nucleation_2033` | 10000 | Stated-not-derived | app05:169 | nucleation arm '1e4 shots' per grid point |
-| `eps_c` | 0.001 | Stated-not-derived | app05:88,160 | reflection asymmetry ~1e-3 at Delta theta_C = 0.1 |
+| `eps_c` | 0.003 | Stated-not-derived | app05:63,115 | target precision on the per-bin asymmetry: a tenth of the comparator's typical bin (\|A_R\| 0.03-0.05; author decision 2026-10-12, option 2; was 1e-3, the size the asymmetry itself was then estimated at) |
 | `n_bin` | 8 | Stated-not-derived | app05:63,115 | 'the 8 bins the 15-site axis resolves': floor(15/2) + 1 distinct \|k_z\| (ruling 2026-10-11, batch 4 item 3b; was 'N_bin ~ 1e2', which the lattice cannot resolve) |
-| `mlae_queries_per_bin_quoted` | 70000 | Stated-not-derived | app05:83 | '~7.0e4 base-circuit queries per kinematic bin' (C_est = 1, x 1/p0^2 flag contrast) |
-| `c_est` | 1 | Stated-not-derived | app05:88 | author-adopted branch prior \|A_R\| < sin(pi/66) = 0.048: every circuit at m_max, Cramer-Rao constant one (Suzuki Fisher_final) |
-| `dn_branch_prior` | 0.048 | Stated-not-derived | app05:88 | 'We adopt this as a prior on \|A_R\|': \|A_R\| < sin(pi/66) (author choice) |
+| `mlae_queries_per_bin_quoted` | 7800 | Stated-not-derived | app05:63 | '~8e3 queries per momentum bin' at eps_c = 3e-3 (C_est = 1, x 1/p0^2 flag contrast; 2026-10-12, was '~7.0e4' at 1e-3) |
+| `c_est` | 1 | Stated-not-derived | app05:63 | author-adopted branch prior \|p0 A_R\| < sin(pi/66) = 0.048: every circuit at m_max, Cramer-Rao constant one (Suzuki Fisher_final) |
+| `dn_branch_prior` | 0.048 | Stated-not-derived | app05:63 | 'which we adopt as a prior rather than derive': \|p0 A_R\| < sin(pi/66) (author choice); the comparator's largest bin gives p0 A_R = 0.033 (2026-10-12) |
 | `mlae_schedule` | single | Cited | arxiv_1904_10246 Manuscript_v2.tex:238 | all circuits at m_max; LIS m = 1, 3, ..., m_max (:268, :271) kept as sensitivity |
-| `dn_estimate` | 0.001 | Stated-not-derived | app05:88 | '\|R_p\|^2 - \|R_pbar\|^2 ~ ... ~ 1e-3 at Delta theta_C = 0.1' (an estimate, not a bound) |
+| `dn_estimate` | 0.05 | Assumed | sint/sint_results.json | COMPUTED (2026-10-12, sint/scatter.py): the largest per-bin \|A_R\| of the chapter's free-fermion comparator (two Wilson flavours, a m_f = 0.5, static tanh wall \|y\| phi = 0.5 of width 1/m_phi, Delta theta_C = 0.1) over the 8 x 8 incident (k_z, k_y) bins; it changes sign across the axis (+0.031 to -0.038 at k_y = 0). The 1+1D estimate of arxiv_2412_10365 gave ~1e-3 |
+| `dn_estimate_1p1d_record` | 0.001 | Stated-not-derived | app05:61 | '~1e-3 at Delta theta_C = 0.1' (arxiv_2412_10365), the printed estimate until 2026-10-12 (record) |
 | `dn_state_independent_bound` | 1 | Assumed | derived here | no derived bound on \|Delta\| follows from the chapter's inputs (the 'below Delta theta_C' scaling, taken as a bound, gives 0.1 > 0.048); recorded only: the single depth rests on the author prior (c_est), not on a derived bound |
 | `m_max_quoted` | 33 | Stated-not-derived | app05:88,166 | 'm_max = floor(1e9/3.0e7) = 33' (fixed point) |
 | `envelope_2033` | 1000000000 | Cited | DOE RFI 2026 | 1e9 hard-op envelope, app05:88,91,166 |
@@ -134,7 +135,8 @@ Output of `dump_assumptions.py`, generated from the live `Assumptions` dataclass
 | `slope_early_fraction_2033` | 0.3333333333 | Assumed | shot_audit.json ch8 lever (5) | 2033 early time t/3: 33 of 100 steps; a long lever arm is ~5x cheaper than t/1.5 |
 | `detection_sigma` | 3 | Assumed | H. Lamm 2026-10-02 | the 2033 first result is a 3-sigma detection of Delta n |
 | `n_points_first` | 2 | Stated-not-derived | app05:143 | first result at T = T_c and 0.9 T_c (the box's two temperatures) |
-| `s_int` | 0.001 | Assumed | NEEDS_AUTHOR | f_eq-weighted integrated asymmetry; NOT computed; taken at the per-k estimate (app05:88); the first-result Delta-n wall scales as (1e-3/S_int)^2 |
+| `s_int` | 0.0133 | Assumed | sint/sint_results.json | COMPUTED (2026-10-12, sint/scatter.py): f_eq-weighted (Fermi-Dirac at a T = 0.5) mean of A_R over the incident bins for the comparator at \|y\| phi = 0.5, width 2a, Delta theta_C = 0.1; 1.5e-2 at 0.9 T_c; 1.2-1.7e-2 over wall amplitudes 0.3-1.0 and widths 1-2 a; linear in Delta theta_C, zero at 0; the C' relation R(hole_L) = R(p_R) holds to 1e-4. Converged in chain length and packet width. The first-result Delta-n wall scales as S_int^-2 |
+| `s_int_band` | (0.012, 0.017) | Assumed | sint/sint_results.json | COMPUTED record: S_int over the comparator's wall amplitudes 0.3-1.0 and widths 1-2 a at T_c and 0.9 T_c |
 | `label_register_first` | 7 | Assumed | shot_audit.json ch8 lever (1) | packet-label register of the f_eq-weighted packet superposition, taken from the 10-qubit workspace |
 | `t_depth_2028` | (5400, 7000) | Assumed | factory.json ch08 run 1 | T-depth per 12-step shot, banked: ceil(1980/29) x 21.38 + ... per step (A = 29-30 RUS ancillas) to the serial structural schedule, x 12 / 3.3; the model scales it by n_trot_2028 / t_depth_2028_ref_steps |
 | `t_depth_2028_ref_steps` | 12 | Assumed | factory.json ch08 run 1 | step count of the factory.json run behind t_depth_2028; depth is proportional to the step count |
@@ -276,17 +278,17 @@ A second check covers the background. `c_prime_residual` (lines 1093-1102) confi
 
 With every circuit at depth 33 the estimator constant is 1. Writing a = (1 + Δ)/2 with Δ = p₀A_R, this is the Cramér-Rao bound from Suzuki's Fisher information m²/(1 − Δ²) per circuit, and it requires |Δ| < sin(π/66) = 0.0476 (`balanced_branch_bound`, line 836; intermediate `mlae_branch_bound_needed`). The authors adopt |A_R| < 0.048, which implies it, as a prior; the ~10⁻³ estimate sits 47.6 times inside it (`dn_estimate_headroom`). The model checks that no derived bound supplies it (`mlae_derived_bound_ok = False`, `mlae_author_prior_ok = True`; `test_branch_condition_and_author_prior`). Then:
 
-- queries per bin = 1/(p₀² ε_C² m) = 1/(0.6584² × 10⁻⁶ × 33) = **6.99e4**, printed ~7.0e4;
-- 8 bins (`n_bin`, the distinct |k_z| on the 15-site axis, floor(15/2) + 1 = 8, checked in `__post_init__`; ruling 2026-10-11, batch 4 item 3b, was 100) give 5.59e5 queries in **1.695e4 circuits** of depth 33 (`Result.shots`);
-- this is 69.9 times the Heisenberg count ε_C⁻¹ N_bin = 8e3 (`test_2033_mlae_schedule`).
+- queries per bin = 1/(p₀² ε_C² m) = 1/(0.6584² × 9×10⁻⁶ × 33) = **7.77e3**, printed ~8e3 (ε_C = 3e-3 since 2026-10-12, a tenth of the comparator's typical bin; at the earlier 1e-3 it was 6.99e4);
+- 8 bins (`n_bin`, the distinct |k_z| on the 15-site axis, floor(15/2) + 1 = 8, checked in `__post_init__`; ruling 2026-10-11, batch 4 item 3b, was 100) give 6.21e4 queries in **1.88e3 circuits** of depth 33 (`Result.shots`);
+- this is 23.3 times the Heisenberg count ε_C⁻¹ N_bin = 2.67e3 (`test_2033_mlae_schedule`).
 
 **Walls.** All walls are serial on one machine. Each circuit costs T × 1 µs + 0.1 ms; `circuit_s` is at lines 986-988.
 
 - One depth-33 circuit takes 993 s (~17 min; `deepest_circuit_s`; with the 2028 `shot_s` pinned by `test_maximum_circuit_time`), and one application of A takes 30.06 s (`base_circuit_s`).
-- One campaign Δn point is 1.695e4 × 993 s = **0.533 yr** (`dn_arm_yr`; `Result.wall_time_s` = 1.68e7 s).
+- One campaign Δn point is 1.88e3 × 993 s = **0.059 yr** (`dn_arm_yr`; `Result.wall_time_s` = 1.87e6 s).
 - The nucleation circuits are single circuits, so each is synthesized to its own budget. The shots follow `slope_shots` at the decrement the box's 1e4 single-time count fixes, δ(10/m_φ) = 2.5e-3 (`nucleation_decrement_late`): 2.96e4 at 33 steps (8.446e6 T) and 2.96e4 at 100 steps (2.656e7 T), printed 3e4, which comes to **12.0 d** at T_c. The 100-point scan takes 3.29 yr.
 - **Finite-volume saddle** (`slab_saddle`; ruling 2026-10-11, printed as one sentence). On the 15×8 cylinder no critical bubble fits: a thin-wall bubble of tension s = σ/m_φ² against ΔF = ℓ m_φ³ (1 − T/T_c) has a minimum S/T = 4πs²/ℓ = 21.9, above the wall pair's 2sL_⊥ = 10.6, so the saddle is a pair of walls wrapping the 8-site direction and Γ/V is finite at T_c. σ = 1.32 m_φ² (`sigma_over_mphi2`, with `latent_heat_ell` = 1) reproduces the assumed decrement (2.52e-3 against 2.5e-3, `slab_reproduces_assumed_decrement`); in thin-wall φ⁴ it means λ/m_φ = 0.25. At 0.9 T_c the action over T grows to 11.3 and the decrement halves (`decrement_ratio_0p9tc` 0.50), so that nucleation point costs 2 × the shots, **24.1 d** (`nucleation_point_days_0p9tc`).
-- The campaign is 10 × 0.533 + 3.29 = **8.62 yr**, 1.72 times the 5-year horizon (`wall_campaign_s` 2.72e8 s).
+- The campaign is 10 × 0.059 + 3.29 = **3.88 yr**, 0.78 of the 5-year horizon (`wall_campaign_s` 1.22e8 s; 8.62 yr at ε_C = 1e-3).
 - The first result runs at depth 31, not 33. MLAE depths are odd (`dn_schedule` returns the largest odd depth that fits as `m_top`). The 7-qubit label register drives 2⁷ label-controlled packets, which add 1.657e6 T per application. With the label packets t_A = 3.169e7, so depth 33 no longer fits in 10⁹ and the deepest odd depth that fits is 31 (`first_m_top`). Here S_int is the f_eq-weighted integral of A_R in the chapter's Eq. (deltan), taken at 10⁻³ (`s_int`, not computed). Each temperature then needs 9/(p₀² S_int² × 31) = 6.70e5 queries in 2.16e4 circuits, or 246.0 d. The first result is 2 × 246.0 + 12.0 + 24.1 d = 528 d = **1.45 yr** (`wall_first_result_s` 4.56e7 s; the 0.9 T_c nucleation point carries the slab factor 2). The nucleation scan plus the first result fits in **4.63 yr** (the two first-result nucleation points are already in the scan) (`test_2033_wall_time_and_campaign`, `test_2033_first_result_tier`).
 
 **Depth and factories.** The T-depth per evolution, 7.2e5 to 2.87e6, is an Assumed input from the factory analysis. The low end is A = 40, which borrows the 30 bath ancillas as rotation workspace; no Δn circuit needs the bath. The high end is A = 10, the workspace alone. This gives F* = 10.3 to 41.1, so the ten-factory baseline holds at both ends. A 1-year campaign would need about 86 factories (`factories_for_1yr`; 700 at 100 bins).
@@ -336,9 +338,9 @@ Table 1.1 of the paper prints the two headline rows as "Scalar bubble, 6²; 174 
 | 2033 T-depth 0.72-2.9e6, F* 10-41 | 10.3-41.1 | `test_2033_depth_exports` |
 | 2033 ε_l ≲ 1e-10 | 1.01e-10 | `test_epsilon_l_follows_r3` |
 | flag contrast p₀ = 0.66 | 0.6584 | `test_b2_flag_contrast_and_c_prime` |
-| Δn shots: 6.7e5 queries at depth 31 (first result); 5.6e5 over 8 bins in 1.7e4 circuits at depth 33 (campaign) | 6.697e5; 5.592e5; 1.695e4 | `test_2033_first_result_tier`, `test_2033_mlae_schedule` |
+| Δn shots: 3.8e3 queries at depth 31 (first result); 6.2e4 over 8 bins in 1.9e3 circuits at depth 33 (campaign) | 3.786e3; 6.214e4; 1.883e3 | `test_2033_first_result_tier`, `test_2033_mlae_schedule` |
 | nucleation 3e4 shots at each of two times; decrement 2.5e-3 at 10/m_φ from a wall-pair saddle with σ ≈ 1.3 m_φ²; ×2 at 0.9 T_c | 2.963e4 at 33 and 100 steps; `slab_decrement_tc` 2.52e-3; 24.1 d | `test_2033_wall_time_and_campaign` |
-| walls: first result ≳1.4 yr; campaign ≳8.6 yr, 1.7× the horizon; scan + first result ≳4.6 yr | 1.446; 8.62, 1.72; 4.63 yr | `test_2033_first_result_tier`, `test_2033_wall_time_and_campaign` |
+| walls: first result ≳39 d; campaign ≳3.9 yr, inside the horizon; scan + first result ≳3.3 yr | 38.9 d; 3.88, 0.78; 3.29 yr | `test_2033_first_result_tier`, `test_2033_wall_time_and_campaign` |
 | any ramp r > 0.007 forces a shallower schedule | 0.007 | `test_2033_m_max_is_the_fixed_point` |
 | bath sweep ≳1.3e8 T; mixing 3-20 sweeps (words): nucleation shot 0.4-2.7e9 T, scan 78-500 yr | 1.328e8; `bath_mixing_sensitivity` | `test_b5_filtered_bath_estimate`, `test_bath_mixing_band_is_words_only` |
 | ε_l ≲ 1e-12 per location with idles; ≲ 7e-14 to keep the fault bias below the first-result error | 9.97e-13; 6.87e-14 | `test_g4_fault_bias_model` |
@@ -368,9 +370,9 @@ Taken from `docs/OPEN_ITEMS.md` and the chapter's algorithm-development gap. Non
 - **The flag contrast depends on a fermion mass the chapter does not fix.** p₀ = 0.66 at a m_f = 0.5 (taken equal to a m_φ) and 0.57-0.77 for a m_f = 0.25-1. On the wall background p₀ = 0.60-0.65, so the query factor 2.3 is a lower bound and can reach 2.75.
 - **Δn is flavor-resolved by necessity.** An exact symmetry (charge conjugation with the flavor and spinor swap, `c_prime_residual` = 0) makes the flavor-summed asymmetry vanish identically.
 - **The bath is estimated, not priced.** One unit of Lindblad time is about 5.5e5 T (`filtered_jump_t`). One application of each of the 240 scalar jumps is 1.3e8 T, five nucleation circuits, and 7.3 such sweeps fit in 10⁹. A dynamic-exponent heuristic puts the sweeps needed to mix at 3-20 (`bath_mixing_sweeps`, printed as words); at any value in the band the preparation dominates the nucleation shot (section 4.6). The dissipator rate during evolution is open. The Gibbs preparation and the basin projector are carried at 0 T.
-- **S_int is not computed.** The first result takes S_int = 10⁻³, the per-k estimate. Its Δn wall scales as (10⁻³/S_int)².
-- **The Δn readout rests on an adopted prior.** The single-depth schedule (estimator constant 1) uses the adopted prior |A_R| < 0.048, and no bound is derived from the chapter's inputs. Without the prior, Suzuki's LIS schedule costs 1.46 times the queries.
-- **Fault bias.** At the 0.1-fault budget the deepest circuit has p_f = 0.095, which can shift A_R by up to 4.4e-3, above the per-bin 10⁻³. Keeping the bias below the first-result error needs ε_l ≲ 6.9e-12 per T, or ≲ 6.9e-14 per location once 9.9e10 idle qubit-cycles are counted. A null circuit (the flavor-R antiparticle branch, a = ½ exactly) quadruples the first-result Δn queries: 5.5 yr for the first result, 8.7 yr with the scan. The fault budget counts T gates only; idle, Clifford and measurement faults are outside it.
+- **S_int comes from the free-fermion comparator.** `sint/scatter.py` (2026-10-12) gives S_int = 1.33e-2 at T_c (1.5e-2 at 0.9 T_c; 1.2-1.7e-2 over wall amplitudes 0.3-1 and widths 1-2 a) and per-bin |A_R| up to 0.05 with sign changes, for a static prescribed tanh wall in the free theory; the interacting, plasma-dressed wall is what the calculation determines. The first-result Δn wall scales as S_int⁻². The 1+1D estimate 10⁻³ is kept as a record (`dn_estimate_1p1d_record`).
+- **The Δn readout rests on an adopted prior.** The single-depth schedule (estimator constant 1) uses the adopted prior |p₀A_R| < 0.048, and no bound is derived from the chapter's inputs; the comparator's largest bin gives p₀A_R = 0.033, headroom 1.4. Without the prior, Suzuki's LIS schedule costs 1.46 times the queries.
+- **Fault bias.** At the 0.1-fault budget the deepest circuit has p_f = 0.095, which can shift A_R by up to 4.4e-3, above the per-bin 3×10⁻³. Keeping the bias below the first-result error needs ε_l ≲ 1e-10 per T, or ≲ 1e-12 per location once 9.9e10 idle qubit-cycles are counted. A null circuit (the flavor-R antiparticle branch, a = ½ exactly) quadruples the first-result Δn queries: 0.13 yr for the first result, 8.7 yr with the scan. The fault budget counts T gates only; idle, Clifford and measurement faults are outside it.
 - **Physics of the schedule.**
   - The 2028 slope now uses 1.0 and 2.0/m_φ (ruling 2026-10-11), both in the chapter's exponential window; the expected decrement there (5e-3 at 1.2/m_φ, from the r23 count) is still the chapter author's to confirm.
   - The decrement 2.5e-3 at T_c rests on the stated assumption σ = 1.32 m_φ² for the wall-pair saddle (`slab_saddle`); Γ/V is finite at T_c on 15×8 because no critical bubble fits. The 0.9 T_c point carries the factor 2 that follows.

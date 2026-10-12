@@ -310,17 +310,26 @@ class Assumptions:
                                               "regime the decrement grows linearly with t", "derived here 2026-10-11")
     n_rare_range: Tagged = Stated((1e3, 1e4), f"{TEX}:83", "N_rare ~ 1e3-1e4 in Eq. Nshot_baryo")
     shots_nucleation_2033: Tagged = Stated(1e4, f"{TEX}:169", "nucleation arm '1e4 shots' per grid point")
-    eps_c: Tagged = Stated(1e-3, f"{TEX}:88,160", "reflection asymmetry ~1e-3 at Delta theta_C = 0.1")
+    eps_c: Tagged = Stated(3e-3, f"{TEX}:63,115", "target precision on the per-bin asymmetry: a tenth of the comparator's "
+                                                   "typical bin (|A_R| 0.03-0.05; author decision 2026-10-12, option 2; was "
+                                                   "1e-3, the size the asymmetry itself was then estimated at)")
     n_bin: Tagged = Stated(8, f"{TEX}:63,115", "'the 8 bins the 15-site axis resolves': floor(15/2) + 1 distinct |k_z| "
                            "(ruling 2026-10-11, batch 4 item 3b; was 'N_bin ~ 1e2', which the lattice cannot resolve)")
-    mlae_queries_per_bin_quoted: Tagged = Stated(7.0e4, f"{TEX}:83", "'~7.0e4 base-circuit queries per kinematic bin' (C_est = 1, "
-                                                 "x 1/p0^2 flag contrast)")
-    c_est: Tagged = Stated(1.0, f"{TEX}:88", "author-adopted branch prior |A_R| < sin(pi/66) = 0.048: "
+    mlae_queries_per_bin_quoted: Tagged = Stated(7.8e3, f"{TEX}:63", "'~8e3 queries per momentum bin' at eps_c = 3e-3 (C_est = 1, "
+                                                 "x 1/p0^2 flag contrast; 2026-10-12, was '~7.0e4' at 1e-3)")
+    c_est: Tagged = Stated(1.0, f"{TEX}:63", "author-adopted branch prior |p0 A_R| < sin(pi/66) = 0.048: "
                            "every circuit at m_max, Cramer-Rao constant one (Suzuki Fisher_final)")
-    dn_branch_prior: Tagged = Stated(0.048, f"{TEX}:88", "'We adopt this as a prior on |A_R|': |A_R| < sin(pi/66) (author choice)")
+    dn_branch_prior: Tagged = Stated(0.048, f"{TEX}:63", "'which we adopt as a prior rather than derive': |p0 A_R| < sin(pi/66) (author "
+                                                     "choice); the comparator's largest bin gives p0 A_R = 0.033 (2026-10-12)")
     mlae_schedule: Tagged = Cited("single", "arxiv_1904_10246 Manuscript_v2.tex:238",
                                   "all circuits at m_max; LIS m = 1, 3, ..., m_max (:268, :271) kept as sensitivity")
-    dn_estimate: Tagged = Stated(1e-3, f"{TEX}:88", "'|R_p|^2 - |R_pbar|^2 ~ ... ~ 1e-3 at Delta theta_C = 0.1' (an estimate, not a bound)")
+    dn_estimate: Tagged = Assumed(0.05, "COMPUTED (2026-10-12, sint/scatter.py): the largest per-bin |A_R| of the chapter's "
+                                        "free-fermion comparator (two Wilson flavours, a m_f = 0.5, static tanh wall |y| phi "
+                                        "= 0.5 of width 1/m_phi, Delta theta_C = 0.1) over the 8 x 8 incident (k_z, k_y) "
+                                        "bins; it changes sign across the axis (+0.031 to -0.038 at k_y = 0). The 1+1D "
+                                        "estimate of arxiv_2412_10365 gave ~1e-3", "sint/sint_results.json")
+    dn_estimate_1p1d_record: Tagged = Stated(1e-3, f"{TEX}:61", "'~1e-3 at Delta theta_C = 0.1' (arxiv_2412_10365), the "
+                                                                "printed estimate until 2026-10-12 (record)")
     dn_state_independent_bound: Tagged = Assumed(1.0, "no derived bound on |Delta| follows from the chapter's inputs (the 'below Delta theta_C' "
                                                  "scaling, taken as a bound, gives 0.1 > 0.048); recorded only: the "
                                                  "single depth rests on the author prior (c_est), not on a derived bound", "derived here")
@@ -353,8 +362,14 @@ class Assumptions:
                                                 "cheaper than t/1.5", "shot_audit.json ch8 lever (5)")
     detection_sigma: Tagged = Assumed(3, "the 2033 first result is a 3-sigma detection of Delta n", "H. Lamm 2026-10-02")
     n_points_first: Tagged = Stated(2, f"{TEX}:143", "first result at T = T_c and 0.9 T_c (the box's two temperatures)")
-    s_int: Tagged = Assumed(1e-3, "f_eq-weighted integrated asymmetry; NOT computed; taken at the per-k estimate "
-                            "(app05:88); the first-result Delta-n wall scales as (1e-3/S_int)^2", "NEEDS_AUTHOR")
+    s_int: Tagged = Assumed(1.33e-2, "COMPUTED (2026-10-12, sint/scatter.py): f_eq-weighted (Fermi-Dirac at a T = 0.5) "
+                                     "mean of A_R over the incident bins for the comparator at |y| phi = 0.5, width "
+                                     "2a, Delta theta_C = 0.1; 1.5e-2 at 0.9 T_c; 1.2-1.7e-2 over wall amplitudes "
+                                     "0.3-1.0 and widths 1-2 a; linear in Delta theta_C, zero at 0; the C' relation "
+                                     "R(hole_L) = R(p_R) holds to 1e-4. Converged in chain length and packet width. The "
+                                     "first-result Delta-n wall scales as S_int^-2", "sint/sint_results.json")
+    s_int_band: Tagged = Assumed((1.2e-2, 1.7e-2), "COMPUTED record: S_int over the comparator's wall amplitudes 0.3-1.0 "
+                                                   "and widths 1-2 a at T_c and 0.9 T_c", "sint/sint_results.json")
     label_register_first: Tagged = Assumed(7, "packet-label register of the f_eq-weighted packet superposition, "
                                            "taken from the 10-qubit workspace", "shot_audit.json ch8 lever (1)")
     t_depth_2028: Tagged = Assumed((5.4e3, 7.0e3), "T-depth per 12-step shot, banked: ceil(1980/29) x 21.38 + ... per step "
@@ -1173,7 +1188,7 @@ def _model_2033(a: Assumptions) -> Result:
     derived_bound_ok = float(a.dn_state_independent_bound.lo) < branch_bound   # False (R15)
     prior_ok = (a.mlae_schedule.value == "single" and float(a.c_est.lo) == 1.0
                 and round(float(a.dn_branch_prior.lo), 3) == round(branch_bound, 3)
-                and float(a.dn_estimate.lo) < branch_bound)  # True (R16)
+                and p0 * float(a.dn_estimate.lo) < branch_bound)  # True: p0 A_R = 0.033 < 0.0476 (the chapter's bound is on |p0 A_R|)
     single_depth = derived_bound_ok or prior_ok
     if a.mlae_schedule.value not in ("single", "LIS"):
         raise ValueError("only the single-depth and Suzuki LIS schedules are priced")
@@ -1380,7 +1395,8 @@ def _model_2033(a: Assumptions) -> Result:
         "per_bin_mlae": per_bin_mlae, "per_bin_mlae_quoted": float(a.mlae_queries_per_bin_quoted.lo),
         "mlae_single_depth": single_depth, "mlae_estimator_constant": c_est,
         "mlae_branch_bound_needed": branch_bound, "dn_estimate": float(a.dn_estimate.lo),
-        "dn_estimate_headroom": branch_bound / float(a.dn_estimate.lo),
+        "dn_estimate_headroom": branch_bound / (p0 * float(a.dn_estimate.lo)),   # 1.44 on p0 A_R (was 48 on A_R = 1e-3)
+        "s_int_band": (a.s_int_band.lo, a.s_int_band.hi),
         "mlae_depths": tuple(depths), "mlae_circuits_per_depth_per_bin": n_per_depth,
         "mlae_circuits_per_bin": circuits_per_bin,
         "mlae_lis_circuit_constant": lis_circuit_constant(m_top),
