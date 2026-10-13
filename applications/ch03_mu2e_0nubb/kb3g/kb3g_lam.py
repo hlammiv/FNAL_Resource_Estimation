@@ -8,7 +8,7 @@ sys.dont_write_bytecode = True
 import toyop as L
 from sm import Model
 
-SPACES = {'f7p3': ['f7', 'p3'], 'f7p3p1': ['f7', 'p3', 'p1'], 'pf': ['f7', 'p3', 'p1', 'f5']}
+SPACES = {'f7p3': ['f7', 'p3'], 'f7p3p1': ['f7', 'p3', 'p1'], 'pf': ['f7', 'p3', 'f5', 'p1']}
 snt, space = sys.argv[1], sys.argv[2]
 k = int(sys.argv[3]) if len(sys.argv) > 3 else 4
 tol = float(sys.argv[4]) if len(sys.argv) > 4 else 1e-9

@@ -32,8 +32,10 @@ column). The chapter keeps the 0.3-0.5 MeV band and prints both.
 - `toyop.py`: the simplobs toy (operator, delta-force Hamiltonian, Pauli-LCU lambda), reconstructed from the session
   record; `run(["f7","p3"])` reproduces lambda/|M| = 69.1 and p_ref = 0.929.
 - `kb3g_lam.py <snt> <space> [k] [tol]`: the computation; writes `lam_<snt>_<space>.json`. The vectorized route
-  applies the operator in the interaction file's mode numbering; the dict-based cross-check it prints is valid
-  only when the toy's orbit order matches the file's (it does in f7p3 and f7p3p1, not in pf), see the log.
+  applies the operator in the interaction file's mode numbering and a dict-based route (the toy's own `apply_2b`)
+  cross-checks it; the two agree to all digits in every space once the toy's orbit order matches the file's (pf is
+  listed as f7, p3, f5, p1 for that reason; the first pf run, with p1 before f5, showed an 11% discrepancy in the
+  cross-check route only, from the dropped reordering signs). The vectorized value never changed.
 - `rabi_kb3g.py <snt> <space> <theta|M| list>`: the Rabi check (logs `rabi_kb3g_f7p3*.log`).
 - `implications.py [snt]`: pushes the JSON results through `estimates/ch03_mu2e_0nubb.py` and prints the rows
   before and after.

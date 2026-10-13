@@ -1,5 +1,5 @@
-pf: 3868 terms, lambda 208.3550, operator built in 57.2s
-  48Ca: M-dim 12022, E [-76.3687 -72.1375], Ex [0.     4.2312], J [0. 4.], 8.4s
-  48Ti: M-dim 634744, E [-92.4577 -91.4728], Ex [0.     0.9849], J [0. 2.], 1855.4s
-RESULT kb3g pf: lambda 208.3550 M -0.14841 lambda/|M| 1403.88 p_ref 0.9022 gs share 0.0039 ||O|Ca>||^2 5.68682  (1960.0s)
-  cross-check (toy apply_2b route): M -0.16506  (vectorized -0.14841)
+pf: 3868 terms, lambda 208.3550, operator built in 13.1s
+  48Ca: M-dim 12022, E [-76.3687 -72.1375], Ex [0.     4.2312], J [0. 4.], 3.8s
+  48Ti: M-dim 634744, E [-92.4577 -91.4728], Ex [0.     0.9849], J [0. 2.], 1432.4s
+RESULT kb3g pf: lambda 208.3550 M -0.14841 lambda/|M| 1403.88 p_ref 0.9022 gs share 0.0039 ||O|Ca>||^2 5.68682  (1464.0s)
+  cross-check (toy apply_2b route): M -0.14841  (vectorized -0.14841)
