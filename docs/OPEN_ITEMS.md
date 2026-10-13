@@ -150,3 +150,10 @@ Chapters 11 and 12 have no model in this package and are not listed.
 - The Hamming-weight-phasing ancilla count k - w(k) plus one repeat-until-success ancilla (`common.hwp_ancilla`, `common.RUS_ANCILLA`) is applied everywhere; Ch. 10 does not itemize the synthesis ancilla.
 - The reference targets (1e5 and 1e9 hard ops, 150-250 and 1000 logical qubits, eps_l 1e-8) and the seconds per year (Julian, 3.15576e7) live in `common.py` since 2026-10-09 and every chapter model aliases them.
 - The utility boxes carry no dollar figures (author ruling 2026-10-09); the models hold no utility inputs.
+
+### Ch. 4 (ch04_hybrid_lqcd): classical bar for disconnected loops moved (added 2026-10-13)
+
+arXiv:2609.37049 (Barca et al., 2026-09-29) lowers the classical noise-vector variance for disconnected diagrams by about
+10^3 at about twice the cost. The chapter cites it and states that the noise-matched HVP shot counts do not yet include it.
+Author ruling needed on whether to reprice that requirements-table row (shot counts would rise by up to 10^3) or keep the
+pre-2026 comparison. No model field has changed.
