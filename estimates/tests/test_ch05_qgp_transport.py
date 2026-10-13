@@ -1221,14 +1221,14 @@ def test_systematics_row_2026_10_12(a):
     if not TEX.exists():
         pytest.skip("chapter .tex not on disk")
     tex = TEX.read_text()
-    for frag in ("Systematics (model differences, not error bars; scaled from Euclidean results) & discretization "
+    for frag in ("Systematics & model differences, not error bars, scaled from Euclidean results: discretization "
                  "$50$--$100\\%$ at $a_s=0.2$ fm, $35$--$70\\%$ at $0.15$ fm (outside the $a^2$ window); finite volume "
                  "order one at $LT<1$, not quantified; subgroup $5$--$10\\%$ if $H_I$ keeps $\\Sigma(216\\times 3)$ "
                  "unfrozen, else uncontrolled",
                  "Neither spacing is in the $a^2$ scaling regime: $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm.",
                  "We carry $50$--$100\\%$ at $0.2$ fm and $35$--$70\\%$ at $0.15$ fm as the discretization difference",
                  "its relation to the infinite-volume $\\eta/s$ is uncontrolled at order one; we assign it no percentage",
-                 "We carry $5$--$10\\%$ on $\\eta/s$ as the subgroup difference, conditional on $H_I$",
-                 "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648}"):
+                 "We carry $5$--$10\\%$ on $\\eta/s$ as the subgroup difference, at the upper end for this short-distance correlator, conditional on $H_I$",
+                 "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648,arxiv_1906_11213}"):
         assert frag in tex, frag
 

@@ -425,7 +425,7 @@ def test_branch_condition_and_author_prior(a, r33):
     assert a.c_est.prov is Provenance.STATED and a.c_est.lo == 1.0
     assert a.dn_branch_prior.prov is Provenance.STATED and f"{b:.3f}" == f"{a.dn_branch_prior.lo:.3f}"
     assert i["mlae_single_depth"] is True and i["mlae_estimator_constant"] == 1.0
-    assert round(i["dn_estimate_headroom"], 1) == 1.4           # 'p0 A_R = 0.033 is 1.4 times below it' (comparator bin 0.05)
+    assert round(i["dn_estimate_headroom"], 1) == 1.3           # 'p0 A_R = 0.037 is 1.3 times below it' (comparator bin 0.056)
     # without the prior: 'below Delta theta_C' taken as a bound (0.1) is ~2x the branch condition, so LIS
     no_prior = replace(a, mlae_schedule=m.Cited("LIS", "test"), c_est=Stated(m.lis_query_constant(33), "test"))
     r01 = m.model(replace(no_prior, dn_state_independent_bound=Stated(0.1, "test", "test")), "2033").intermediates
@@ -496,21 +496,21 @@ def test_2033_first_result_tier(a, r33):
     # R1/R2: 3-sigma detection of Delta n at T_c and 0.9 T_c, plus the nucleation slope at both temperatures
     i = r33.intermediates
     assert i["first_points"] == 2 and i["first_detection_sigma"] == 3
-    assert i["s_int_taken"] == 1.33e-2 and a.s_int.prov is Provenance.ASSUMED   # computed 2026-10-12 (sint/scatter.py)
+    assert i["s_int_taken"] == 2.14e-2 and a.s_int.prov is Provenance.ASSUMED   # computed 2026-10-12 (sint/scatter.py, Bloch sign fixed)
     # B2: label-controlled packets lengthen A, so the first-result circuits run at depth 31; queries x 1/p0^2
     assert i["first_m_top"] == 31 and sci(i["label_packets_t"]) == ("1.7", 6)
-    _close(i["first_queries_per_point"], 9 / (1.33e-2 ** 2 * 31 * i["flag_contrast_p0"] ** 2), 1e-12)
-    assert sci(i["first_queries_per_point"]) == ("3.8", 3)      # '3.8e3 queries' (was 6.7e5)
-    assert sci(i["first_circuits_per_point"]) == ("1.2", 2)      # was 2.2e4
-    assert round(i["first_dn_point_days"], 1) == 1.4            # 1.4 days (was ~250)
+    _close(i["first_queries_per_point"], 9 / (2.14e-2 ** 2 * 31 * i["flag_contrast_p0"] ** 2), 1e-12)
+    assert sci(i["first_queries_per_point"]) == ("1.5", 3)      # '1.5e3 queries' (was 6.7e5)
+    assert sci(i["first_circuits_per_point"]) == ("4.7", 1)      # was 2.2e4
+    assert round(i["first_dn_point_days"], 1) == 0.5            # 0.5 days (was ~250)
     # the 0.9 T_c nucleation point costs twice the T_c one (slab saddle, decrement x 0.50): 12 + 24 d
     _close(i["first_result_days"], 2 * i["first_dn_point_days"] + i["nucleation_point_days"]
            + i["nucleation_point_days_0p9tc"], 1e-12)
     assert round(i["nucleation_point_days_0p9tc"]) == 24
-    assert round(i["first_result_days"]) == 39                  # '>~39 d' (was 1.4 yr, 528 d)
+    assert round(i["first_result_days"]) == 37                  # '>~37 d' (was 1.4 yr, 528 d)
     _close(i["wall_first_result_s"], i["first_result_days"] * 86400, 1e-12)
     # the Delta-n wall scales as (1e-3 / S_int)^2
-    half = m.model(replace(a, s_int=Stated(6.65e-3, "test")), "2033").intermediates
+    half = m.model(replace(a, s_int=Stated(1.07e-2, "test")), "2033").intermediates
     _close(half["first_dn_point_days"], 4 * i["first_dn_point_days"], 1e-6)
     assert i["first_label_register"] == 7 and i["first_workspace_left"] == 3
 
@@ -539,7 +539,7 @@ def test_2033_first_result_depth(r33):
     _close(9.6e6, 2.87e6 * 3480 / 1044, 0.01)                             # ceil(10440/3) / ceil(10440/10)
     assert round(i["first_f_star"][1]) == 34                              # 'F* ~ 34'
     assert round(i["first_f_star"][0], 1) == 3.1 and i["first_baseline_ok"] == (False, True)
-    assert round(i["first_result_yr_unborrowed"] / i["first_result_yr"], 2) == 1.16   # 'about 15% longer' without borrowing (was ~3x)
+    assert round(i["first_result_yr_unborrowed"] / i["first_result_yr"], 2) == 1.06   # 'about 6% longer' without borrowing (was ~3x)
     import pathlib
 
 
@@ -764,20 +764,20 @@ def test_g4_fault_bias_model(a, r33):
     _close(i["fault_prob_per_circuit"], 1 - math.exp(-0.1), 1e-12)
     _close(i["fault_bias_worst_A_R"], i["fault_prob_per_circuit"] / (33 * i["flag_contrast_p0"]), 1e-12)
     assert sci(i["fault_bias_worst_A_R"], 0) == ("4", -3)
-    _close(i["fault_prob_for_bias_below_first_sigma"], 31 * i["flag_contrast_p0"] * 1.33e-2 / 3, 1e-12)
-    assert sci(i["epsilon_l_bias_first"], 0) == ("1", -10)      # bias budget at S_int 1.33e-2 (was 7e-12 at 1e-3)
+    _close(i["fault_prob_for_bias_below_first_sigma"], 31 * i["flag_contrast_p0"] * 2.14e-2 / 3, 1e-12)
+    assert sci(i["epsilon_l_bias_first"], 0) == ("2", -10)      # bias budget at S_int 2.14e-2 (was 7e-12 at 1e-3)
     assert sci(i["epsilon_l_bias_bin"], 0) == ("7", -11)      # eps_c 3e-3 (2e-11 at 1e-3)
     _close(i["idle_qubit_cycles_deepest"], 1000 * r33.hard_ops[0] * 1e-6 / 1e-5, 1e-12)
     assert sci(i["idle_qubit_cycles_deepest"]) == ("9.9", 10)
     assert round(i["idle_faults_at_box_epsilon_l"]) == 10
     assert sci(i["epsilon_l_with_idle"], 0) == ("1", -12)
-    assert sci(i["epsilon_l_with_idle_first_bias"], 0) == ("1", -12)   # S_int 1.33e-2 (7e-14 at 1e-3)
+    assert sci(i["epsilon_l_with_idle_first_bias"], 0) == ("2", -12)   # S_int 2.14e-2 (7e-14 at 1e-3)
     assert i["null_control_query_factor"] == 4.0
     # null route costed (verifier 2026-10-05): first result ~5.5 yr, ~8.7 yr with the scan, past the horizon
-    assert round(i["first_result_null_yr"], 2) == 0.13 and round(i["scan_plus_first_null_yr"], 1) == 3.3
+    assert round(i["first_result_null_yr"], 2) == 0.11 and round(i["scan_plus_first_null_yr"], 1) == 3.3
     assert i["scan_plus_first_null_yr"] < i["horizon_yr"]
     tex = TEX.read_text()
-    assert "$\\lesssim 7\\times 10^{-14}$ per location" in tex and "7\\times 10^{-12}" not in tex
+    assert "$\\lesssim 7\\times 10^{-13}$ per location" in tex and "7\\times 10^{-14}" not in tex   # per-bin target 3e-3 (2026-10-12)
     box = tex.split("2033 target: wall scattering")[1].split("end{benchmarkbox}")[0]
     assert "idle qubit-cycle" not in box and "10^{-14}" not in box
 
@@ -809,7 +809,7 @@ def test_referee_text_hooks():
     assert "flavor-summed asymmetry vanishes" in tex                               # C'
     assert "unquantified" not in tex and "is not priced. We write $r$ for the full" not in tex
     assert r"$\gtrsim 1.3\times 10^{8}$ T" in tex                                  # B5
-    assert r"$\lesssim 7\times 10^{-14}$ per location" in tex                     # G4 (idles counted)
+    assert r"$\lesssim 7\times 10^{-13}$ per location" in tex                     # G4 (idles counted), per-bin target
     assert "break down for the fermions" not in tex                                 # B1
     assert "where no classical method is established" not in tex                    # B1
     assert "imprint a bubble profile" not in tex                                    # B2
@@ -856,7 +856,7 @@ def test_bath_mixing_band_is_words_only(a, r33):
     s_lo, s_hi = i["nucleation_scan_yr_with_prep_band"]
     assert round(s_lo) == 78 and round(s_hi, -1) == 500          # omission sentence: '78-500 yr'
     f_lo, f_hi = i["first_result_yr_with_prep_band"]
-    assert round(f_lo, 1) == 2.4 and round(f_hi) == 15
+    assert round(f_lo, 1) == 2.3 and round(f_hi) == 15
     # the printed walls do not carry the preparation
     assert r33.hard_ops[0] < 1e9 and round(i["nucleation_point_days"]) == 12
     with pytest.raises(ValueError):

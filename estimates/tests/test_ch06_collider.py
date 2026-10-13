@@ -1490,7 +1490,7 @@ PHRASES = [
     r"so nothing makes the box term cancel in the trend",
     r"and global analyses combine lattice constraints with collider data~\cite{Ji_LaMET,arxiv_1908_10439,arxiv_1711_07916}",
     r"the string wraps the axis $3.9$, $7.7$ and $11.6$ times",
-    r"The smallest box with all three modes is $L_\parallel=16$ ($1828$ LQ); $L_\parallel=4$ ($532$ LQ) shares $3.1$ GeV, a one-point check of box dependence ($0.24$--$3.7$ yr).",
+    r"The smallest box with all three modes is $L_\parallel=16$ ($1828$ LQ); $L_\parallel=4$ ($532$ LQ) shares $3.1$ GeV, a one-point check of box dependence ($0.46$--$3.7$ yr).",
     r"${\gtrsim}\,4.7\times$ the shots if a bin's occupation equals its signal share",
     r"the pair meets again after $0.4$ fm/$c$, before the $0.7$--$1$ fm/$c$ formation time",
     r"\mathcal{N}_h(P_h)\,\bar\psi_q(0)\,W_0^\dagger",

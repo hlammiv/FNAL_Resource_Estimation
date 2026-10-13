@@ -15,7 +15,7 @@ for ny in (0, 1, 4):
             rows[(ny, round(kz, 3), sig)] = (RL, RR, RL - RR)
     # hole (antiparticle) of flavour L: negative-energy packet; C' predicts R(pbar_L) = R(p_R)
     for kz in [2 * math.pi * n / S.LZ for n in (3, 5)]:
-        hk = lambda q: S.s3 * (S.AM + 2 * S.RW - S.RW * math.cos(q) - S.RW * math.cos(ky)) + S.s1 * math.sin(q) + S.s2 * math.sin(ky)
+        hk = lambda q: S.s3 * (S.AM + 2 * S.RW - S.RW * math.cos(q) - S.RW * math.cos(ky)) - S.s1 * math.sin(q) - S.s2 * math.sin(ky)
         e, v = np.linalg.eigh(hk(kz)); u = v[:, 0]
         dq = 1e-4; vg = (np.linalg.eigvalsh(hk(kz + dq))[0] - np.linalg.eigvalsh(hk(kz - dq))[0]) / (2 * dq)
         # negative-energy packet moving toward +z needs vg > 0: use -kz if needed

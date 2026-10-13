@@ -9,7 +9,7 @@ The chapter's cost model is Eqs. (Nq_baryo)-(Nshot_baryo), app05:81-83:
 
 ESTIMATOR CONSTANT (R16 author ruling; R15 derivation kept). C_est = 1, every circuit at m_max = 33. The authors
 adopt |A_R| < sin(pi/66) = 0.048 as the branch prior for the Delta n arm (R16, 'that value sounds fine'); the
-~1e-3 signal estimate sits 48x inside it. C_est is Stated(1, author prior). The R15 analysis below is why a prior
+comparator's largest bin gives p0 A_R = 0.037, 1.3x inside it (the 1+1D 1e-3 estimate sat 48x inside). C_est is Stated(1, author prior). The R15 analysis below is why a prior
 is needed (no bound is derived from the chapter's inputs); Suzuki's LIS constant 1.457 is kept as a sensitivity
 (intermediates mlae_lis_*), not priced.
 R15 analysis. The Delta n readout encodes the asymmetry as a = (1 + Delta)/2: a
@@ -126,7 +126,7 @@ R17 (e) CHECK: the Fermion_Primitives (FP) hop prices gauge-covariant hops; Ch.8
   synthesized to the deepest MLAE circuit's budget (fixed point above); the 2028 box and the interim
   instance are single circuits and keep their own-circuit budget. Since r25 the 2033 nucleation circuits are
   single circuits too and are synthesized to their own budget (2.656e7 T at t, 8.45e6 T at t/3).
-  The f_eq-weighted integrated asymmetry S_int is NOT computed: the first-result tier takes S_int = 1e-3 (the
+  The f_eq-weighted integrated asymmetry S_int is COMPUTED (2026-10-12, sint/scatter.py): 2.1e-2; until then the first-result tier took S_int = 1e-3 (the
   chapter's per-k estimate) and its Delta-n wall scales as (1e-3/S_int)^2 (NEEDS_AUTHOR).
 REFEREE REVISION (2026-10-04; editorial_review/REFEREE_REPORT.md B2, B3, G2; responses/ch08.md)
   G2: the 2033 headline (Result.hard_ops, PUBLISHED, Table 1.1) is the deepest executed circuit, m_max base
@@ -203,10 +203,10 @@ WALL TIME AND FACTORIES
   Mixed-depth runs enter depth_exports as full-circuit equivalents, shots x T_i / T_headline (depth scales with
   T under the ancilla-bound schedule); the walls themselves are summed circuit by circuit.
   2028 (one tier): one parameter point, slope to 20% -> wall_campaign_s ~54 min; wall_first_result_s = None.
-  2033 first result: 3-sigma detection of Delta n at T_c and 0.9 T_c (9/(S_int^2 m_max) = 2.73e5 queries per
-  point at S_int = 1e-3) plus the slope at both temperatures -> wall_first_result_s ~0.58 yr.
+  2033 first result: 3-sigma detection of Delta n at T_c and 0.9 T_c (9/(p0^2 S_int^2 m_top) = 1.5e3 queries per
+  point at S_int = 2.1e-2; 2.73e5 at the earlier 1e-3) plus the slope at both temperatures -> wall_first_result_s ~37 d (record: ~0.58 yr).
   2033 campaign: 10 Delta-n points at +-1e-3 per bin over 100 bins (3.03e6 queries each) plus the 100-point
-  slope scan -> wall_campaign_s ~32 yr, 6.3x the horizon; the scan plus the first result fit (3.8 yr).
+  slope scan -> wall_campaign_s 3.9 yr since eps_c = 3e-3 (2026-10-12; records: 32 yr at 100 bins, 8.6 yr at 8 bins and eps_c = 1e-3); the scan plus the first result 3.3 yr.
 """
 
 from __future__ import annotations
@@ -323,10 +323,11 @@ class Assumptions:
                                                      "choice); the comparator's largest bin gives p0 A_R = 0.033 (2026-10-12)")
     mlae_schedule: Tagged = Cited("single", "arxiv_1904_10246 Manuscript_v2.tex:238",
                                   "all circuits at m_max; LIS m = 1, 3, ..., m_max (:268, :271) kept as sensitivity")
-    dn_estimate: Tagged = Assumed(0.05, "COMPUTED (2026-10-12, sint/scatter.py): the largest per-bin |A_R| of the chapter's "
+    dn_estimate: Tagged = Assumed(0.056, "COMPUTED (2026-10-12, sint/scatter.py, after the Bloch-sign fix of the verification "
+                                         "pass): the largest per-bin |A_R| of the chapter's "
                                         "free-fermion comparator (two Wilson flavours, a m_f = 0.5, static tanh wall |y| phi "
                                         "= 0.5 of width 1/m_phi, Delta theta_C = 0.1) over the 8 x 8 incident (k_z, k_y) "
-                                        "bins; it changes sign across the axis (+0.031 to -0.038 at k_y = 0). The 1+1D "
+                                        "bins (0.059 at width 1 a); it changes sign across the axis. The 1+1D "
                                         "estimate of arxiv_2412_10365 gave ~1e-3", "sint/sint_results.json")
     dn_estimate_1p1d_record: Tagged = Stated(1e-3, f"{TEX}:61", "'~1e-3 at Delta theta_C = 0.1' (arxiv_2412_10365), the "
                                                                 "printed estimate until 2026-10-12 (record)")
@@ -362,14 +363,16 @@ class Assumptions:
                                                 "cheaper than t/1.5", "shot_audit.json ch8 lever (5)")
     detection_sigma: Tagged = Assumed(3, "the 2033 first result is a 3-sigma detection of Delta n", "H. Lamm 2026-10-02")
     n_points_first: Tagged = Stated(2, f"{TEX}:143", "first result at T = T_c and 0.9 T_c (the box's two temperatures)")
-    s_int: Tagged = Assumed(1.33e-2, "COMPUTED (2026-10-12, sint/scatter.py): f_eq-weighted (Fermi-Dirac at a T = 0.5) "
-                                     "mean of A_R over the incident bins for the comparator at |y| phi = 0.5, width "
-                                     "2a, Delta theta_C = 0.1; 1.5e-2 at 0.9 T_c; 1.2-1.7e-2 over wall amplitudes "
-                                     "0.3-1.0 and widths 1-2 a; linear in Delta theta_C, zero at 0; the C' relation "
-                                     "R(hole_L) = R(p_R) holds to 1e-4. Converged in chain length and packet width. The "
-                                     "first-result Delta-n wall scales as S_int^-2", "sint/sint_results.json")
-    s_int_band: Tagged = Assumed((1.2e-2, 1.7e-2), "COMPUTED record: S_int over the comparator's wall amplitudes 0.3-1.0 "
-                                                   "and widths 1-2 a at T_c and 0.9 T_c", "sint/sint_results.json")
+    s_int: Tagged = Assumed(2.14e-2, "COMPUTED (2026-10-12, sint/scatter.py, after the Bloch-sign fix of the verification "
+                                     "pass; 1.33e-2 before it): f_eq-weighted (Fermi-Dirac at a T = 0.5) mean of A_R "
+                                     "over the incident bins for the comparator at |y| phi = 0.5, width 2a, Delta "
+                                     "theta_C = 0.1; 2.4e-2 at 0.9 T_c; 1.9-2.7e-2 over wall amplitudes 0.3-1.0 and "
+                                     "widths 1-2 a at both temperatures; linear in Delta theta_C, zero at 0; the C' "
+                                     "relation R(hole_L) = R(p_R) holds to 1e-4. Converged in chain length and packet "
+                                     "width. The first-result Delta-n wall scales as S_int^-2", "sint/sint_results.json")
+    s_int_band: Tagged = Assumed((1.9e-2, 2.7e-2), "COMPUTED record: S_int over the comparator's wall amplitudes 0.3-1.0 "
+                                                   "and widths 1-2 a at T_c (1.9-2.4e-2) and 0.9 T_c (2.1-2.7e-2)",
+                                 "sint/sint_results.json")
     label_register_first: Tagged = Assumed(7, "packet-label register of the f_eq-weighted packet superposition, "
                                            "taken from the 10-qubit workspace", "shot_audit.json ch8 lever (1)")
     t_depth_2028: Tagged = Assumed((5.4e3, 7.0e3), "T-depth per 12-step shot, banked: ceil(1980/29) x 21.38 + ... per step "
@@ -1196,7 +1199,7 @@ def _model_2033(a: Assumptions) -> Result:
     c_est = 1.0 if single_depth else c_lis                     # 1 (R16)
     per_bin_single_depth = 1.0 / (eps ** 2 * m_max)            # 3.03e4 (constant 1, contrast 1: r25 record)
     per_bin_ideal = c_est / (eps ** 2 * m_top)                 # 3.03e4 at unit flag contrast (r26 record)
-    per_bin_mlae = c_est / (p0 ** 2 * eps ** 2 * m_top)        # 7.0e4: B2 flag contrast, queries x 1/p0^2
+    per_bin_mlae = c_est / (p0 ** 2 * eps ** 2 * m_top)        # 7.8e3 at eps_c = 3e-3 (7.0e4 at 1e-3): B2 flag contrast, queries x 1/p0^2
     per_bin_lis = c_lis / (p0 ** 2 * eps ** 2 * m_top)         # (sensitivity)
     depths = [m_top] if single_depth else mlae_depths(m_top)
     n_per_depth = per_bin_mlae / sum(depths)                   # 918.3 circuits per depth per bin
@@ -1204,7 +1207,7 @@ def _model_2033(a: Assumptions) -> Result:
     lis_n_per_depth = per_bin_lis / sum(mlae_depths(m_top))    # 152.8 (sensitivity)
     n_bin = int(a.n_bin.lo)                                    # 8 distinct |k_z| (ruling 2026-10-11; was 100)
     n_bin_distinct_kz = int(a.lz_sites.lo) // 2 + 1            # 8
-    queries = per_bin_mlae * n_bin                             # 5.6e5 (was 7.0e6 at 100 bins)
+    queries = per_bin_mlae * n_bin                             # 6.2e4 (5.6e5 at eps_c = 1e-3; 7.0e6 at 100 bins)
     queries_heisenberg = per_bin_heisenberg * n_bin
     overhead = per_bin_mlae / per_bin_heisenberg               # 30.3
 
@@ -1242,24 +1245,24 @@ def _model_2033(a: Assumptions) -> Result:
     dn_campaign_yr = n_dn * dn_point_yr                        # 28.4 yr serial
     n_scan = float(a.n_scan_points.lo)
     nucl_scan_yr = n_scan * nucl_s / SEC_PER_YR                # 3.33 yr serial
-    campaign_serial_yr = dn_campaign_yr + nucl_scan_yr         # 31.7 yr serial on one machine
+    campaign_serial_yr = dn_campaign_yr + nucl_scan_yr         # 3.9 yr serial on one machine (31.7 at 100 bins and eps_c = 1e-3)
     campaign_over_horizon = campaign_serial_yr / horizon       # 6.35: cost reduction needed to fit the horizon
 
     # R25 first result (R1/R2): 3-sigma detection of the f_eq-weighted Delta n at the two box temperatures, plus
-    # the nucleation slope at both. Queries (1 - S^2)/(sigma^2 m) with sigma = S/3; S_int not computed (1e-3 taken).
+    # the nucleation slope at both. Queries (1 - S^2)/(sigma^2 m) with sigma = S/3; S_int computed (sint/scatter.py).
     s_int = float(a.s_int.lo)
     n_sig = float(a.detection_sigma.lo)
     n_first = int(a.n_points_first.lo)
     # B2: the label-controlled packets (2^7 x one packet, a bound) lengthen A, so these circuits run shallower.
     sched_first = dn_schedule(a, free_prep(a, int(a.label_register_first.lo)))
     m_first = sched_first["m_top"]                             # 31
-    first_queries = c_est * n_sig ** 2 / (p0 ** 2 * s_int ** 2 * m_first)   # 6.7e5 per point
+    first_queries = c_est * n_sig ** 2 / (p0 ** 2 * s_int ** 2 * m_first)   # 1.5e3 per point (6.7e5 at S_int = 1e-3)
     first_circuits = first_queries / m_first                   # 2.2e4 per point
     first_dn_s = first_circuits * circuit_s(a, sched_first)    # 2.2e7 s = 2.5e2 d
-    first_s = n_first * first_dn_s + nucl_s + nucl_s_09        # 4.6e7 s = 528 d = 1.45 yr (T_c and 0.9 T_c slopes)
+    first_s = n_first * first_dn_s + nucl_s + nucl_s_09        # 37 d (528 d at S_int = 1e-3; T_c and 0.9 T_c slopes)
     # what fits in the horizon on one machine: the nucleation scan (which contains the two first-result
     # temperatures) plus the first-result Delta-n points, then whole campaign Delta-n points
-    scan_plus_first_yr = nucl_scan_yr + n_first * first_dn_s / SEC_PER_YR   # 3.84 yr
+    scan_plus_first_yr = nucl_scan_yr + n_first * first_dn_s / SEC_PER_YR   # 3.3 yr (3.84 at S_int = 1e-3)
     dn_points_in_horizon = min(n_dn, math.floor((horizon - nucl_scan_yr) / dn_point_yr))   # 0
     fits_in_horizon_yr = scan_plus_first_yr
     lis_campaign_yr = n_dn * lis_dn_arm_s / SEC_PER_YR + nucl_scan_yr   # 44.7 yr serial (sensitivity)
@@ -1531,7 +1534,7 @@ def _model_2033(a: Assumptions) -> Result:
         f"epsilon_l = {eps_l_base:.2e} base circuit, {eps_l_deepest:.2e} deepest MLAE circuit "
         f"({deepest_t:.3g} T); printed '<~3e-9' and '<~1e-10'.",
         f"Tiers: first result {first_s / SEC_PER_DAY:.0f} d (2 x 3-sigma Delta n at {first_dn_s / SEC_PER_DAY:.1f} d, "
-        f"S_int = {s_int:g} taken, not computed; nucleation slopes {nucl_s / SEC_PER_DAY:.1f} d at T_c and "
+        f"S_int = {s_int:g} from the free-fermion comparator (sint/scatter.py); nucleation slopes {nucl_s / SEC_PER_DAY:.1f} d at T_c and "
         f"{nucl_s_09 / SEC_PER_DAY:.0f} d at 0.9 T_c); campaign "
         f"{campaign_serial_yr:.2f} yr, {campaign_over_horizon:.2f}x the horizon; scan + first result {scan_plus_first_yr:.2f} yr fits.",
         f"T-depth {a.t_depth_2033.value} per base circuit (factory.json), F* {dx['f_star'][0]:.1f}-{dx['f_star'][1]:.1f}: "

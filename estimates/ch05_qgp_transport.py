@@ -416,10 +416,11 @@ class Assumptions:
     # literature pass is recorded in NEEDS_AUTHOR.md (Ch. 5, systematics rows). None is an a^2 or 1/L extrapolation.
     sys_discretization_0p2fm: Tagged = Assumed((0.50, 1.00), "discretization difference on the correlator at a_s = 0.2 fm "
                                                "for H_I with one-link staggered quarks: (pi a_s T)^2 = 0.5-0.9; the "
-                                               "anisotropic SU(3) shear correlator has a 17-21% tree-level cutoff effect "
-                                               "at a_s T = 0.2 (arxiv_1802_07718), Meyer bounds aT = 1/8 at 20% "
+                                               "anisotropic SU(3) shear correlator (tree-level Symanzik action) has a 20-27% "
+                                               "tree-level cutoff effect at a_s T = 0.2 and 10-11% at 0.125 "
+                                               "(arxiv_1802_07718 App. C), Meyer bounds aT = 1/8 at 20% "
                                                "(arxiv_0805_4567); (a_s T)^2 scaling with the temporal share removed "
-                                               "(arxiv_hep-lat_0105012) gives 25-50% for a fully improved action; the "
+                                               "(arxiv_hep-lat_0105012) gives 35-60% for a fully improved action; the "
                                                "unimproved taste sector adds splittings of (600-800 MeV)^2 "
                                                "(arxiv_hep-lat_9805009, arxiv_0903_3598)",
                                                "arxiv_1802_07718,arxiv_0805_4567,arxiv_hep-lat_0105012,arxiv_1407_6387")

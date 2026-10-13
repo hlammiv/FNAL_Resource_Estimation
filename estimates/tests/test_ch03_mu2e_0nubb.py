@@ -1474,7 +1474,7 @@ def test_referee_max_subroutine_time(a, tex):
         pytest.skip("chapter .tex not on disk")
     assert "Maximum subroutine time & N/A" not in tex
     assert ("Maximum subroutine time & $\\sim 54$ min per shot ($0\\nu\\beta\\beta$ validation stage, resonant "
-            "transition); $1.8$--$7.3$ min ($^{27}$Al, 2033); $0.10$\\,s (2028)") in tex
+            "transition, within the 2033 target); $1.8$--$7.3$ min ($^{27}$Al, 2033); $0.10$\\,s (2028)") in tex
 
 
 def test_referee_text_corrections(a, tex):

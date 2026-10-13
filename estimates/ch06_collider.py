@@ -2026,7 +2026,7 @@ def _model_2033(a: Assumptions) -> Result:
         "t_total_box_check_one_mode": tuple(t_one),                       # (2.4e9, 1.25e10)
         "wall_per_shot_box_check_one_mode_s": tuple(shot_one),            # (2.4e3, 1.8e4)
         "wall_box_check_one_mode_s": wall_box_one,
-        "wall_box_check_one_mode_yr": (wall_box_one[0] / yr, wall_box_one[1] / yr),   # (0.24, 3.7)
+        "wall_box_check_one_mode_yr": (wall_box_one[0] / yr, wall_box_one[1] / yr),   # (0.46, 3.7)
         "box_check_over_campaign": (wall_box_one[0] / wall_trend[0], wall_box_one[1] / wall_trend[1]),   # vs the trend
         "box_check_in_campaign": True,                                    # smaller ruling (a), 2026-10-05
         "ff_z_bin_centres": zc,

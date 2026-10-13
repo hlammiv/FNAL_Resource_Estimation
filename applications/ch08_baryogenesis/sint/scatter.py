@@ -33,8 +33,10 @@ def chain_h(ky, wall, dtheta, width, z0):
     return h
 
 def bloch(kz, ky):
-    """symmetric-phase 2x2 Bloch Hamiltonian, its positive-energy spinor, energy and z group velocity"""
-    hk = lambda q: s3 * (AM + 2 * RW - RW * math.cos(q) - RW * math.cos(ky)) + s1 * math.sin(q) + s2 * math.sin(ky)
+    """symmetric-phase 2x2 Bloch Hamiltonian of chain_h (hop(alpha) e^{iq} + h.c. = -s3 cos q - alpha sin q), its
+    positive-energy spinor, energy and z group velocity. The sign of the sin terms was wrong until 2026-10-12 (verification
+    pass), which launched s3 u instead of u and mixed in a negative-energy component; S_int was then 1.33e-2."""
+    hk = lambda q: s3 * (AM + 2 * RW - RW * math.cos(q) - RW * math.cos(ky)) - s1 * math.sin(q) - s2 * math.sin(ky)
     e, v = np.linalg.eigh(hk(kz)); u = v[:, 1]; E = e[1]
     dq = 1e-4; vg = (np.linalg.eigvalsh(hk(kz + dq))[1] - np.linalg.eigvalsh(hk(kz - dq))[1]) / (2 * dq)
     return u, E, vg
