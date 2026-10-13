@@ -2,3 +2,4 @@ pf: 3868 terms, lambda 208.3550, operator built in 19.0s
   48Ca: M-dim 12022, E [-73.6618 -69.9263], Ex [0.     3.7355], J [0. 2.], 2.2s
   48Ti: M-dim 634744, E [-91.006  -89.9962], Ex [0.     1.0098], J [0. 2.], 981.9s
 RESULT gxpf1a pf: lambda 208.3550 M -0.12627 lambda/|M| 1650.14 p_ref 0.9474 gs share 0.0029 ||O|Ca>||^2 5.49554  (1020.0s)
+  cross-check (toy apply_2b route): M -0.12627  (vectorized -0.12627)
