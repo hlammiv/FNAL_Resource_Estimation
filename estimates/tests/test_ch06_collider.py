@@ -1535,8 +1535,8 @@ PHRASES = [
     r"Campaign & trend $+\,L_\parallel{=}4$ check: $2.4$--$2.5\times 10^{4}$ shots, $3.3$--$26$ yr (on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview}; high end $5.2\times$ the five-year window) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # cut pass 2026-10-06: the gap paragraph's one-machine sentence restated the campaign box row (pinned above) and is cut
     # requirements
-    r"Number of subroutine calls & $\sim 130$",
-    r"Maximum subroutine time & $4.9\times 10^{3}$--$3.7\times 10^{4}$ s per shot (2033); $\sim 0.13$ s (2028)",
+    r"Subroutine calls & $\sim 130$",
+    r"\textbf{Wall time} & $4.9\times 10^{3}$--$3.7\times 10^{4}$ s per shot",
     # cut pass 2026-10-06: the Hard-op row restated the box Per-shot T and is cut; the Size row is back (template rows kept for cross-chapter consistency)
     r"$3^3$: $995$ LQ, $5.4\times 10^{9}$--$1.5\times 10^{10}$ T, $653$ shots",
     r"$3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots",
