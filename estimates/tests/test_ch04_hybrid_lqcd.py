@@ -714,7 +714,7 @@ def test_2033_depth_factories_and_walls():
     for k in ("f_star", "floor_wall_s", "factories_for_1yr"):
         assert I33[k] == dx[k]
     assert near(I33["floor_wall_s"][1], I33["wall_campaign_s"][1] - s2[1] * 1e-4, 1e-9)
-    for s in ("Per-shot wall time & $530$--$2100\\,$s \\\\", "$86\\,$d--$2.7$ yr on one machine", "$1.6$--$18$ yr on one machine",
+    for s in ("\\textbf{Wall time} & $530$--$2100\\,$s per shot \\\\", "$86\\,$d--$2.7$ yr on one machine", "$1.6$--$18$ yr on one machine",
               "$1.6$--$4.6$ yr, which fits", "$0.63$--$1.8$ yr",
               "rather than $213\\,$s"):
         assert s in TEX, s
@@ -759,7 +759,7 @@ def test_e27_no_multiple_machines_in_tex_or_model():
     assert all(low[max(0, i.start() - 3):i.start()] == "lq " for i in re.finditer(r"\bmachines\b", low))
     assert low.count("machines") <= 1
     assert "The campaign runs serially on one machine, and it is depth-bound." in TEX
-    assert "Per-shot wall time & $74\\,$ms \\\\" in TEX                  # boxes carry final numbers only (E29)
+    assert "\\textbf{Wall time} & $74\\,$ms per shot; $6.5$ h on one machine for one configuration \\\\" in TEX                  # boxes carry final numbers only (E29)
     # style pass 2026-10-08: 'horizon' sentence went (prose anchor retired)
     s = m.Assumptions()
     for name in ("n_machines", "parallel_machines", "machines_for_horizon", "n_devices"):
@@ -783,7 +783,7 @@ def test_2033_qme_alternative():
 
 
 def test_2033_uncertainty_budget():
-    assert "$30\\%$ (first result) and $20\\%$ (campaign) relative on $P$" in TEX
+    assert "one configuration, $30\\%$ on $P$" in TEX and "three configurations, $20\\%$ on $P$" in TEX
     assert I33["rel_first"] == 0.30 and I33["rel_campaign"] == 0.20
     assert I33["n_cfg_first"] == 1 and I33["n_cfg_campaign"] == 3
 
