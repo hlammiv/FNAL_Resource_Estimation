@@ -2436,7 +2436,7 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  r"$417$ queries per application and $1.8\times 10^{6}$ T",
                  r"$2.5\times 10^{10}$ at $t=10a$ ($2.1$--$3.0\times 10^{10}$ over the Yukawa-weight band); $1.3\times 10^{10}$ at $t=5a$",
                  r"first result $36$~s; campaign $13$~min",
-                 r"$3.1$~yr \\", r"$3.6$--$4.0$~yr for $4$--$8$ temperatures",
+                 r"first result $3.1$~yr;", r"$3.6$--$4.0$~yr for $4$--$8$ temperatures",
                  r"$1.1\times 10^{3}$ at $10a$ $+$ $5.5\times 10^{3}$ at $5a$, one temperature",
                  r"With the Hadamard test this needs $1.2\times 10^{15}$ shots at $10a$",
                  r"no zero-point part: $1.3\times 10^{-4}$ at $10a$",
@@ -2448,7 +2448,7 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  r"$\lambda=Q(2+y\rho_{\max})=648$", r"$\beta\lambda=1296$", r"$2\lambda t=6.5\times 10^{3}$ applications",
                  # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,
                  # the Hilbert-Schmidt-norm formula went (described in words), "budget" -> "2033 target"
-                 r"$3.4$ times the 2033 target", r"Thermal-state systematic & not bounded",
+                 r"$3.4$ times the 2033 target", r"thermal-state systematic not bounded",
                  r"preprint~\cite{AlvesLammLiu_inprep}"):
         assert frag in tex, frag
     assert "in preparation" not in tex and "N_{\\rm coupling}" not in tex
