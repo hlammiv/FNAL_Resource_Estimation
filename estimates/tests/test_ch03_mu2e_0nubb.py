@@ -417,7 +417,7 @@ def test_2028_oracle_load_is_printed_separately(r28, tex):
     # cut pass 2026-10-06: the requirements rows that restated the boxes are gone; one row points at the boxes
     # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
     assert "peak $88$ LQ, $127$ under amplitude estimation" in tex
-    assert "lower bound" not in tex.split("The 2028 benchmark}")[1].split("The 2033 tiers")[0]
+    assert "lower bound" not in tex.split("Concrete instantiations}")[1].split("The 2033 target (1000+")[0]   # restructure 2026-10-22
     assert "$61$ LQ" not in tex and "$65$ LQ" not in tex
     assert "$63$ LQ" not in tex and "QROM address" not in tex
     assert "the register needs $55$ LQ during the insertion" in tex and "a peak of $116$" not in tex
@@ -444,7 +444,7 @@ def test_2028_oracle_load_is_printed_separately(r28, tex):
     assert "The executed shot is then $0.17\\times$ the 2028 target at $D=10^{2}$" in tex
     assert ("and $1.005\\times$ at $D=600$, above it by less than the precision of the count, "
             "and it fits up to $D=596$") in tex and "$D=603$" not in tex and "$D=604$" not in tex
-    assert "lookup passes" not in tex and "lookup-only price" not in tex and "2--3" not in tex.split("Sizes &")[1][:400]
+    assert "lookup passes" not in tex and "lookup-only price" not in tex and "2--3" not in tex.split("insertion LCU $\\Gamma\\lesssim 128$")[1][:400]
     assert "4D-4" not in tex and "D\\sim 10^{4}" not in tex
     # R16 sweep: the Gamma = 512 / 1600 what-ifs and the 0.054x fraction live in the prose only (pinned above)
     assert "insertion LCU $\\Gamma\\lesssim 128$ (dipole $\\Gamma{=}24$)" in tex
@@ -488,7 +488,7 @@ def test_2028_shots_and_wall_time(r28, tex):
     if tex is not None:
         assert "$\\sim 0.024$--$0.10\\,$s per Hadamard-test shot" in tex
         assert "$\\sim 8$--$33$ min (Hadamard test) or $\\sim 68$ s (MLAE at $D=10^{2}$) on one machine" in tex
-        assert "(at $1\\,\\mu$s per T-gate and $0.1$\\,ms per shot, convention in Ch.~\\ref{ch:overview}" in tex
+        # restructure 2026-10-22: the timing convention parenthetical left the box row; the sentence after the box carries it
         # the 0.1 ms is sourced in the chapter (r17 verifier); the 1 ms bound is retired (r25)
         assert "$0.1$\\,ms per shot for initialization, readout and decoding, as on current superconducting hardware~\\cite{Google_QEC_below_threshold}" in tex
         assert "which we bound at $1$\\,ms" not in tex and "1$\\,ms per-shot bound" not in tex
@@ -918,7 +918,7 @@ def test_2033_shots_as_printed(a, r33, tex):
     # style pass 2026-10-08: box rows hold quantity and value only (rule 10); numbers unchanged
     assert ("$4.9\\times 10^{3}$ per Hamiltonian; "
             "$9.8\\times 10^{3}$--$1.5\\times 10^{4}$ over the $2$--$3$ VS-IMSRG Hamiltonians") in tex
-    assert "Per-shot wall time & $\\sim 1.8$--$7.3$ min" in tex and "T-depth & $8.9\\times 10^{6}$--$3.7\\times 10^{7}$" in tex
+    assert "$\\sim 1.8$--$7.3$ min per shot" in tex and "T-depth & $8.9\\times 10^{6}$--$3.7\\times 10^{7}$" in tex
     assert "Flagship $^{27}$Al & $e_{\\max}{=}8$--$10$: $\\approx 700$--$1100$ LQ, $\\times 8.5\\times 10^{4}$--$3.3\\times 10^{6}$ the 2033 target" in tex   # box row; multiple_flagship is in retired
     assert "(all six categories at the dipole's shot factor)" not in tex and "estimand;" not in tex
     assert "per basis scan" not in tex
@@ -1058,7 +1058,7 @@ def test_single_machine_serial_campaign(a, r28, r33, tex):
         ch3.Assumptions(campaign_horizon_yr=c.Stated((5, 10), "x"))
     if tex is None:
         pytest.skip("chapter .tex not on disk")
-    assert "Campaign window & 5 years" in tex
+    # restructure 2026-10-22: Requirements summary folded into the 2033 box; the campaign window is report-wide
     low = tex.lower()
     for s in ("shot-parallel", "shot parallel", "embarrassingly", "across machines", "machine-year",
               "machine year", "-fold parallelism", "serialized", "divides across", "machines needed",
@@ -1458,7 +1458,7 @@ def test_referee_g2_m3_load_angle_rotations(a, r28, tex):
     for frag in ("we count them as phase-gradient additions~\\cite{arxiv_1812_00954,arxiv_1709_06648}",
                  "(fits to $D=596$; schematic $^4$He needs $77$--$103$ at fidelity $0.999$)",
                  "$+$ $7.7\\times 10^{2}$--$1.0\\times 10^{3}$ (amplitude rotations)",
-                 "by Hadamard test on a prepared ground state]"):
+                 "dipole insertion by Hadamard test, $N_{\\rm orb}\\sim 10$]"):
         assert frag in tex, frag
     assert "Size (2028 benchmark)" not in tex          # cut pass 2026-10-06: row restated the box
 
@@ -1473,8 +1473,7 @@ def test_referee_max_subroutine_time(a, tex):
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     assert "Maximum subroutine time & N/A" not in tex
-    assert ("Maximum subroutine time & $\\sim 54$ min per shot ($0\\nu\\beta\\beta$ validation stage, resonant "
-            "transition, within the 2033 target); $1.8$--$7.3$ min ($^{27}$Al, 2033); $0.10$\\,s (2028)") in tex
+    assert "resonant-transition estimate: $8.7$--$38$ days ($\\sim 54$ min per shot)" in tex   # restructure 2026-10-22: box row
 
 
 def test_referee_text_corrections(a, tex):
@@ -1505,7 +1504,7 @@ def test_referee_text_corrections(a, tex):
     assert "Target observable & spin-dependent element to $5\\%$" in tex
     assert "all six categories (other five at the dipole's shot factor and $\\Gamma\\le 128$)" in tex
     assert "whose string counts are not derived here" in tex
-    assert "An expression of interest for Mu2e-II was submitted in 2018" in tex
+    assert "an expression of interest was submitted in 2018" in tex
     assert "nEXO was not selected" not in tex and "We do not date them here." not in tex
     assert "pre-loaded" not in tex and "---" not in tex
     assert "so it isolates the operators that couple to nuclear spin~\\cite{arxiv_2208_07945}" in tex
