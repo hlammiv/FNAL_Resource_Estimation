@@ -42,7 +42,8 @@ applications/chNN_*/    one README per chapter (what is estimated, every assumpt
 docs/                   CONTRACT.md (what every chapter model must expose), CIRCUIT_STATUS.md
                         (generated), PAPER_COSTS.md, OPEN_ITEMS.md (what the models cannot decide)
 resources.json          the generated numbers, in the form the paper's figures and table read
-sync_paper.sh           copies estimates/ into the paper's working tree and runs its suite there
+paper_tools/            figure scripts and table checks for the paper (fig_*.py, verify_table.py)
+sync_paper.sh           checks a checkout of the paper against the models (suite and table check)
 ```
 
 ## Running
@@ -59,7 +60,7 @@ python -m estimates --resources            # regenerate resources.json
 python -m estimates --status               # regenerate docs/CIRCUIT_STATUS.md
 ```
 
-Some tests check that a chapter's text quotes the model's numbers. They need the paper source alongside and skip without it; section 2 ("How to run") of each chapter README says which tests these are and what they check before they skip.
+Some tests check that a chapter's text quotes the model's numbers. They need the paper source and skip without it (`./sync_paper.sh <paper-checkout>` runs them); section 2 ("How to run") of each chapter README says which tests these are and what they check before they skip.
 
 ## Applications
 

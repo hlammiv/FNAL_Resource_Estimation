@@ -1,29 +1,35 @@
 #!/usr/bin/env bash
-# Push the resource models from this repository into the paper's working copy and run the
-# paper's own test suite there.
+# Check the paper's text against the resource models in this repository.
 #
-# This repository is the source of truth for estimates/. The paper tree keeps a copy at
-# scripts/estimates/ so that its figures (scripts/fig_*.py, resources.py) and its table checks
-# (tests/test_table.py, verify_table.py) can import it. Files that live only in the paper tree
-# are excluded, so --delete does not remove them:
-#   NEEDS_AUTHOR.md, proposals/         the authors' working notes
-#   CONTRACT.md, CIRCUIT_STATUS.md,     the paper's copies of docs/ (refreshed below)
-#   PAPER_COSTS.md
-#   tests/test_table.py                 needs scripts/verify_table.py and the paper's .tex
+# The paper repository holds text, figures and the bibliography only. All code lives here:
+# estimates/ (the models) and paper_tools/ (figure scripts and table checks). This script
+# assembles a temporary tree in the layout those tools expect, with the paper's sources linked
+# in, and runs the test suite and the table check there. It changes neither repository, except
+# that figure scripts run from such a tree write to the paper's Figures/.
+#
+# Usage: sync_paper.sh [path-to-paper-checkout]
 set -euo pipefail
 
-REPO=/home/hlamm/Desktop/fnalqc/FNAL_Resource_Estimation
-PAPER=/home/hlamm/Desktop/fnalqc/overleaf_upload_20261002b
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PAPER="$(cd "${1:-/home/hlamm/Desktop/fnalqc/FNAL_2026_QC_WP}" && pwd)"
 
-rsync -a --delete \
-  --exclude __pycache__ --exclude .pytest_cache \
-  --exclude NEEDS_AUTHOR.md --exclude proposals/ \
-  --exclude CONTRACT.md --exclude CIRCUIT_STATUS.md --exclude PAPER_COSTS.md \
-  --exclude tests/test_table.py \
-  "$REPO/estimates/" "$PAPER/scripts/estimates/"
+TREE="$(mktemp -d)"
+trap 'rm -rf "$TREE"' EXIT
 
-# The three generated/contract documents are kept in docs/ here and beside the package there.
+for f in "$PAPER"/*; do ln -s "$f" "$TREE/"; done
+rm -f "$TREE/scripts"
+
+mkdir "$TREE/scripts"
+rsync -a --exclude __pycache__ --exclude .pytest_cache --exclude test_table.py \
+  "$REPO/paper_tools/" "$TREE/scripts/"
+rsync -a --exclude __pycache__ --exclude .pytest_cache "$REPO/estimates/" "$TREE/scripts/estimates/"
+cp "$REPO/paper_tools/test_table.py" "$TREE/scripts/estimates/tests/"
+cp "$REPO/resources.json" "$TREE/scripts/"
 cp "$REPO/docs/CONTRACT.md" "$REPO/docs/CIRCUIT_STATUS.md" "$REPO/docs/PAPER_COSTS.md" \
-   "$PAPER/scripts/estimates/"
+   "$TREE/scripts/estimates/"
+# The Ch. 2 tests read their study files from applications/ beside the package.
+ln -s "$REPO/applications" "$TREE/scripts/applications"
 
-cd "$PAPER/scripts" && OMP_NUM_THREADS="${OMP_NUM_THREADS:-2}" python3 -m pytest estimates/tests -q
+cd "$TREE/scripts"
+OMP_NUM_THREADS="${OMP_NUM_THREADS:-2}" python3 -m pytest estimates/tests -q -p no:cacheprovider
+python3 verify_table.py
