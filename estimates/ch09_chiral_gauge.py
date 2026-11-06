@@ -2198,7 +2198,7 @@ def _model_2033(a: Assumptions) -> Result:
     c_sp, t_dov, t_shot = P["c_sp"], P["t_dov"], P["t_shot"]
     t_rot_retired = float(a.t_per_rot.value)          # 30: retired constant, records only
     n_dov_floor = be_norm * t_over_a                  # 2Q t = 4320 applications (r22: 21,600): no step size goes below
-    t_shot_floor = n_dov_floor * t_dov                # 4.1e9 T at the headline application price
+    t_shot_floor = n_dov_floor * t_dov                # 1.2e10 T at the headline application cost
     # r24 records: the r22-r23 headline (kappa 1e2, t = 50a, 5031 steps) and the worst-case step at those inputs
     P_r22 = _price_sp(sd_r22["n_central"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)      # 2.00789e11
     P_r22_bound = _price_sp(tb_r22["n_steps"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)  # 1.276e12

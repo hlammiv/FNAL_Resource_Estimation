@@ -2099,7 +2099,7 @@ def _model_2033(a: Assumptions) -> Result:
         "trend_over_horizon": trend_over_horizon,                         # (0.30, 4.4)
         "shots_campaign_2033": shots_camp,                                # (1.27e4, 2.53e4): trend + L_par = 4 check
         "wall_campaign_2033_s": wall_camp,
-        "wall_campaign_2033_yr": (wall_camp[0] / yr, wall_camp[1] / yr),  # (1.72, 25.8) -> '1.7--26 yr'
+        "wall_campaign_2033_yr": (wall_camp[0] / yr, wall_camp[1] / yr),  # (3.28, 25.8) -> '3.3--26 yr'
         "campaign_over_horizon": camp_over_horizon,                       # (0.34, 5.16) -> '5.2x'
         "configurations_in_horizon": configs_in_horizon,
         "wall_campaign_two_spacings_yr": (wall_camp_2sp[0] / yr, wall_camp_2sp[1] / yr),

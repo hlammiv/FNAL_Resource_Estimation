@@ -431,7 +431,7 @@ class Assumptions:
                                                         "arxiv_1802_07718,arxiv_hep-lat_0105012")
     sys_finite_volume_floor: Tagged = Assumed(0.50, "finite volume at LT = 0.68-0.91 is order one and not quantified; "
                                                     "0.5 is the floor if a number is forced. Euclidean thermal "
-                                                    "observables converge only for LT >= 4 (arxiv_hep-lat_0105012, "
+                                                    "observables converge only for LT >~ 3-4 (arxiv_hep-lat_9602007, "
                                                     "arxiv_1007_2580, arxiv_2401_01169); 5-10% shifts at LT = 2-3 "
                                                     "(arxiv_hep-lat_0701020, arxiv_0704_1801, arxiv_1802_07718, "
                                                     "arxiv_1012_4963); T_c moved > 12% at LT = 1.5-1.7 "
@@ -1307,11 +1307,11 @@ def _intermediates_2033(a: Assumptions, c: dict) -> dict:
         "m_pi_L_2033_hi": a.m_pi_MeV.hi * c["Lfm"] / a.hbarc.lo,         # 1.22  -> "~1"
         "L_for_mpiL4_fm": c["L_mpiL4"],                                  # 2.26 -> "2.3"
         "L_ext_sites": (c["L_mpiL4"] / a.a_s_fm.lo),                     # 11.3 -> "~12^3"
-        "lq_12cubed_lo": c["lq_12"][0], "lq_12cubed_hi": c["lq_12"][1],  # 62,308 -> "~6e4"
-        "factor_beyond_2033": c["lq_12"][0] / 1000.0,                    # 62 -> "~60" (vs the 1000-LQ limit)
+        "lq_12cubed_lo": c["lq_12"][0], "lq_12cubed_hi": c["lq_12"][1],  # 72,676 -> "~7e4"
+        "factor_beyond_2033": c["lq_12"][0] / 1000.0,                    # 73 -> "~70" (vs the 1000-LQ limit)
         "factor_beyond_2033_register": c["lq_12"][0] / (0.5 * (c["lq"][0] + c["lq"][1])),   # 56 -> "~60"
-        "lq_12cubed_over_lanl": c["lq_12"][0] / a.lanl_lq.lo,            # 1.7 -> "comparable"
-        "lq_4cubed_lo": c["lq_4"][0], "lq_4cubed_hi": c["lq_4"][1],      # 2404-2504 -> "low thousands"
+        "lq_12cubed_over_lanl": c["lq_12"][0] / a.lanl_lq.lo,            # 2.0 -> "comparable"
+        "lq_4cubed_lo": c["lq_4"][0], "lq_4cubed_hi": c["lq_4"][1],      # 2788-2888 -> "low thousands"
         "k_min_over_T_at_L_ext_fm": tuple(c["kmin_at_L_ext_fm"] / T for T in c["Ts"]),   # 2.4, 1.8 -> "1.8-2.4 T at L ~ 2.3 fm"
         "k_min_over_T_at_12cubed": tuple(c["kmin_at_12cubed"] / T for T in c["Ts"]),     # 2.3, 1.7 -> "1.7-2.3 T on 12^3"
         "L_for_kmin_eq_T_fm": c["L_kmin_eq_T"],                          # 5.5, 4.1 -> "L >~ 4-6 fm" (was 7.75)

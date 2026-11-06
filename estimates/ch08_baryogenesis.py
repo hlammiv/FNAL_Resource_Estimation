@@ -320,7 +320,7 @@ class Assumptions:
     c_est: Tagged = Stated(1.0, f"{TEX}:63", "author-adopted branch prior |p0 A_R| < sin(pi/66) = 0.048: "
                            "every circuit at m_max, Cramer-Rao constant one (Suzuki Fisher_final)")
     dn_branch_prior: Tagged = Stated(0.048, f"{TEX}:63", "'which we adopt as a prior rather than derive': |p0 A_R| < sin(pi/66) (author "
-                                                     "choice); the comparator's largest bin gives p0 A_R = 0.033 (2026-10-12)")
+                                                     "choice); the comparator's largest bin gives p0 A_R = 0.037 (2026-10-12)")
     mlae_schedule: Tagged = Cited("single", "arxiv_1904_10246 Manuscript_v2.tex:238",
                                   "all circuits at m_max; LIS m = 1, 3, ..., m_max (:268, :271) kept as sensitivity")
     dn_estimate: Tagged = Assumed(0.056, "COMPUTED (2026-10-12, sint/scatter.py, after the Bloch-sign fix of the verification "
@@ -1191,7 +1191,7 @@ def _model_2033(a: Assumptions) -> Result:
     derived_bound_ok = float(a.dn_state_independent_bound.lo) < branch_bound   # False (R15)
     prior_ok = (a.mlae_schedule.value == "single" and float(a.c_est.lo) == 1.0
                 and round(float(a.dn_branch_prior.lo), 3) == round(branch_bound, 3)
-                and p0 * float(a.dn_estimate.lo) < branch_bound)  # True: p0 A_R = 0.033 < 0.0476 (the chapter's bound is on |p0 A_R|)
+                and p0 * float(a.dn_estimate.lo) < branch_bound)  # True: p0 A_R = 0.037 < 0.0476 (the chapter's bound is on |p0 A_R|)
     single_depth = derived_bound_ok or prior_ok
     if a.mlae_schedule.value not in ("single", "LIS"):
         raise ValueError("only the single-depth and Suzuki LIS schedules are priced")
@@ -1398,7 +1398,7 @@ def _model_2033(a: Assumptions) -> Result:
         "per_bin_mlae": per_bin_mlae, "per_bin_mlae_quoted": float(a.mlae_queries_per_bin_quoted.lo),
         "mlae_single_depth": single_depth, "mlae_estimator_constant": c_est,
         "mlae_branch_bound_needed": branch_bound, "dn_estimate": float(a.dn_estimate.lo),
-        "dn_estimate_headroom": branch_bound / (p0 * float(a.dn_estimate.lo)),   # 1.44 on p0 A_R (was 48 on A_R = 1e-3)
+        "dn_estimate_headroom": branch_bound / (p0 * float(a.dn_estimate.lo)),   # 1.29 on p0 A_R (was 48 on A_R = 1e-3)
         "s_int_band": (a.s_int_band.lo, a.s_int_band.hi),
         "mlae_depths": tuple(depths), "mlae_circuits_per_depth_per_bin": n_per_depth,
         "mlae_circuits_per_bin": circuits_per_bin,

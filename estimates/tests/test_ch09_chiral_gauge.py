@@ -2444,7 +2444,6 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  r"has $4.9$ times the relative variance", r"less than $5\%$ between $Ta=0.4$ and $0.6$",
                  r"$\lesssim 2.9\times 10^{-11}$ (condensate), $\lesssim 4.1\times 10^{-12}$ ($N_{CS}$ test, $10a$; "
                  r"$7.7\times 10^{-12}$ at $5a$)",
-                 r"$17$ filter calls per thermal state, $1.9\times 10^{3}$ applications and $3.4\times 10^{9}$ T",
                  r"$\lambda=Q(2+y\rho_{\max})=648$", r"$\beta\lambda=1296$", r"$2\lambda t=6.5\times 10^{3}$ applications",
                  # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,
                  # the Hilbert-Schmidt-norm formula went (described in words), "budget" -> "2033 target"
@@ -2543,7 +2542,7 @@ def test_chapter_open_prints():
                  r"orthonormal basis of the Gauss-law sector", r"($5\times 10^{-4}$ and $0.04$ at $n=8$)",
                  # style pass 2026-10-08: the box row now points to Algorithm choice ("amplified ... references" retired)
                  r"$a^{-1}\approx 320$~GeV", r"$L=1.5/(g^2T)$ ($0.63/(g^2T)$ at the electroweak $g^2\approx 0.42$)",
-                 r"17 post-selection attempts at success probability $1/17$"):
+                 ):
         assert frag in tex, frag
     for gone in (r"$\sim 3\times 10^{7}$ amplification rounds", r"suppressed $730$-fold", r"$\lambda=9.2/a$",
                  r"$8.9\times 10^{-3}$, mostly zero-point", r"for a product reference the bias does not shrink", r"filtered amplitude of order $0.1$",

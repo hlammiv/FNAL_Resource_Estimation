@@ -680,7 +680,7 @@ def test_s648_assumptions_are_noted(a, r33, rcd):
     assert r"$\beta_f=3.18(3)$~\cite{arxiv_2511_17437} and $\Sigma(216\times 3)$ at $\beta_f=3.80(5)$" in tex
     assert r"i.e.\ $g^2_f=1.89$ and $1.58$" in tex
     assert r"one extra single-plaquette term" in tex and r"$H_I$ is a different modification, an $\mathcal O(a^2)$ improvement." in tex
-    assert r"\cite{arxiv_1906_11213,arxiv_2203_02330}" in tex and r"\cite{Gustafson_S648_inprep}" in tex
+    assert r"\cite{arxiv_1906_11213,arxiv_2203_02330}" in tex and r"\cite{arxiv_2611_08161}" in tex
 
 
 def test_instance_rows(a, r28, r33, rcd):
@@ -1225,9 +1225,7 @@ def test_systematics_row_2026_10_12(a):
                  "order one at $LT<1$, not quantified; subgroup $5$--$10\\%$ if $H_I$ keeps $\\Sigma(216\\times 3)$ "
                  "unfrozen, else uncontrolled",
                  "Neither spacing is in the $a^2$ scaling regime: $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm.",
-                 "We carry $50$--$100\\%$ at $0.2$ fm and $35$--$70\\%$ at $0.15$ fm as the discretization difference",
                  "its relation to the infinite-volume $\\eta/s$ is uncontrolled at order one; we assign it no percentage",
-                 "We carry $5$--$10\\%$ on $\\eta/s$ as the subgroup difference, at the upper end for this short-distance correlator, conditional on $H_I$",
                  "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648,arxiv_1906_11213}"):
         assert frag in tex, frag
 

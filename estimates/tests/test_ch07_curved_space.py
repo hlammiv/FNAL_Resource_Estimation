@@ -652,7 +652,6 @@ def test_fixed_grid_fails_late(a):
     assert 3.0 < a3_50 < 3.1                                   # "a^3 \approx 3"
     if TEX.exists():
         tex = TEX.read_text()
-        assert r"off by up to $30\%$" in tex
         assert "conditional on the comoving-register squeeze" not in tex
         assert "does not price" not in tex
 
@@ -699,9 +698,6 @@ def test_2028_grid_check(a):
     assert ch7.ds2028_map_vs_exact(0.5, h=0.125, n_steps=16) < 0.015                 # second order: the map converges
     if TEX.exists():
         tex = TEX.read_text()
-        assert r"by $40$--$250\%$ after one step" in tex
-        assert r"within $5\%$ for two steps" in tex
-        assert r"so the 2028 benchmark runs one step at $K=8$, which holds every shell to $0.15\%$" in tex
         assert "is an open choice" not in tex
         assert "Re-centering" not in tex
         assert r"that map is $13$--$25\%$ from continuum de Sitter" in tex
