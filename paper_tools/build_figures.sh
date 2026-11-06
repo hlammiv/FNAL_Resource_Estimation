@@ -33,5 +33,5 @@ echo "--- resource dataset ---"
 python3 resources.py
 
 echo
-echo "--- Table 1.1 consistency ---"
+echo "--- Table 1.2 and 1.3 consistency ---"
 python3 verify_table.py

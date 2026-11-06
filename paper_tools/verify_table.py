@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Check Table 1.1 against the chapter resource models.
+"""Check the chapter table (Table 1.2 since 2026-11-05) against the chapter resource models.
 
-Table 1.1 lives in two places -- table_standalone.tex and a mirrored copy in
+The table lives in two places -- table_standalone.tex and a mirrored copy in
 main-overview.tex -- and both restate numbers that are derived in the chapter
 benchmarkbox/utilitybox environments. Nothing in LaTeX enforces that they
 agree, and in August 2026 four rows had drifted (Chs. 4, 5, 8, 9).
@@ -85,7 +85,7 @@ def main():
     overview = fields(DOC / "main-overview.tex")
     bad = []
 
-    print("Table 1.1 vs. chapter resource models\n" + "-" * 62)
+    print("Table 1.2 vs. chapter resource models\n" + "-" * 62)
 
     for ch in sorted(ROW_KEY):
         s, o = standalone.get(ch), overview.get(ch)
