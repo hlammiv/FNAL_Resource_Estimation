@@ -1348,8 +1348,7 @@ def test_insertion_share_and_moru_wording(a, tex):
         assert "same factor of two in Eq." not in tex and "each register spans" not in tex
         assert "register asymmetry" not in tex
         # R15 ruling 3: Mo/Ru classification and register
-        assert "the $22$ proton states of $jj44$ and the $32$ neutron states of $jj55$, $54$ modes in all" in tex
-        assert "falls between the $jj44$ and $jj55$ pairs, both co-design" in tex     # R16
+        assert "The pair is a co-design target" in tex     # R16, wording tightened on the markup board
         assert "near-miss cross-check" not in tex and "near-miss pairs" not in tex
         assert "$0\\nu\\beta\\beta$ co-design & $^{76}$Ge/Se, $^{82}$Se/Kr: $\\times 2.6$--$11$" in tex
         assert "$0\\nu\\beta\\beta$ near miss & $^{48}$Ca/Ti: $\\times 1.8$--$7.3$" in tex
@@ -1414,8 +1413,7 @@ def test_r17_registers_printed_and_load_count(r33, tex):
         pytest.skip("chapter .tex not on disk")
     assert "\\le 250" not in tex
     assert "Logical qubits & $74$--$174$ \\\\" in tex
-    assert "$N_{\\rm anc}\\sim 50$--$150$ ancillae, $74$--$174$ LQ" in tex
-    assert "$90$--$190$ and $94$--$194$ LQ" in tex
+    assert "$^{48}$Ca/Ti & $pf$ & 40 & 90--190" in tex and "$^{76}$Ge/Se & $jj44$ & 44 & 94--194" in tex   # moved to the survey table
     # referee M3 (2026-10-04): the angle rotations are now estimated in the text (load_angle_cost)
     assert ("That source does not itemize the rotations that apply the amplitude angles;") in tex   # style pass: L dropped
     assert "and we do not price them" not in tex
