@@ -21,7 +21,7 @@ def data():
         (r"$B/M$ first result", first, True, r"$13$–$103$ d", ""),
         (r"$B/M$ campaign (trend + $L_\parallel=4$ check)", i["wall_campaign_2033_yr"], True, r"$3.3$–$26$ yr", r"high end $5.2\times$ window"),
         (r"$L_\parallel=4$ check", i["wall_box_check_one_mode_yr"], True, r"$0.46$–$3.7$ yr", ""),
-        (r"Static dipole Im$\,V$, three temperatures", tuple(x / yr for x in i["dipole_static"]["wall_scan_s"]), False, r"$0.47$–$0.80$ yr", ""),
+        (r"Static dipole Im$\,V$, three temperatures", tuple(x / yr for x in i["dipole_static"]["wall_scan_s"]), False, r"$0.51$–$0.87$ yr", ""),
         (r"Light-like dipole $\hat q$, three temperatures", tuple(x / yr for x in i["dipole_lightlike"]["wall_scan_s"]), False, r"$3.7$–$6.8$ d", ""),
         (r"Fragmentation function (FCC era)", i["wall_ff_yr"], True, r"$\geq 12$–$1400$ yr", r"$2.3$–$280\times$ window"),
     ]

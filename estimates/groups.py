@@ -6,8 +6,8 @@ paper and line; the quotable record is PAPER_COSTS.md next to this file.
 
 Sources (bib keys): arxiv_2208_12309 (2T), arxiv_2312_10285 (2O),
 arxiv_2405_05973 (Sigma(36x3)), arxiv_2408_00075 (fast Fourier transforms),
-arxiv_2511_17437 (Sigma(72x3)), Gustafson_S648_inprep (Sigma(216x3), in preparation;
-draft mains648.tex and cost_notes/, read 2026-10-05).
+arxiv_2511_17437 (Sigma(72x3)), arxiv_2611_08161 (Sigma(216x3), Table 11; replaced the
+October draft on 2026-11-06, ruling S648).
 
 What the papers give, and what they do not:
 - Register per link: 2T 5, 2O 6, Sigma(36x3) 8, Sigma(72x3) 9. The chapters'
@@ -62,7 +62,9 @@ class PrimitiveCost:
 
         t(eps) = t_const + n_rot * (1.15 log2(1/eps) + 9.2)  =  t_papers(eps) + 9.2 n_rot
 
-    `t_papers` is the paper's own slope-only price, kept as the legacy record (rule R2, superseded).
+    `t_papers` is the paper's own slope-only price, kept as the legacy record (rule R2, superseded). Exception:
+    arxiv_2611_08161 (Sigma(216x3)) prints the full fit, 9.2 T per rotation inside its constant, so there t_const is
+    that constant less 9.2 n_rot, t(eps) is the printed expression and t_papers is only the slope-only record.
     `toffoli` is the count implied at 7 T per Toffoli (derived, flagged as such in `note`).
     """
     t_const: float
@@ -151,7 +153,7 @@ class Group:
     used_by: tuple[str, ...] = ()
     note: str = ""
     # U_phi (electric phase) calls per link per step, by Hamiltonian. Absent -> 1 (the Sigma(36x3)/(72x3) papers
-    # add it once). The Sigma(216x3) draft's tab:primcost lists U_Ph at 1 (H_KS) and 2 (H_I).
+    # add it once). The Sigma(216x3) paper's Table 13 lists U_Ph at 1 (H_KS) and 2 (H_I).
     phi_mult: Mapping[str, float] = field(default_factory=dict)
 
     @property
@@ -344,49 +346,59 @@ GROUPS: dict[str, Group] = {
     ),
 
     # Sigma(216x3) (order 648; the qutrit Clifford group). Author ruling (H. Lamm, 2026-10-05): Ch. 5 2033 moves to
-    # this group with H_I. Source: E. J. Gustafson, H. Lamm, E. M. Murairi, S. Osorio Perez, "Primitive quantum gates
-    # for an SU(3) discrete subgroup: Sigma(216x3)", IN PREPARATION (bib Gustafson_S648_inprep); draft
-    # /home/hlamm/Desktop/QC/S648_primitive_gates/mains648.tex (D below), cost notes in cost_notes/ (CN below).
-    # QUBIT ENCODING only (D tab:qubitcosts :836-846); the draft's qubit-qutrit rows (tab:qutritcosts) are not used.
-    # Same conventions as the other groups: 7 T per Toffoli, the printed log coefficient read as n_rot = b / 1.15,
-    # each rotation at the full fit (E20). Multiplicities: D tab:primcost :870-883 = PRIMCOST, plus U_Ph at 1 (KS) /
-    # 2 (I) per link per step (phi_mult). Composition reproduces D tab:costsummary :978-979 exactly (tests).
-    # Rotations per link per step: KS 923 + 7 d, I 1839 + 21 d (= D's synthesis-error column, no 1/2 factor).
+    # this group with H_I. Author ruling (S648, 2026-11-06): costs move from the October draft to the published paper.
+    # Source: E. J. Gustafson, H. Lamm, E. Murairi, S. Osorio Perez, "Primitive Quantum Gates for an SU(3) Discrete
+    # Subgroup: Sigma(216x3)", arxiv_2611_08161. QUBIT ENCODING only (Table 11); the mixed rows (Table 12) are not used.
+    # READING THE TABLE. Table 11 prints a + b log2(1/eps) with rotations at 1.15 log2(1/eps) + 9.2 (Table 3), so its
+    # constant a already holds 9.2 T per rotation. PrimitiveCost.t adds the 9.2 itself, so t_const here is the
+    # non-rotation T: a - 9.2 n_rot, n_rot = b / 1.15. U_Tr 30924 - 15 x 9.2 = 30786; U_FFT 13597.2 - 426 x 9.2 = 9678
+    # (Table 9: 9678 T, 426 R_Z); U_phi 330 - 10 x 9.2 = 238 (Table 10: 238 T, 10 R_Z). t(eps) is then exactly Table 11.
+    # Multiplicities: Table 13 = PRIMCOST, plus U_Ph at 1 (KS) / 2 (I) per link per step (phi_mult). Composition
+    # reproduces Table 14 exactly (tests). Rotations per link per step: KS 854.5 + 7.5 d, I 1701.5 + 22.5 d (Table 14's
+    # synthesis-error column). The T-width and clean-ancilla columns are recorded here; see the S648 note below.
+    # S648 NOTE ON WIDTH AND ANCILLAS. No model reads this entry's T-width, and no model reads its `ancilla`: the Ch. 5
+    # and Ch. 6 registers carry a 100-200 ancilla allowance, and SCHED_2033 in ch05_qgp_transport.py assumes the whole
+    # electric layer runs at once. That layer now needs 81 x 9 (U_FFT) and 81 x 18 (U_Ph) clean ancillas if run at once.
     "S216x3": Group(
         "Σ(216×3)", 648,
-        link_qubits_chapter=Cited(11, "Gustafson_S648_inprep", "'can be encoded into a register of 11 qubits' (D :171); ceil(log2 648) = 10 is not used"),
-        link_qubits_compiled=Cited(11, "Gustafson_S648_inprep", "omega^p C^q E^r V^(2s+t) X^u D^y: 4 qutrits (p,q,r,y) as qubit pairs + 3 qubits (s,t,u) = 11 (D :321-329)"),
+        link_qubits_chapter=Cited(11, "arxiv_2611_08161", "the 11-qubit element register; ceil(log2 648) = 10 is not used"),
+        link_qubits_compiled=Cited(11, "arxiv_2611_08161", "omega^p C^q E^r V^(2s+t) X^u D^y: 4 qutrits (p,q,r,y) as qubit pairs + 3 qubits (s,t,u) = 11"),
         plaquette_t=None,
         primitives={
-            "U_inv": _pc(2065, 0, 4, "Gustafson_S648_inprep tab:qubitcosts (D :840); CN cost_U_inverse.tex :145",
-                         "T-width 2; 295 Toffoli; circuit Fig. dsbqubitinverse (D :542) with Fig. mathfrakvqubit"),
-            "U_mul": _pc(2548, 0, 5, "Gustafson_S648_inprep tab:qubitcosts (D :841); CN cost_U_multiplication.tex :148",
-                         "T-width 3; 364 Toffoli; circuit Fig. dsbmultiplyqubit (D :609)"),
-            "U_Tr":  _pc(30786, 16.1, 10, "Gustafson_S648_inprep tab:qubitcosts (D :842); squish D :693, phasing D :695",
-                         "T-width 1; squish 2 x 15393 T (4398 Toffoli) + 14 R_Z syntheses (15 rotations, 14 distinct "
-                         "angles, x_{0,1,2} = x_{0,1,2,3} synthesized once and applied twice); 10 clean ancilla = 4 class "
-                         "qubits + 6 scratch. Circuits Figs. s216x3tracesquishdiagram, dsbphasetrace, App. tracecircuits"),
-            "U_phi": _pc(630, 11.5, 1, "Gustafson_S648_inprep tab:qubitcosts (D :844), sec:uph_impl (D :810); CN cost_U_phase.tex",
-                         "kinetic phase U_Ph: decode-and-rotate on a 5-qubit irrep label, 90 Toffoli + 10 controlled R_Z "
-                         "(ten nonzero phase classes); T-width 1; ancilla 1 in D (CN resource_comparison.tex :81 lists 5). "
-                         "Called 1 x (H_KS), 2 x (H_I) per link per step"),
-            "U_FFT": _pc(1086, 529, 1, "Gustafson_S648_inprep tab:qubitcosts (D :843); CN cost_U_fourier.tex :168-170",
-                         "T-width 11. = D_D twiddle 551 + 9 rot, Phi^{72x3} 0 + 8 rot (fixed cube roots), qubit H_3 3 exact T + "
-                         "10 rot, inner U_FFT^{Sigma(72x3)} 532 + 433 rot: 460 rotations. The inner FFT 'enters by citation' "
-                         "to arxiv_2511_17437 (D :752), which prints only a lower-bound estimate 532 + 515.2 log (:905); the "
-                         "draft's 497.95 log is the authors' own re-synthesis (CN resource_comparison.tex :746, :779-782)",
-                         t_gates=3),
+            "U_inv": _pc(2065, 0, 4, "arxiv_2611_08161 Table 11",
+                         "T-width 2; 4 clean ancillas; 295 Toffoli implied at 7 T"),
+            "U_mul": _pc(2548, 0, 5, "arxiv_2611_08161 Table 11",
+                         "T-width 3; 5 clean ancillas; 364 Toffoli implied at 7 T"),
+            "U_Tr":  _pc(30786, 17.25, 10, "arxiv_2611_08161 Table 11",
+                         "printed 30924 + 17.25 log2(1/eps), T-width 1, 10 clean ancillas; t_const = 30924 - 15 x 9.2 = 30786 "
+                         "(4398 Toffoli implied at 7 T), 15 rotations"),
+            "U_phi": _pc(238, 11.5, 18, "arxiv_2611_08161 Table 11; Table 10; Sec. VIII.1",
+                         "kinetic phase U_Ph: printed 330 + 11.5 log2(1/eps), T-width 1, 18 clean ancillas; t_const = 330 - "
+                         "10 x 9.2 = 238 = 34 Toffoli (17 to compute the flags, 17 to uncompute), 10 rotations (ten nonzero "
+                         "phase classes). Called 1 x (H_KS), 2 x (H_I) per link per step"),
+            "U_FFT": _pc(9678, 489.9, 9, "arxiv_2611_08161 Table 11; Table 9",
+                         "printed 13597.2 + 489.9 log2(1/eps), T-width 1, 9 clean ancillas; t_const = 13597.2 - 426 x 9.2 = "
+                         "9678, 426 rotations. Table 9 by level (T, R_Z): Delta(27) 9, 38; V^2 210, 2; V 450, 8; X 4177, 14; "
+                         "D 4832, 364. An upper bound: flags are counted per sector without sharing. The paper does not split "
+                         "the 9678 T into Toffolis and exact T; t_gates = 4 is the remainder of 9678 / 7, DERIVED HERE, and "
+                         "enters only the implied Toffoli count (1382) that sets the T-depth schedule",
+                         t_gates=4),
         },
-        c_t={"KS": lambda d, e: 36876 * d - 34074 + (8.05 * d + 1061.45) * _log(e),      # D tab:costsummary :978
-             "I":  lambda d, e: 135142 * d - 115216 + (24.15 * d + 2114.85) * _log(e)},  # D tab:costsummary :979
-        benchmark={"KS": 2.0e10, "I": 6.1e10},   # D tab:fiducial :1021 (L^3 = 10^3, N_t = 50, eps_T = 1e-8, d = 3)
-        dominant="no single primitive (unlike U_F for Sigma(72x3)). Report convention (E20), d=3, eps=1e-10: H_I U_mul 38%, "
-                 "U_Tr 25%, U_FFT 24%, U_inv 13%, U_phi <1%; H_KS U_FFT 38%, U_Tr 26%, U_mul 25%, U_inv 10%",
+        # Table 14 prints its constants with the 9.2 T per rotation inside: KS 36945 d - 9420.6 + (8.625 d + 982.675) log,
+        # I 135349 d - 65978.2 + (25.875 d + 1956.725) log. c_t is the slope-only record the other groups keep, so 9.2 T per
+        # rotation comes off here and c_t_full puts it back: c_t_full is the printed Table 14 expression.
+        c_t={"KS": lambda d, e: 36876 * d - 17282 + (8.625 * d + 982.675) * _log(e),
+             "I":  lambda d, e: 135142 * d - 81632 + (25.875 * d + 1956.725) * _log(e)},
+        benchmark={"KS": 2.3e10, "I": 6.8e10},   # Table 14 / Table 15 (L^3 = 10^3, N_t = 50, eps_T = 1e-8, d = 3)
+        dominant="no single primitive (unlike U_F for Sigma(72x3)). Report convention (E20), d=3, eps=1e-10: H_I U_mul 35%, "
+                 "U_FFT 29%, U_Tr 23%, U_inv 12%, U_phi <1%; H_KS U_FFT 44%, U_Tr 23%, U_mul 23%, U_inv 9%",
         used_by=("Ch5 2033",),
         phi_mult={"KS": 1, "I": 2},
-        note=("IN PREPARATION (Gustafson, Lamm, Murairi, Osorio Perez). Qubit encoding, 11 qubits/link, no ceil(log2) "
-              "conflict. Freezing beta_f^{3+1} = 3.80(5) (Wilson, D tab:subgroups :190). Toffoli 7 T; R_Z 1.15 log2 per "
-              "synthesis in the draft; eps_T 1e-8 fiducial; error budget (7d+923) / (21d+1839) d L^d N_t eps with no 1/2."),
+        note=("Published: arxiv_2611_08161 (Gustafson, Lamm, Murairi, Osorio Perez), Table 11. Qubit encoding, 11 qubits/link, "
+              "no ceil(log2) conflict. Freezing beta_f^{3+1} = 3.80(5) (Table 1). 7 T per Toffoli; R_Z 1.15 log2(1/eps) + 9.2 "
+              "per synthesis (Table 3), already inside the printed constants; eps_T 1e-8 fiducial; error budget (7.5d+854.5) / "
+              "(22.5d+1701.5) d L^d N_t eps (Table 14). T-width (U_inv 2, U_mul 3, U_Tr 1, U_FFT 1, U_Ph 1) and clean ancillas "
+              "(4, 5, 10, 9, 18) are recorded in each primitive's note and `ancilla`; no model reads them for this group."),
     ),
 
     "SU2": Group("SU(2)", 0, Cited(12, "Lamm_QC_RoundTable", "digitized; fig_qubit_budget.py"), None, None,
@@ -420,7 +432,7 @@ def electric_per_link(group: str, ham: str, d: int, eps: float, fft: bool = True
     (FFT if one is COMPILED for the group and fft=True, else the naive U_F)
     plus the electric phase U_phi where the paper lists it separately. Full fit (E20) unless papers=True."""
     g = GROUPS[group]
-    # A group with no naive U_F in its paper (Sigma(216x3): the draft builds only the FFT) always uses U_FFT.
+    # A group with no naive U_F in its paper (Sigma(216x3) builds only the FFT) always uses U_FFT.
     key = "U_FFT" if ((fft and g.has_fft) or "U_F" not in g.primitives) else "U_F"
     t = PRIMCOST[ham]["U_F"](d) * _price(g.primitives[key], eps, papers)
     if "U_phi" in g.primitives:

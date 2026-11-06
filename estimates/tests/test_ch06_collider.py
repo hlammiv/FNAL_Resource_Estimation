@@ -1130,9 +1130,9 @@ def test_2033_fragmentation_shots_and_wall_time(r33):
 def test_2033_dipole_rows(a, r33):
     """R7 dipole rows; q1 (rulings A/B, 2026-10-05): the media are quench-prepared (20-step coupling ramp + c/T, c = 2-2 pi,
     90-282 steps before the sources enter), each circuit priced whole with its own R-TOL eps (scratchpad/quench/cost/price2.py).
-    Chapter: '995 LQ and 5.4e9--1.5e10 T per shot (2.3--6.7e9 of it the dipole evolution), 5.4--15x the 1e9-T limit
-    (eps_l <~ 6.6e-12)'; '912 LQ and 2.0--5.5e8 T (eps_l <~ 1.8e-10), under the limit'; '653 shots per temperature for Im V
-    and 405 for q-hat: 57--98 and 1.2--2.3 d, and 0.47--0.80 yr and 3.7--6.8 d for three temperatures'."""
+    Chapter: '995 LQ and 5.9e9--1.6e10 T per shot (2.6--7.2e9 of it the dipole evolution), 5.9--16x the 1e9-T limit
+    (eps_l <~ 6.1e-12)'; '912 LQ and 2.0--5.5e8 T (eps_l <~ 1.8e-10), under the limit'; '653 shots per temperature for Im V
+    and 405 for q-hat: 62--106 and 1.2--2.3 d, and 0.51--0.87 yr and 3.7--6.8 d for three temperatures'."""
     i = r33.intermediates
     ds, dl = i["dipole_static"], i["dipole_lightlike"]
     assert i["dipole_steps"] == (50, 100)                                   # the 0.01 fm/c grid
@@ -1151,20 +1151,20 @@ def test_2033_dipole_rows(a, r33):
     assert ds["n_prep_steps"] == (110, 302) == dl["n_prep_steps"]
     # verifier q1-1 (2026-10-05): the prep leg at the row's rule step instead of the grid, record only, unpriced
     assert ds["n_prep_steps_at_rule_step"] == (187, 725) and dl["n_prep_steps_at_rule_step"] == (141, 547)
-    near(ds["t_shot_prep_at_rule_step"][0], 7.55e9, 1e-2); near(ds["t_shot_prep_at_rule_step"][1], 2.69e10, 1e-2)   # 7.6-27x, unpriced
+    near(ds["t_shot_prep_at_rule_step"][0], 8.206e9, 1e-2); near(ds["t_shot_prep_at_rule_step"][1], 2.926e10, 1e-2)   # 8.2-29x, record
     near(dl["t_shot_prep_at_rule_step"][0], 2.3e8, 2e-2); near(dl["t_shot_prep_at_rule_step"][1], 8.3e8, 2e-2)       # still fits
     assert a.quench_c_range.value == (2.0, 2 * _m.pi) and a.quench_c_range.prov is c.Provenance.CITED
     assert a.eth_assumed.prov is c.Provenance.ASSUMED and a.quench_ramp_a.value == 1.0
     assert not hasattr(a, "thermal_prep_t") and not hasattr(a, "eroq_shot_penalty")   # retired with E-rho-OQ (ruling A)
     # per-shot T spans (c = 2, 0.5 fm/c) .. (c = 2 pi, 1 fm/c); the dipole evolution alone is the pre-q1 record
-    near(ds["t_shot"][0], 5.4040e9, 1e-3); near(ds["t_shot"][1], 1.5092e10, 1e-3)      # '5.4e9--1.5e10'
+    near(ds["t_shot"][0], 5.8755e9, 1e-3); near(ds["t_shot"][1], 1.6397e10, 1e-3)      # '5.9e9--1.6e10'
     near(dl["t_shot"][0], 1.9650e8, 1e-3); near(dl["t_shot"][1], 5.5030e8, 1e-3)       # '2.0--5.5e8'
-    near(ds["t_shot_by_c"][0][1], 9.726e9, 1e-3); near(ds["t_shot_by_c"][1][0], 1.076e10, 1e-3)
-    near(ds["t_shot_evolution_only"][0], 2.346627e9, 1e-5); near(ds["t_shot_evolution_only"][1], 6.657600e9, 1e-5)   # '2.3--6.7e9 of it'
+    near(ds["t_shot_by_c"][0][1], 1.0570e10, 1e-3); near(ds["t_shot_by_c"][1][0], 1.1692e10, 1e-3)
+    near(ds["t_shot_evolution_only"][0], 2.5527e9, 1e-3); near(ds["t_shot_evolution_only"][1], 7.2374e9, 1e-3)   # '2.6--7.2e9 of it'
     near(dl["t_shot_evolution_only"][0], 7.164794e7, 1e-5); near(dl["t_shot_evolution_only"][1], 2.044818e8, 1e-5)
-    near(ds["t_shot_over_cap"][0], 5.404, 1e-3); near(ds["t_shot_max_over_cap"], 15.09, 1e-3)   # '5.4--15x the 10^9-T limit'
+    near(ds["t_shot_over_cap"][0], 5.8755, 1e-3); near(ds["t_shot_max_over_cap"], 16.40, 1e-3)   # '5.9--16x the 10^9-T limit'
     assert dl["t_shot_max_over_cap"] < 1 and ds["lq_over_marker"] < 1                 # q-hat row 'under the limit'
-    near(ds["eps_l_required"], 6.63e-12, 2e-3); near(dl["eps_l_required"], 1.82e-10, 2e-3)   # '6.6e-12', '1.8e-10'
+    near(ds["eps_l_required"], 6.099e-12, 2e-3); near(dl["eps_l_required"], 1.82e-10, 2e-3)   # '6.1e-12', '1.8e-10'
     # shots (unchanged by q1): binomial on the color-floor P_s curve, rate corrected by the color model (r26 v2, J4)
     near(ds["shots_per_T_binomial"], 653.14, 1e-4)          # '653'
     near(dl["shots_per_T_binomial"], 405.00, 1e-4)          # '405'
@@ -1176,15 +1176,15 @@ def test_2033_dipole_rows(a, r33):
     assert a.thermal_variance_factor.value == (1, 1)
     assert ds["shots_per_T"] == (ds["shots_per_T_binomial"],) * 2 and dl["shots_per_T"] == (dl["shots_per_T_binomial"],) * 2
     # walls: one temperature at c = 2 .. 2 pi, then three temperatures; each shot at its own time (mean of the two circuits)
-    near(ds["wall_first_s"][0] / 86400, 57.19, 1e-3); near(ds["wall_first_s"][1] / 86400, 97.71, 1e-3)   # '57--98 d'
+    near(ds["wall_first_s"][0] / 86400, 62.16, 1e-3); near(ds["wall_first_s"][1] / 86400, 106.17, 1e-3)   # '62--106 d'
     near(dl["wall_first_s"][0] / 86400, 1.234, 1e-3); near(dl["wall_first_s"][1] / 86400, 2.265, 1e-3)   # '1.2--2.3 d'
-    near(ds["wall_scan_s"][0] / m.SECONDS_PER_YEAR, 0.4697, 2e-3); near(ds["wall_scan_s"][1] / 3.156e7, 0.8025, 2e-3)   # '0.47--0.80 yr'
+    near(ds["wall_scan_s"][0] / m.SECONDS_PER_YEAR, 0.5106, 2e-3); near(ds["wall_scan_s"][1] / 3.156e7, 0.8720, 2e-3)   # '0.51--0.87 yr'
     near(dl["wall_scan_s"][0] / 86400, 3.70, 2e-3); near(dl["wall_scan_s"][1] / 86400, 6.79, 2e-3)           # '3.7--6.8 d'
     per = sum(0.5 * (t * 1e-6 + 1e-4) for t in ds["t_shot_by_c"][0])
     near(ds["wall_first_s"][0], ds["shots_per_T"][0] * per, 1e-12)
     rows = m.INSTANCE_ROWS(a, "2033", r33)
     assert [r[1] for r in rows] == [(964, 964), (995, 995), (912, 912)]
-    assert [tuple(round(x / 1e8) for x in r[2]) for r in rows[1:]] == [(54, 151), (2, 6)]
+    assert [tuple(round(x / 1e8) for x in r[2]) for r in rows[1:]] == [(59, 164), (2, 6)]
     assert "quench-prepared" in rows[1][3]["note"] and "quench-prepared" in rows[2][3]["note"]
 
 
@@ -1536,7 +1536,7 @@ PHRASES = [
     r"Subroutine calls & $\sim 130$",
     r"\textbf{Wall time} & $4.9\times 10^{3}$--$3.7\times 10^{4}$ s per shot",
     # cut pass 2026-10-06: the Hard-op row restated the box Per-shot T and is cut; the Size row is back (template rows kept for cross-chapter consistency)
-    r"$3^3$: $995$ LQ, $5.4\times 10^{9}$--$1.5\times 10^{10}$ T, $653$ shots",
+    r"$3^3$: $995$ LQ, $5.9\times 10^{9}$--$1.6\times 10^{10}$ T, $653$ shots",
     r"$3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots",
     r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps",
     r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps",
@@ -1544,7 +1544,7 @@ PHRASES = [
     r"Baryon number and strangeness are conserved, so baryons and kaons come in pairs",
     # q1 (2026-10-05, rulings A/B): quench-prepared media, E-rho-OQ dropped
     r"$\Sigma(72\!\times\!3)$ for SU(3) at $\sim 5\%$ truncation accuracy, $\Sigma(216\!\times\!3)$ for the static dipole and $2O$ for SU(2) dipoles",
-    r"First: $\mathrm{Im}\,V$, one temperature & static dipole, $\Sigma(216{\times}3)$ $H_I$ $3^3$: $995$ LQ, $5.4\times 10^{9}$--$1.5\times 10^{10}$ T, $653$ shots, $57$--$98$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"First: $\mathrm{Im}\,V$, one temperature & static dipole, $\Sigma(216{\times}3)$ $H_I$ $3^3$: $995$ LQ, $5.9\times 10^{9}$--$1.6\times 10^{10}$ T, $653$ shots, $62$--$106$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"First: $\hat q$, one temperature & light-like, $2O$ $3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots, $1.2$--$2.3$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"$7.5\times 10^{4}$--$1.2\times 10^{6}$ shots, ${\geq}\,12$--$1400$ yr \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"$\sim 130$: $3$ sampling configurations ($3$ source momenta, one spacing); $120$ fragmentation ($10{\cdot}4{\cdot}3$); $2$ dipole rows $\times$ $3$ temperatures \\",
@@ -2009,15 +2009,15 @@ def test_r27_j3_nh_insertion_sum_rule(r33):
 
 # --- s648 (author ruling 2026-10-05, (5)): static dipole on Sigma(216x3) / H_I ------------------------------------
 def test_s648_static_dipole_pricing(a):
-    """The static row's per-link step is the draft's H_I closed form at d = 3 with every rotation at the full fit
-    (+9.2 T per rotation, 21 d + 1839 = 1902 rotations), U_phi twice; Sigma(72x3) / H_KS is unchanged by phi_mult."""
+    """The static row's per-link step is the paper's H_I closed form (Table 14, arxiv_2611_08161) at d = 3 with every rotation at the full fit
+    (+9.2 T per rotation, 22.5 d + 1701.5 = 1769 rotations), U_phi twice; Sigma(72x3) / H_KS is unchanged by phi_mult."""
     from estimates.groups import c_t_stated
     for eps in (1e-5, 2.7634e-5, 1e-8):
         ax = m._at_eps(a, eps, 1)
         gs = m.gauge_step(ax, "S216x3", 3, "I")
-        assert gs["rotations_per_link"] == 1902 and gs["multiplicity"]["U_phi"] == 2
+        assert gs["rotations_per_link"] == 1769 and gs["multiplicity"]["U_phi"] == 2
         assert gs["electric_dense"] is None and gs["hamiltonian"] == "I"
-        near(gs["per_link"], c_t_stated("S216x3", "I", 3, eps) + 9.2 * 1902, 1e-9)
+        near(gs["per_link"], c_t_stated("S216x3", "I", 3, eps) + 9.2 * 1769, 1e-9)
         near(m.pure_gauge_step(ax, "S216x3", 3, "I")["per_link"], gs["per_link"], 1e-12)
         assert m.gauge_step(ax, "S72x3", 3)["multiplicity"]["U_phi"] == 1
     assert a.group_dipole_static.value == "S216x3" and a.hamiltonian_dipole_static.value == "I"

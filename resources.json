@@ -332,23 +332,23 @@
   {
    "ch": 5,
    "era": "2033",
-   "label": "Sigma(216x3)+3 stag, H_I, 3^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench ramp + c/T thermalization + Trotter to its own fit time; primitives in preparation, hop a Sigma(72x3) placeholder)",
+   "label": "Sigma(216x3)+3 stag, H_I, 3^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench ramp + c/T thermalization + Trotter to its own fit time; primitives arxiv_2611_08161, hop a Sigma(72x3) placeholder)",
    "lq": [
     1234,
     1334
    ],
    "t": [
-    6254507678.064556,
-    22339635646.163525
+    6666649182.468966,
+    23788575396.273254
    ],
    "codesign": false,
-   "src": "app03:2033 box (temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route 2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule 2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: '6.3e9-2.2e10 (5.6e9-2.1e10 quench + 6.9e8-1.2e9 fit evolution)', one circuit per shot, corners (300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (6.255e9, 2.234e10). Was (1.051e10, 3.142e10) at T = 160 MeV. tol 0.05: two figures.",
+   "src": "app03:2033 box (temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route 2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule 2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: '6.7e9-2.4e10 (5.9e9-2.3e10 quench + 7.4e8-1.3e9 fit evolution)', one circuit per shot, corners (300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (6.667e9, 2.379e10). Was (1.051e10, 3.142e10) at T = 160 MeV. tol 0.05: two figures.",
    "group": "S216x3",
    "hamiltonian": "I",
    "lattice": "3^3",
    "route": "quench (ETH)",
-   "electric": "Sigma(216x3) FFT (Gustafson_S648_inprep)",
-   "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = 0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) late shot is 3.0e10 (t_deepest_campaign)",
+   "electric": "Sigma(216x3) FFT (arxiv_2611_08161)",
+   "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = 0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) late shot is 3.2e10 (t_deepest_campaign)",
    "condition": "ETH with dynamical fermions at the chapter's couplings on 3^3 and the relaxation of the momentum density within t_th assumed; T_c^lat measured in situ; shots at the thermal variance; non-freezing H_I trajectory assumed",
    "exports_note": "R9 exports (t_per_shot, t_depth_per_shot, f_star, floor_wall_s, factories_for_1yr) are the campaign at the (300 MeV, tau = 1/k = 0.0955 fm/c, c = 2) corner only, over both spacings, not a band (floor is the high/low depth schedule); wall_first_result_s and wall_campaign_s are bands"
   },
@@ -426,8 +426,8 @@
     995
    ],
    "t": [
-    5404126081.220993,
-    15091501185.203785
+    5875547692.119041,
+    16396859944.394287
    ],
    "codesign": false,
    "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.6e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (step rule 2026-10-04: the 4.65 GeV point at 50 a runs 575 steps, exact 4.9014e9 and 2.6159e10; r26 2.5381e10 at 500 steps; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
@@ -440,10 +440,10 @@
     653
    ],
    "wall_time_s_first_result": [
-    4941008,
-    8442007
+    5370687,
+    9173061
    ],
-   "note": "R7 first-result row; s648: Sigma(216x3) (11 qubits/link, Gustafson_S648_inprep) with H_I as Ch. 5's 2033 box, all primitives compiled in the draft; q1 (ruling B): medium quench-prepared from the electric vacuum (20-step coupling ramp + c/T thermalization, c = 2-2 pi, 90-282 steps) before the sources enter, ETH / typicality assumed; 5.4-15x the 1e9-T limit, stated; step rule on the improved free dispersion (85 / 240 dipole steps); t = 0.5 and 1 fm/c, each shot at its own time; shots binomial on P_s, no estimator penalty; measures P_s, not |W|^2 (J4)"
+   "note": "R7 first-result row; s648: Sigma(216x3) (11 qubits/link, arxiv_2611_08161) with H_I as Ch. 5's 2033 box, all primitives compiled in that paper; q1 (ruling B): medium quench-prepared from the electric vacuum (20-step coupling ramp + c/T thermalization, c = 2-2 pi, 90-282 steps) before the sources enter, ETH / typicality assumed; 5.9-16x the 1e9-T limit, stated; step rule on the improved free dispersion (85 / 240 dipole steps); t = 0.5 and 1 fm/c, each shot at its own time; shots binomial on P_s, no estimator penalty; measures P_s, not |W|^2 (J4)"
   },
   {
    "ch": 6,
@@ -648,47 +648,47 @@
    "era": "2033",
    "label": "3D 3^3 SU(2)/2O overlap + Higgs, TPQ (Chern-Simons growth, method test)",
    "lq": [
-    1015,
-    1015
+    1235,
+    1235
    ],
    "t": [
-    24534413524.140427,
-    24534413524.140427
+    41470438398.1214,
+    41470438398.1214
    ],
    "codesign": false,
-   "src": "app06 2033 box ('1015 = 216 + 486 + 270 + 43', sphaleron shot at 10a '1.9e10'; verifier 2026-10-04: 17 filter calls in 8 rounds (2k + 1), 1513 applications, 10,063 x t_dov = 1.8597e10; referee C1 (2026-10-04): the thermal filter at beta||H|| = 2Q / (T a) = 864, d_beta 89, 712 applications, 9262 x 1,847,860 = 1.7115e10 '1.7e10'; r25 '1.6e10': Yukawa inside (a second sgn sequence, 417 queries per application, 8790 x 1,847,747.1 = 1.6242e10) and the +5-LQ fan-out (R10). r24 box '1010 = 216 + 486 + 270 + 38', '8.2e9'; r24: kappa = 30, t = 10a, 450 steps x 19 + 240 = 8790 applications x 937,592.7 T = 8.2414e9; the condensate arm row '2.2e8' is the preparation alone). r22-r23 box: '~2.0e11': 65,643 applications x 3,058,805 T, carried exact and rounded once (R4). r22 (E26): the sign function on the single-particle kernel (arxiv_2607_28524; 598 Toffolis + 24 T + 6 rotations per query, 692 queries + lift + Higgs per application), N_Trotter from the state-dependent estimate (5031; range 1186-14,242), 13 applications per step, 38 ancilla. In the prose, not the box: the range 1.1-3.5e11, the worst-case bound 8.3e4 steps / 1.3e12, Ch. 5's fixed step 1.1e11. r21 box was 1005 LQ, ~1.8e13",
+   "src": "app06 2033 box (r26-yukawa 2026-11-06: '1235 = 432 + 486 + 270 + 47', 21,985 x 1,872,027 + gauge steps + reflections = 4.147e10; before the ruling '1015 = 216 + 486 + 270 + 43', sphaleron shot at 10a '1.9e10'; verifier 2026-10-04: 17 filter calls in 8 rounds (2k + 1), 1513 applications, 10,063 x t_dov = 1.8597e10; referee C1 (2026-10-04): the thermal filter at beta||H|| = 2Q / (T a) = 864, d_beta 89, 712 applications, 9262 x 1,847,860 = 1.7115e10 '1.7e10'; r25 '1.6e10': Yukawa inside (a second sgn sequence, 417 queries per application, 8790 x 1,847,747.1 = 1.6242e10) and the +5-LQ fan-out (R10). r24 box '1010 = 216 + 486 + 270 + 38', '8.2e9'; r24: kappa = 30, t = 10a, 450 steps x 19 + 240 = 8790 applications x 937,592.7 T = 8.2414e9; the condensate arm row '2.2e8' is the preparation alone). r22-r23 box: '~2.0e11': 65,643 applications x 3,058,805 T, carried exact and rounded once (R4). r22 (E26): the sign function on the single-particle kernel (arxiv_2607_28524; 598 Toffolis + 24 T + 6 rotations per query, 692 queries + lift + Higgs per application), N_Trotter from the state-dependent estimate (5031; range 1186-14,242), 13 applications per step, 38 ancilla. In the prose, not the box: the range 1.1-3.5e11, the worst-case bound 8.3e4 steps / 1.3e12, Ch. 5's fixed step 1.1e11. r21 box was 1005 LQ, ~1.8e13",
    "group": "2O",
    "shots": 1111.111111111111,
    "route": "overlap+QSP",
    "sgn_architecture": "single_particle_lift",
    "trotter_rule": "state",
-   "t_representative": 24534413524.140427,
-   "t_condensate_arm": 3418088968.913808,
+   "t_representative": 41470438398.1214,
+   "t_condensate_arm": 4921422857.933803,
    "kappa": 30.0,
    "t_evol_lattice": 10.0,
    "t_range_step_count": [
-    18526874527.30816,
-    37297651178.85692
+    33242961165.323612,
+    55923018954.140915
    ],
-   "t_alternative_fixed_step": 20567426900.26382,
-   "t_alternative_worst_case_bound": 91255326685.17392,
+   "t_alternative_fixed_step": 35767997376.72157,
+   "t_alternative_worst_case_bound": 135671842325.05415,
    "t_record_second_quantized": 18089231750752.113,
-   "t_short_time": 12992229655.903206,
+   "t_short_time": 21502860909.954803,
    "wall_first_result_s": [
-    98680552.13489841,
-    98680552.13489841
+    164282480.3118518,
+    164282480.3118518
    ],
    "wall_campaign_s": [
-    112352908.41055363,
-    126025264.68620886
+    183968172.143587,
+    203653863.9753222
    ],
    "f_star": [
-    12.147005488913328,
-    12.247645871481906
+    12.006337632041813,
+    12.108006286335533
    ],
    "t_box": [
-    25000000000.0,
-    25000000000.0
+    41000000000.0,
+    41000000000.0
    ]
   },
   {

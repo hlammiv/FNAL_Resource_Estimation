@@ -26,15 +26,15 @@ def routes():
     m = estimates.load(5)
     a = m.Assumptions()
     i = m.model(a, "2033").intermediates
-    prep_lo, prep_hi = i["quench_prep_t"]                           # 5.56e9, 2.12e10 (152 / 572 steps)
-    fit_lo, fit_hi = i["t_fit_deepest"]                             # 6.95e8, 1.18e9 (19 / 32 fit steps)
-    tot_lo, tot_hi = i["t_deepest"]                                 # 6.25e9, 2.23e10: the box
+    prep_lo, prep_hi = i["quench_prep_t"]                           # 5.93e9, 2.25e10 (152 / 572 steps)
+    fit_lo, fit_hi = i["t_fit_deepest"]                             # 7.41e8, 1.26e9 (19 / 32 fit steps)
+    tot_lo, tot_hi = i["t_deepest"]                                 # 6.67e9, 2.38e10: the box
     assert np.isclose(tot_lo, prep_lo + fit_lo) and np.isclose(tot_hi, prep_hi + fit_hi)
     p2_lo, p2_hi = i["second_spacing_quench_prep_t"]                # 196 / 755 steps at dt = 0.0075 fm/c
     f2_lo, f2_hi = i["second_spacing_t_fit_deepest"]                # 19 / 48 fit steps
-    t2_lo, t2_hi = i["second_spacing_own_step_t_deepest"]           # 7.88e9, 2.98e10
+    t2_lo, t2_hi = i["second_spacing_own_step_t_deepest"]           # 8.40e9, 3.17e10
     assert np.isclose(t2_hi, i["t_deepest_campaign"][1])
-    ref = i["t_per_shot_2033_mu0_evolution"]                        # 1.474e10: the 4 fm/c reference evolution (record)
+    ref = i["t_per_shot_2033_mu0_evolution"]                        # 1.570e10: the 4 fm/c reference evolution (record)
     return [
         (r"quench + Trotter, longest circuit ($a_s{=}0.2$ fm)", prep_lo, prep_hi, fit_lo, fit_hi, tot_lo, tot_hi),
         (r"same, second spacing ($a_s{=}0.15$ fm) late circuit", p2_lo, p2_hi, f2_lo, f2_hi, t2_lo, t2_hi),
@@ -42,7 +42,7 @@ def routes():
     ]
 
 
-TOT_X = 10.95         # log10 x of the per-shot total column (right of the 3.6e10 reference bar)
+TOT_X = 10.95         # log10 x of the per-shot total column (right of the 3.8e10 reference bar)
 
 
 def sci(x):

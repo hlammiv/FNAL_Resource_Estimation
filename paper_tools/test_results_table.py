@@ -203,9 +203,9 @@ def test_co_design_band_in_bullet():
 
 def test_machine_time_bullet():
     within = [ch for ch in DIGITAL if campaign_over_window(ch) <= 1]
-    assert within == [2, 3, 7, 8, 9]
+    assert within == [2, 3, 7, 8]       # r26-yukawa: Ch. 9 left (5.8-6.5 yr)
     text = top_line()
-    assert "Five of the nine campaigns fit the five-year window on one machine." in text
+    assert "Four of the nine campaigns fit the five-year window on one machine." in text
     assert f"{float(f'{campaign_over_window(5):.2g}'):.0f}\\times$ (Ch." in text
 
 

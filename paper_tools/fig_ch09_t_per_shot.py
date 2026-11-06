@@ -68,7 +68,7 @@ def main():
             r = v
         ax.text(r * 1.28, y, label(v), va="center", ha="left", fontsize=7, color=ff.INK)
     ax.text(1e9 * 1.15, 0, "2033 target", color=ff.ORANGE, fontsize=7, ha="left", va="center")
-    ax.set(xscale="log", xlim=(3e8, 3e14), ylim=(-0.6, n - 0.4), yticks=range(n),
+    ax.set(xscale="log", xlim=(3e8, 1.5e15), ylim=(-0.6, n - 0.4), yticks=range(n),
            yticklabels=[r[0] for r in reversed(rows)], xlabel="T per shot")
     ax.tick_params(axis="y", length=0)
     ax.tick_params(axis="y", which="both", right=False)

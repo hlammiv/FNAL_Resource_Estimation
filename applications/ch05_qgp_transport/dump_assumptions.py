@@ -66,7 +66,7 @@ NOTE_OVERRIDES = {
                       "(2 ancillas each) run at once and F* >= 10 (f_star_2028_per_step); with only the 2 qubits any "
                       "primitive needs, F* = 1.66 (f_star_2028_at_2_workspace)",
     "hamiltonian_2033": "the 2033 box is priced at the improved Hamiltonian H_I (tab:primcost H_I row: 4 U_F, 2 U_Ph, "
-                        "3(d-1)/2 U_Tr, 2 + 11(d-1) U_inv, 4 + 26(d-1) U_mul per link-step; Gustafson_S648_inprep). "
+                        "3(d-1)/2 U_Tr, 2 + 11(d-1) U_inv, 4 + 26(d-1) U_mul per link-step; arxiv_2611_08161 Table 13). "
                         "'KS' restores the H_KS multiplicities for Sigma(216x3) (sensitivity)",
     "eps_syn": "total synthesis error per shot, report-wide; each circuit sets its own per-rotation tolerance "
                "eps_rot = sqrt(eps_syn / N_rot) (common.eps_rot_for, randomized synthesis), N_rot = synthesized "
@@ -89,8 +89,8 @@ NOTE_OVERRIDES = {
                                  "t = 0 and one step (0.045 fm/c; for an even correlator delta ~ t^2, so 0.1 at a_t "
                                  "would be ~0.02 here), used only to price the first result at 30% in the prose: "
                                  "N = 2 (1 - c0^2) / (c0^2 r^2 delta^2), c0 = cbar. delta is open",
-    "group_2033": "Sigma(216x3) subset SU(3), |G| = 648, 11 qubits/link in the draft's qubit encoding "
-                  "(Gustafson_S648_inprep, in preparation)",
+    "group_2033": "Sigma(216x3) subset SU(3), |G| = 648, 11 qubits/link in the published qubit encoding "
+                  "(arxiv_2611_08161, Table 11)",
     "T_over_Tc_2033": "T = 1.5 T_c^lat, the same convention as the 2028 benchmark",
     "ceiling_2033_t": "'the RFI's ~1e9-hard-op 2033 envelope' (app03:149), the 2033 hard-operation ceiling",
     "shots_per_gridpt": "RECORD: 10^3/grid-pt (eps^-2 = 25 x ~40) of the 4 fm/c reference campaign; the priced "

@@ -95,7 +95,8 @@ def a24(a):
                                beta_H_rule=c.Assumed("stated", "r24 record: the filter at beta||H|| = 1e2"),
                                aa_call_rule=c.Assumed("per_round", "r24 record: one filter call per round"),
                                count_gauge_steps_and_reflections=c.Assumed(False, "r24 record: before batch 5 item 12"),
-                               count_yukawa_normalization=c.Assumed(False, "r24 record: 2Q normalization"))
+                               count_yukawa_normalization=c.Assumed(False, "r24 record: 2Q normalization"),
+                               fermion_content_2033=c.Assumed("none", "r24 record: before ruling r26-yukawa, Q = 216"))
 
 
 @pytest.fixture(scope="module")
@@ -124,9 +125,10 @@ N_BOUND_10 = math.ceil(math.sqrt(LAMBDA * 10 ** 3 / 0.1))   # 7442 at t = 10a (r
 # r24 (H. Lamm 2026-10-02, 'ok to run for a shorter amount of time, and lower kappa is ok'): kappa = 30, t = 2 fm = 10a
 D_SGN = math.ceil(30 * math.log(1e3))                 # 208
 YUK = 1.5                                             # 2026-10-10: Yukawa weight in the normalization, (2 + y rho_max)/2 at y rho_max = 1
-N_TROT, PER_STEP = 450, 25                            # state-dependent estimate at t = 10a; Jacobi-Anger order at lambda dt = 648 x 10/450 = 14.4 (19 at 2Q dt = 9.6)
+Q = 432                                               # ruling r26-yukawa (2026-11-06): 216 doublet + 216 singlet modes (Q = 216 before)
+N_TROT, PER_STEP = 450, 43                            # state-dependent estimate at t = 10a; Jacobi-Anger order at lambda dt = 1296 x 10/450 = 28.8 (r26-yukawa; 25 at 14.4; 19 at 2Q dt = 9.6)
 # referee C1 (2026-10-04): the thermal filter at beta||H|| = 2Q / (T a) = 864: d_beta = round(sqrt(864 ln 1e4)) = 89
-D_BETA = round(math.sqrt(YUK * 2 * 216 / 0.5 * math.log(1e4)))      # 109 (89 at 2Q; r25: 30 at the record beta||H|| = 1e2)
+D_BETA = round(math.sqrt(YUK * 2 * Q / 0.5 * math.log(1e4)))        # 155 (r26-yukawa; 109 at Q = 216; 89 at 2Q; r25: 30 at the record beta||H|| = 1e2)
 # verifier (2026-10-04): 8 amplification rounds call the filter 2 x 8 + 1 = 17 times (first referee pass 8: 712)
 TPQ, TPQ_R25, TPQ_C1 = D_BETA * 17, 240, 89 * 8        # 1853 applications (at 2Q: 1513; C1 712; r25 240)
 NDOV = PER_STEP * N_TROT + TPQ                        # 10,063 applications (C1 9262; r25 8790)
@@ -134,40 +136,43 @@ NQD = 2 * D_SGN + 1                                   # 417 queries per applicat
 NQD_24 = D_SGN + 1                                    # 209 (r24, Yukawa outside)
 NQ = NDOV * NQD                                       # 3,665,430 single-particle queries (r24 1,837,110)
 NROT_APP = NQD * 6 + 6 + 1                            # 2509 rotations per application (r24 1261)
-C_HIGGS = 27 * 392 + 27 * 40 * 7                      # 18,144: U_x per site + 40 SELECT strings per site
+C_HIGGS = 27 * 392 + 27 * 80 * 7                      # 25,704: U_x per site + 80 SELECT strings per site (8 bilinears x 2 x 5, r26-yukawa)
+C_HIGGS_REC = 27 * 392 + 27 * 40 * 7                  # 18,144: the Q = 216 records
+TOF_Q, TOF_LIFT, TOF_REFL = 601, 2 * (2 * Q - 1), 19  # r26-yukawa: 598 + 3 read-gate; 1726; 19 (598, 862, 18 before)
 # r22-r23 headline (kappa 1e2, t = 50a), kept as a record
 N_TROT_R22, PER_STEP_R22, NDOV_R22 = 5031, 13, 65643
 
 
-def price_sp(n_dov, d=D_SGN, n_sgn=2):
+def price_sp(n_dov, d=D_SGN, n_sgn=2, record=False):
     """One shot of n_dov applications by hand: (d + 1) + (n_sgn - 1) d queries of 598 Toffolis + 24 T + 6 rotations
     (r25: n_sgn = 2, the Yukawa projector), the lift (862 Toffolis + 12 T + 6 rotations), the reflection (18 Toffolis +
     1 rotation), the Higgs vertex; R-TOL from its own count."""
     nq = (d + 1) + (n_sgn - 1) * d
     n_rot = n_dov * (nq * 6 + 6 + 1)
     tr = fit(n_rot)
-    c_sp = 598 * 7 + 24 + 6 * tr
-    t_dov = nq * c_sp + (862 * 7 + 12 + 6 * tr) + (18 * 7 + tr) + C_HIGGS
+    tq, tl, tf, ch = (598, 862, 18, C_HIGGS_REC) if record else (TOF_Q, TOF_LIFT, TOF_REFL, C_HIGGS)
+    c_sp = tq * 7 + 24 + 6 * tr
+    t_dov = nq * c_sp + (tl * 7 + 12 + 6 * tr) + (tf * 7 + tr) + ch
     return {"n_rot": n_rot, "t_rot": tr, "c_sp": c_sp, "t_dov": t_dov, "t_shot": n_dov * t_dov}
 
 
 N33 = NDOV * NROT_APP                                 # 25,248,067 rotations per shot (C1 23,238,358; r25 22,054,110)
 EPS33 = math.sqrt(1e-2 / N33)
 T33 = fit(N33)                                        # 27.047 (r24 26.476; r22 29.134)
-C_SP = 598 * 7 + 24 + 6 * T33                         # 4372.3 (r24 4368.9; r22 4384.8)
-C_LIFT, C_OUTER = 862 * 7 + 12 + 6 * T33, 18 * 7 + T33
+C_SP = TOF_Q * 7 + 24 + 6 * T33                       # 4397.8 (r26-yukawa; r25 4372.3; r24 4368.9; r22 4384.8)
+C_LIFT, C_OUTER = TOF_LIFT * 7 + 12 + 6 * T33, TOF_REFL * 7 + T33
 # batch 5 item 12 (2026-10-09): the gauge terms of a step (KS multiplicities of 2312.10285 with the group FFT of
 # 2408.00075 at the headline tolerance, per link, x 81 links) and the 16 amplification reflections (2 x 972-controlled
 # NOTs at 2n Toffolis, 2407.17966) are counted in every current shot
 GAUGE_STEP = 81 * (2 * (216 + 42 * T33) + 2 * (0.5 * (350 + 4 * T33) + 3 * 112 + 6 * 392))     # 6.924e5 T
-REFL = 16 * (2 * 972) * 7                                                                       # 217,728 T
+REFL = 16 * (2 * 1188) * 7                                                                      # 266,112 T (r26-yukawa; 217,728 at 972 controls)
 
 
 def shot(n_dov, d=D_SGN, n_trot=N_TROT, n_sgn=2):
     """The counted shot: price_sp + the gauge terms of n_trot steps + the reflections (batch 5 item 12)."""
     return price_sp(n_dov, d, n_sgn)["t_shot"] + n_trot * GAUGE_STEP + REFL
 T_DOV = NQD * C_SP + C_LIFT + C_OUTER + C_HIGGS       # 1,847,747.1 (r24 937,592.7; r22 3,058,805.3)
-T_DOV_24 = price_sp(NDOV, n_sgn=1)["t_dov"]           # 937,592.7 (r24)
+T_DOV_24 = price_sp(NDOV, n_sgn=1, record=True)["t_dov"]   # about 937,592.7 (r24, Q = 216)
 # RECORD: the retired second-quantized construction at the worst-case step (the r21 box)
 NDOV_SQ = 5 * N_BOUND + TPQ_R25                           # 416,215
 NQ_SQ = NDOV_SQ * 691                                 # 287,604,565 BE queries
@@ -198,8 +203,8 @@ C_FLOOR = 11900 + 81 * LINK_MUX + 27 * 392 + 25 * T_PRE_F          # 61,043.6 (t
 def test_published_is_the_box_as_printed():
     assert m.PUBLISHED["2028"].lq == (250, 250)                  # r25 R10: 42 ancilla (r22-r24 240, r20-r21 247)
     assert m.PUBLISHED["2028"].hard_ops == (2.7e5, 2.9e5)       # r21 a (r17 2.8-3.0e5)
-    assert m.PUBLISHED["2033"].lq == (1015, 1015)                # r25: 38 + 5 fan-out (r22-r24 1010, r21 1005)
-    assert m.PUBLISHED["2033"].hard_ops == (2.5e10, 2.5e10)     # Yukawa weight in the normalization 2026-10-10 (batch 5 1.9e10; C1 1.7e10; r25 1.6e10, r24 8.2e9)
+    assert m.PUBLISHED["2033"].lq == (1235, 1235)                # r26-yukawa: 432 + 486 + 270 + 47; r25: 38 + 5 fan-out (r22-r24 1010, r21 1005)
+    assert m.PUBLISHED["2033"].hard_ops == (4.1e10, 4.1e10)     # r26-yukawa (2.5e10 before); Yukawa weight in the normalization 2026-10-10 (batch 5 1.9e10; C1 1.7e10; r25 1.6e10, r24 8.2e9)
     assert set(m.PUBLISHED) == {"2028", "2033"}
     assert m.DISPUTED == {}
 
@@ -245,12 +250,12 @@ def test_uses_shared_synthesis_and_toffoli_conventions(a, r28, r33):
     assert i28["eps_rot"] == c.eps_rot_for(6090) and i28["chunked_eps_rot"] == c.eps_rot_for(7056)
     assert math.isclose(i28["t_per_rot_chapter"], T_RUS) and math.isclose(i28["chunked_t_per_rot_chapter"], T_RUS_C)
     assert math.isclose(i28["t_per_rot_rhop"], T_RUS) and math.isclose(i28["chunked_t_per_rot_rhop"], T_RUS_C)
-    assert i33["n_rot_shot"] == N33 == 32875427 and i33["eps_rot"] == c.eps_rot_for(N33)      # 2026-10-10 (25,248,067 at 2Q)
-    assert math.isclose(i33["t_per_rot"], T33) and round(T33, 1) == 27.4 and round(EPS33 * 1e5, 1) == 1.7
-    assert rel(N33, 3.3e7) <= 0.02                               # 3.3e7 rotations per sphaleron shot (2.5e7 at 2Q)
+    assert i33["n_rot_shot"] == N33 == 55160365 and i33["eps_rot"] == c.eps_rot_for(N33)      # 2026-10-10 (25,248,067 at 2Q)
+    assert math.isclose(i33["t_per_rot"], T33) and round(T33, 1) == 27.8 and round(EPS33 * 1e5, 1) == 1.3
+    assert rel(N33, 5.5e7) <= 0.02                               # 5.5e7 (r26-yukawa); 3.3e7 rotations per sphaleron shot (2.5e7 at 2Q)
     # r24: the condensate arm is its own circuit (the preparation alone) with its own tolerance
     nc = TPQ * NROT_APP
-    assert i33["n_rot_shot_condensate"] == nc == 4649177 and i33["eps_rot_condensate"] == c.eps_rot_for(nc)   # 2026-10-10 (2Q: 3,796,117)
+    assert i33["n_rot_shot_condensate"] == nc == 6611215 and i33["eps_rot_condensate"] == c.eps_rot_for(nc)   # 2026-10-10 (2Q: 3,796,117)
     assert math.isclose(i33["t_per_rot_condensate"], fit(nc))
     assert i33["sq_draft_frame_n_rot_shot"] == NROTQ * NQ_SQ and math.isclose(i33["sq_draft_frame_t_per_rot"], T33D)
     for n, e in ((N28, EPS28), (N28C, EPS28C), (N33, EPS33)):
@@ -583,16 +588,17 @@ def test_2028_shots_and_wall_time(a, r28):
 
 def test_2033_lq_components_exact(r33):
     i = r33.intermediates
-    assert i["lq_fermion"] == 216
+    assert i["lq_fermion"] == 432 and i["lq_doublet"] == 216 and i["lq_singlet"] == 216    # ruling r26-yukawa
     assert i["lq_gauge"] == 486
     assert i["lq_higgs"] == 270
     # r25 (R10): 38 itemized + 5 for the fan-out of the shared control (r22-r24 38, r21 33, r20 43)
-    assert i["lq_ancilla_itemized"] == 38 and i["lq_ancilla_fanout"] == 5 and i["depth_variant"] == "fanout"
-    assert i["lq_ancilla"] == 43 and i["lq_ancilla_asserted"] == 110
-    assert i["lq_total"] == 1015 and r33.lq == (1015, 1015)
-    assert i["qubits_per_site"] == 36
-    assert i["lq_dwf_backup_L5_8"] == 2527 and rel(2527, 2.5e3) <= 0.02
-    assert i["lq_dwf_backup_L5_16"] == 4255 and rel(4255, 4e3) <= 0.10
+    # r26-yukawa: + 1 index qubit (species) + 3 read flags
+    assert i["lq_ancilla_itemized"] == 42 and i["lq_ancilla_fanout"] == 5 and i["depth_variant"] == "fanout"
+    assert i["lq_ancilla"] == 47 and i["lq_ancilla_asserted"] == 110
+    assert i["lq_total"] == 1235 and r33.lq == (1235, 1235)
+    assert i["qubits_per_site"] == 44
+    assert i["lq_dwf_backup_L5_8"] == 4259 and rel(4259, 4.3e3) <= 0.02
+    assert i["lq_dwf_backup_L5_16"] == 7715 and rel(7715, 7.7e3) <= 0.01
     # record: the retired second-quantized construction
     assert i["sq_lq_ancilla"] == 33 and i["sq_lq_total"] == 1005
     assert i["sq_lq_ancilla_draft_frame"] == 43 and i["sq_lq_total_draft_frame"] == 1015
@@ -614,7 +620,7 @@ def test_2033_d_sgn_is_natural_log_and_an_integer_degree(a, r33):
     # the other reading (kappa = ||H_W|| / Delta at the same gap): degree 346, 1.64x the shot
     assert i["d_sgn_if_kappa_is_norm_over_gap"] == math.ceil(30 * math.log(1e3) * 7.5 / 4.5) == 346
     assert math.isclose(i["t_per_shot_if_kappa_is_norm_over_gap"], shot(NDOV, 346))
-    assert rel(i["t_per_shot_if_kappa_is_norm_over_gap"], 4.038e10) <= 0.01      # 2026-10-10 (at 2Q: 3.107e10; 17 calls alone 3.076e10; C1 2.831e10; r25 2.686e10, r24 1.355e10)
+    assert rel(i["t_per_shot_if_kappa_is_norm_over_gap"], 6.819e10) <= 0.01      # r26-yukawa (Q = 216: 4.038e10); 2026-10-10 (at 2Q: 3.107e10; 17 calls alone 3.076e10; C1 2.831e10; r25 2.686e10, r24 1.355e10)
     with pytest.raises(ValueError):
         dataclasses.replace(a, m0_wilson=c.Assumed(2.5, "test"))
 
@@ -628,11 +634,12 @@ def test_2033_architecture_is_the_single_particle_lift(a, r33):
     with pytest.raises(ValueError):
         dataclasses.replace(a, sgn_architecture=c.Cited("second_quantized", "test"))
     # Q = N^d N_I 2^((d+1)/2) = 27 x 2 x 4; index register q = n_I + n_S + n_X = 1 + 2 + 3 x 2
-    assert i["q_modes"] == 27 * 2 * 4 == 216 == i["lq_fermion"]
-    assert i["index_register"] == {"color": 1, "spin": 2, "coordinates": 6} and i["index_register_qubits"] == 9
+    # r26-yukawa: 27 x 4 x (2 colors + 2 singlets); + one species qubit
+    assert i["q_modes"] == 27 * 4 * (2 + 2) == 432 == i["lq_fermion"]
+    assert i["index_register"] == {"color": 1, "species": 1, "spin": 2, "coordinates": 6} and i["index_register_qubits"] == 10
     assert i["n_lcu_unitaries"] == 4 * 3 + 1 == 13 and i["term_register_qubits"] == 5
-    assert i["be_normalization_kinetic"] == 2 * 216 == 432 and i["yukawa_weight"] == 1.0 and i["yukawa_norm_factor"] == 1.5
-    assert i["be_normalization"] == 648 and i["yukawa_norm_factor_band"] == (1.15, 2.0)    # lambda = Q (2 + y rho_max), 2026-10-10
+    assert i["be_normalization_kinetic"] == 2 * 432 == 864 and i["yukawa_weight"] == 1.0 and i["yukawa_norm_factor"] == 1.5
+    assert i["be_normalization"] == 1296 and i["yukawa_norm_factor_band"] == (1.15, 2.0)    # lambda = Q (2 + y rho_max), 2026-10-10
 
 
 def test_2033_single_particle_query_itemized(a, r33):
@@ -641,29 +648,29 @@ def test_2033_single_particle_query_itemized(a, r33):
     q = i["sp_query"]
     assert q["toffoli_items"] == {"direction_flags": 2, "backward_flags": 3, "forward_flags": 3, "controlled_shifts": 12,
                                   "dirac_flags": 3, "read_iteration": 3 * 26, "link_copy": 5 * 81, "mux_orientation": 10,
-                                  "fixup_iteration": 3 * 26, "projector": 4}
-    assert q["toffoli"] == 598 == i["sp_query_toffoli"] == i["sp_query_toffoli_stated"]
+                                  "fixup_iteration": 3 * 26, "projector": 4, "species_read_gate": 3}
+    assert q["toffoli"] == 601 == i["sp_query_toffoli"] == i["sp_query_toffoli_stated"]
     assert q["t_direct_items"] == {"mux_and_inverse": 20, "prepare_controlled_h": 4} and q["t_direct"] == 24
     assert q["rot_items"] == {"prepare_and_inverse": 4, "qsp_phase_controlled": 2} and q["n_rot"] == 6
     assert (i["sp_query_t_direct"], i["sp_query_n_rot"]) == (24, 6)
     # 'this takes 78 + 405 + 78: 561 of the query's 598 Toffolis'; 'the other 37'
     assert q["link_read_toffoli"] == 78 + 405 + 78 == 561 == i["sp_link_read_toffoli"] and 598 - 561 == 37
-    assert m.single_particle_query_2O(3, 3, 6) == q
+    assert m.single_particle_query_2O(3, 3, 6, species_gate=True) == q and m.single_particle_query_2O(3, 3, 6)["toffoli"] == 598
     # the multiplexer on a color qubit: 10 T, no Toffoli, no ancilla
     assert i["mux_index_per_bit"] == {"x1": (0, 0), "x2": (0, 0), "x3": (0, 0), "x4": (0, 4), "x5": (0, 4), "x6": (0, 2)}
     assert (i["mux_index_toffoli"], i["mux_index_t_direct"], i["mux_index_ancilla"]) == (0, 10, 0)
     # the price of a query at the shot's tolerance
-    assert math.isclose(i["c_sp"], C_SP) and round(i["c_sp"], 1) == 4374.3
+    assert math.isclose(i["c_sp"], C_SP) and round(i["c_sp"], 1) == 4397.8
     assert rel(i["c_sp"], i["c_sp_stated"]) <= 0.01                             # '~4.4e3 T'
-    assert rel(598 * 7 + 24 + 6 * 27.2, 4.4e3) <= 0.01                         # the printed arithmetic
-    assert 0.89 < i["sp_link_read_share_of_query"] < 0.905                      # '90% of it the link read'
+    assert rel(601 * 7 + 24 + 6 * 27.8, 4.4e3) <= 0.01                         # the printed arithmetic
+    assert 0.885 < i["sp_link_read_share_of_query"] < 0.895                     # '89% of it the link read'
     assert 0.035 < i["sp_rotation_share_of_query"] < 0.045                      # 'about 4% of a query' (3.7%)
     # controlled shifts: mod 3 on two bits is 2 Toffolis; mod 2^n is n (n - 1) / 2; anything else is not derived
     assert m._ctrl_shift_toffolis(3) == 2 and m._ctrl_shift_toffolis(8) == 3 and m._ctrl_shift_toffolis(4) == 1
     with pytest.raises(ValueError):
         m._ctrl_shift_toffolis(5)
     # the link read scales with the number of links (the address is in superposition)
-    q4 = m.single_particle_query_2O(3, 4, 6)
+    q4 = m.single_particle_query_2O(3, 4, 6, species_gate=True)
     assert q4["toffoli_items"]["link_copy"] == 5 * 192 and q4["toffoli_items"]["read_iteration"] == 3 * 63
     b = dataclasses.replace(a, L_2033=c.Assumed(4, "test"))
     assert m.model(b, "2033").intermediates["sp_query_toffoli"] == q4["toffoli"]
@@ -675,24 +682,24 @@ def test_2033_one_application_components(a, r33):
     i = r33.intermediates
     assert i["yukawa_placement"] == "inside" and i["n_sgn_per_application"] == 2
     assert i["n_queries_per_dov"] == 208 + 1 + 208 == NQD == 417
-    assert math.isclose(i["t_sgn_per_dov"], 417 * C_SP) and rel(i["t_sgn_per_dov"], 1.8e6) <= 0.02   # '1.8e6 T'
-    assert i["lift"] == {"toffoli": 2 * (2 * 216 - 1), "t_direct": 12, "n_rot": 6, "leaves": 432, "anc_iteration": 10}
-    assert i["lift"]["toffoli"] == 862 and m.lift_cost(216, 3) == i["lift"]
-    assert math.isclose(i["c_lift"], C_LIFT) and rel(i["c_lift"], 6.2e3) <= 0.01                     # '6.2e3 T'
-    assert i["n_be_ancilla"] == 2 + 9 + 1 + 1 + 1 + 5 == 19 and i["outer_reflection"] == {"toffoli": 18, "n_rot": 1}
+    assert math.isclose(i["t_sgn_per_dov"], 417 * C_SP) and rel(i["t_sgn_per_dov"], 1.83e6) <= 0.01   # '1.9e6 T' for the application
+    assert i["lift"] == {"toffoli": 2 * (2 * 432 - 1), "t_direct": 12, "n_rot": 6, "leaves": 864, "anc_iteration": 11}
+    assert i["lift"]["toffoli"] == 1726 and m.lift_cost(432, 3) == i["lift"]
+    assert math.isclose(i["c_lift"], C_LIFT) and rel(i["c_lift"], 1.2e4) <= 0.03                     # '1.2e4 T'
+    assert i["n_be_ancilla"] == 2 + 10 + 1 + 1 + 1 + 5 == 20 and i["outer_reflection"] == {"toffoli": 19, "n_rot": 1}
     assert math.isclose(i["c_outer"], C_OUTER)
-    # the Higgs vertex: outside sgn, once per application; 27 U_x + 40 strings per site
+    # the Higgs vertex: outside sgn, once per application; 27 U_x + 80 strings per site (r26-yukawa: 8 bilinears x 2 x 5)
     assert i["n_umult_per_higgs_site"] == 1 and i["c_higgs_umult_T"] == 27 * 392 == 10584
-    assert i["higgs_strings_per_site"] == 8 * (4 + 1) == 40 == i["higgs_strings_per_site_stated"]
-    assert i["higgs_select_toffolis"] == 27 * 40 == 1080
-    assert i["c_higgs_per_dov"] == C_HIGGS == 18144 and rel(18144, 1.8e4) <= 0.01                    # '1.8e4 T'
+    assert i["higgs_strings_per_site"] == 8 * 2 * (4 + 1) == 80 == i["higgs_strings_per_site_stated"]
+    assert i["higgs_select_toffolis"] == 27 * 80 == 2160
+    assert i["c_higgs_per_dov"] == C_HIGGS == 25704 and rel(25704, 2.6e4) <= 0.02                    # '2.6e4 T'
     assert i["n_rot_per_dov"] == NROT_APP == 2509
-    assert math.isclose(i["t_per_dov"], T_DOV) and round(i["t_per_dov"], 1) == 1848578.1
-    assert rel(i["t_per_dov"], i["t_per_dov_stated"]) <= 0.03                                         # '1.8e6 T'
-    assert 0.98 < i["sgn_share_of_dov"] < 0.99 and 0.003 < i["lift_share_of_dov"] < 0.004
-    assert 0.009 < i["higgs_share_of_dov"] < 0.01
+    assert math.isclose(i["t_per_dov"], T_DOV) and round(i["t_per_dov"], 1) == 1872027.2
+    assert rel(i["t_per_dov"], i["t_per_dov_stated"]) <= 0.03                                         # '1.9e6 T'
+    assert 0.975 < i["sgn_share_of_dov"] < 0.985 and 0.006 < i["lift_share_of_dov"] < 0.007
+    assert 0.013 < i["higgs_share_of_dov"] < 0.014
     # r25 (a): 1.97x the r24 application (Yukawa outside), whose numbers stay reproducible
-    assert rel(i["yukawa_over_r24_per_application"], 1.9716) <= 1e-4 and rel(i["r24_t_per_dov"], 937592.7) <= 1e-7   # (2Q chain 1.9710)
+    assert rel(i["yukawa_over_r24_per_application"], 1.99663) <= 1e-4 and rel(i["r24_t_per_dov"], 937592.7) <= 1e-7   # (2Q chain 1.9710)
     assert rel(i["r24_t_per_shot"], 8.241440e9) <= 1e-6 and rel(i["r24_t_per_shot_condensate"], 2.24118e8) <= 1e-5
     t_coh = 1.15 * math.log2(N33 / 1e-2) + 9.2
     assert math.isclose(i["t_per_rot_coherent"], t_coh)
@@ -793,9 +800,9 @@ def test_2033_trotter_rule_switch_and_records(a, r33):
     # the rule switch: the headline, the worst-case bound, the fixed step of Ch. 5 (2 fm / 0.01 fm = 200), the old ~30
     i = r33.intermediates
     assert i["n_trotter_by_rule"] == {"state": N_TROT, "bound": N_BOUND_10, "step": 200, "stated": 30}
-    assert i["n_dov_per_step_by_rule"] == {"state": 25, "bound": 6, "step": 46, "stated": 237}      # at lambda = 648 (2Q: 19, 6, 33, 163)
-    assert i["n_dov_by_rule"] == {"state": 13103, "bound": 46505, "step": 11053, "stated": 8963}   # (2Q: 10063, 46165, 8113, 6403)
-    assert i["n_dov_per_step_worst_stated"] == 6                                                  # '6 applications each'
+    assert i["n_dov_per_step_by_rule"] == {"state": 43, "bound": 9, "step": 82, "stated": 459}      # at lambda = 1296 (648: 25, 6, 46, 237) (2Q: 19, 6, 33, 163)
+    assert i["n_dov_by_rule"] == {"state": 21985, "bound": 69613, "step": 19035, "stated": 16405}   # (lambda = 648: 13103, 46505, 11053, 8963) (2Q: 10063, 46165, 8113, 6403)
+    assert i["n_dov_per_step_worst_stated"] == 9                                                  # '9 applications each'
     by = i["t_per_shot_by_trotter_rule"]
     for rule, n_dov in i["n_dov_by_rule"].items():
         assert math.isclose(by[rule], shot(n_dov, n_trot=i["n_trotter_by_rule"][rule])), rule
@@ -804,25 +811,25 @@ def test_2033_trotter_rule_switch_and_records(a, r33):
         # the gauge terms of a step are counted at the chain's own tolerance, so the switched chain differs below 1e-3
         assert rb.intermediates["n_dov_total"] == n_dov and rel(rb.hard_ops[0], by[rule]) <= 1e-3
         assert math.isclose(rb.breakdown_total(), rb.hard_ops[0])
-    assert rel(by["bound"], 9.12553e10) <= 1e-5 and rel(by["step"], 2.05674e10) <= 1e-5        # 2026-10-10 (2Q 9.06136e10, 1.51281e10; C1 8.40e10, 1.35e10; r25 8.31e10, 1.26e10)
-    assert rel(by["stated"], 1.65828e10) <= 1e-5                                                  # (2Q 1.18479e10)
-    assert rel(i["t_per_shot_bound"], i["t_per_shot_bound_stated"]) <= 0.01                       # '9.1e10 T'
+    assert rel(by["bound"], 1.356718e11) <= 1e-5 and rel(by["step"], 3.57680e10) <= 1e-5        # r26-yukawa (Q = 216: 9.12553e10, 2.05674e10); 2026-10-10 (2Q 9.06136e10, 1.51281e10; C1 8.40e10, 1.35e10; r25 8.31e10, 1.26e10)
+    assert rel(by["stated"], 3.07218e10) <= 1e-5                                                  # (Q = 216: 1.65828e10) (2Q 1.18479e10)
+    assert rel(i["t_per_shot_bound"], i["t_per_shot_bound_stated"]) <= 0.04                       # '1.4e11 T'
     assert rel(i["t_per_shot_empirical_step"], i["t_per_shot_empirical_step_stated"]) <= 0.04     # '1.4e10 T' (1.3508e10)
     assert i["t_per_shot_at_pre_r21_steps"] == by["stated"]
     # r22-r23 records at 50a and kappa 1e2: the worst case 1.276e12 and the headline 2.008e11
     assert rel(i["r22_bound"]["t_per_shot"], 1.275773e12) <= 1e-5 and i["r22_bound"]["per_step"] == 5
     # the range of the step count: 54 and 11 applications per step
-    assert i["n_dov_per_step_range"] == (76, 14) and i["n_dov_range"] == (9985, 19689)       # 2026-10-10 (2Q: 54, 11; 7291, 15527)
+    assert i["n_dov_per_step_range"] == (141, 21) and i["n_dov_range"] == (17722, 29389)       # 2026-10-10 (2Q: 54, 11; 7291, 15527)
     lo, hi = i["t_per_shot_range"]
-    assert math.isclose(lo, shot(9985, n_trot=107)) and math.isclose(hi, shot(19689, n_trot=1274))
-    assert rel(lo, 1.852687e10) <= 1e-5 and rel(hi, 3.729765e10) <= 1e-5                           # 2026-10-10 (2Q 1.354339e10-2.959068e10; C1 1.1988e10-2.7226e10)
+    assert math.isclose(lo, shot(17722, n_trot=107)) and math.isclose(hi, shot(29389, n_trot=1274))
+    assert rel(lo, 3.324296e10) <= 1e-5 and rel(hi, 5.592302e10) <= 1e-5                           # 2026-10-10 (2Q 1.354339e10-2.959068e10; C1 1.1988e10-2.7226e10)
     slo, shi = i["t_per_shot_range_stated"]
     assert rel(lo, slo) <= 0.03 and rel(hi, shi) <= 0.02                                          # '1.9-3.7e10 T' (1.853, 3.730)
     # a 12x spread in the step count is a 2.3x spread in T: the floor 2Q t
-    assert 11.9 < 1274 / 107 < 12 and 2.0 < hi / lo < 2.1   # 2.01 at lambda = 648 (2Q 2.13; C1 2.27)
-    assert i["n_dov_floor"] == 648 * 10 == 6480 and rel(6480, i["n_dov_floor_stated"]) <= 0.01   # '6.5e3 applications'
-    assert math.isclose(i["t_per_shot_floor"], 6480 * T_DOV) and rel(i["t_per_shot_floor"], 1.2e10) <= 0.01
-    assert rel(i["floor_ratio_to_envelope"], 11.98) <= 0.001                                      # '12 times the target' (2Q: 8.0)
+    assert 11.9 < 1274 / 107 < 12 and 1.6 < hi / lo < 1.7   # 1.68 at lambda = 1296 (2.01 at 648) (2Q 2.13; C1 2.27)
+    assert i["n_dov_floor"] == 1296 * 10 == 12960 and rel(12960, i["n_dov_floor_stated"]) <= 0.01   # '1.3e4 applications'
+    assert math.isclose(i["t_per_shot_floor"], 12960 * T_DOV) and rel(i["t_per_shot_floor"], 2.4e10) <= 0.02
+    assert rel(i["floor_ratio_to_envelope"], 24.26) <= 0.001                                      # (Q = 216: 12; 2Q: 8.0)
     assert all(v > i["t_per_shot_floor"] for v in by.values())
     with pytest.raises(ValueError):
         dataclasses.replace(a, trotter_rule_2033=c.Cited("empirical", "test"))
@@ -833,8 +840,10 @@ def test_2033_jacobi_anger_applications_per_step(a, r33):
     # the Jacobi-Anger polynomial at x = 2Q dt for a QSP error of 1e-2 over the shot
     i = r33.intermediates
     assert a.eps_qsp.value == 1e-2 == i["eps_qsp"]
-    assert math.isclose(i["jacobi_anger_x"], 648 * 10 / 450) and round(i["jacobi_anger_x"], 1) == 14.4   # lambda dt = 14.4 (2Q dt = 9.6)
-    assert i["n_dov_per_step"] == PER_STEP == 25 == i["n_dov_per_step_stated"]
+    assert math.isclose(i["jacobi_anger_x"], 1296 * 10 / 450) and round(i["jacobi_anger_x"], 1) == 28.8   # lambda dt = 28.8 (Q = 216: 14.4; 2Q dt = 9.6)
+    assert i["n_dov_per_step"] == PER_STEP == 43 == i["n_dov_per_step_stated"]
+    assert [m.dov_per_step(n, 10.0, 432, 1e-2, 1.5) for n in (7442, 200, 30)] == [9, 82, 459]      # r26-yukawa
+    assert [m.dov_per_step(n, 10.0, 432, 1e-2, 1.5) for n in (107, 450, 1274)] == [141, 43, 21]
     assert [m.dov_per_step(n, 10.0, 216, 1e-2, 1.5) for n in (7442, 200, 30)] == [6, 46, 237]
     assert [m.dov_per_step(n, 10.0, 216, 1e-2, 1.5) for n in (107, 450, 1274)] == [76, 25, 14]
     # at the 2Q normalization (the r22-r25 records):
@@ -863,8 +872,8 @@ def test_2033_jacobi_anger_applications_per_step(a, r33):
             exact = complex(math.cos(x * math.cos(th)), -math.sin(x * math.cos(th)))
             assert abs(approx - exact) <= 1e-2 / n
     # without a self-inverse block encoding the count doubles
-    assert math.isclose(i["t_per_shot_if_not_self_inverse"], shot(450 * 50 + TPQ))
-    assert rel(i["t_per_shot_if_not_self_inverse"], 4.536e10) <= 0.01                             # 2026-10-10 (2Q 3.473e10; C1 3.29e10; r25 3.21e10, r24 1.63e10)
+    assert math.isclose(i["t_per_shot_if_not_self_inverse"], shot(450 * 86 + TPQ))
+    assert rel(i["t_per_shot_if_not_self_inverse"], 7.775e10) <= 0.01                             # 2026-10-10 (2Q 3.473e10; C1 3.29e10; r25 3.21e10, r24 1.63e10)
 
 
 def _herm_exp(H, t):
@@ -1071,34 +1080,34 @@ def test_r21_wilson_hop_rank_norm_and_strings():
 # --- 2033: the shot ----------------------------------------------------------
 
 def a_beta_rule_is_normalization(i):
-    return i["beta_H_used"] == 1.5 * 2 * 216 / 0.5 == 1296      # beta lambda (2Q: 864)
+    return i["beta_H_used"] == 1.5 * 2 * 432 / 0.5 == 2592      # beta lambda (Q = 216: 1296; 2Q: 864)
 
 
 def test_2033_dov_evolution_tpq_total(a, r33):
     i = r33.intermediates
-    assert i["n_dov_evolution"] == 25 * N_TROT == 11250                       # (2Q: 8550)
-    assert rel(i["n_dov_evolution"], i["n_dov_evolution_stated"]) <= 0.025    # '1.1e4 applications'
-    assert math.isclose(i["t_evolution"], 11250 * T_DOV)
+    assert i["n_dov_evolution"] == 43 * N_TROT == 19350                       # (Q = 216: 11250) (2Q: 8550)
+    assert rel(i["n_dov_evolution"], i["n_dov_evolution_stated"]) <= 0.025    # '1.9e4 applications'
+    assert math.isclose(i["t_evolution"], 19350 * T_DOV)
     assert rel(i["t_evolution"], i["t_evolution_stated"]) <= 0.02             # 2.0797e10 -> '2.1e10' (2Q 1.58e10; r24 8.0e9)
     assert i["delta_beta"] == 1e-4
     # referee C1 (2026-10-04): beta||H|| = lambda / (T a) = 1296 (2Q: 864), the normalization the filter's polynomial sees
     assert a_beta_rule_is_normalization(i)
-    assert rel(i["d_beta_exact"], 109.25) <= 0.01 and i["d_beta"] == 109 == D_BETA and i["d_beta_record_r25"] == 30
-    assert rel(i["d_beta_at_delta_beta_1e-3"], 94.6) <= 0.01                                     # (2Q: 77.3)
-    assert i["n_dov_tpq"] == TPQ == 1853 and rel(TPQ, i["n_dov_tpq_stated"]) <= 0.03 and i["n_dov_tpq_r25"] == 240
-    assert i["n_filter_calls"] == 17 and i["n_dov_tpq_one_call_per_round"] == D_BETA * 8 == 872   # verifier: 2k + 1 (C1 record 712 at 2Q)
+    assert rel(i["d_beta_exact"], 154.51) <= 0.01 and i["d_beta"] == 155 == D_BETA and i["d_beta_record_r25"] == 30
+    assert rel(i["d_beta_at_delta_beta_1e-3"], 133.8) <= 0.01                                     # (2Q: 77.3)
+    assert i["n_dov_tpq"] == TPQ == 2635 and rel(TPQ, i["n_dov_tpq_stated"]) <= 0.03 and i["n_dov_tpq_r25"] == 240
+    assert i["n_filter_calls"] == 17 and i["n_dov_tpq_one_call_per_round"] == D_BETA * 8 == 1240   # verifier: 2k + 1 (C1 record 712 at 2Q)
     assert math.isclose(i["t_tpq"], TPQ * T_DOV)
     assert rel(i["t_tpq"], i["t_tpq_stated"]) <= 0.025                        # 2.7961e9 -> '2.8e9' (C1 1.3e9; r25 4.4e8)
     # the evolution, not the thermal state, is the shot
-    assert not i["tpq_dominates"] and 0.84 < i["evolution_share_of_shot"] < 0.86 and 0.135 < i["tpq_share_of_shot"] < 0.145   # 14% (2Q: 15%)
+    assert not i["tpq_dominates"] and 0.865 < i["evolution_share_of_shot"] < 0.88 and 0.115 < i["tpq_share_of_shot"] < 0.125   # 12% (2Q: 15%)
     # the thermal state = the filter and its reflections (batch 5 item 12)
-    assert math.isclose(i["tpq_share_of_shot"], i["t_thermal_prep"] / i["t_per_shot"]) and round(i["tpq_share_of_shot"], 2) == 0.14   # '14%' (2Q 15%; C1 7.7%)
+    assert math.isclose(i["tpq_share_of_shot"], i["t_thermal_prep"] / i["t_per_shot"]) and round(i["tpq_share_of_shot"], 2) == 0.12   # '12%' (2Q 15%; C1 7.7%)
     assert math.isclose(i["t_thermal_prep"], TPQ * T_DOV + REFL)
-    assert i["n_dov_total"] == NDOV == 13103 and i["n_queries_total"] == NQ == 5463951      # 2026-10-10 (2Q: 10063, 4196271)
-    assert rel(NDOV, 1.3e4) <= 0.01                                           # '1.3e4 applications' (2Q 1.0e4; C1 9.3e3)
-    assert math.isclose(i["t_per_shot_core"], NDOV * T_DOV) and rel(i["t_per_shot_core"], 2.4221918e10) <= 1e-6   # 2026-10-10 (2Q 1.8596712e10)
+    assert i["n_dov_total"] == NDOV == 21985 and i["n_queries_total"] == NQ == 9167745      # 2026-10-10 (2Q: 10063, 4196271)
+    assert rel(NDOV, 2.2e4) <= 0.01                                           # '2.2e4 applications' (2Q 1.0e4; C1 9.3e3)
+    assert math.isclose(i["t_per_shot_core"], NDOV * T_DOV) and rel(i["t_per_shot_core"], 4.1156518e10) <= 1e-6   # 2026-10-10 (2Q 1.8596712e10)
     # batch 5 item 12 (2026-10-09): + the gauge terms of 450 steps + the reflections
-    assert math.isclose(i["t_per_shot"], shot(NDOV)) and rel(i["t_per_shot"], 2.4534414e10) <= 1e-6   # (2Q 1.8908505e10)
+    assert math.isclose(i["t_per_shot"], shot(NDOV)) and rel(i["t_per_shot"], 4.1470438e10) <= 1e-6   # (2Q 1.8908505e10)
     assert math.isclose(i["t_per_shot"], i["t_per_shot_core"] + i["t_gauge_steps_per_shot"] + i["aa_reflection_T"])
     assert rel(i["t_per_shot"], i["t_per_shot_stated"]) <= 0.025              # 2.4534e10 -> '2.5e10' (2Q 1.8909e10; C1 1.7e10; r25 1.6e10)
     assert rel(i["r25_headline"]["t_per_shot"], 1.6241697e10) <= 1e-6 and i["r25_headline"]["n_dov"] == 8790   # record
@@ -1108,11 +1117,11 @@ def test_2033_dov_evolution_tpq_total(a, r33):
     assert math.isclose(i["gauge_step_T_per_link"],
                         2 * (216 + 42 * T33) + 2 * (0.5 * (350 + 4 * T33) + 3 * 112 + 6 * 392))
     assert math.isclose(i["gauge_step_T"], 81 * i["gauge_step_T_per_link"]) and math.isclose(i["gauge_step_T"], GAUGE_STEP)
-    assert rel(i["gauge_step_T"], 6.9e5) <= 0.01                             # '6.9e5 T per step'
-    assert 0.015 < i["gauge_step_share_of_step"] < 0.025                      # '2% of a step' (r24 4%)
+    assert rel(i["gauge_step_T"], 7.0e5) <= 0.01                             # '7.0e5 T per step'
+    assert 0.008 < i["gauge_step_share_of_step"] < 0.01                       # '1% of a step' (Q = 216: 2%; r24 4%)
     assert math.isclose(i["t_gauge_steps_per_shot"], N_TROT * GAUGE_STEP)
-    assert i["aa_reflection_T"] == REFL == 217728                             # 2n Toffolis (arxiv_2407_17966)
-    assert rel(i["aa_reflection_T"], 2.2e5) <= 0.02                           # '2.2e5 T per shot'
+    assert i["aa_reflection_T"] == REFL == 266112                             # 2n Toffolis (arxiv_2407_17966)
+    assert rel(i["aa_reflection_T"], 2.7e5) <= 0.02                           # '2.7e5 T per shot'
     assert i["aa_reflection_T"] < 3e-5 * i["t_per_shot"]
     # the switch off restores the r25-C1 total and drops the two primitives
     off = m.model(dataclasses.replace(a, count_gauge_steps_and_reflections=c.Assumed(False, "test")), "2033")
@@ -1123,7 +1132,7 @@ def test_2033_dov_evolution_tpq_total(a, r33):
 def test_2033_hard_ops_is_one_headline_and_responds_to_inputs(a, r33):
     i = r33.intermediates
     lo, hi = r33.hard_ops
-    assert lo == hi == i["t_per_shot"] and round(lo, -5) == 2.45344e10          # 2026-10-10 (2Q: 1.89085e10, core 1.85967e10)
+    assert lo == hi == i["t_per_shot"] and round(lo, -5) == 4.14704e10          # 2026-10-10 (2Q: 1.89085e10, core 1.85967e10)
     # the record parameters of the second-quantized construction do not move the headline
     for b in (dataclasses.replace(a, hop_frame_undo=c.Assumed(False, "test")),
               dataclasses.replace(a, hop_share=c.Assumed("draft", "test")),
@@ -1137,17 +1146,18 @@ def test_2033_hard_ops_is_one_headline_and_responds_to_inputs(a, r33):
     b = dataclasses.replace(a, t_evol_fm=c.Assumed(5, "test"))
     ib = m.model(b, "2033").intermediates
     assert ib["n_trotter_2033"] == math.ceil(math.sqrt(i["trotter_lambda_sd"] * 25 ** 3 / 0.1)) == 1779
-    assert ib["n_dov_floor"] == 648 * 25 and ib["t_per_shot"] > 2 * lo
+    assert ib["n_dov_floor"] == 1296 * 25 and ib["t_per_shot"] > 2 * lo
     # r24: the r22 headline is recovered with kappa 1e2 and t = 10 fm (and the Yukawa outside, r25)
     b = dataclasses.replace(a, t_evol_fm=c.Assumed(10, "test"), kappa_2033=c.Assumed(1e2, "test"),
                             yukawa_placement=c.Stated("outside", "test"), beta_H_rule=c.Assumed("stated", "test"),
                             aa_call_rule=c.Assumed("per_round", "test"),
                             count_gauge_steps_and_reflections=c.Assumed(False, "test"),
-                            count_yukawa_normalization=c.Assumed(False, "test"))
+                            count_yukawa_normalization=c.Assumed(False, "test"),
+                            fermion_content_2033=c.Assumed("none", "test"))
     assert math.isclose(m.model(b, "2033").hard_ops[0], i["r22_headline"]["t_per_shot"], rel_tol=1e-12)
     # a larger QSP error budget lowers the order
     b = dataclasses.replace(a, eps_qsp=c.Assumed(0.1, "test"))
-    assert m.model(b, "2033").intermediates["n_dov_per_step"] == m.dov_per_step(450, 10.0, 216, 0.1, 1.5) < 25
+    assert m.model(b, "2033").intermediates["n_dov_per_step"] == m.dov_per_step(450, 10.0, 432, 0.1, 1.5) < 43
 
 
 def test_2033_hard_ops_matches_box(r33):
@@ -1176,14 +1186,14 @@ def test_2033_kappa_physical_scaling(r33):
     i = r33.intermediates
     lo, hi = i["t_per_shot_kappa_physical"]
     slo, shi = i["t_per_shot_kappa_physical_stated"]
-    assert (slo, shi) == (8.0e11, 8.0e12)                                       # (2Q: 6.1e11, 6.1e12)
-    assert rel(lo, slo) <= 0.015 and rel(hi, shi) <= 0.015
+    assert (slo, shi) == (1.3e12, 1.3e13)                                       # (2Q: 6.1e11, 6.1e12)
+    assert rel(lo, slo) <= 0.04 and rel(hi, shi) <= 0.04
     assert math.isclose(lo, shot(NDOV, 6908)) and math.isclose(hi, shot(NDOV, 69078))
     assert 32 < lo / i["t_per_shot"] < 33 and 320 < hi / i["t_per_shot"] < 330
-    assert 7.9e2 <= lo / 1e9 < 8.1e2 and 7.9e3 <= hi / 1e9 < 8.1e3      # '8.0e2-8.0e3 times the target' (2Q: 6.1e2-6.1e3)
+    assert 1.3e3 <= lo / 1e9 < 1.4e3 and 1.3e4 <= hi / 1e9 < 1.4e4      # '8.0e2-8.0e3 times the target' (2Q: 6.1e2-6.1e3)
     # r24: kappa ~ 1e2 at t = 10a (the r17-r23 kappa)
     assert math.isclose(i["t_per_shot_kappa_r22"], shot(NDOV, 691))
-    assert rel(i["t_per_shot_kappa_r22"], i["t_per_shot_kappa_r22_stated"]) <= 0.01     # '5.3e10' (r24 2.7e10)
+    assert rel(i["t_per_shot_kappa_r22"], i["t_per_shot_kappa_r22_stated"]) <= 0.04     # '5.3e10' (r24 2.7e10)
 
 
 def test_2033_eps_l_at_0p1_faults_per_shot(r33):
@@ -1209,16 +1219,16 @@ def test_2033_thermal_route_is_tpq_and_the_sampler_is_repriced(r33):
     assert rel(i["gibbs_T_per_jump_implied"], 3.3e6) <= 0.02                # record: the retired '1e10'
     g = i["gibbs_estimate"]
     w = math.sqrt(math.log(1e3))
-    assert (g["low"]["dov_per_jump"], g["central"]["n_jumps"], g["high"]["n_jumps"]) == (1296, 3000, 9000)   # beta lambda (2Q: 864; r25 100)
-    assert math.isclose(g["central"]["dov_per_jump"], 2 * w * 1296) and math.isclose(g["high"]["dov_per_jump"], 4 * w * 1296)
+    assert (g["low"]["dov_per_jump"], g["central"]["n_jumps"], g["high"]["n_jumps"]) == (2592, 3000, 9000)   # beta lambda (2Q: 864; r25 100)
+    assert math.isclose(g["central"]["dov_per_jump"], 2 * w * 2592) and math.isclose(g["high"]["dov_per_jump"], 4 * w * 2592)
     for k in g:
         assert math.isclose(g[k]["t_total"], g[k]["n_jumps"] * (g[k]["dov_per_jump"] * T_DOV + 1e3))
     lo, mid, hi = i["gibbs_T_estimate"]
-    assert rel(lo, i["gibbs_T_stated"][0]) <= 0.01 and rel(hi, i["gibbs_T_stated"][1]) <= 0.03    # 7.2e12-2.3e14 (2Q: 4.8e12-1.5e14)
+    assert rel(lo, i["gibbs_T_stated"][0]) <= 0.03 and rel(hi, i["gibbs_T_stated"][1]) <= 0.03    # 7.2e12-2.3e14 (2Q: 4.8e12-1.5e14)
     assert rel(mid, i["gibbs_T_central_stated"]) <= 0.015                                         # '3.8e13' (2Q 2.5e13)
-    assert rel(i["gibbs_over_tpq"], i["gibbs_over_tpq_stated"]) <= 0.01                          # '1.1e4' (2Q 9.0e3; C1 1.9e4)
-    assert rel(g["central"]["dov_per_jump"], 6.81e3) <= 0.01                                      # (2Q 4.54e3)
-    assert rel(g["low"]["over_tpq"], 2.1e3) <= 0.02 and rel(g["high"]["over_tpq"], 6.6e4) <= 0.02   # (2Q 1.7e3, 5.4e4; C1 3.6e3, 1.1e5)
+    assert rel(i["gibbs_over_tpq"], i["gibbs_over_tpq_stated"]) <= 0.04                          # '1.1e4' (2Q 9.0e3; C1 1.9e4)
+    assert rel(g["central"]["dov_per_jump"], 1.362e4) <= 0.01                                      # (2Q 4.54e3)
+    assert rel(g["low"]["over_tpq"], 2.95e3) <= 0.02 and rel(g["high"]["over_tpq"], 9.3e4) <= 0.02   # (2Q 1.7e3, 5.4e4; C1 3.6e3, 1.1e5)
     # the sampler replaces the TPQ preparation: it would multiply the shot even at its low end
     assert lo > 4 * i["t_per_shot"] and mid > 20 * i["t_per_shot"]
 
@@ -1230,9 +1240,9 @@ def test_2033_shots_and_wall_time(r33, r33_24):
     assert i["shots"] == 1e4
     assert math.isclose(i["wall_s_per_shot"], i["t_per_shot"] * 1e-6 + 1e-4)
     assert rel(i["wall_s_per_shot"], i["wall_s_per_shot_stated"]) <= 0.025      # 18,597 s -> '1.9e4 s'
-    assert rel(i["wall_yr_per_point"], 7.7739) <= 1e-3                          # one temperature at 10a, 10% (2026-10-10; 2Q 5.9913; C1 5.4230; r25 5.1463)
+    assert rel(i["wall_yr_per_point"], 13.1402) <= 1e-3                          # one temperature at 10a, 10% (2026-10-10; 2Q 5.9913; C1 5.4230; r25 5.1463)
     assert r33.wall_time_s == i["wall_campaign_s"]                           # 2026-10-05 method test: 3.56-3.99 yr (2Q 2.71-3.06; rate campaign record)
-    assert rel(r33.wall_time_s[0], 1.123529e8) <= 1e-3 and rel(r33.wall_time_s[1], 1.260253e8) <= 1e-3
+    assert rel(r33.wall_time_s[0], 1.839682e8) <= 1e-3 and rel(r33.wall_time_s[1], 2.036539e8) <= 1e-3
     # the r24 prints (Yukawa outside): 8241 s, 2.6 yr per point, 1.3e2 yr for the retired 50-point scan
     j = r33_24.intermediates
     assert rel(j["wall_s_per_shot"], 8241.44) <= 1e-5 and rel(j["wall_yr_per_point"], 2.6114) <= 1e-3
@@ -1247,17 +1257,17 @@ def test_r24_condensate_arm_is_the_preparation_alone(a, a24, r33, r33_24):
     own R-TOL tolerance."""
     i = r33.intermediates
     cs = i["condensate_shot"]
-    assert cs["n_trot"] == 0 and cs["n_dov_evol"] == 0 and cs["n_dov"] == i["n_dov_condensate"] == TPQ == 1853   # (2Q: 1513)
+    assert cs["n_trot"] == 0 and cs["n_dov_evol"] == 0 and cs["n_dov"] == i["n_dov_condensate"] == TPQ == 2635   # (2Q: 1513)
     P = price_sp(TPQ)
     assert cs["n_rot_shot"] == P["n_rot"] == TPQ * 2509 and math.isclose(cs["t_rot"], P["t_rot"])
-    assert math.isclose(i["t_per_shot_condensate"], P["t_shot"] + REFL) and rel(i["t_per_shot_condensate"], 3.418089e9) <= 1e-5   # 2026-10-10 (2Q: 2.790318e9); + the reflections
+    assert math.isclose(i["t_per_shot_condensate"], P["t_shot"] + REFL) and rel(i["t_per_shot_condensate"], 4.921423e9) <= 1e-5   # 2026-10-10 (2Q: 2.790318e9); + the reflections
     assert rel(i["t_per_shot_condensate"], i["t_per_shot_condensate_stated"]) <= 0.02          # '2.8e9 T' (C1 1.3e9; r25 4.4e8)
     assert rel(i["r25_headline"]["t_per_shot_condensate"], 4.41661e8) <= 1e-5                  # record
     # its own (looser) tolerance makes it a little cheaper than the same applications inside the sphaleron shot
     assert i["t_per_shot_condensate"] < i["t_tpq"] and rel(i["t_per_shot_condensate"], i["t_tpq"]) < 0.01
     assert not i["condensate_inside_2033_envelope"]                                            # C1: 1.3x the 1e9 limit
     w = i["wall_s_per_shot_condensate"]
-    assert math.isclose(w, i["t_per_shot_condensate"] * 1e-6 + 1e-4) and rel(w, 3418.09) <= 1e-4   # 2026-10-10 (2Q 2790.10)
+    assert math.isclose(w, i["t_per_shot_condensate"] * 1e-6 + 1e-4) and rel(w, 4921.42) <= 1e-4   # 2026-10-10 (2Q 2790.10)
     assert rel(w, i["wall_s_condensate_stated"]) <= 0.01                                       # '2.8e3 s' (C1 1.3e3)
     yr = 3.156e7
     assert math.isclose(i["wall_yr_condensate_point"], 1e3 * w / yr)
@@ -1265,7 +1275,7 @@ def test_r24_condensate_arm_is_the_preparation_alone(a, a24, r33, r33_24):
     assert rel(i["wall_day_condensate_temperature"], i["wall_day_condensate_point_stated"]) <= 0.02   # 32.29 -> '32 days' (C1 15)
     # the r24 prints (Yukawa outside): 2.2412e8 T, 224.1 s, 2.6 days per point, 0.36 yr for the retired scan
     j = r33_24.intermediates
-    P24 = price_sp(240, n_sgn=1)
+    P24 = price_sp(240, n_sgn=1, record=True)
     assert math.isclose(j["t_per_shot_condensate"], P24["t_shot"]) and rel(j["t_per_shot_condensate"], 2.2412e8) <= 1e-4
     assert rel(j["wall_s_per_shot_condensate"], 224.1) <= 1e-3 and rel(j["wall_day_condensate_point"], 2.594) <= 1e-3
     assert math.isclose(j["wall_yr_condensate_scan"], 50 * j["wall_yr_condensate_point"])
@@ -1333,8 +1343,8 @@ def test_r24_evolution_time_and_linear_regime(a, r33):
     i = r33.intermediates
     assert a.t_evol_fm.value == 2 and a.a_fm.value == 0.2 and i["t_over_a_2033"] == 10
     assert i["t_over_a_2033"] * i["temp_lat"] == 5.0
-    assert i["n_dov_floor"] == 648 * 10 == 6480 and rel(6480, i["n_dov_floor_stated"]) <= 0.01    # 2 lambda t (2Q: 4320)
-    assert math.isclose(i["t_per_shot_floor"], 6480 * T_DOV) and round(i["floor_ratio_to_envelope"], 1) == 12.0
+    assert i["n_dov_floor"] == 1296 * 10 == 12960 and rel(12960, i["n_dov_floor_stated"]) <= 0.01    # (Q = 216: 6480; 2Q: 4320)
+    assert math.isclose(i["t_per_shot_floor"], 12960 * T_DOV) and round(i["floor_ratio_to_envelope"], 1) == 24.3
 
 
 def test_r23_no_machine_count(r33):
@@ -1368,7 +1378,7 @@ def test_2033_second_quantized_construction_is_a_record(a, r33):
     assert rel(by["step"], 2.274e11) <= 1e-3 and rel(by["stated"], 1.691e10) <= 1e-3      # the r21 comparison prints
     # at equal step count the valid construction is 14.2x cheaper per application and per shot
     assert rel(rec["over_single_particle_per_application"], 14.18) <= 1e-3
-    assert math.isclose(rec["over_single_particle_per_application"], 691 * C_BE33 / price_sp(416215, 691, n_sgn=1)["t_dov"])
+    assert math.isclose(rec["over_single_particle_per_application"], 691 * C_BE33 / price_sp(416215, 691, n_sgn=1, record=True)["t_dov"])
     assert math.isclose(rec["over_single_particle_per_shot"], rec["over_single_particle_per_application"])
     # sgn of the many-body operator is not the bilinear with kernel sgn(h): they agree on the one-particle sector only,
     # and the many-body operator has an exact zero mode (the empty state), so its condition number is undefined
@@ -1398,13 +1408,13 @@ def test_2033_second_quantized_construction_is_a_record(a, r33):
 
 
 def test_2033_record_lcu_terms_per_site(a, r33):
-    # r21 (3c): the LCU of one query of the second-quantized construction, per site. Record, except the Higgs strings,
-    # which the headline still uses (40 per site, once per application)
+    # r21 (3c): the LCU of one query of the second-quantized construction, per site. Record (r26-yukawa: the headline's
+    # Higgs strings are now 80 per site, off-diagonal bilinears)
     i = r33.intermediates
     per = i["lcu_per_site"]
     assert per["hop"] == 3 * 2 * 2 * 1 * 2 == 24 and per["hop_per_link"] == 8
     assert per["onsite"] == 4 * 2 == 8
-    assert per["higgs"] == 8 * (4 + 1) == 40 == i["higgs_strings_per_site"]
+    assert per["higgs"] == 8 * (4 + 1) == 40 and i["higgs_strings_per_site"] == 80
     assert per["total"] == LCU_SITE == 72 == i["lcu_terms_per_site"] == i["lcu_terms_per_site_stated"]
     assert m.lcu_terms_per_site(3, 2, 2, 1, 2, radial_terms=5) == per
     assert i["lcu_terms"] == 27 * 72 == 1944 and rel(i["lcu_terms"], i["lcu_terms_stated"]) <= 0.03
@@ -1474,7 +1484,7 @@ def test_2033_record_draft_frame(a, r33):
     # the frame switch moves the record only
     b = dataclasses.replace(a, link_frame=c.Cited("draft", "test"))
     rb = m.model(b, "2033")
-    assert rb.hard_ops == r33.hard_ops and rb.lq == (1015, 1015)
+    assert rb.hard_ops == r33.hard_ops and rb.lq == (1235, 1235)
     assert math.isclose(rb.intermediates["second_quantized_record"]["t_per_shot"], NQ_SQ * C_BE33D)
     assert rb.intermediates["sq_lq_total"] == 1015
 
@@ -1566,8 +1576,8 @@ def test_breakdown_statuses(a, r33):
     assert all("DERIVED HERE" in p.src for p in r33.breakdown if p.name in ("sp_query_toffoli", "sp_query_direct_T"))
     assert not any("FermionPrimitives_unpub" in p.src for p in r33.breakdown)     # no unpublished input at 2033
     by = {p.name: p for p in r33.breakdown}
-    assert by["sp_query_toffoli"].count == 598 * NQ and by["sp_query_rotations"].count == 6 * NQ
-    assert by["lift_toffoli"].count == 862 * NDOV and by["higgs_select_toffoli"].count == 1080 * NDOV
+    assert by["sp_query_toffoli"].count == 601 * NQ and by["sp_query_rotations"].count == 6 * NQ
+    assert by["lift_toffoli"].count == 1726 * NDOV and by["higgs_select_toffoli"].count == 2160 * NDOV
     q = sum(p.t_total for p in r33.breakdown if p.name.startswith("sp_query_"))
     assert math.isclose(q / r33.intermediates["t_per_shot_core"], NQD * C_SP / T_DOV)   # sgn is 99% of the itemized shot (r25)
     rec = GROUPS["2O"].primitives["controlled_group_action"]
@@ -1764,17 +1774,17 @@ def test_2033_ancilla_itemized_at_peak(a, r33):
     # E23 (5), r20; r22: the single-particle architecture. Peak = whole shot + one application + one query + link read
     i = r33.intermediates
     assert i["ancilla_stack"] == {"readout": 1, "qsp_signal": 1, "fpaa": 1, "h_lcu": 2}
-    assert i["ancilla_application"] == {"lift_type_register": 2, "index_register": 9, "hov_lcu": 1, "sgn_signal": 1,
+    assert i["ancilla_application"] == {"lift_type_register": 2, "index_register": 10, "hov_lcu": 1, "sgn_signal": 1,
                                         "sgn_real_part": 1}
     assert i["ancilla_query"] == {"term_register": 5}
-    assert i["ancilla_select"] == {"direction_flags": 3, "iteration_temporaries": 6, "link_copy": 5}
-    assert i["lq_ancilla_itemized"] == 5 + 14 + 5 + 14 == 38 < i["lq_ancilla_asserted"] == 110
-    assert i["lq_ancilla"] == 38 + 5                       # r25 (R10): the fan-out of the shared control
+    assert i["ancilla_select"] == {"direction_flags": 3, "iteration_temporaries": 6, "link_copy": 5, "species_read_gate": 3}
+    assert i["lq_ancilla_itemized"] == 5 + 15 + 5 + 17 == 42 < i["lq_ancilla_asserted"] == 110
+    assert i["lq_ancilla"] == 42 + 5                       # r25 (R10): the fan-out of the shared control
     # not concurrent with the link read: the lift's own iteration (9 temporaries + accumulator), the Higgs U_x, RUS,
     # the amplification reflection's two clean ancilla
     nc = i["ancilla_not_concurrent"]
-    assert nc == {"lift_iteration": 10, "higgs_umult": 4, "rus": 1, "fpaa_reflection": 2}
-    assert max(nc.values()) <= 5 + 14 and i["umult_clean_ancilla"] == 4
+    assert nc == {"lift_iteration": 11, "higgs_umult": 4, "rus": 1, "fpaa_reflection": 2}
+    assert max(nc.values()) <= 5 + 17 and i["umult_clean_ancilla"] == 4
     # the readout control acts on the two inserted operators only and is idle during the TPQ filter
     assert "idle during the TPQ filter" in a.anc_readout.note and "arxiv_2208_13112" in a.anc_readout.note
     # record: the second-quantized construction (r21: 7 + 22 + 4 = 33; the draft frame's link term 14, 43)
@@ -2285,9 +2295,9 @@ def test_r25_yukawa_inside_doubles_the_sign_sequences(a, r33, r33_24):
     i, j = r33.intermediates, r33_24.intermediates
     assert a.yukawa_placement.value == "inside" and a.yukawa_placement.prov is c.Provenance.STATED
     assert i["n_queries_per_dov"] == 417 and j["n_queries_per_dov"] == 209
-    assert i["c_lift"] != j["c_lift"] and i["c_higgs_per_dov"] == j["c_higgs_per_dov"] == C_HIGGS   # same circuits
-    assert 1.96 < i["t_per_dov"] / j["t_per_dov"] < 1.98                     # 'twice the cost'
-    assert i["lq_ancilla_itemized"] == j["lq_ancilla"] == 38                 # no new qubit: same signal and real-part
+    assert i["c_lift"] != j["c_lift"] and i["c_higgs_per_dov"] == C_HIGGS and j["c_higgs_per_dov"] == C_HIGGS_REC
+    assert 1.96 < i["t_per_dov"] / j["t_per_dov"] < 2.01                     # 'twice the cost'
+    assert i["lq_ancilla_itemized"] == 42 and j["lq_ancilla"] == 38          # the Yukawa projector adds no qubit; the +4 are r26-yukawa's
     with pytest.raises(ValueError):
         dataclasses.replace(a, yukawa_placement=c.Stated("both", "test"))
 
@@ -2298,12 +2308,12 @@ def test_r25_short_time_shot_at_its_own_depth(a, r33):
     sd = i["trotter_state_dependent_short"]
     assert i["short_time_lat"] == 5.0 and sd["n_central"] == math.ceil(math.sqrt(sd["lambda_var"] * 125 / 0.1)) == 160
     sh = i["short_shot"]
-    assert sh["per_step"] == m.dov_per_step(160, 5.0, 216, 1e-2, 1.5) == 32 and sh["n_dov"] == 160 * 32 + TPQ == 6973   # (2Q: 23, 5193)
-    assert math.isclose(sh["x"], 648 * 5 / 160) and sh["x"] == 20.25
-    P = price_sp(6973)
-    assert math.isclose(sh["t_shot"], shot(6973, n_trot=160)) and rel(sh["t_shot"], 1.2992230e10) <= 1e-5   # 2026-10-10 (2Q: 9.700662e9)
-    assert rel(sh["t_shot"], i["t_per_shot_short_stated"]) <= 0.01             # '9.7e9 T' (before 9.6e9; C1 8.1e9; r25 7.2e9)
-    assert rel(i["wall_s_per_shot_short"], i["wall_s_short_stated"]) <= 0.01   # '9.7e3 s' (before 9.6e3; C1 8.1e3)
+    assert sh["per_step"] == m.dov_per_step(160, 5.0, 432, 1e-2, 1.5) == 55 and sh["n_dov"] == 160 * 55 + TPQ == 11435   # (2Q: 23, 5193)
+    assert math.isclose(sh["x"], 1296 * 5 / 160) and sh["x"] == 40.5
+    P = price_sp(11435)
+    assert math.isclose(sh["t_shot"], shot(11435, n_trot=160)) and rel(sh["t_shot"], 2.1502861e10) <= 1e-5   # 2026-10-10 (2Q: 9.700662e9)
+    assert rel(sh["t_shot"], i["t_per_shot_short_stated"]) <= 0.03             # '9.7e9 T' (before 9.6e9; C1 8.1e9; r25 7.2e9)
+    assert rel(i["wall_s_per_shot_short"], i["wall_s_short_stated"]) <= 0.03   # '9.7e3 s' (before 9.6e3; C1 8.1e3)
     assert sh["t_shot"] < 0.54 * i["t_per_shot"]   # the shared thermal filter (17 calls) keeps it above half
 
 
@@ -2325,13 +2335,13 @@ def test_r25_depth_matches_the_factory_analysis(a, r33, r33_24):
     # r25 headline: the fan-out holds F* >= 10 on every run
     i = r33.intermediates
     assert i["depth_variant"] == "fanout" and i["baseline_ok_all_runs"]
-    assert all(12.1 < f[0] and f[1] < 12.6 for f in i["f_star_by_run"].values())
+    assert all(12.0 < f[0] and f[1] < 12.3 for f in i["f_star_by_run"].values())
     assert round(i["f_star"][0]) == i["f_star_stated"] == 12                  # 'raises this to 12'
     fr = i["f_star_by_run_register"]["sph10"]
     assert rel(fr[0], i["f_star_register_stated"][0]) <= 0.01 and rel(fr[1], i["f_star_register_stated"][1]) <= 0.01
     lo, hi = i["slowdown_register"]
     assert rel(lo, 1.6) <= 0.03 and rel(hi, 1.8) <= 0.03                       # '1.6-1.8 times slower'
-    assert i["umult_concurrent"] == 19 // 4 == 4
+    assert i["umult_concurrent"] == 22 // 4 == 5
 
 
 def test_r25_exports_2033(r33):
@@ -2342,14 +2352,14 @@ def test_r25_exports_2033(r33):
     t, d = c._band(i["t_per_shot"]), c._band(i["t_depth_per_shot"])
     assert i["f_star"] == pytest.approx((t[0] / d[1], t[1] / d[0]))
     # batch 5 item 12: the gauge terms and reflections are taken at the itemized circuit's T per layer, so F* is unchanged
-    assert 12.1 < i["f_star"][0] < 12.2 and 12.2 < i["f_star"][1] < 12.3
+    assert 12.0 < i["f_star"][0] < 12.1 and 12.1 < i["f_star"][1] < 12.2
     runs = i["exports_by_run"]
     assert i["floor_wall_s"] == (sum(e["floor_wall_s"][0] for e in runs[0].values()),
                                  sum(e["floor_wall_s"][1] for e in runs[1].values()))
     assert i["floor_wall_s"][1] < i["wall_campaign_s"][1]                      # F* >= 10: the serial wall is the wall
-    assert 35.5 < i["factories_for_1yr"][0] < 35.7 and 39.9 < i["factories_for_1yr"][1] < 40.0   # method test, 2026-10-10 (2Q: 27.1, 30.6)
-    # the 10a test (1111 shots, 0.65 yr) and the condensate (32 days per temperature) fit a year; the 5a test does not
-    assert runs[0]["sph10"]["fits_1yr"][1] and runs[0]["cond"]["fits_1yr"][1] and not runs[0]["sph5"]["fits_1yr"][1]
+    assert 58.2 < i["factories_for_1yr"][0] < 58.4 and 64.4 < i["factories_for_1yr"][1] < 64.6   # method test, 2026-10-10 (2Q: 27.1, 30.6)
+    # r26-yukawa: only the condensate (57 days per temperature) fits a year; before, the 10a test (0.86 yr) did as well
+    assert runs[0]["cond"]["fits_1yr"][1] and not runs[0]["sph10"]["fits_1yr"][1] and not runs[0]["sph5"]["fits_1yr"][1]
 
 
 def test_r25_two_tiers_2033(a, r33):
@@ -2369,19 +2379,19 @@ def test_r25_two_tiers_2033(a, r33):
     assert math.isclose(tf["wall_s"], 1e2 / 0.09 * w["sph10"] + vr * 1e2 / 0.09 * w["sph5"])
     assert i["wall_first_result_s"] == (tf["wall_s"], tf["wall_s"])
     yr = 3.156e7
-    assert rel(tf["wall_s"] / yr, 3.1268) <= 1e-3 and round(tf["wall_s"] / yr, 1) == i["wall_yr_first_stated"] == 3.1   # 2026-10-10 (2Q 2.3554)
+    assert rel(tf["wall_s"] / yr, 5.2054) <= 1e-3 and round(tf["wall_s"] / yr, 1) == i["wall_yr_first_stated"] == 5.2   # 2026-10-10 (2Q 2.3554)
     for nt, cs, wc in zip((4, 8), tc_["shots"], i["wall_campaign_s"]):
         assert cs == pytest.approx({"sph10": 1e2 / 0.09, "sph5": vr * 1e2 / 0.09, "cond": nt * 1e3})
         assert math.isclose(wc, sum(n * w[k] for k, n in cs.items()))
     lo, hi = (x / yr for x in i["wall_campaign_s"])
-    assert rel(lo, 3.5600) <= 1e-3 and rel(hi, 3.9932) <= 1e-3                                  # 2026-10-10 (2Q 2.7090, 3.0627)
-    assert (round(lo, 1), round(hi, 1)) == i["wall_yr_campaign_stated"] == (3.6, 4.0)          # '3.6-4.0 yr'
+    assert rel(lo, 5.8292) <= 1e-3 and rel(hi, 6.4529) <= 1e-3                                  # 2026-10-10 (2Q 2.7090, 3.0627)
+    assert (round(lo, 1), round(hi, 1)) == i["wall_yr_campaign_stated"] == (5.8, 6.5)          # '5.8-6.5 yr'
     olo, ohi = tc_["over_horizon"]
-    assert ohi < 1 and (round(olo, 2), round(ohi, 2)) == i["campaign_over_horizon_stated"]      # 'inside the 5-year horizon'
-    assert round(i["wall_yr_method_test_at_campaign_eps"]) == 28                                 # 'the test at 10% would take 28 yr' (2Q: 21)
+    assert ohi > 1 and (round(olo, 1), round(ohi, 1)) == i["campaign_over_horizon_stated"]      # r26-yukawa: '1.2-1.3 times the five-year window' (was inside)
+    assert round(i["wall_yr_method_test_at_campaign_eps"]) == 47                                 # 'the test at 10% would take 47 yr' (2Q: 21)
     # record: the r25 rate campaign (4-8 temperatures at 10%, 10a at each, 5a x4 at one) as printed before the ruling
     r25 = i["wall_yr_campaign_r25_rate"]
-    assert rel(r25[0], 47.458) <= 1e-3 and rel(r25[1], 78.591) <= 1e-3                           # record at the current chain (2Q: 36.078, 60.001)
+    assert rel(r25[0], 79.898) <= 1e-3 and rel(r25[1], 132.685) <= 1e-3                           # record at the current chain (2Q: 36.078, 60.001)
     assert (round(r25[0]), round(r25[1])) == i["wall_yr_campaign_r25_rate_stated"]
     assert r33.shots == (tf["shots"]["sph10"],) * 2
 
@@ -2431,23 +2441,23 @@ def test_r25_2028_schedule_tiers_and_exports(a, r28):
 def test_r25_chapter_prints_the_model(r28, r33):
     """The r25 prints in app06 (boxes and prose) are the model's numbers, rounded once."""
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex").read_text()
-    for frag in (r"$1015 = 216$ fermion $+\,486$ gauge $+\,270$ Higgs $+\,43$ ancilla",
+    for frag in (r"$1235 = 432$ fermion ($216$ doublet, $216$ singlet) $+\,486$ gauge $+\,270$ Higgs $+\,47$ ancilla",
                  r"$250 = 192$ fermion $+\,16$ gauge $+\,42$ ancilla",
-                 r"$417$ queries per application and $1.8\times 10^{6}$ T",
-                 r"$2.5\times 10^{10}$ at $t=10a$ ($2.1$--$3.0\times 10^{10}$ over the Yukawa-weight band); $1.3\times 10^{10}$ at $t=5a$",
+                 r"$417$ queries per application and $1.9\times 10^{6}$ T",
+                 r"$4.1\times 10^{10}$ at $t=10a$ ($3.4$--$5.1\times 10^{10}$ over the Yukawa-weight band); $2.2\times 10^{10}$ at $t=5a$",
                  r"first result $36$~s; campaign $13$~min",
-                 r"first result $3.1$~yr;", r"$3.6$--$4.0$~yr for $4$--$8$ temperatures",
+                 r"first result $5.2$~yr;", r"$5.8$--$6.5$~yr for $4$--$8$ temperatures",
                  r"$1.1\times 10^{3}$ at $10a$ $+$ $5.5\times 10^{3}$ at $5a$, one temperature",
                  r"With the Hadamard test this needs $1.2\times 10^{15}$ shots at $10a$",
                  r"no zero-point part: $1.3\times 10^{-4}$ at $10a$",
-                 r"checks the evolution and the estimator, not the thermal state", r"($430$--$2400\times$)", r"The test at $10\%$ would take $28$~yr",
+                 r"checks the evolution and the estimator, not the thermal state", r"($430$--$2400\times$)", r"The test at $10\%$ would take $47$~yr",
                  r"has $4.9$ times the relative variance", r"less than $5\%$ between $Ta=0.4$ and $0.6$",
-                 r"$\lesssim 2.9\times 10^{-11}$ (condensate), $\lesssim 4.1\times 10^{-12}$ ($N_{CS}$ test, $10a$; "
-                 r"$7.7\times 10^{-12}$ at $5a$)",
-                 r"$\lambda=Q(2+y\rho_{\max})=648$", r"$\beta\lambda=1296$", r"$2\lambda t=6.5\times 10^{3}$ applications",
+                 r"$\lesssim 2.0\times 10^{-11}$ (condensate), $\lesssim 2.4\times 10^{-12}$ ($N_{CS}$ test, $10a$; "
+                 r"$4.7\times 10^{-12}$ at $5a$)",
+                 r"$\lambda=Q(2+y\rho_{\max})=1296$", r"$\beta\lambda=2592$", r"$2\lambda t=1.3\times 10^{4}$ applications",
                  # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,
                  # the Hilbert-Schmidt-norm formula went (described in words), "budget" -> "2033 target"
-                 r"$3.4$ times the 2033 target", r"thermal-state systematic not bounded",
+                 r"$4.9$ times the 2033 target", r"thermal-state systematic not bounded",
                  r"preprint~\cite{AlvesLammLiu_inprep}"):
         assert frag in tex, frag
     assert "in preparation" not in tex and "N_{\\rm coupling}" not in tex
@@ -2459,8 +2469,8 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  "$36$--$60$~yr", "method-validation result", "sphaleron shot", "Per-shot T, sphaleron"):
         assert gone not in tex, gone
     i = r33.intermediates
-    assert r33.lq[0] == 1015 and round(r33.hard_ops[0] / 1e10, 1) == 2.5                                  # 2026-10-10 (2Q 1.9)
-    assert round(i["t_per_shot_short"] / 1e9, 1) == 13.0 and round(i["tiers"]["first_result"]["wall_yr"], 1) == 3.1
+    assert r33.lq[0] == 1235 and round(r33.hard_ops[0] / 1e10, 1) == 4.1                                  # r26-yukawa (1015, 2.5)
+    assert round(i["t_per_shot_short"] / 1e10, 1) == 2.2 and round(i["tiers"]["first_result"]["wall_yr"], 1) == 5.2
     assert r28.lq[0] == 250 and round(r28.intermediates["wall_first_result_s"][0]) == 36
 
 
@@ -2492,12 +2502,12 @@ def test_typical_reference_success_probability(r33):
     # C1: 1-design reference, post-selection exact; p = prod (1 + e^{-beta|eps|})/2 over the 216 free modes at beta = 2
     i = r33.intermediates
     t = i["typical_ref"]
-    assert t["n_modes"] == 216 and i["typical_ref_n_frozen"] == 208
-    assert abs(t["E0"] + 186.658) < 1e-3
-    assert abs(i["typical_ref_ln_p"] + 137.934) < 1e-3                    # chapter 'p = e^{-138} ~ 1e-60'
-    assert round(t["log10_p"]) == -60
-    assert 7.0e29 < i["typical_ref_aa_rounds"] < 7.1e29                   # chapter '~1e30 rounds'
-    assert round(i["typical_ref_ln_norm_offset"]) == -923                  # chapter 'a further e^{-923}' (at -lambda; -491 at -2Q)
+    assert t["n_modes"] == 432 and i["typical_ref_n_frozen"] == 416      # r26-yukawa: the singlet copies of the free spectrum
+    assert abs(t["E0"] + 373.315) < 1e-3
+    assert abs(i["typical_ref_ln_p"] + 275.868) < 1e-3                    # chapter 'p = e^{-276} ~ 1e-120'
+    assert round(t["log10_p"]) == -120
+    assert 6.2e59 < i["typical_ref_aa_rounds"] < 6.4e59                   # chapter '~1e60 rounds'
+    assert round(i["typical_ref_ln_norm_offset"]) == -1845                 # chapter 'a further e^{-1845}' (at -lambda; Q = 216: -923)
     # independent check: ln p = S - ln D - beta (E - E0)
     assert abs(t["S"] - t["lnD"] - 2.0 * t["E_minus_E0"] - t["ln_p"]) < 1e-9
     assert abs(i["heralded_accept_min"] - 1 / 17) < 1e-12
@@ -2534,7 +2544,7 @@ def test_ncs_kubo_readout_and_units(r33):
 def test_chapter_open_prints():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex").read_text()
     # symbol pass 2026-10-08: single-use p, d_beta and the alpha restatement went (rule 11); their anchors retired
-    for frag in (r"$\sim 10^{30}$ rounds", r"a further $e^{-923}$",
+    for frag in (r"$\sim 10^{60}$ rounds", r"a further $e^{-1845}$",
                  r"$\lambda\ge 9.2/a$ at $g^2=1$", r"$9.6\times 10^{-4}$, mostly zero-point",
                  r"$\sigma^2\gtrsim 1.1\times 10^{14}$ ($1.2\times 10^{12}$ even for an ideal helicity operator",
                  r"suppressed $\sim 10^{3}$-fold ($0.0023\pm 0.0016$ against $1.68$) already at $L=3/(g^2T)$",
@@ -2548,3 +2558,46 @@ def test_chapter_open_prints():
                  r"$8.9\times 10^{-3}$, mostly zero-point", r"for a product reference the bias does not shrink", r"filtered amplitude of order $0.1$",
                  r"total systematic $\sim 40\%$", r"$\gtrsim 30\%$; $\Gamma_{\rm sph}$ at $3^3$ is validation-quality"):
         assert gone not in tex, gone
+
+
+# --- r26-yukawa (H. Lamm 2026-11-06, option (a) on SIDE-2): gauge-singlet fermions ------------------------------
+
+def test_yukawa_ruling_records_and_pre_ruling_chain(a, r28, r33):
+    """'none' reproduces the pre-ruling 2033 chain; the records and the 2028 benchmark (no Higgs, no Yukawa) do not move."""
+    i = r33.intermediates
+    b = m.model(dataclasses.replace(a, fermion_content_2033=c.Assumed("none", "test")), "2033")
+    assert b.lq == (1015, 1015) and rel(b.hard_ops[0], 2.4534414e10) <= 1e-6 and b.intermediates["q_modes"] == 216
+    assert rel(b.intermediates["tiers"]["first_result"]["wall_yr"], 3.1268) <= 1e-3
+    assert rel(i["r25_headline"]["t_per_shot"], 1.6241697e10) <= 1e-6 and rel(i["r24_t_per_shot"], 8.2414398e9) <= 1e-6
+    assert rel(i["r22_headline"]["t_per_shot"], 2.00789e11) <= 1e-4 and i["sq_lq_total"] == 1005
+    assert r28.lq == (250, 250) and rel(r28.hard_ops[1], 288535.5) <= 1e-5
+
+
+def test_yukawa_minimum_singlet_count():
+    """Rank argument: M = [[0, Y], [Y^T, M_s]] on 4 doublet components + n Weyl singlets has a zero mode for every n < 4,
+    with any Yukawa matrix Y and any Majorana block M_s; n = 4 has none at a generic Y."""
+    import numpy as np
+    rng = np.random.default_rng(9)
+    for n in (1, 2, 3, 4):
+        Y = rng.normal(size=(4, n)) + 1j * rng.normal(size=(4, n))
+        Ms = rng.normal(size=(n, n)) + 1j * rng.normal(size=(n, n))
+        M = np.block([[np.zeros((4, 4)), Y], [Y.T, Ms + Ms.T]])
+        assert (np.linalg.matrix_rank(M) < 4 + n) == (n < 4)
+
+
+def test_yukawa_free_kernel_shares_the_polynomial(a, r33):
+    i = r33.intermediates
+    assert i["n_singlet_dirac"] == 2 and i["fermion_content"] == "two_dirac_singlets"
+    assert math.isclose(i["free_kernel_gap"], math.sqrt(0.75)) and math.isclose(i["kappa_free_kernel"], 7.5 / math.sqrt(0.75))
+    assert i["kappa_free_kernel"] < a.kappa_2033.value and i["d_sgn"] == 208 and i["d_sgn_free_kernel"] == 60
+    assert i["n_trotter_2033"] == 450 and i["higgs_bilinears_per_site"] == 8     # singlets carry no link
+
+
+def test_yukawa_other_choice_one_dirac_singlet(a):
+    """Two Weyl singlets: Q = 324, two doublet components stay massless. Printed in the proposal, not the chapter."""
+    i = m.model(dataclasses.replace(a, fermion_content_2033=c.Assumed("one_dirac_singlet", "test")), "2033").intermediates
+    assert i["q_modes"] == 324 and i["lq_total"] == 1127 and i["be_normalization"] == 972
+    assert rel(i["t_per_shot"], 3.30266e10) <= 1e-4 and i["higgs_strings_per_site"] == 40
+    assert rel(i["tiers"]["campaign"]["wall_yr"][1], 5.2209) <= 1e-3
+    with pytest.raises(ValueError):
+        dataclasses.replace(a, fermion_content_2033=c.Assumed("three", "test"))

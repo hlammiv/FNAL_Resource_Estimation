@@ -158,6 +158,22 @@ r25 (H. Lamm 2026-10-02: rulings R1, R4, R9, R10 and the queued Ch. 9 rulings (a
   The 50-point scan (n_coupling, 257 yr) and the per-point levers are records. PUBLISHED: 2028 LQ 240 -> 250;
   2033 LQ 1010 -> 1015, hard_ops 8.2e9 -> 1.6e10.
 
+r26-yukawa (H. Lamm 2026-11-06, ruling "option (a)" on the coauthor question SIDE-2: "what gauge-invariant Yukawa can be built
+from three SU(2) doublets?"; accept that Q, the register, lambda and the T counts change):
+  Three doublets have no singlet, so the earlier psi-bar_L Phi psi_R was not gauge invariant. The 2033 fermion content is now
+  one Dirac doublet psi (two left-handed Weyl doublets, Witten condition unchanged) + two gauge-singlet Dirac fields chi_b,
+  b = 1, 2 (four right-handed Weyl singlets after conjugating chi_L; DERIVED HERE: four doublet components with no bare mass
+  need at least four Weyl singlets, whatever Majorana masses the singlets have). L_Y = -y psi-bar_a Phi_ab chi_b + h.c. with
+  Phi = rho U as a 2x2 matrix; b is a global custodial index, with one Yukawa y (Assumed, as before). Register: Q = 216 -> 432.
+  The singlet modes join the single-particle kernel on one more index qubit (species). H_W[U] + H_W[1] is one block encoding:
+  the read flags are ANDed with species = doublet (+D = 3 Toffolis, +3 ancilla), a singlet reads a zero copy and M acts as the
+  identity. So alpha, kappa, d_sgn and the 417 queries per application do not change; the free gap 0.866 (kappa_free 8.66)
+  sits above the gap kappa = 30 assumes. lambda = Q (2 + y rho_max) doubles, which moves the Jacobi-Anger order, d_beta, the
+  lift, the reflections and the wall times. The Higgs vertex becomes 8 off-diagonal bilinears per site at 2 strings each.
+  The Trotter step count does not move (singlets carry no link). The 2028 benchmark has no Higgs and no Yukawa: no change.
+  fermion_content_2033 = 'one_dirac_singlet' is the other choice (Q = 324, leaves two doublet components massless) and 'none'
+  reproduces the pre-ruling chain. Every record passes record_=True and keeps its Q = 216 circuit.
+
 ROUND HISTORY (rulings applied, by round; records)
 Round B rulings (H. Lamm, 2026-09-28) applied here:
   R5      Toffoli -> T is 7 T per Toffoli everywhere in the report, Ch. 9 included. No
@@ -327,6 +343,7 @@ from estimates.groups import (GROUPS, PRIMCOST, RHOP_SRC, RHOP_N_PAULI_DIAGONAL,
 TEX = "app06"
 SEC_PER_YR = 3.156e7
 _GROUPINGS = ("color", "color+s", "color+site")
+SINGLET_DIRAC_FIELDS = {"two_dirac_singlets": 2, "one_dirac_singlet": 1, "none": 0}   # ruling r26-yukawa (2026-11-06)
 
 
 # --------------------------------------------------------------------------- #
@@ -503,7 +520,7 @@ def _ctrl_shift_toffolis(L: int) -> int:
     raise ValueError(f"controlled shift mod {L} is not derived here (L = 3 or a power of two)")
 
 
-def single_particle_query_2O(D: int, L: int, link_qubits: int) -> dict:
+def single_particle_query_2O(D: int, L: int, link_qubits: int, species_gate: bool = False) -> dict:
     """One block-encoding query U_h = P^dag S P of the single-particle Wilson kernel H_W[U] on the index register
     (color, spin, D coordinates) and the link registers (DERIVED HERE, r22; construction of arxiv_2607_28524).
 
@@ -526,7 +543,12 @@ def single_particle_query_2O(D: int, L: int, link_qubits: int) -> dict:
     Direct T: M and M^dag at 10 T each, and a controlled-H in the uniform-over-D PREPARE and in its inverse (2 T each).
     Rotations: PREPARE and its inverse (the mass/hop split and the uniform-over-D state: 2 each) and the QSP phase,
     controlled on the LCU qubit of h_ov (2). Gate-level simulation on the full 3^3 lattice with a random 2O
-    configuration: scratchpad ch9ov/recheck_select.py; ported to the tests (sampled columns)."""
+    configuration: scratchpad ch9ov/recheck_select.py; ported to the tests (sampled columns).
+    species_gate (ruling r26-yukawa, DERIVED HERE, not checked at gate level): the index register also holds gauge-singlet
+    modes on one species qubit. Each direction flag is ANDed with species = doublet into a read flag, and the read and fix-up
+    walks run below the read flags (D Toffolis, D ancilla held through the read). For a singlet the copy stays zero, which
+    encodes the identity of 2O, so M does nothing and the CZ(leaf, x1) sign does not fire; the shifts and Dirac flags act on
+    both species. The free kernel H_W[1] and H_W[U] are thus one block encoding with the same alpha."""
     b = int(link_qubits)
     n_sites, n_links = L ** D, D * L ** D
     n_dir = math.ceil(math.log2(D)) if D > 1 else 0
@@ -536,6 +558,8 @@ def single_particle_query_2O(D: int, L: int, link_qubits: int) -> dict:
            "controlled_shifts": 2 * D * _ctrl_shift_toffolis(L), "dirac_flags": D,
            "read_iteration": D * (n_sites - 1), "link_copy": (b - 1) * n_links, "mux_orientation": 2 * (b - 1),
            "fixup_iteration": D * (n_sites - 1), "projector": n_term - 1}
+    if species_gate:
+        tof["species_read_gate"] = D
     t_direct = {"mux_and_inverse": 2 * mx["t_direct"], "prepare_controlled_h": 4}
     rot = {"prepare_and_inverse": 4, "qsp_phase_controlled": 2}
     link_read = tof["read_iteration"] + tof["link_copy"] + tof["fixup_iteration"]
@@ -544,7 +568,7 @@ def single_particle_query_2O(D: int, L: int, link_qubits: int) -> dict:
             "t_direct": sum(t_direct.values()), "rot_items": rot, "n_rot": sum(rot.values()),
             "link_read_toffoli": link_read, "n_lcu_unitaries": 4 * D + 1, "term_register": n_term,
             "anc_direction_flags": D, "anc_iteration": radix_lines * D * (1 if L == 3 else math.ceil(math.log2(L))),
-            "anc_link_copy": b - 1}
+            "anc_link_copy": b - 1, "anc_species_gate": D if species_gate else 0}
 
 
 def single_particle_query_Z3_1p1d(L: int, link_qubits: int) -> dict:
@@ -669,6 +693,19 @@ def free_overlap_modes(L: int, d: int, m: float, r: float) -> list:
         lam = math.sqrt(max(0.0, 2.0 + 2.0 * c / math.sqrt(b2 + c * c)))
         out += [lam, lam, -lam, -lam]
     return out
+
+
+def free_wilson_gap(L: int, d: int, m: float, r: float) -> float:
+    """Smallest |eigenvalue| of the free Wilson kernel h_W(p) on L^d, sqrt(b^2 + c^2) with the b and c of free_overlap_modes
+    (ruling r26-yukawa, DERIVED HERE). 0.866 on 3^3 at m = -1.5, r = 1 (p = (2 pi / 3, 0, 0), c = 0): the gauge-singlet
+    sector's gap, against alpha / kappa = 0.25 for the gauged sector."""
+    gap = float("inf")
+    for n in itertools.product(range(L), repeat=d):
+        p = [2.0 * math.pi * ni / L for ni in n]
+        b2 = sum(math.sin(pi) ** 2 for pi in p)
+        c = m + r * sum(1.0 - math.cos(pi) for pi in p)
+        gap = min(gap, math.sqrt(b2 + c * c))
+    return gap
 
 
 def typical_reference_tpq(modes: list, beta: float, two_q: float) -> dict:
@@ -822,28 +859,29 @@ DEPTH_SRC_2033 = ("r25 factory analysis (apply_log/r25_ch09.md, section 'T-depth
                   "item of single_particle_query_2O, lift_cost, the reflection and the Higgs vertex")
 
 
-def sp_query_depth_2O(t_rot: float, variant: str) -> tuple[float, float]:
+def sp_query_depth_2O(t_rot: float, variant: str, gate_layers: int = 0) -> tuple[float, float]:
     """(lo, hi) T-depth of one query. 'register' lo: the itemized layers with 3 rotation layers (PREPARE's two rotations
     and the two commuting halves of the controlled QSP phase run in parallel on idle select ancilla); hi: every Toffoli,
-    direct T and rotation serial (598 + 24 + 6 t_rot). 'fanout': the fan-out layers with 3 rotation layers (one value)."""
+    direct T and rotation serial (598 + 24 + 6 t_rot). 'fanout': the fan-out layers with 3 rotation layers (one value).
+    gate_layers (r26-yukawa): the D read-flag ANDs share the species control, serial in every variant (no new fan-out)."""
     if variant == "fanout":
-        d = sum(SP_QUERY_DEPTH_2O["fanout"].values()) + 3 * t_rot          # 274 + 3 t_rot = 353.4 at 26.476
+        d = sum(SP_QUERY_DEPTH_2O["fanout"].values()) + gate_layers + 3 * t_rot          # 274 + 3 t_rot = 353.4 at 26.476
         return d, d
-    lo = sum(SP_QUERY_DEPTH_2O["register"].values()) + 3 * t_rot           # 614 + 3 t_rot = 693.4
-    hi = 598 + 24 + 6 * t_rot                                              # 780.9
+    lo = sum(SP_QUERY_DEPTH_2O["register"].values()) + gate_layers + 3 * t_rot           # 614 + 3 t_rot = 693.4
+    hi = 598 + gate_layers + 24 + 6 * t_rot                                # 780.9
     return lo, hi
 
 
 def application_depth_2O(n_queries: int, t_rot: float, variant: str, lift: dict, outer: dict,
                          n_higgs_sites: int, higgs_select_toffolis: float, umult_toffolis: int,
-                         umult_concurrent: int) -> tuple[float, float]:
+                         umult_concurrent: int, gate_layers: int = 0) -> tuple[float, float]:
     """(lo, hi) T-depth of one application: n_queries sequential queries (QSP is a sequential product) + the lift +
     the QSP reflection + the Higgs vertex. Lift: two serial unary iterations (lift['toffoli']) plus the uniform-over-3
     preparations, in parallel across coordinates (lo: 4 T-layers + 2 rotations) or serial (hi: 12 + 6 rotations).
     Reflection: an n-controlled flag on idle ancilla, log-tree (lo 5) or ladder (hi = its Toffoli count). Higgs: the
     SELECT walk is serial (higgs_select_toffolis); the U_x run umult_concurrent at a time on the clean ancilla free
     outside a query (lo: ceil(sites / concurrent) rounds of umult_toffolis) or all serial (hi)."""
-    q_lo, q_hi = sp_query_depth_2O(t_rot, variant)
+    q_lo, q_hi = sp_query_depth_2O(t_rot, variant, gate_layers)
     lift_lo = lift["toffoli"] + 4 + 2 * t_rot
     lift_hi = lift["toffoli"] + lift["t_direct"] + lift["n_rot"] * t_rot
     ref_lo, ref_hi = 5 + outer["n_rot"] * t_rot, outer["toffoli"] + outer["n_rot"] * t_rot
@@ -1028,6 +1066,12 @@ class Assumptions:
     D_2033: Tagged = Assumed(3, "app06 'D=3'")
     L_2033: Tagged = Assumed(3, "app06 'V=3^3=27'")
     Nf_2033: Tagged = Assumed(1, "app06 'N_f=1' (Witten anomaly minimum)")
+    fermion_content_2033: Tagged = Assumed(
+        "two_dirac_singlets", "ruling r26-yukawa, H. Lamm 2026-11-06 (option (a) on SIDE-2): gauge-singlet fermions added so "
+        "the Yukawa is gauge invariant; the count is DERIVED HERE and flagged for his check. 'two_dirac_singlets': four "
+        "right-handed Weyl singlets, the fewest that give all four doublet components a mass term, Q = 432. "
+        "'one_dirac_singlet': two Weyl singlets, two doublet components stay massless, Q = 324. 'none': the pre-ruling chain, "
+        "Q = 216, whose Yukawa is not gauge invariant (records)")
     Nc_2033: Tagged = Assumed(2, "app06 'N_c=2 [SU(2)]'")
     N_rho: Tagged = Assumed(16, "app06 'N_rho=16'")
     ancilla_2033_asserted: Tagged = Stated(110, "app06 (pre-r20)", "RECORD (E23 (5)): '+ ~110 ancilla', asserted; "
@@ -1112,7 +1156,7 @@ class Assumptions:
     lcu_terms_per_site_stated: Tagged = Stated(72, "app06 (r21)", "RECORD (second-quantized construction): '72 Pauli strings "
                                                                   "per site': 24 hop + 8 on-site + 40 Higgs")
     lcu_terms_stated: Tagged = Stated(1.9e3, "app06 (r21)", "RECORD (second-quantized construction): '1944 at V = 27'")
-    higgs_strings_per_site_stated: Tagged = Stated(40, "app06 2033 derivation", "'$40$ select strings per site' of the Higgs "
+    higgs_strings_per_site_stated: Tagged = Stated(80, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 40. '$40$ select strings per site' of the Higgs "
                                                                                 "vertex (8 on-site Z strings x the 5-term "
                                                                                 "binary expansion of rho)")
     n_umult_per_higgs_site: Tagged = Stated(
@@ -1161,10 +1205,10 @@ class Assumptions:
     t_per_shot_sq_stated: Tagged = Stated(1.8e13, "app06 (r21 box)", "RECORD (second-quantized construction at the worst-case "
                                                                      "step): '~1.8e13' (1.809e13), 1005 LQ")
     # the single-particle query and one application, as the prose states them (r22)
-    sp_query_toffoli_stated: Tagged = Stated(598, "app06 2033 derivation", "'561 of the query's 598 Toffolis'; the query "
+    sp_query_toffoli_stated: Tagged = Stated(601, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 598. '561 of the query's 598 Toffolis'; the query "
                                                                            "is 598 Toffolis, 24 T and 6 rotations")
     c_sp_stated: Tagged = Stated(4.4e3, "app06 2033 derivation", "'598 x 7 + 24 + 6 x 29.1 ~ 4.4e3 T' per query (4384.8)")
-    t_per_dov_stated: Tagged = Stated(1.8e6, "app06 2033 derivation", "'417 queries per application and 1.8e6 T' (r25 (a), "
+    t_per_dov_stated: Tagged = Stated(1.9e6, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 1.8e6. '417 queries per application and 1.8e6 T' (r25 (a), "
                                                                       "Yukawa inside: 1,847,747.1; r24 9.4e5; r22 3.1e6)")
     t_evol_fm: Tagged = Assumed(2, "r24 (H. Lamm 2026-10-02, 'ok to run for a shorter amount of time'): app06 't = 2 fm "
                                    "= 10a'; was 10 fm = 50a (r17-r23)")
@@ -1202,26 +1246,26 @@ class Assumptions:
                                                                         "(5537 at g^2 = 1)")
     dt_empirical_fm: Tagged = Cited(0.01, "app03 2033 box ('2nd-order Trotter at Delta t = a_t/10', a_t = 0.1 fm/c)",
                                     "the fixed step of Ch. 5's 3^3 evolution, the printed comparison")
-    t_shot_empirical_step_stated: Tagged = Stated(2.1e10, "app06 2033 derivation", "'200 steps ... the shot would be "
+    t_shot_empirical_step_stated: Tagged = Stated(3.6e10, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 2.1e10. '200 steps ... the shot would be "
                                                                                     "1.4e10 T' at the fixed step of Ch. 5 "
                                                                                     "(17 filter calls: 1.4989e10; C1: 1.3508e10; r25: 1.2635e10; r24 6.4e9; 33 per step)")
-    n_dov_per_step_stated: Tagged = Stated(25, "app06 2033 derivation", "'19 applications per step': the Jacobi-Anger order "
+    n_dov_per_step_stated: Tagged = Stated(43, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 25. '19 applications per step': the Jacobi-Anger order "
                                                                         "at 2Q dt = 9.6 (r24; r22 13 at 4.3)")
-    n_dov_per_step_worst_stated: Tagged = Stated(6, "app06 2033 derivation", "'7.4e3 steps of 6 applications each' at the "
+    n_dov_per_step_worst_stated: Tagged = Stated(9, "app06 2033 derivation", "'7.4e3 steps of 6 applications each' at the "
                                                                              "worst-case step (r24)")
     n_dov_per_step_bound_stated: Tagged = Stated(5, "app06 (r22-r23)", "RECORD: 'with 5 applications per step' at the r22 worst-case "
                                                                              "step (derived there too); also the r21 "
                                                                              "'~5 D_ov applications per step' that the "
                                                                              "second-quantized record keeps")
-    n_dov_evolution_stated: Tagged = Stated(1.1e4, "app06 2033 derivation", "'The evolution is then 8.6e3 applications' "
+    n_dov_evolution_stated: Tagged = Stated(1.9e4, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 1.1e4. 'The evolution is then 8.6e3 applications' "
                                                                             "(r24: 8550; r22 65,403)")
-    n_dov_floor_stated: Tagged = Stated(6.5e3, "app06 2033 derivation", "'no step size takes the evolution below 2Qt = 4320 "
+    n_dov_floor_stated: Tagged = Stated(1.3e4, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 6.5e3. 'no step size takes the evolution below 2Qt = 4320 "
                                                                         "applications, 4.1e9 T' (r24; r22 21,600)")
-    t_evolution_stated: Tagged = Stated(2.1e10, "app06 2033 derivation", "'or 1.6e10 T-gates' (r25: 1.5798e10; r24 8.0e9)")
-    t_shot_range_stated: Tagged = Stated((1.9e10, 3.7e10), "app06 2033 derivation", "batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is "
+    t_evolution_stated: Tagged = Stated(3.6e10, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 2.1e10. 'or 1.6e10 T-gates' (r25: 1.5798e10; r24 8.0e9)")
+    t_shot_range_stated: Tagged = Stated((3.3e10, 5.6e10), "app06 2033 derivation", "r26-yukawa 2026-11-06: was 1.9-3.7e10. batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is "
                                                                                    "1.1-2.6e10 T' (17 filter calls: 1.3469e10, 2.8708e10; C1 1.2-2.7e10; r25: 1.1115e10, 2.6352e10; "
                                                                                    "r24 5.6e9-1.3e10)")
-    t_shot_bound_stated: Tagged = Stated(9.1e10, "app06 2033 derivation", "batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' "
+    t_shot_bound_stated: Tagged = Stated(1.4e11, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 9.1e10. batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' "
                                                                           "(17 filter calls: 8.546e10; C1 8.4e10; r25: 8.310e10; r24 4.2e10; r22 1.276e12)")
     beta_H: Tagged = Assumed(1e2, "RECORD (r25 and earlier): app06 'beta||H|| ~ 1e2'. Referee C1 (2026-10-04): inconsistent "
                                   "with the chapter's own block encoding, whose normalization is 2Q = 432 at beta = 2a")
@@ -1231,29 +1275,29 @@ class Assumptions:
                                   "1e-4 needs degree 84 (scratch referee/ch09/deg.py); the sqrt formula gives 89.2")
     delta_beta: Tagged = Assumed(1e-4, "app06 'and delta_beta ~ 1e-4' (ch09-delta-beta); "
                                        "sqrt(1e2 ln 1e4) = 30.35 -> d_beta = 30; 1e-3 would give 26.3")
-    d_beta_stated: Tagged = Stated(109, "app06 2033 derivation", "referee C1 (2026-10-04): 'degree d_beta = 89' at beta||H|| = 2Q / (T a) = 864 (89.2); r25 '~30' at the record 1e2")
+    d_beta_stated: Tagged = Stated(155, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 109. referee C1 (2026-10-04): 'degree d_beta = 89' at beta||H|| = 2Q / (T a) = 864 (89.2); r25 '~30' at the record 1e2")
     aa_rounds: Tagged = Stated(8, "app06 2033 derivation, route (iv)", "'~8 rounds of fixed-point amplitude amplification'; "
                                                                        "'an estimate rather than a derivation'")
     aa_call_rule: Tagged = Assumed("2k+1", "verifier 2026-10-04: k rounds of amplitude amplification call the filter "
                                    "2k + 1 times (U and U^dag once per round, plus the first call); 'per_round' keeps "
                                    "the r24-r25 and first-referee-pass record of one call per round")
-    n_dov_tpq_stated: Tagged = Stated(1.9e3, "app06 2033 derivation", "'1.5e3 applications' (89 x 17 = 1513: 2k + 1 filter calls in k = 8 rounds, verifier 2026-10-04; first referee pass 712 = 89 x 8; r25 240)")
-    t_tpq_stated: Tagged = Stated(3.4e9, "app06 2033 derivation", "'2.8e9 T' inside the sphaleron shot "
+    n_dov_tpq_stated: Tagged = Stated(2.6e3, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 1.9e3. '1.5e3 applications' (89 x 17 = 1513: 2k + 1 filter calls in k = 8 rounds, verifier 2026-10-04; first referee pass 712 = 89 x 8; r25 240)")
+    t_tpq_stated: Tagged = Stated(4.9e9, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 3.4e9. '2.8e9 T' inside the sphaleron shot "
                                                                          "(2.796e9 at 17 calls; first referee pass 1.3e9; r25: 4.4346e8; r24 2.3e8; r22 7.3e8)")
-    t_per_shot_2033_stated: Tagged = Stated(2.5e10, "app06 2033 derivation and box", "'per-shot total over the N_Dov = 8.8e3 "
+    t_per_shot_2033_stated: Tagged = Stated(4.1e10, "app06 2033 derivation and box", "r26-yukawa 2026-11-06: was 2.5e10. 'per-shot total over the N_Dov = 8.8e3 "
                                                                                     "applications is 1.6e10 T-gates' (17 filter calls: 1.8597e10; C1 1.7115e10; r25: "
                                                                                     "1.6242e10; r24 8.2e9; r22 2.008e11)")
-    ratio_representative_stated: Tagged = Stated(25, "app06 2033 derivation", "'a factor 19 above the budget' (17 filter calls: 18.60; C1 2026-10-04: 17.11; r25: 16.24; r24 8.2; r22 2.0e2)")
-    gibbs_T_stated: Tagged = Stated((7.2e12, 2.3e14), "app06 route (iv)", "'The range is 5.5e11-1.7e13' (r25, re-priced at the "
+    ratio_representative_stated: Tagged = Stated(41, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 25. 'a factor 19 above the budget' (17 filter calls: 18.60; C1 2026-10-04: 17.11; r25: 16.24; r24 8.2; r22 2.0e2)")
+    gibbs_T_stated: Tagged = Stated((1.5e13, 4.6e14), "app06 route (iv)", "r26-yukawa 2026-11-06: was 7.2e12-2.3e14. 'The range is 5.5e11-1.7e13' (r25, re-priced at the "
                                                                           "Yukawa-inside application; r24 2.8e11-8.9e12; "
                                                                           "r22 9.2e11-2.9e13)")
-    gibbs_T_central_stated: Tagged = Stated(3.8e13, "app06 route (iv)", "'2.5e13 T' (C1 2026-10-04, beta||H|| = 864: 2.518e13; r25: 2.914e12; r24 1.5e12; r22 4.8e12)")
-    gibbs_over_tpq_stated: Tagged = Stated(1.1e4, "app06 route (iv)", "'9.0e3 times' (17 filter calls: 9005; C1 2026-10-04: 1.914e4; r25 6.6e3; both scale with "
+    gibbs_T_central_stated: Tagged = Stated(7.7e13, "app06 route (iv)", "r26-yukawa 2026-11-06: was 3.8e13. '2.5e13 T' (C1 2026-10-04, beta||H|| = 864: 2.518e13; r25: 2.914e12; r24 1.5e12; r22 4.8e12)")
+    gibbs_over_tpq_stated: Tagged = Stated(1.6e4, "app06 route (iv)", "r26-yukawa 2026-11-06: was 1.1e4. '9.0e3 times' (17 filter calls: 9005; C1 2026-10-04: 1.914e4; r25 6.6e3; both scale with "
                                                                       "the application price)")
     kappa_physical: Tagged = Stated((1e3, 1e4), "app06 2033 derivation", "'kappa ~ 1e3-1e4 ... near-physical-mass'")
-    t_physical_stated: Tagged = Stated((8.0e11, 8.0e12), "app06 2033 derivation", "'6.1e11-6.1e12 T' (17 filter calls: 6.107e11, 6.120e12; C1: 5.620e11, 5.632e12; r25: 5.333e11, 5.345e12; "
+    t_physical_stated: Tagged = Stated((1.3e12, 1.3e13), "app06 2033 derivation", "r26-yukawa 2026-11-06: was 8.0e11-8.0e12. '6.1e11-6.1e12 T' (17 filter calls: 6.107e11, 6.120e12; C1: 5.620e11, 5.632e12; r25: 5.333e11, 5.345e12; "
                                                                                   "r24 2.7e11-2.7e12; r22 2.0e12-2.0e13)")
-    eps_l_2033_stated: Tagged = Stated(4.1e-12, "app06 2033 derivation and box", "'eps_l <~ 5.3e-12' (batch 5 item 12, 2026-10-09: 5.289e-12; 17 filter calls alone: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot "
+    eps_l_2033_stated: Tagged = Stated(2.4e-12, "app06 2033 derivation and box", "r26-yukawa 2026-11-06: was 4.1e-12. 'eps_l <~ 5.3e-12' (batch 5 item 12, 2026-10-09: 5.289e-12; 17 filter calls alone: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot "
                                                                                  "for the 10a sphaleron shot (R3; r25 6.157e-12; "
                                                                                  "r24 1.2e-11; r22 5.0e-13)")
     # thermal-state route alternatives (app06 route (iv)), emitted so the prose numbers are checkable
@@ -1295,7 +1339,7 @@ class Assumptions:
                                      "(suppression 431-2400, quoted ~1e3)")
     eps_obs: Tagged = Assumed(0.1, "app06 'at eps=0.1'; box: '10% statistical'")
     shots_2033: Tagged = Stated(1e4, "app06 2033 box", "'1e4 (psi-bar psi: 1e3/coupling; Gamma_sph: 1e4/coupling)'")
-    wall_per_shot_2033_stated: Tagged = Stated(2.5e4, "app06 requirements and wall-time paragraph", "'1.9e4 s' per 10a shot (18,597; C1 17,115) "
+    wall_per_shot_2033_stated: Tagged = Stated(4.1e4, "app06 requirements and wall-time paragraph", "r26-yukawa 2026-11-06: was 2.5e4. '1.9e4 s' per 10a shot (18,597; C1 17,115) "
                                                                                                     "(r25: 16,241.7; r24 8.2e3; r22 2.008e5)")
     # r23 (H. Lamm 2026-10-02, apply_log/r23_ch09.md): the report assumes one machine. The Stated n_machines = 6.4e2
     # ("inside the 5-year horizon only on ~6.4e2 machines") is retired with n_machines_needed, wall_yr_parallel and
@@ -1312,15 +1356,15 @@ class Assumptions:
     t_shot_to_fit_scan_stated: Tagged = Stated(3.2e8, "RECORD (r24 wall-time paragraph)", "'a shot of 3.2e8 T' (3.156e8; "
                                                                                    "unchanged: set by the shot count)")
     # r24 (1): the condensate arm at its own shot (the preparation alone)
-    t_shot_condensate_stated: Tagged = Stated(3.4e9, "app06 2033 box and wall-time paragraph",
-                                              "'condensate shot 2.8e9 T' (TPQ alone at its own R-TOL, 17 filter calls: 2.7901e9; C1 1.3119e9; r25 4.4166e8, "
+    t_shot_condensate_stated: Tagged = Stated(4.9e9, "app06 2033 box and wall-time paragraph",
+                                              "r26-yukawa 2026-11-06: was 3.4e9. 'condensate shot 2.8e9 T' (TPQ alone at its own R-TOL, 17 filter calls: 2.7901e9; C1 1.3119e9; r25 4.4166e8, "
                                               "r24 2.2e8)")
-    eps_l_condensate_stated: Tagged = Stated(2.9e-11, "app06 2033 box", "'eps_l <~ 3.6e-11' for the condensate (17 filter calls: 3.584e-11; C1: 7.623e-11; r25 2.264e-10; r24 4.5e-10)")
-    wall_day_condensate_point_stated: Tagged = Stated(40, "app06 wall-time paragraph",
-                                                      "'32 days per temperature' (1e3 condensate shots; 32.29; C1 15.18; r25 5.112; "
+    eps_l_condensate_stated: Tagged = Stated(2.0e-11, "app06 2033 box", "r26-yukawa 2026-11-06: was 2.9e-11. 'eps_l <~ 3.6e-11' for the condensate (17 filter calls: 3.584e-11; C1: 7.623e-11; r25 2.264e-10; r24 4.5e-10)")
+    wall_day_condensate_point_stated: Tagged = Stated(57, "app06 wall-time paragraph",
+                                                      "r26-yukawa 2026-11-06: was 40. '32 days per temperature' (1e3 condensate shots; 32.29; C1 15.18; r25 5.112; "
                                                       "r24 2.6 days per coupling point)")
     wall_yr_condensate_scan_stated: Tagged = Stated(0.36, "RECORD (r24 box)", "'0.36 yr for the ~50-point scan'; retired by r25 (e)")
-    t_shot_kappa_r22_stated: Tagged = Stated(8.0e10, "app06 2033 derivation", "batch 5 item 12 (2026-10-09): 6.150e10 with the gauge steps (was 6.1e10); 'at kappa ~ 1e2 the same circuit costs 5.3e10 T' "
+    t_shot_kappa_r22_stated: Tagged = Stated(1.4e11, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 8.0e10. batch 5 item 12 (2026-10-09): 6.150e10 with the gauge steps (was 6.1e10); 'at kappa ~ 1e2 the same circuit costs 5.3e10 T' "
                                                                               "(17 filter calls: 6.119e10; C1 5.631e10; r25: 5.344e10; r24 2.7e10)")
     # r24 levers for one sphaleron point under a year; sizes DERIVED HERE; none is applied to the box
     lever_eps_obs: Tagged = Assumed(0.15, "r24 lever: a 15% statistical target on Gamma_sph (shots sigma^2 / eps^2)")
@@ -1375,25 +1419,25 @@ class Assumptions:
     n_temperatures: Tagged = Stated((4, 8), "author ruling r25 (e), H. Lamm 2026-10-02",
                                     "'campaign 4-8 temperatures (not 50 couplings)' on the symmetric / near-T_c side; "
                                     "the two-time linearity check at one of them, 10a only at the rest")
-    t_shot_short_stated: Tagged = Stated(1.3e10, "app06 wall-time paragraph and box", "batch 5 item 12 (2026-10-09): 9.7007e9 with the gauge steps and reflections (was 9.6e9); '160 steps of 23 applications ... "
+    t_shot_short_stated: Tagged = Stated(2.2e10, "app06 wall-time paragraph and box", "r26-yukawa 2026-11-06: was 1.3e10. batch 5 item 12 (2026-10-09): 9.7007e9 with the gauge steps and reflections (was 9.6e9); '160 steps of 23 applications ... "
                                                                                        "9.6e9 T' at 5a (17 filter calls: 9.5897e9; C1 8.109e9; r25: 7.2366e9)")
-    eps_l_short_stated: Tagged = Stated(7.7e-12, "app06 2033 box", "'1.0e-11 at 5a' (17 filter calls: 1.043e-11; C1: 1.233e-11; r25: 1.382e-11)")
-    wall_s_short_stated: Tagged = Stated(1.3e4, "app06 wall-time paragraph", "'9.7e3 s' per 5a shot (batch 5 item 12, 2026-10-09: 9700.7; before 9589.7; C1 8109; r25 7236.6)")
-    wall_s_condensate_stated: Tagged = Stated(3.4e3, "app06 wall-time paragraph", "'2.8e3 s' per condensate shot (17 filter calls: 2790.1; C1: 1311.9; r25 441.7)")
+    eps_l_short_stated: Tagged = Stated(4.7e-12, "app06 2033 box", "r26-yukawa 2026-11-06: was 7.7e-12. '1.0e-11 at 5a' (17 filter calls: 1.043e-11; C1: 1.233e-11; r25: 1.382e-11)")
+    wall_s_short_stated: Tagged = Stated(2.2e4, "app06 wall-time paragraph", "r26-yukawa 2026-11-06: was 1.3e4. '9.7e3 s' per 5a shot (batch 5 item 12, 2026-10-09: 9700.7; before 9589.7; C1 8109; r25 7236.6)")
+    wall_s_condensate_stated: Tagged = Stated(4.9e3, "app06 wall-time paragraph", "r26-yukawa 2026-11-06: was 3.4e3. '2.8e3 s' per condensate shot (17 filter calls: 2790.1; C1: 1311.9; r25 441.7)")
     f_star_register_stated: Tagged = Stated((5.6, 6.3), "app06 wall-time paragraph", "'only 5.6-6.3 T gates per reaction "
                                                                                   "layer' as itemized (10a shot: 5.59-6.32)")
     slowdown_register_stated: Tagged = Stated((1.6, 1.8), "app06 wall-time paragraph", "'1.6-1.8 times slower' (10 / F*)")
     f_star_2033_stated: Tagged = Stated(12, "app06 wall-time paragraph", "'raises this to 12' (12.17-12.54 over the runs)")
     shots_first_stated: Tagged = Stated((1.1e3, 5.5e3), "app06 box and wall-time paragraph", "'1.1e3 shots at 10a and 5.5e3 "
                                                                                            "at 5a' (1111, 5497; r25 4444 under linear growth)")
-    wall_yr_first_stated: Tagged = Stated(3.1, "app06 box and wall-time paragraph", "first result (method test) '2.4 yr' (batch 5 item 12, 2026-10-09: 2.355; before 2.325; "
+    wall_yr_first_stated: Tagged = Stated(5.2, "app06 box and wall-time paragraph", "r26-yukawa 2026-11-06: was 3.1. first result (method test) '2.4 yr' (batch 5 item 12, 2026-10-09: 2.355; before 2.325; "
                                           "before the 2026-10-05 ruling 2.005 with the 5a ratio 4; C1 1.744; r25 1.591)")
-    wall_yr_campaign_stated: Tagged = Stated((3.6, 4.0), "app06 box and wall-time paragraph", "campaign '2.7-3.1 yr' (batch 5 item 12, 2026-10-09: 2.709-3.063; before 2.7-3.0; method "
+    wall_yr_campaign_stated: Tagged = Stated((5.8, 6.5), "app06 box and wall-time paragraph", "r26-yukawa 2026-11-06: was 3.6-4.0. campaign '2.7-3.1 yr' (batch 5 item 12, 2026-10-09: 2.709-3.063; before 2.7-3.0; method "
                                              "test + condensate at 4-8 temperatures: 2.679-3.032; the rate campaign before "
                                              "the 2026-10-05 ruling 36.08-60.00, record wall_yr_campaign_r25_stated)")
-    campaign_over_horizon_stated: Tagged = Stated((0.71, 0.80), "app06 box and wall-time paragraph", "'inside the 5-year "
+    campaign_over_horizon_stated: Tagged = Stated((1.2, 1.3), "app06 box and wall-time paragraph", "r26-yukawa 2026-11-06: was 0.71-0.80. 'inside the 5-year "
                                                   "horizon' (0.536-0.606; rate campaign before 2026-10-05: 7-12x)")
-    wall_yr_campaign_r25_stated: Tagged = Stated((47, 79), "RECORD (app06 before the 2026-10-05 method-test ruling)",
+    wall_yr_campaign_r25_stated: Tagged = Stated((80, 133), "RECORD (app06 before the 2026-10-05 method-test ruling)",
                                                  "'36-60 yr for 4-8 temperatures, 7-12x the 5-year horizon' (rate campaign; "
                                                  "at 30%: '4.0-6.7 yr')")
     wall_s_first_2028_stated: Tagged = Stated(36, "app06 2028 box", "first result '36 s' (125 shots; 36.08)")
@@ -1417,6 +1461,8 @@ class Assumptions:
             elif isinstance(v.value, (int, float)) and not isinstance(v.value, bool):
                 if v.value <= 0:
                     raise ValueError(f"{f.name}: must be positive")
+        if self.fermion_content_2033.value not in SINGLET_DIRAC_FIELDS:
+            raise ValueError(f"fermion_content_2033 must be one of {tuple(SINGLET_DIRAC_FIELDS)}")
         if self.aa_call_rule.value not in ("2k+1", "per_round"):
             raise ValueError("aa_call_rule must be '2k+1' or 'per_round'")
         if self.spatial_hop_grouping.value not in _GROUPINGS:
@@ -2044,7 +2090,10 @@ def _model_2033(a: Assumptions) -> Result:
     V = L ** D                                        # 27
     dirac = 2 ** ((D + 1) // 2)                       # 4 in 3+1D
     n_rho_q = math.ceil(math.log2(int(a.N_rho.value)))   # 4
-    lq_f = dirac * Nf * Nc * V                        # 216
+    n_singlet = SINGLET_DIRAC_FIELDS[a.fermion_content_2033.value]   # 2 gauge-singlet Dirac fields (r26-yukawa)
+    lq_doublet = dirac * Nf * Nc * V                  # 216
+    lq_singlet = dirac * n_singlet * V                # 216
+    lq_f = lq_doublet + lq_singlet                    # 432 (216 before r26-yukawa)
     lq_g = D * V * g.link_qubits                      # 486
     lq_h = V * (n_rho_q + g.link_qubits)              # 270
     tc = a.toffoli_convention.value
@@ -2057,10 +2106,11 @@ def _model_2033(a: Assumptions) -> Result:
 
     # r22 (E26 (i)): the single-particle kernel. H = psi^dag h_ov[U] psi, h_ov = gamma^0 + sgn(H_W[U]); H_W[U] is a
     # Q x Q matrix of link operators, promoted to an index register (color, spin, coordinates) and the link registers.
-    q_modes = lq_f                                    # Q = 216 single-particle modes = the Jordan-Wigner register
-    q_index = {"color": math.ceil(math.log2(Nc * Nf)), "spin": math.ceil(math.log2(dirac)),
-               "coordinates": D * math.ceil(math.log2(L))}                # 1 + 2 + 6 = 9
+    q_modes = lq_f                                    # Q = 432 single-particle modes = the Jordan-Wigner register
+    q_index = {"color": math.ceil(math.log2(Nc * Nf)), "species": 1 if n_singlet else 0, "spin": math.ceil(math.log2(dirac)),
+               "coordinates": D * math.ceil(math.log2(L))}                # 1 + 1 + 2 + 6 = 10 (9 before r26-yukawa)
     n_index = sum(q_index.values())
+    n_index_record = n_index - q_index["species"]     # 9: the Q = 216 records
     m0 = float(a.m0_wilson.value)
     alpha_hw = 2.0 * D + abs(D - m0)                  # r = 1: hops D (Dirac) + D (Wilson), on-site |D - m_0|: 7.5
     norm_hw_free = 2.0 * D - m0                       # the free-field ||H_W|| (all momenta at pi): 4.5
@@ -2069,7 +2119,12 @@ def _model_2033(a: Assumptions) -> Result:
     y_rho = float(a.yukawa_coupling_y.value) * float(a.higgs_rho_max_lat.value)            # 1.0
     yukawa_norm_factor = (2.0 + y_rho) / 2.0 if a.count_yukawa_normalization.value else 1.0   # 1.5
     yukawa_norm_band = tuple((2.0 + w) / 2.0 for w in (float(a.yukawa_weight_band.lo), float(a.yukawa_weight_band.hi)))  # 1.15-2.0
-    be_norm = be_norm_kinetic * yukawa_norm_factor    # 648 (r25-C1: 432)
+    be_norm = be_norm_kinetic * yukawa_norm_factor    # 1296 (r26-yukawa; 2026-10-10: 648; r25-C1: 432)
+    # r26-yukawa: the free kernel of the singlets shares the polynomial of the gauged kernel if its gap is at least alpha / kappa
+    free_gap = free_wilson_gap(L, D, -m0, 1.0)        # 0.866
+    kappa_free = alpha_hw / free_gap                  # 8.66, below kappa = 30
+    d_sgn_free = math.ceil(kappa_free * math.log(1 / float(a.delta_sgn.value)))   # 60: the degree a free kernel alone would need
+    assert kappa_free <= float(a.kappa_2033.value) or not n_singlet
 
     # The Higgs vertex's SELECT strings (r21 c): the on-site bilinear (4 N Z strings at d = 3) weighted by rho, whose
     # binary expansion on log2 N_rho qubits has log2 N_rho + 1 terms. The hop and on-site counts of the same function
@@ -2080,7 +2135,13 @@ def _model_2033(a: Assumptions) -> Result:
     c_toff = toffoli_t(lcu_toff, tc)                  # 13,608 (record)
     lcu_terms_pre = float(a.lcu_terms_stated_pre_r21.value)        # 1.7e3 (record)
     c_toff_pre = toffoli_t(lcu_terms_pre, tc)         # 11,900 (record)
-    higgs_strings = V * lcu["higgs"]                  # 27 x 40 = 1080
+    higgs_strings_record = V * lcu["higgs"]           # 27 x 40 = 1080 (Q = 216 records: on-site Z strings)
+    # r26-yukawa: psi-bar_a Phi_ab chi_b pairs each doublet mode with a singlet mode: 4 n_singlet off-diagonal bilinears per
+    # site, a^dag b + h.c. at 2 strings each (XX + YY), x the 5-term binary expansion of rho.
+    higgs_pairs_per_site = dirac * n_singlet          # 8
+    higgs_strings_per_site = (higgs_pairs_per_site * int(a.lcu_strings_per_bilinear.value) * (n_rho_q + 1)
+                              if n_singlet else lcu["higgs"])                       # 80 (40 before r26-yukawa)
+    higgs_strings = V * higgs_strings_per_site        # 27 x 80 = 2160
 
     # QSP sign-function degree: natural log (log2 would give ~1e3). A Chebyshev degree is an
     # integer, so ceil; the chapter rounds 691 -> 700, carried as d_sgn_stated.
@@ -2140,9 +2201,13 @@ def _model_2033(a: Assumptions) -> Result:
     n_dov_tpq_r25 = d_beta_record_r25 * int(a.aa_rounds.value)   # 240: the records below keep the r25 filter
 
     # ---- one application of the block-encoded psi^dag h_ov psi / (2Q) (r22, DERIVED HERE) ----------------------
-    spq = single_particle_query_2O(D, L, g.link_qubits)            # 598 Toffolis + 24 T + 6 rotations
+    spq = single_particle_query_2O(D, L, g.link_qubits, species_gate=bool(n_singlet))   # 601 Toffolis + 24 T + 6 rotations
+    spq_record = single_particle_query_2O(D, L, g.link_qubits)     # 598 (the Q = 216 records)
+    gate_layers = spq["toffoli_items"].get("species_read_gate", 0)  # 3
     mux_ix = colour_multiplexer_index_2O()                         # 10 T, no Toffoli, no ancilla
-    lift = lift_cost(q_modes, D if L == 3 else 0)                  # 862 Toffolis + 12 T + 6 rotations (3 coordinates mod 3)
+    # 3 coordinates mod 3; one singlet would make the color-species index three-valued as well (r26-yukawa)
+    lift = lift_cost(q_modes, (D if L == 3 else 0) + (1 if n_singlet == 1 else 0))   # 1726 Toffolis + 12 T + 6 rotations
+    lift_record = lift_cost(lq_doublet, D if L == 3 else 0)        # 862 Toffolis + 12 T + 6 rotations
     # r25 (a): the Ginsparg-Wilson-projected Yukawa is inside. Its projector (1 - sgn(H_W))/2 is a second QSVT
     # polynomial of degree d_sgn on the same block encoding (same signal and real-part qubits, run after the first),
     # once per application; the lift and the Higgs vertex stay once per application.
@@ -2150,8 +2215,9 @@ def _model_2033(a: Assumptions) -> Result:
     n_q_per_dov = (d_sgn + 1) + (n_sgn - 1) * d_sgn  # 417 (r24 209): d_sgn + 1 for h_ov, d_sgn for the projector
     # the QSP that evolves or filters with the block encoding reflects about the all-zero state of its ancilla
     n_be_anc = (int(a.anc_lift_type.value) + n_index + int(a.anc_dov_lcu.value) + int(a.anc_sgn_signal.value)
-                + int(a.anc_sgn_real_part.value) + spq["term_register"])       # 2 + 9 + 1 + 1 + 1 + 5 = 19
-    outer = {"toffoli": n_be_anc - 1, "n_rot": 1}                  # 18 Toffolis + the QSP phase
+                + int(a.anc_sgn_real_part.value) + spq["term_register"])       # 2 + 10 + 1 + 1 + 1 + 5 = 20
+    outer = {"toffoli": n_be_anc - 1, "n_rot": 1}                  # 19 Toffolis + the QSP phase
+    outer_record = {"toffoli": n_be_anc - (n_index - n_index_record) - 1, "n_rot": 1}   # 18 (the Q = 216 records)
     # The Higgs vertex is not part of H_W: outside the sign function, once per application.
     umult = g.primitives["U_mul"]
     t_umult = umult.t(1e-4)                           # 392 (no rotations: eps-free)
@@ -2161,28 +2227,32 @@ def _model_2033(a: Assumptions) -> Result:
     n_um = int(a.n_umult_per_higgs_site.value)        # 1
     c_higgs = V * n_um * t_umult                      # 10,584
     higgs_sel_toff = higgs_strings * float(a.lcu_toffoli_per_term.value)       # 1080
-    c_higgs_app = c_higgs + toffoli_t(higgs_sel_toff, tc)          # 18,144
+    c_higgs_app = c_higgs + toffoli_t(higgs_sel_toff, tc)          # 25,704 (18,144 before r26-yukawa)
+    c_higgs_app_record = c_higgs + toffoli_t(higgs_strings_record * float(a.lcu_toffoli_per_term.value), tc)   # 18,144
 
-    def _price_sp(n_trot_, d_=d_sgn, per_step_=None, t_=t_over_a, toff_saved_=0, n_sgn_=n_sgn, tpq_=n_dov_tpq, nf_=None):
+    def _price_sp(n_trot_, d_=d_sgn, per_step_=None, t_=t_over_a, toff_saved_=0, n_sgn_=n_sgn, tpq_=n_dov_tpq, nf_=None,
+                  record_=False):
         """One shot in the single-particle architecture: n_trot_ steps of r applications (r = the Jacobi-Anger order
         at 2Q dt unless given) + the TPQ applications, each (d_ + 1) queries + lift + reflection + Higgs, at this
         circuit's own R-TOL tolerance. r23 levers: t_ = the evolution time in lattice units, toff_saved_ = Toffolis
-        removed from one query."""
+        removed from one query. record_=True: the Q = 216 circuit before ruling r26-yukawa, for the r22-r25 records."""
+        spq_, lift_, outer_, chig_, q_ = ((spq_record, lift_record, outer_record, c_higgs_app_record, lq_doublet) if record_
+                                          else (spq, lift, outer, c_higgs_app, q_modes))
         if n_trot_ == 0:                              # r24: preparation only (the condensate arm), no evolution
             r_ = 0
         else:
             nf = yukawa_norm_factor if nf_ is None else nf_          # records (r22-r25) pass 1.0: the 2Q normalization
-            r_ = dov_per_step(n_trot_, t_, q_modes, eps_qsp, nf) if per_step_ is None else int(per_step_)
+            r_ = dov_per_step(n_trot_, t_, q_, eps_qsp, nf) if per_step_ is None else int(per_step_)
         n_dov_ = n_trot_ * r_ + tpq_
         nq_ = (d_ + 1) + (n_sgn_ - 1) * d_
-        n_rot_app_ = nq_ * spq["n_rot"] + lift["n_rot"] + outer["n_rot"]
+        n_rot_app_ = nq_ * spq_["n_rot"] + lift_["n_rot"] + outer_["n_rot"]
         n_rot_shot_ = n_dov_ * n_rot_app_
         e = eps_rot_for(n_rot_shot_, eps_syn)
         tr = t_per_rotation(e, a.rot_synthesis.value)
-        c_sp_ = toffoli_t(spq["toffoli"] - toff_saved_, tc) + spq["t_direct"] + spq["n_rot"] * tr
-        c_lift_ = toffoli_t(lift["toffoli"], tc) + lift["t_direct"] + lift["n_rot"] * tr
-        c_outer_ = toffoli_t(outer["toffoli"], tc) + outer["n_rot"] * tr
-        t_dov_ = nq_ * c_sp_ + c_lift_ + c_outer_ + c_higgs_app
+        c_sp_ = toffoli_t(spq_["toffoli"] - toff_saved_, tc) + spq_["t_direct"] + spq_["n_rot"] * tr
+        c_lift_ = toffoli_t(lift_["toffoli"], tc) + lift_["t_direct"] + lift_["n_rot"] * tr
+        c_outer_ = toffoli_t(outer_["toffoli"], tc) + outer_["n_rot"] * tr
+        t_dov_ = nq_ * c_sp_ + c_lift_ + c_outer_ + chig_
         return {"n_trot": n_trot_, "per_step": r_, "x": be_norm * t_ / n_trot_ if n_trot_ else 0.0, "n_dov": n_dov_,
                 "n_q_per_dov": nq_, "t_lat": t_,
                 "n_dov_evol": n_trot_ * r_, "n_queries": n_dov_ * nq_, "n_rot_app": n_rot_app_,
@@ -2200,13 +2270,13 @@ def _model_2033(a: Assumptions) -> Result:
     n_dov_floor = be_norm * t_over_a                  # 2Q t = 4320 applications (r22: 21,600): no step size goes below
     t_shot_floor = n_dov_floor * t_dov                # 1.2e10 T at the headline application cost
     # r24 records: the r22-r23 headline (kappa 1e2, t = 50a, 5031 steps) and the worst-case step at those inputs
-    P_r22 = _price_sp(sd_r22["n_central"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)      # 2.00789e11
-    P_r22_bound = _price_sp(tb_r22["n_steps"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)  # 1.276e12
+    P_r22 = _price_sp(sd_r22["n_central"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0, record_=True)      # 2.00789e11
+    P_r22_bound = _price_sp(tb_r22["n_steps"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0, record_=True)  # 1.276e12
     # r25 records: the r24 headline (Yukawa outside sgn) and its condensate shot
-    P_r24 = _price_sp(n_trot, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)      # 8.2414e9
-    C_r24 = _price_sp(0, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0)           # 2.2412e8
-    P_r25 = _price_sp(n_trot, tpq_=n_dov_tpq_r25, nf_=1.0)     # 1.6242e10: the r25 headline (filter at the record 1e2)
-    C_r25 = _price_sp(0, tpq_=n_dov_tpq_r25, nf_=1.0)          # 4.4166e8: the r25 condensate shot
+    P_r24 = _price_sp(n_trot, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0, record_=True)      # 8.2414e9
+    C_r24 = _price_sp(0, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0, record_=True)           # 2.2412e8
+    P_r25 = _price_sp(n_trot, tpq_=n_dov_tpq_r25, nf_=1.0, record_=True)     # 1.6242e10: the r25 headline (filter at the record 1e2)
+    C_r25 = _price_sp(0, tpq_=n_dov_tpq_r25, nf_=1.0, record_=True)          # 4.4166e8: the r25 condensate shot
     P_kappa_r22 = _price_sp(n_trot, d_=d_sgn_r22)     # kappa ~ 1e2 at t = 10a: the sensitivity the prose prints
     # r24 (1): the condensate arm. <psibar psi> is static: measured on the prepared state, no real-time evolution, so its
     # shot is the preparation alone (the TPQ filter, n_dov_tpq applications) at that circuit's own R-TOL tolerance.
@@ -2224,7 +2294,7 @@ def _model_2033(a: Assumptions) -> Result:
     gauge_step_share = t_gauge_step / (per_step * t_dov)                 # about 2% of the step
     # The amplification's reflection about the reference state on the whole register, as an n-controlled NOT at 2n
     # Toffolis on two clean ancilla (arxiv_2407_17966, abstract), twice per round. Counted since 2026-10-09 (batch 5 item 12).
-    n_reflect_controls = lq_f + lq_g + lq_h           # 972
+    n_reflect_controls = lq_f + lq_g + lq_h           # 1188 (972 before r26-yukawa)
     n_reflections = 2 * int(a.aa_rounds.value)        # 16
     t_fpaa_reflections = n_reflections * toffoli_t(2 * n_reflect_controls, tc)       # 2.2e5 T per shot
 
@@ -2318,7 +2388,7 @@ def _model_2033(a: Assumptions) -> Result:
                "sgn_real_part": int(a.anc_sgn_real_part.value)}                                   # 14
     anc_query = {"term_register": spq["term_register"]}                                           # 5
     anc_select = {"direction_flags": spq["anc_direction_flags"], "iteration_temporaries": spq["anc_iteration"],
-                  "link_copy": spq["anc_link_copy"]}                                              # 14
+                  "link_copy": spq["anc_link_copy"], "species_read_gate": spq["anc_species_gate"]}  # 17 (14 before r26-yukawa)
     anc_not_concurrent = {"lift_iteration": lift["anc_iteration"], "higgs_umult": umult_ancilla, "rus": anc_rus,
                           "fpaa_reflection": int(a.fpaa_reflection_ancilla.value)}                # 10, 4, 1, 2
     assert max(anc_not_concurrent.values()) <= sum(anc_query.values()) + sum(anc_select.values())
@@ -2327,9 +2397,9 @@ def _model_2033(a: Assumptions) -> Result:
     # r25 (R10): the CNOT fan-out of the shared control during the link read restores F* >= 10 (factory analysis)
     depth_variant = a.depth_variant_2033.value
     anc_fanout = int(a.anc_fanout_2033.value) if depth_variant == "fanout" else 0     # 5
-    lq_anc = lq_anc_itemized + anc_fanout             # 43 (r22-r24 38)
+    lq_anc = lq_anc_itemized + anc_fanout             # 47 (r25 43, r22-r24 38)
     lq_anc_asserted = int(a.ancilla_2033_asserted.value)                         # 110 (record)
-    lq = lq_f + lq_g + lq_h + lq_anc                  # 1015 (r22-r24 1010, r21 1005, r20 1015, r19 1082)
+    lq = lq_f + lq_g + lq_h + lq_anc                  # 1235 (r25 1015, r22-r24 1010, r21 1005, r20 1015, r19 1082)
     lq_dwf_backup = tuple(lq_f * L5 + lq_g + lq_h + lq_anc for L5 in (int(a.L5_backup.lo), int(a.L5_backup.hi)))
     # record: the second-quantized construction's itemization (r21: 7 + 22 + 4 = 33; draft frame 43)
     n_addr = math.ceil(math.log2(lcu_terms))                                     # 11
@@ -2348,9 +2418,9 @@ def _model_2033(a: Assumptions) -> Result:
     sq_lq_anc_mux = sq_anc_base + max(sq_anc_term_mux.values())                  # 33
     sq_lq_anc_draft = sq_anc_base + max(sum(anc_link_draft.values()), umult_ancilla)   # 43
     sq_lq_anc = sq_lq_anc_mux if frame == "multiplexer" else sq_lq_anc_draft
-    sq_lq = lq_f + lq_g + lq_h + sq_lq_anc            # 1005 (r21 box)
-    sq_lq_draft = lq_f + lq_g + lq_h + sq_lq_anc_draft   # 1015
-    qubits_per_site = D * g.link_qubits + (n_rho_q + g.link_qubits) + dirac * Nf * Nc   # 36
+    sq_lq = lq_doublet + lq_g + lq_h + sq_lq_anc      # 1005 (r21 box; record, Q = 216)
+    sq_lq_draft = lq_doublet + lq_g + lq_h + sq_lq_anc_draft   # 1015 (record, Q = 216)
+    qubits_per_site = D * g.link_qubits + (n_rho_q + g.link_qubits) + dirac * (Nf * Nc + n_singlet)   # 44 (36 before r26-yukawa)
 
     # Records at the pre-r21 query count (30 x 5 + 240 = 390 D_ov, 691 each) and the pre-r21 1.7e3-term LCU line, so
     # every earlier print stays reproducible: the r20 center (draft frame), the r20 floor (multiplexer), the W2 top,
@@ -2413,7 +2483,7 @@ def _model_2033(a: Assumptions) -> Result:
     haar_rounds = math.exp(dS_haar / 2)               # RECORD (r25 prose '~3e7', retired by the chapter-open pass)
     # chapter-open pass (referee C1, DERIVED HERE): typical (1-design) reference on the free fermion sector of 3^3
     temp = float(a.temp_lat_2033.value)
-    ov_modes = free_overlap_modes(L, D, -m0, 1.0) * (Nc * Nf)                  # 216 modes
+    ov_modes = free_overlap_modes(L, D, -m0, 1.0) * (Nc * Nf + n_singlet)      # 432 modes (216 before r26-yukawa)
     typ = typical_reference_tpq(ov_modes, 1.0 / temp, float(be_norm))         # ln p = -137.9, rounds 7.0e29
     # referee C3 (DERIVED HERE): Delta N_CS by the Kubo form, Hadamard-test readout, free-field background
     g2_ncs = float(a.g2_bare.value)
@@ -2514,7 +2584,7 @@ def _model_2033(a: Assumptions) -> Result:
         the reflections (counted since batch 5 item 12) have no itemized depth; they are taken at the itemized circuit's
         T per reaction layer, so the depth scales with the shot and F* is that of the itemized circuit."""
         lo_, hi_ = application_depth_2O(P_["n_q_per_dov"], P_["t_rot"], variant_, lift, outer, V, higgs_sel_toff,
-                                        umult_toffolis, umult_concurrent)
+                                        umult_toffolis, umult_concurrent, gate_layers)
         scale = P_["t_shot"] / P_["t_shot_core"]
         return (P_["n_dov"] * lo_ * scale, P_["n_dov"] * hi_ * scale)
     t_short = float(a.t_short_fm.value) / float(a.a_fm.value)                 # 5a
@@ -2603,7 +2673,7 @@ def _model_2033(a: Assumptions) -> Result:
                   f"{umult_ancilla} clean ancilla; tab:tgatecost, COMPILED; no controlled variant, so SCALING); outside sgn"),
         Primitive("higgs_select_toffoli", higgs_sel_toff * n_dov, T_PER_TOFFOLI[tc], CircuitStatus.SCALING,
                   "app06 2033 derivation; Babbush_PRX_2018",
-                  f"{lcu['higgs']} Higgs strings per site (r21 c) at one SELECT Toffoli each, once per application"),
+                  f"{higgs_strings_per_site} Higgs strings per site (r21 c, r26-yukawa) at one SELECT Toffoli each, once per application"),
     ) + (() if not a.count_gauge_steps_and_reflections.value else (
         Primitive("gauge_step_terms", n_trot * n_links, t_gauge_link, CircuitStatus.SCALING,
                   "arxiv_2312_10285 (KS multiplicities, groups.PRIMCOST); arxiv_2408_00075 (group FFT); ESTIMATED HERE",
@@ -2618,6 +2688,9 @@ def _model_2033(a: Assumptions) -> Result:
 
     inter = {
         "sgn_architecture": arch,
+        "fermion_content": a.fermion_content_2033.value, "n_singlet_dirac": n_singlet, "lq_doublet": lq_doublet,
+        "lq_singlet": lq_singlet, "free_kernel_gap": free_gap, "kappa_free_kernel": kappa_free, "d_sgn_free_kernel": d_sgn_free,
+        "higgs_bilinears_per_site": higgs_pairs_per_site,
         "lq_fermion": lq_f, "lq_gauge": lq_g, "lq_higgs": lq_h, "lq_ancilla": lq_anc, "lq_total": lq,
         "link_qubits": g.link_qubits, "higgs_qubits_per_site": n_rho_q + g.link_qubits,
         "qubits_per_site": qubits_per_site,
@@ -2644,7 +2717,7 @@ def _model_2033(a: Assumptions) -> Result:
         "n_queries_per_dov": n_q_per_dov, "t_sgn_per_dov": P["t_sgn"],
         "lift": lift, "c_lift": P["c_lift"], "outer_reflection": outer, "c_outer": P["c_outer"],
         "n_be_ancilla": n_be_anc,
-        "higgs_strings_per_site": lcu["higgs"], "higgs_strings_per_site_stated": float(a.higgs_strings_per_site_stated.value),
+        "higgs_strings_per_site": higgs_strings_per_site, "higgs_strings_per_site_stated": float(a.higgs_strings_per_site_stated.value),
         "higgs_select_toffolis": higgs_sel_toff, "c_higgs_umult_T": c_higgs, "c_higgs_per_dov": c_higgs_app,
         "n_rot_per_dov": P["n_rot_app"],
         "sgn_share_of_dov": P["t_sgn"] / t_dov, "lift_share_of_dov": P["c_lift"] / t_dov,
@@ -2698,6 +2771,8 @@ def _model_2033(a: Assumptions) -> Result:
         "t_per_shot_empirical_step": by_rule["step"]["t_shot"],
         "t_per_shot_empirical_step_stated": float(a.t_shot_empirical_step_stated.value),
         "t_per_shot_at_pre_r21_steps": by_rule["stated"]["t_shot"],
+        # r26-yukawa sensitivity (not the headline): a third sign sequence if the Yukawa is dressed on both sides
+        "t_per_shot_if_yukawa_dressed_both_sides": _count(_price_sp(n_trot, n_sgn_=3))["t_shot"],
         "t_per_shot_if_not_self_inverse": P_not_self_inverse["t_shot"],
         # counted since 2026-10-09 (batch 5 item 12): the gauge terms of a step and the amplification reflections
         "gauge_step_T_per_link": t_gauge_link, "gauge_step_T": t_gauge_step,
@@ -2907,7 +2982,7 @@ def _model_2033(a: Assumptions) -> Result:
         f"rotations = c_sp {c_sp:.1f} T (link read {link_read_share:.0%}, rotations {rot_share:.0%}).",
         f"Application: {n_q_per_dov} x c_sp = {P['t_sgn']:.0f} + lift {P['c_lift']:.1f} + reflection {P['c_outer']:.1f} + "
         f"Higgs {c_higgs_app:.0f} ({V} U_x + {higgs_sel_toff:.0f} SELECT Toffolis, outside sgn) = {t_dov:.1f} T; "
-        f"normalization 2Q = {be_norm}.",
+        f"normalization lambda = Q (2 + y rho_max) = {be_norm}.",
         f"R-TOL: {P['n_rot_app']} rotations per application x {n_dov} = {n_rot_shot:.6g} per shot -> eps_rot = "
         f"{eps_rot:.4g}, {t_rot:.3f} T per rotation.",
         f"N_Trotter (E26 (ii)): state-dependent second-order estimate (Alves, Lamm, Liu, preprint FERMILAB-PUB-26-0397-T), evaluated here at "
@@ -3017,8 +3092,8 @@ PUBLISHED = {
                           "fits the 32 ancilla. r22 (E26): 31 phasing ancilla + 1 RUS (was 37 + 2 = 39, 247 LQ); the T "
                           "count does not move",
                       rel_tol=0.10),
-    "2033": Published(lq=(1015, 1015), hard_ops=(2.5e10, 2.5e10),
-                      src="app06 2033 box ('1015 = 216 + 486 + 270 + 43', sphaleron shot at 10a '1.9e10'; verifier 2026-10-04: "
+    "2033": Published(lq=(1235, 1235), hard_ops=(4.1e10, 4.1e10),
+                      src="app06 2033 box (r26-yukawa 2026-11-06: '1235 = 432 + 486 + 270 + 47', 21,985 x 1,872,027 + gauge steps + reflections = 4.147e10; before the ruling '1015 = 216 + 486 + 270 + 43', sphaleron shot at 10a '1.9e10'; verifier 2026-10-04: "
                           "17 filter calls in 8 rounds (2k + 1), 1513 applications, 10,063 x t_dov = 1.8597e10; referee C1 "
                           "(2026-10-04): the thermal filter at beta||H|| = 2Q / (T a) = 864, d_beta 89, 712 applications, "
                           "9262 x 1,847,860 = 1.7115e10 '1.7e10'; r25 '1.6e10': Yukawa "

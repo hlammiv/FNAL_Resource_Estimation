@@ -8,14 +8,14 @@ retired). The two 2033 dipole media are quench-prepared: electric vacuum, coupli
 priced as a floor), then c / T of evolution with c = 2-2 pi (90-282 steps; Hayata-Hidaka arxiv_2011_09814 for 2 pi, the
 exact small-lattice checks in scratchpad/quench for 2) before the sources enter; ETH / dynamical typicality assumed at
 the chapter couplings (eth_assumed). Each circuit is priced whole with its own R-TOL eps (pricing basis
-scratchpad/quench/cost/price2.py). Static Im V: 2.3 / 6.7e9 -> 5.4e9-1.5e10 T per shot (5.4-15x the 1e9 limit, stated;
-eps_l 1.5e-11 -> 6.6e-12), 653 shots, one temperature 34 -> 57-98 d, three 102 d -> 172-293 d. Light-like q-hat:
+scratchpad/quench/cost/price2.py). Static Im V: 2.3 / 6.7e9 -> 5.9e9-1.6e10 T per shot (5.9-16x the 1e9 limit, stated;
+eps_l 1.5e-11 -> 6.1e-12), 653 shots, one temperature 34 -> 62-106 d, three 102 d -> 186-319 d (arxiv_2611_08161 costs). Light-like q-hat:
 7.2e7 / 2.0e8 -> 2.0e8-5.5e8 T (fits; eps_l 4.9e-10 -> 1.8e-10), 405 shots, 0.65 -> 1.2-2.3 d, three 1.9 -> 3.7-6.8 d.
 Shots and LQ unchanged; the species row does not move. The coarse-step thermalization lever (2-5x) is unpriced.
 STAGE stays r26 for the species headline; resources.json moves at Final (dipole rows).
 
 s648 (author ruling 2026-10-05, (5); NEEDS_AUTHOR 'Ch. 6 s648'): the static dipole row follows Ch. 5's 2033 box to
-pure-gauge Sigma(216x3) (11 qubits/link, Gustafson_S648_inprep) with H_I: 833 -> 995 LQ, 2.9 / 8.4e8 -> 2.3 / 6.7e9 T
+pure-gauge Sigma(216x3) (11 qubits/link, arxiv_2611_08161) with H_I: 833 -> 995 LQ, 2.9 / 8.4e8 -> 2.3 / 6.7e9 T
 per shot (2.3-6.7x the 1e9 limit), 72 / 203 -> 85 / 240 steps (state-dependent rule on the tree-level improved free
 dispersion, an assumption about H_I's free limit), eps_l 1.2e-10 -> 1.5e-11, 4.3 -> 34 d first result, 13 -> 102 d
 for three temperatures; naive E-rho-OQ 378 -> 455 (|G| = 648; the printed D4 range does not move). The species /
@@ -486,7 +486,7 @@ class Assumptions:
     # (995 LQ <= 1000). The species / fragmentation row stays Sigma(72x3) / H_KS: 1092 LQ > 1000 at 11 qubits/link
     # (would need the ~1.1k caveat), and a switch would reuse Ch. 5's Sigma(72x3) placeholder hop, 72% of the step
     # (NEEDS_AUTHOR 'Ch. 6 s648').
-    group_dipole_static: Tagged = Cited("S216x3", "Gustafson_S648_inprep", "s648 ruling (5): 'pure-gauge "
+    group_dipole_static: Tagged = Cited("S216x3", "arxiv_2611_08161", "s648 ruling (5): 'pure-gauge "
                                         "Sigma(216x3) 3^3', qubit encoding, 11 qubits/link (groups.py)")
     hamiltonian_dipole_static: Tagged = Stated("I", f"{TEX}:98", "s648 ruling (1)/(5): the improved H_I, as Ch. 5's "
                                                "2033 box; tab:primcost H_I multiplicities, U_phi twice (phi_mult)")
@@ -2426,10 +2426,10 @@ def INSTANCE_ROWS(a, era, r):
                   "observable": "Im V(r = a, T) from singlet survival (kappa as byproduct)",
                   "shots_per_T": [round(x) for x in ds["shots_per_T"]],
                   "wall_time_s_first_result": [round(x) for x in ds["wall_first_s"]],
-                  "note": "R7 first-result row; s648: Sigma(216x3) (11 qubits/link, Gustafson_S648_inprep) with H_I as "
-                          "Ch. 5's 2033 box, all primitives compiled in the draft; q1 (ruling B): medium quench-prepared "
+                  "note": "R7 first-result row; s648: Sigma(216x3) (11 qubits/link, arxiv_2611_08161) with H_I as "
+                          "Ch. 5's 2033 box, all primitives compiled in that paper; q1 (ruling B): medium quench-prepared "
                           "from the electric vacuum (20-step coupling ramp + c/T thermalization, c = 2-2 pi, 90-282 steps) "
-                          "before the sources enter, ETH / typicality assumed; 5.4-15x the 1e9-T limit, stated; step rule "
+                          "before the sources enter, ETH / typicality assumed; 5.9-16x the 1e9-T limit, stated; step rule "
                           "on the improved free dispersion (85 / 240 dipole steps); t = 0.5 and 1 fm/c, each shot at its "
                           "own time; shots binomial on P_s, no estimator penalty; measures P_s, not |W|^2 (J4)"}),
                 (r"light-like dipole $\hat q$, pure-gauge $2O$ $3{\times}3{\times}5$", (dl["lq"], dl["lq"]),
