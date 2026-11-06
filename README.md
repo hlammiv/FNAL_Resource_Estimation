@@ -42,7 +42,8 @@ applications/chNN_*/    one README per chapter (what is estimated, every assumpt
 docs/                   CONTRACT.md (what every chapter model must expose), CIRCUIT_STATUS.md
                         (generated), PAPER_COSTS.md, OPEN_ITEMS.md (what the models cannot decide)
 resources.json          the generated numbers, in the form the paper's figures and table read
-paper_tools/            figure scripts and table checks for the paper (fig_*.py, verify_table.py)
+paper_tools/            figure scripts and table checks for the paper (fig_*.py, verify_table.py,
+                        test_table.py for the chapter table, test_results_table.py for the results table)
 sync_paper.sh           checks a checkout of the paper against the models (suite and table check)
 ```
 

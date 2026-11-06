@@ -20,10 +20,10 @@ for f in "$PAPER"/*; do ln -s "$f" "$TREE/"; done
 rm -f "$TREE/scripts"
 
 mkdir "$TREE/scripts"
-rsync -a --exclude __pycache__ --exclude .pytest_cache --exclude test_table.py \
+rsync -a --exclude __pycache__ --exclude .pytest_cache --exclude test_table.py --exclude test_results_table.py \
   "$REPO/paper_tools/" "$TREE/scripts/"
 rsync -a --exclude __pycache__ --exclude .pytest_cache "$REPO/estimates/" "$TREE/scripts/estimates/"
-cp "$REPO/paper_tools/test_table.py" "$TREE/scripts/estimates/tests/"
+cp "$REPO/paper_tools/test_table.py" "$REPO/paper_tools/test_results_table.py" "$TREE/scripts/estimates/tests/"
 cp "$REPO/resources.json" "$TREE/scripts/"
 cp "$REPO/docs/CONTRACT.md" "$REPO/docs/CIRCUIT_STATUS.md" "$REPO/docs/PAPER_COSTS.md" \
    "$TREE/scripts/estimates/"
