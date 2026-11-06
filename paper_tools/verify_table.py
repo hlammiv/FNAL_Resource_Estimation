@@ -47,7 +47,7 @@ ROW_KEY = {
     2: "Decoding DUNE", 3: "Hunting LNV/LFV", 4: "Quantum-accelerated lattice fermions",
     5: "Viscosity of the perfect liquid", 6: "QCD for colliders",
     7: "After the Big Bang", 8: "Origins of matter", 9: "Chiral lattice fermions",
-    10: "Dense QCD without the sign problem",
+    10: "Dense QCD",
 }
 
 
