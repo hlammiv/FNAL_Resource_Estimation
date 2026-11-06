@@ -1012,17 +1012,10 @@ def test_simplified_0nubb_rows(a, r33, tex):
     for frag in ("are $5.17$ and $4.26$ MeV ($4.28$ and $3.00$ MeV measured~\\cite{ENSDF})",
                  "so KB3G is the conservative choice", "\\cite{arxiv_nucl-th_0012077}",
                  "$74$--$174$ LQ, $0.91$--$1.9\\times 10^{8}$ T, projection estimate: $120$--$240$ days",
-                 "$78$--$178$ LQ, $6.8$--$9.6\\times 10^{8}$ T, resonant-transition estimate: $8.7$--$38$ days",
-                 "full $pf$ by resonant transition $\\times 4.6$--$5.8$, $85$--$350$ days",
                  "($\\times 0.74$--$1.5$ at the model $0^+$ gaps)",
-                 "The qDRIFT samples run one at a time, so these circuits keep only $2$--$3$ factories busy.",
-                 "accidental resonances between excited parent and daughter $0^+$ states",
-                 "$1.0\\times 10^{-10}$--$1.1\\times 10^{-9}$ ($0\\nu\\beta\\beta$ validation stage)",
-                 "recovers $|M|$ to within $7\\%$ and $4\\%$ at $\\theta|M|=0.3$ MeV and $15\\%$ and $10\\%$ at $0.5$ MeV",   # KB3G 2026-10-12
-                 "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$", "raises $\\lambda/|M|$ to $445$",
+                 "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$",
                  "$\\lambda/|M|\\approx 1.4\\times 10^{3}$, so $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ projection shots, $130$--$260$ years",
                  "with per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
-                 "\\cite{Campbell_qDRIFT_2019}", "It stays past 2033.",
                  "We take the daughter projection at the parent's cost; a daughter with a smaller gap raises it"):
         assert frag in tex, frag
 
@@ -1252,7 +1245,10 @@ def test_printed_strings_are_in_the_tex(a, tex):
                "qdrift_f7p3p1:157", "pf_rabi_t:157",
                "mo_ru_after_lever:169", "mo_ru_after_lever_generic:169", "n_rot_flagship:152",
                "multiple_flagship:152,215", "eps_rot_sd:90", "eps_rot_survey:90", "eps_rot_flagship:152",
-               "c_T_flagship:152", "insertion_share_near_miss:217", "insertion_jj44:143", "insertion_jj44_dense:143"}
+               "c_T_flagship:152", "insertion_share_near_miss:217", "insertion_jj44:143", "insertion_jj44_dense:143",
+               # markup board 2026-11-06: C3-6 cuts the resonant-transition stage, SYN-2 moves the algebra to Ch. 1
+               "c_T_coherent:90",
+               "f7p3p1_t:157,box", "f7p3p1_wall:157,box", "pf_rabi_multiple:157,box", "pf_rabi_wall:157,box", "rabi_factories:163", "eps_l_first_light:254"}
     assert retired <= set(p), retired - set(p)
     if tex is not None:
         for k, v in r25.items():
@@ -1268,7 +1264,7 @@ def test_printed_strings_are_in_the_tex(a, tex):
             continue
         # plain multiples are set as '$\times 1.7$--$6.8$' or '14--54' in the prose; accept either spelling
         assert v in tex or v.replace("--", "$--$") in tex, f"{k}: {v!r} not in app11_mu2e_0nubb.tex"
-    assert "10^{-2}/N_{\\rm rot}" in tex and "c_T\\approx 27" not in tex     # R-TOL rule sentence, app11:90
+    assert "c_T\\approx 27" not in tex     # the R-TOL rule sentence now lives in Ch. 1 (SYN-2, 2026-11-06)
     assert "0.1/N_{\\rm gate}^{\\rm shot}" in tex                    # R3 definition, app11:93
 
 
@@ -1473,7 +1469,6 @@ def test_referee_max_subroutine_time(a, tex):
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     assert "Maximum subroutine time & N/A" not in tex
-    assert "resonant-transition estimate: $8.7$--$38$ days ($\\sim 54$ min per shot)" in tex   # restructure 2026-10-22: box row
 
 
 def test_referee_text_corrections(a, tex):

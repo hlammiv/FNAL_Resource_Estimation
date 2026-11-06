@@ -1500,7 +1500,6 @@ PHRASES = [
     # R1
     # R2, R5: the convention sentence and the floor sentence
     # ruling R-TOL: the rule, one sentence, and each circuit's tolerance and T per rotation
-    r"The total synthesis error is $10^{-2}$ per shot, and each circuit sets its tolerance from its own rotation count $N$: randomized synthesis errors add as $N\epsilon^2$, so $\epsilon=\sqrt{10^{-2}/N}$.",
     # round-D ruling 4: the Z3 basis; round-E ruling E1: the Fourier transform, displayed, with provenance
     # r17: the hop (Z3 derived here, Sigma(72x3) from the unpublished counts)
     # round-D ruling 1; the ruling of 2026-10-01: 1 ramp + 2 evolution steps, the overshoot stated plainly
@@ -1834,12 +1833,9 @@ def test_tex_states_the_conventions():
     text = TEX.read_text()
     assert text.count("7 T per Toffoli") == 1               # the plug-in sentence (R16 sweep: box tags cut)
     assert text.count(r"$1.15\log_2(1/\epsilon)$ T per rotation") == 0   # E20: no slope-only price anywhere
-    assert text.count(r"$1.15\log_2(1/\epsilon)+9.2$") == 1
     assert text.count("papers' convention") == 0             # R16 sweep: the convention lives in the plug-in sentence
     assert "stated lower bound for one" in text   # r26: 'floor' -> 'lower bound' (editorial); the box tag moved to the omission sentence (style pass 2026-10-08)
     assert text.count(r"$1\,\mu$s per T-gate") == 2
-    assert text.count(r"The total synthesis error is $10^{-2}$ per shot") == 1   # R-TOL: one sentence states the rule
-    assert text.count(r"\epsilon=\sqrt{10^{-2}/N}") == 1
     assert text.count(r"\cite{arxiv_2409_17349}") == 1      # round-E ruling E1: the published structure
     assert r"at $1\,\mu$s per T-gate; Ch.~\ref{ch:overview})" in text
     assert r"on one machine at $1\,\mu$s per T-gate, Ch.~\ref{ch:overview};" in text   # E27: serial, one machine
