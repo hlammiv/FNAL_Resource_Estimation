@@ -210,15 +210,11 @@ def test_machine_time_bullet():
 
 
 def test_far_end_bullet():
+    """The bullet names the beyond-RFI region without numbers; those stay in the chapters (H. Lamm, 2026-11-06)."""
     text = top_line()
-    r3, r10 = result(3, "codesign"), result(10, "codesign")
-    r2 = result(2, "codesign")
-    assert f"$^{{12}}$C, {r2.lq[0]:.0f}--{r2.lq[1]:.0f} LQ, ${r2.hard_ops[0] / 1e12:.1f}$--${r2.hard_ops[1] / 1e12:.1f}\\times 10^{{12}}$" in text
-    assert f"{r3.lq[0]:.0f}--{r3.lq[1]:.0f} LQ" in text
-    for value in r3.hard_ops:
-        mantissa, exponent = f"{value:.1e}".split("e+")
-        assert f"{mantissa}\\times 10^{{{int(exponent)}}}" in text
-    assert f"{r10.lq[0]:.0f}--{r10.lq[1]:.0f}-LQ register without an estimated depth" in text
+    assert "lie in the beyond-RFI region" in text
+    r2, r3 = result(2, "codesign"), result(3, "codesign")
+    assert min(r2.hard_ops) >= 1e12 and min(r3.hard_ops) >= 1e12
 
 
 def test_wall_time_sentence():
