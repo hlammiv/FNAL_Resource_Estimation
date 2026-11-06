@@ -150,11 +150,11 @@ def expected(ch: int, era: str, h: Headline) -> tuple[tuple[float, float], str]:
 
 
 def table_t(ch: int, era: str, h: Headline) -> str:
-    """The table's spelling of the hard-operation count: the model's value at one significant
-    digit (H. Lamm, 2026-11-05). The boxes keep their own precision, checked separately."""
+    """The table's spelling of the hard-operation count: the upper end of the model's range at one
+    significant digit (H. Lamm, 2026-11-05). The boxes keep their ranges and precision, checked separately."""
     _, r = _model(ch, era)
     t = _pair(r.intermediates[h.t]) if h.t else _pair(r.hard_ops)
-    return _fmt_t(t, Headline(t_digits=0, t_rel=h.t_rel, t_bound=h.t_bound))
+    return _fmt_t((t[1], t[1]), Headline(t_digits=0, t_rel=h.t_rel, t_bound=h.t_bound))
 
 
 def _cell(ch: int, era: str, table: str) -> str:
@@ -188,7 +188,7 @@ def test_lq_in_table(ch, era, table, request):
 @pytest.mark.parametrize("table", sorted(TABLES))
 @pytest.mark.parametrize("ch,era", PARAMS)
 def test_t_in_table(ch, era, table, request):
-    """The cell prints the model's per-shot count, rounded to one significant digit."""
+    """The cell prints the upper end of the model's per-shot count, at one significant digit."""
     if ch in NO_T:
         pytest.skip(f"Ch{ch} row carries no T-count (NO_T)")
     _xfail(request, (ch, era, "T"))
