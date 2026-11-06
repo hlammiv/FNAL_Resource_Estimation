@@ -730,7 +730,8 @@ def test_2033_heavier_pairs_lq(rcd, tex):
     assert i["lq_jj55"] == (114, 214) and i["lq_mo_ru"] == (104, 204)
     assert min(i["lq_mo_ru"][0], i["lq_jj55"][0]) == 104 and max(i["lq_mo_ru"][1], i["lq_jj55"][1]) == 214
     if tex is not None:
-        assert "($54$: protons in $jj44$, neutrons in $jj55$) sit at $\\sim 100$--$210$ LQ" in tex
+        # markup board C3-5, 2026-11-06: the registers moved into the survey table
+        assert "$^{100}$Mo/Ru & $jj44$, $jj55$ & 54 & 104--204" in tex
         assert "11 + 16 = 27" not in tex and "$108$ system" not in tex
 
 # ------------------------------------------------------------ 2033 hard ops
@@ -1537,3 +1538,19 @@ def test_referee_m3_al27_usdb_gap(a, r33, tex):
     assert ("$2.33$ MeV above the ground state (the $7/2^+$), which would lower the preparation to "
             "$0.89$--$1.8\\times 10^{8}$ T") in tex and "\\cite{Brown_Richter_USDB_2006}" in tex
 
+
+def test_survey_table_matches_the_model(a, tex):
+    """Table tab:ch03_survey (markup board C3-5): every register and T range against the model."""
+    i = ch3.model(a, "2033").intermediates
+    if tex is None:
+        pytest.skip("chapter .tex not on disk")
+    assert i["lq_jj55"] == (114, 214) and i["lq_mo_ru"] == (104, 204)
+    for lo_hi, printed in ((i["prep_al_sd"], (1.0e8, 4.4e8)), (i["prep_pf"], (1.8e9, 7.3e9)), (i["prep_jj44"], (2.6e9, 1.1e10)),
+                           (i["prep_mo_ru"], (6.0e9, 2.5e10)), (i["prep_jj55"], (1.2e10, 5.0e10))):
+        assert float(f"{lo_hi[0]:.2g}") == printed[0] and float(f"{lo_hi[1]:.2g}") == printed[1]
+    for row in ("$^{27}$Al & $sd$ & 24 & 74--174 & $1.0$--$4.4\\times 10^{8}$ & 0.10--0.44",
+                "$^{48}$Ca/Ti & $pf$ & 40 & 90--190 & $1.8$--$7.3\\times 10^{9}$ & 1.8--7.3",
+                "$^{76}$Ge/Se & $jj44$ & 44 & 94--194 & $2.6\\times 10^{9}$--$1.1\\times 10^{10}$ & 2.6--11",
+                "$jj44$, $jj55$ & 54 & 104--204 & $6.0\\times 10^{9}$--$2.5\\times 10^{10}$ & 6--25",
+                "$^{136}$Xe/Ba & $jj55$ & 64 & 114--214 & $1.2$--$5.0\\times 10^{10}$ & 12--50"):
+        assert row in tex, row

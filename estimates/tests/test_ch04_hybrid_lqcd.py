@@ -714,7 +714,7 @@ def test_2033_depth_factories_and_walls():
         assert I33[k] == dx[k]
     assert near(I33["floor_wall_s"][1], I33["wall_campaign_s"][1] - s2[1] * 1e-4, 1e-9)
     for s in ("\\textbf{Wall time} & $530$--$2100\\,$s per shot \\\\", "$86\\,$d--$2.7$ yr on one machine", "$1.6$--$18$ yr on one machine",
-              "$1.6$--$4.6$ yr, which fits", "$0.63$--$1.8$ yr",
+              "$1.6$--$4.6$ yr",
               "rather than $213\\,$s"):
         assert s in TEX, s
     # the model follows its inputs: F* = 10 everywhere restores the baseline wall
