@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the chapter table (Table 1.2 since 2026-11-05) against the chapter resource models.
+"""Check the chapter table (Table 1.1) against the chapter resource models.
 
 The table lives in two places -- table_standalone.tex and a mirrored copy in
 main-overview.tex -- and both restate numbers that are derived in the chapter
@@ -64,7 +64,7 @@ def fields(path):
                 # split on column separators only: several application names
                 # contain an escaped \& ("baryogenesis \& FOPTs")
                 cells = [c.strip() for c in re.split(r"(?<!\\)&", line)]
-                # Ch. | application | first generation | next generation | program \\
+                # Ch. | application | first generation | next generation | first result | campaign \\
                 if len(cells) >= 5:
                     out[ch] = cells
                 break
@@ -85,7 +85,7 @@ def main():
     overview = fields(DOC / "main-overview.tex")
     bad = []
 
-    print("Table 1.2 vs. chapter resource models\n" + "-" * 62)
+    print("Table 1.1 vs. chapter resource models\n" + "-" * 62)
 
     for ch in sorted(ROW_KEY):
         s, o = standalone.get(ch), overview.get(ch)
@@ -96,11 +96,11 @@ def main():
 
         # 1. the two copies must agree with each other, field by field
         #    (field 0 is the chapter number: a \ref in the overview, a digit standalone)
-        names = ("application", "first generation", "next generation", "program")
-        diff = [n for n, a, b in zip(names, s[1:5], o[1:5]) if norm(a) != norm(b)]
+        names = ("application", "first generation", "next generation", "first result", "campaign")
+        diff = [n for n, a, b in zip(names, s[1:6], o[1:6]) if norm(a) != norm(b)]
         if diff:
             bad.append(f"Ch{ch}: the two table copies disagree ({', '.join(diff)})")
-            for n, a, b in zip(names, s[1:5], o[1:5]):
+            for n, a, b in zip(names, s[1:6], o[1:6]):
                 if norm(a) != norm(b):
                     print(f"  Ch{ch:<3} COPIES DIFFER in the {n} cell\n"
                           f"        standalone: {norm(a)[:88]}\n"

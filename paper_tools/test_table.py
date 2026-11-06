@@ -21,7 +21,7 @@ the FIRST "... LQ" token and the FIRST "$...$ T" token of the cell and requires
       register must lie inside the model's register band within PUBLISHED.rel_tol.
 Strict xfails (XFAIL) are the filed disagreements between a box headline and its model;
 each names its NEEDS_AUTHOR.md item, and a fix flips it to XPASS and fails the run.
-Every other "$...$ T" token in a cell (second instances, e.g. Ch. 2's converged 12C) is
+Every other "$...$ T" token in a cell is
 checked for the one spelling by a parse-and-reformat round trip.
 """
 
@@ -81,8 +81,6 @@ HEADLINE = {
 }
 
 # second instances a cell prints after the headline one: (chapter, column) -> model era
-SECOND = {(2, "2033"): "codesign"}
-SECOND_HEADLINE = {(2, "2033"): H()}                 # co-design box '~800-1000 LQ', '~1.7-5.5e12' (1.694-5.507e12)
 
 # filed disagreements, (chapter, column, quantity) -> reason naming the NEEDS_AUTHOR.md item.
 # "Tmodel" = the box's count against the model at the box's precision.
@@ -211,19 +209,6 @@ def test_box_count_is_the_model_at_box_precision(ch, era, request):
 
 
 @pytest.mark.parametrize("table", sorted(TABLES))
-@pytest.mark.parametrize("what", ("LQ2", "T2"))
-@pytest.mark.parametrize("ch,era", sorted(SECOND))
-def test_second_instance_in_table(ch, era, what, table, request):
-    _xfail(request, (ch, era, what))
-    h = SECOND_HEADLINE[ch, era]
-    want_lq, want_t = box(ch, SECOND[ch, era], h)
-    (lq, tol), model_t = expected(ch, SECOND[ch, era], h)
-    assert model_t == want_t, (ch, era, "second instance: model vs box", model_t, want_t)
-    lqs, ts = _tokens(_cell(ch, era, table))
-    got, want = (lqs, want_lq) if what == "LQ2" else (ts, want_t)
-    assert len(got) >= 2 and got[1] == want, (ch, era, table, what, want, got)
-
-
 def _parse(token: str) -> tuple[float, float, int, str]:
     """Numbers, mantissa decimals and relation of a '$...$' hard-op token, whatever its spelling."""
     rel = re.match(r"\$\{?(\\[a-z]+)\}?", token)

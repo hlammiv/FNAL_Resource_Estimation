@@ -1,32 +1,28 @@
-"""Table 1.3 (tab:results, the top-line results by chapter) vs the chapter models.
+"""The results in the chapter table (Table 1.1) and the top-line bullets vs the chapter models.
 
-Every number in every cell of the table is read from the paper, in reading order, and compared
-with its source at the precision the table prints. No value is written down twice: SPEC names
-where each number comes from, not what it should be, so the table cannot drift from the models.
+test_table.py checks each row's register and hard-operation count. This file checks what the
+table adds to them: the 2033 first-result and campaign wall times, and the status symbols.
 
-Three things fail the run:
-  - a printed number that does not round to its source (the table or a model changed);
-  - a printed number with no source in SPEC (a number was added to the table by hand);
-  - a "fits" cell whose model is above the target.
+The wall times are read from the paper in reading order and compared with the models at the
+printed precision, and nothing is written down twice. Each symbol must be the one its model
+gives: the upper end of the range against the target, the worse of register and hard
+operations, or for the campaign against the five-year window. Fits means at or below the target
+at two significant figures, near means below 3 times it, and anything else is not yet fitting.
 
-A source is a model value, or, for the few assumptions the models do not export, a phrase in the
-chapter's own text (Stated). The words around the numbers are not checked: a qualifier such as
-"at least" or "lower bound" is the chapter's statement, carried by hand.
-
-The top-line bullets above the table are checked the same way at the end of this file.
+Three things fail the run: a wall time that does not round to its model, a printed number with
+no source in SPEC, and a symbol that disagrees with its model. Qualifiers such as a lower-bound
+mark are the chapter's statement and are not checked.
 
 Runs through sync_paper.sh, which copies this file beside the other tests; it needs the paper.
 """
 
 import re
-from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
-from estimates import TEX, load
+from estimates import load
 from estimates.common import SECONDS_PER_YEAR as YEAR
 
 DOC = Path(__file__).resolve().parents[3]
@@ -35,13 +31,12 @@ WINDOW_S = 5 * YEAR
 TARGET = {"2028": 1e5, "2033": 1e9}
 LABEL = {"nu_nucleus": 2, "mu2e_0nubb": 3, "hybrid_lqcd": 4, "qgp_transport": 5, "collider": 6,
          "curved_space": 7, "baryogenesis": 8, "chiral": 9, "finite_density": 10}
-COLUMNS = ("2028", "2033", "first", "campaign", "conditions")
+LQ_TARGET = {"2028": 250, "2033": 1000}
+NEAR = 3.0
 SECONDS = {"d": 86400.0, "yr": YEAR, "mo": YEAR / 12}
 
-# Labels that contain digits but are not results. Removed before numbers are read.
-NOT_NUMBERS = (r"\$\\Sigma\(216\\times 3\)\$", r"\$0\\nu\\beta\\beta\$", r"\$3\^3\$", r"\$H_I\$",
-               r"\$N_\{CS\}\$", r"\$2\\beta\$--\$2\\pi\\beta\$", r"\b20(?:28|33)\b",
-               r"\\(?:ref|cite)\{[^}]*\}")
+# Not results: removed before numbers are read.
+NOT_NUMBERS = (r"\\fits(?:yes|near|no)",)
 NUMBER = re.compile(r"(\\sim\s*)?(\d+(?:\.\d+)?)(?:\\times\s*10\^\{(\d+)\})?")
 UNIT = re.compile(r"\$?\s*(\\times|\\%|yr\b|d\b|mo\b|LQ\b)")
 
@@ -77,117 +72,45 @@ def campaign_over_window(ch, end=1):
     return x(ch, "2033", "wall_campaign_s", end) / WINDOW_S
 
 
-@dataclass(frozen=True)
-class Source:
-    """A printed number and where it comes from. value is in seconds for a wall time."""
-    value: Callable[[], float]
+def status(ratio):
+    """The symbol for a value as a multiple of its target."""
+    rounded = float(f"{ratio:.2g}")
+    return r"\fitsyes" if rounded <= 1.0 else r"\fitsnear" if rounded < NEAR else r"\fitsno"
 
 
-@dataclass(frozen=True)
-class AtMost:
-    """A printed number that bounds its source from above ("register also fits 250 LQ")."""
-    value: Callable[[], float]
+def machine_status(ch, era):
+    """The worse of register and hard operations, at the upper end of each range."""
+    return status(max(over(ch, era), lq(ch, era) / LQ_TARGET[era]))
 
 
-@dataclass(frozen=True)
-class Stated:
-    """A printed number that only the chapter's text states: the phrase must be in that chapter."""
-    ch: int
-    phrase: str
-    number: float
+def campaign_status(ch):
+    return status(campaign_over_window(ch))
 
 
-@dataclass(frozen=True)
-class Fits:
-    """The cell says "fits": no printed number, and the source must be at or below the target."""
-    value: Callable[[], float]
+def wall_sources(ch, key):
+    value = result(ch, "2033").intermediates[key]
+    return [lambda: value[0], lambda: value[1]] if isinstance(value, (tuple, list)) else [lambda: value]
 
 
-def S(fn, *args, **kw):
-    return Source(lambda: fn(*args, **kw))
+# Ranges printed as one number because the model gives one value at the printed precision.
+ONE_VALUE = {(2, "wall_first_result_s"), (2, "wall_campaign_s"), (8, "wall_first_result_s"),
+             (8, "wall_campaign_s"), (9, "wall_first_result_s")}
+DIGITAL = sorted(LABEL.values())
 
 
-def fits(ch, era):
-    return Fits(lambda: over(ch, era))
-
-
-def walls(ch, key="wall_first_result_s"):
-    return [S(x, ch, "2033", key, 0), S(x, ch, "2033", key, 1)]
-
-
-def wall(ch, key="wall_first_result_s", end=0):
-    return [S(x, ch, "2033", key, end)]
-
-
-SPEC = {
-    2: {"2028": [fits(2, "2028")],
-        "2033": [fits(2, "2033")],
-        "first": wall(2),
-        "campaign": wall(2, "wall_campaign_s"),
-        "conditions": []},
-    3: {"2028": [fits(3, "2028"), S(x, 3, "2028", "d_range", 1)],
-        "2033": [fits(3, "2033")],
-        "first": walls(3),
-        "campaign": walls(3, "wall_campaign_s"),
-        "conditions": [AtMost(lambda: lq(3, "2033", 1)),
-                       S(x, 3, "2033", "multiple_pf", 0), S(x, 3, "2033", "multiple_jj55", 1),
-                       S(lambda: result(3, "2033").intermediates["simplified_0nubb"]["pf_rabi"]["lq"][0]),
-                       S(x, 3, "2033", "lq_jj55", 1)]},
-    4: {"2028": [fits(4, "2028")],
-        "2033": [fits(4, "2033")],
-        "first": walls(4),
-        "campaign": walls(4, "wall_campaign_s") + [S(campaign_over_window, 4)],
-        "conditions": [S(lq, 4, "codesign", 0), S(ops, 4, "codesign", 0)]},
-    5: {"2028": [Fits(lambda: x(5, "2028", "t_first_result_shot_2028_over_rfi")), S(over, 5, "2028")],
-        "2033": [S(over, 5, "2033", 0), S(over, 5, "2033", 1)],
-        "first": walls(5),
-        "campaign": walls(5, "wall_campaign_s") + [S(campaign_over_window, 5, 0), S(campaign_over_window, 5, 1)],
-        "conditions": [S(lambda: 100 * x(5, "2033", "quench_prep_t", 0) / x(5, "2033", "t_deepest", 0)),
-                       S(lambda: 100 * x(5, "2033", "quench_prep_t", 1) / x(5, "2033", "t_deepest", 1)),
-                       Stated(5, r"$3$--$10\times$", 3), Stated(5, r"$3$--$10\times$", 10)]},
-    6: {"2028": [S(over, 6, "2028")],
-        "2033": [S(over, 6, "2033", 0), S(over, 6, "2033", 1)],
-        "first": walls(6),
-        "campaign": walls(6, "wall_campaign_s") + [S(campaign_over_window, 6),
-                    S(lambda: x(6, "2033", "wall_ff_yr", 0) * YEAR), S(lambda: x(6, "2033", "wall_ff_yr", 1) * YEAR),
-                    S(x, 6, "2033", "ff_cost_reduction_for_horizon", 0), S(x, 6, "2033", "ff_cost_reduction_for_horizon", 1)],
-        "conditions": [S(lambda: 100 * x(6, "2033", "hopping_share_of_step_2033")),
-                       S(lambda: 100 * x(10, "2033", "hop_share_of_c_be"))]},
-    7: {"2028": [fits(7, "2028")],
-        "2033": [S(over, 7, "2033")],
-        "first": walls(7),
-        "campaign": walls(7, "wall_campaign_s"),
-        "conditions": []},
-    8: {"2028": [S(over, 8, "2028"), S(x, 8, "2028", "ct_reduction_banked"),
-                 S(lambda: x(8, "2028", "t_raw_per_shot") / TARGET["2028"])],
-        "2033": [fits(8, "2033")],
-        "first": wall(8),
-        "campaign": wall(8, "wall_campaign_s"),
-        "conditions": []},
-    9: {"2028": [S(over, 9, "2028", 0), S(over, 9, "2028", 1)],
-        "2033": [S(over, 9, "2033")],
-        "first": wall(9),
-        "campaign": walls(9, "wall_campaign_s"),
-        "conditions": []},
-    10: {"2028": [S(over, 10, "2028")],
-         "2033": [S(over, 10, "2033", 0), S(over, 10, "2033", 1)],
-         "first": walls(10),
-         "campaign": walls(10, "wall_campaign_s") + [S(campaign_over_window, 10, 0), S(campaign_over_window, 10, 1)],
-         "conditions": []},
-}
+def sources(ch, key):
+    found = wall_sources(ch, key)
+    return found[:1] if (ch, key) in ONE_VALUE else found
 
 
 def table_rows():
-    text = OVERVIEW.read_text()
-    start = text.index(r"\textbf{Main conditions}")
-    body = text[start:text.index(r"\end{tabularx}", start)]
     rows = {}
-    for line in body.splitlines():
-        m = re.match(r"Ch\.~\\ref\{ch:(\w+)\}\s*&", line)
-        if m:
+    for line in OVERVIEW.read_text().splitlines():
+        m = re.match(r"\\ref\{ch:(\w+)\}\s*&", line)
+        if m and m.group(1) in LABEL:
             cells = [c.strip() for c in re.split(r"(?<!\\)&", line)]
             assert len(cells) == 6, f"expected 6 columns: {line[:80]}"
-            rows[LABEL[m.group(1)]] = dict(zip(COLUMNS, cells[1:]))
+            rows[LABEL[m.group(1)]] = dict(zip(("2028", "2033", "first", "campaign"), cells[2:]))
     return rows
 
 
@@ -222,49 +145,34 @@ def agrees(token, value):
     return float(f"{value:.{significant(token['text'])}g}") == printed
 
 
-def chapter_text(ch):
-    return (DOC / TEX[ch]).read_text()
+def test_every_digital_chapter_has_a_row():
+    assert set(table_rows()) == set(DIGITAL)
 
 
-CELLS = [(ch, col) for ch in SPEC for col in COLUMNS]
+@pytest.mark.parametrize("ch", DIGITAL)
+@pytest.mark.parametrize("col,key", [("first", "wall_first_result_s"), ("campaign", "wall_campaign_s")])
+def test_wall_times_match_the_models(ch, col, key):
+    found = tokens(table_rows()[ch][col])
+    wanted = sources(ch, key)
+    assert len(found) == len(wanted), (
+        f"Ch. {ch} {col}: {len(found)} numbers printed {[t['text'] for t in found]}, {len(wanted)} have a source")
+    for token, value in zip(found, wanted):
+        assert agrees(token, value()), (
+            f"Ch. {ch} {col}: prints {token['text']} {token['unit'] or ''}, model gives "
+            f"{value() / SECONDS.get(token['unit'], 1.0):.4g}")
 
 
-def test_every_chapter_has_a_row():
-    assert set(table_rows()) == set(SPEC)
-
-
-@pytest.mark.parametrize("ch,col", CELLS)
-def test_cell_matches_its_sources(ch, col):
+@pytest.mark.parametrize("ch", DIGITAL)
+@pytest.mark.parametrize("col", ["2028", "2033", "campaign"])
+def test_status_symbols_match_the_models(ch, col):
     cell = table_rows()[ch][col]
-    spec = SPEC[ch][col]
-    found = tokens(cell)
-    printed = iter(found)
-    n_printed = sum(not isinstance(s, Fits) for s in spec)
-    assert len(found) == n_printed, (
-        f"Ch. {ch} {col}: {len(found)} numbers printed {[t['text'] for t in found]}, "
-        f"{n_printed} have a source. Every number in Table 1.3 needs one in SPEC.")
-    for source in spec:
-        if isinstance(source, Fits):
-            assert "fits" in cell, f"Ch. {ch} {col}: expected a 'fits' cell: {cell}"
-            assert float(f"{source.value():.2g}") <= 1.0, f"Ch. {ch} {col} says fits, source {source.value():.3g}x"
-            continue
-        token = next(printed)
-        if isinstance(source, Stated):
-            assert source.phrase in chapter_text(source.ch), f"Ch. {source.ch} no longer says {source.phrase}"
-            assert float(token["text"]) == source.number, f"Ch. {ch} {col}: {token['text']} vs {source.phrase}"
-        elif isinstance(source, AtMost):
-            assert source.value() <= float(token["text"]), f"Ch. {ch} {col}: {source.value()} exceeds {token['text']}"
-        else:
-            assert agrees(token, source.value()), (
-                f"Ch. {ch} {col}: prints {token['text']} {token['unit'] or ''}, source gives "
-                f"{source.value() / SECONDS.get(token['unit'], 1.0) / token['scale']:.4g}")
+    printed = re.findall(r"\\fits(?:yes|near|no)\b", cell)
+    assert len(printed) == 1, f"Ch. {ch} {col}: expected one symbol: {cell}"
+    wanted = campaign_status(ch) if col == "campaign" else machine_status(ch, col)
+    assert printed[0] == wanted, f"Ch. {ch} {col}: prints {printed[0]}, model gives {wanted}"
 
 
 # The bullets above the table: what they count and range over comes from the same sources.
-
-NUMBER_WORD = {4: "four", 5: "Five"}
-DIGITAL = sorted(SPEC)
-
 
 def top_line():
     return re.sub(r"\s+", " ", OVERVIEW.read_text())
@@ -299,13 +207,13 @@ def test_machine_time_bullet():
     text = top_line()
     assert "Five of the nine campaigns fit the five-year window on one machine." in text
     assert f"{float(f'{campaign_over_window(5):.2g}'):.0f}\\times$ (Ch." in text
-    worst = x(6, "2033", "ff_cost_reduction_for_horizon", 1)
-    assert f"${float(f'{worst:.2g}'):.0f}\\times$." in text
 
 
 def test_far_end_bullet():
     text = top_line()
     r3, r10 = result(3, "codesign"), result(10, "codesign")
+    r2 = result(2, "codesign")
+    assert f"$^{{12}}$C, {r2.lq[0]:.0f}--{r2.lq[1]:.0f} LQ, ${r2.hard_ops[0] / 1e12:.1f}$--${r2.hard_ops[1] / 1e12:.1f}\\times 10^{{12}}$" in text
     assert f"{r3.lq[0]:.0f}--{r3.lq[1]:.0f} LQ" in text
     for value in r3.hard_ops:
         mantissa, exponent = f"{value:.1e}".split("e+")
