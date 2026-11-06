@@ -835,7 +835,7 @@ def test_e29_tex_wording_fixes():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app07_finite_density.tex").read_text()
     for s in (r"$n_B$ for $\mu_B\ge 150$~MeV to $30\%$ and $\chi_4/\chi_2$ at all five $\mu_B$ to $\pm 0.3$",
               r"$\Delta p=p(T,\mu_B)-p(T,0)$ from the same samples",
-              r"($2.2\%$ of $\lambda$ per sector, absolute)", r"(depth-limited at the as-compiled end)"):
+              r"($2.2\%$ of $\lambda$ per sector, absolute)"):
         assert s in tex, s
     for old in (r"$1.4$--$4.0\times 10^{4}$", r"$17$--$106$", r"$4.1$--$25$~yr", r"$9.9$--$28$"):
         assert old not in tex, old

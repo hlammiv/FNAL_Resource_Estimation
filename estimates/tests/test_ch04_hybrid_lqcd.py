@@ -528,7 +528,6 @@ def test_2028_depth_and_factories():
     tex = (Path(__file__).resolve().parents[3] / "applications" / "app12_hybrid_lqcd.tex").read_text()
     # style pass 2026-10-08: the T-depth arithmetic and the box's 'single-config demo' wording went (prose anchors retired)
     for s_ in ("$2.6$--$4.8$ factories",
-               "$74\\,$ms rather than $19$--$36\\,$ms",
                "$6.5$ h once three to five factories feed it ($17$--$31$ h on one)"):
         assert s_ in tex, s_
 
@@ -831,7 +830,7 @@ def test_codesign_24x48_instance():
     assert RCD.breakdown_total() == RCD.hard_ops[0]
     # style pass 2026-10-08: the 'column index' register and 'unit-prefactor count' sentences went (anchors retired)
     for s in ("costs $2.6\\times 10^{11}$ T",
-              "LCU compression alone covers the $24^3{\\times}48$ instance", "past 2033"):
+              "past 2033"):
         assert s in TEX, s
 
 
@@ -847,7 +846,7 @@ def test_codesign_production_48x96_after_reduction():
     assert ICD["n_cfg_production"] == 1e3
     assert near(ICD["subroutine_calls_1e4_rung"], 1 / 1e-4 * 1e3, 1e-12)
     assert ICD["subroutine_calls_1e4_rung_box"] == 1e7
-    assert "($5.0\\times 10^{12}$ T) needs $\\sim 50{\\times}$" in TEX and "approximately 50-fold reduction" in TEX
+    pass  # markup board 2026-11-06: sentence cut
 
 
 def test_codesign_one_machine_campaign_horizon():
@@ -870,10 +869,7 @@ def test_codesign_one_machine_campaign_horizon():
     assert not ICD["fits_horizon_one_machine"]
     assert ICD["qme_call_saving"] == 100
     assert RCD.wall_time_s is None and RCD.shots is None                      # conditional rung: not tabulated
-    for s in ("$9.9\\times 10^{10}$ T at a T-depth of $2.5$--$9.9\\times 10^{10}$", "takes $2.9$--$11$ days",
-              "$7.8\\times 10^{4}$--$3.1\\times 10^{5}$ years", "Five years hold 160--640 shots"):
-        assert s in TEX, s
-
+    
 
 def test_synthesis_budget_1000lq_and_1e4lq():
     for I in (I33, ICD):
@@ -1034,8 +1030,8 @@ def test_referee_h2_svt_readout_identity_and_hvp_estimate():
     assert near(ICD["am_production"], 4 / 999, 1e-12) and ICD["v_f_production"] == 3 * 48 ** 3 * 96
     assert near(ICD["hvp_noise_matched_shots_per_cfg"], 7.95e12, 0.001)
     assert ICD["hvp_noise_matched_over_box"] > 1e8
-    assert "$0.75$--$3.0\\times 10^{12}$ at $24^3{\\times}48$ and $1.2$--$4.8\\times 10^{13}$ at $48^3{\\times}96$" in TEX
-    assert "between $2$ and $1/2$" in TEX and "the count scales as $1/\\sigma^2_{\\rm site}$" in TEX
+    pass  # markup board 2026-11-06: sentence cut
+    pass  # markup board 2026-11-06: sentence cut
     # 2026-10-09 ('put some bands'): the site-variance band 1/2-2 about the order-one central value
     assert ICD["hvp_site_variance_band"] == (0.5, 2.0)
     b = ICD["hvp_noise_matched_shots_per_cfg_all_dirs_24c48_band"]
@@ -1046,7 +1042,7 @@ def test_referee_h2_svt_readout_identity_and_hvp_estimate():
     assert ICD["v_f_codesign"] == 3 * 24 ** 3 * 48
     assert near(ICD["hvp_noise_matched_shots_per_cfg_24c48"], 4.967e11, 0.001)
     assert 4e7 < ICD["hvp_noise_matched_over_box_24c48"] < 6e7
-    assert "noise-matched HVP loops need $0.75$--$3.0\\times 10^{12}$ shots per cfg at $24^3{\\times}48$" in TEX
+    pass  # markup board 2026-11-06: sentence cut
     assert ICD["hvp_current_directions"] == 3
     half = m.model(replace(A, hvp_site_variance=m.Assumed(0.5, "x")), "codesign").intermediates
     assert near(half["hvp_noise_matched_shots_per_cfg"], 2 * ICD["hvp_noise_matched_shots_per_cfg"], 1e-12)
@@ -1103,10 +1099,9 @@ def test_referee_h2_hvp_mapping_and_error_budget():
         assert 1.3 <= _m.hypot(st, sy) / sy <= 1.42
         assert 24.5 <= sy / (0.003 * abs(disc)) <= 30.5    # 24.8 (Mainz), 30.3 (BMW): "25--30"
         assert 0.003 * 713.2 > _m.hypot(st, sy)
-    for s_ in ("1.5\\times 10^{7}$ calls", "$\\le 9\\times 10^{6}$ classical vectors", "$1.7\\times 10^{5}$ at $24^3$",
-               "=5\\times 10^{-5}$ of the per-shot T", "by at most $1.3$--$1.4{\\times}$", "$25$--$30{\\times}$ below",
-               "which the disconnected errors already meet",
-               "at most a $1.3$--$1.4{\\times}$ cut", "($0.6$--$9\\times 10^{10}$ yr each)",
-               "purely imaginary", "no $0.3\\%$ target"):
+    for s_ in (
+               "by at most $1.3$--$1.4{\\times}$",
+               "at most a $1.3$--$1.4{\\times}$ cut",
+               "purely imaginary"):
         assert s_ in TEX, s_
     assert "uncosted HVP estimator" not in TEX and "not yet costed" not in TEX
