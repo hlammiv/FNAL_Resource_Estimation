@@ -1,8 +1,8 @@
 """Table 1.1 vs the chapter boxes and the chapter models: every cell of both generation
 columns, Chs. 2-10, prints its chapter box's headline register and per-shot hard-operation
 count, with the box's own significant figures, in both copies of the table (rulings R10-a..e,
-H. Lamm, 2026-09-29; author request 2026-10-01 "for table 1.1 get the figures and numbers to
-match": a cell carries the box's value at the box's precision, e.g. 1.0e9 not 10^9, 1082 not 1.1k).
+H. Lamm, 2026-09-29). Since 2026-11-05 (H. Lamm) a cell rounds its hard-operation count to one
+significant digit; the register stays as the box prints it.
 
 The two copies are doc/main-overview.tex and doc/table_standalone.tex; rows are found by
 the chapter label phrases in scripts/verify_table.py ROW_KEY, and the cells are the third
@@ -149,6 +149,14 @@ def expected(ch: int, era: str, h: Headline) -> tuple[tuple[float, float], str]:
     return (lq, tol), _fmt_t(t, h)
 
 
+def table_t(ch: int, era: str, h: Headline) -> str:
+    """The table's spelling of the hard-operation count: the model's value at one significant
+    digit (H. Lamm, 2026-11-05). The boxes keep their own precision, checked separately."""
+    _, r = _model(ch, era)
+    t = _pair(r.intermediates[h.t]) if h.t else _pair(r.hard_ops)
+    return _fmt_t(t, Headline(t_digits=0, t_rel=h.t_rel, t_bound=h.t_bound))
+
+
 def _cell(ch: int, era: str, table: str) -> str:
     cell = CELLS[table][era].get(ch)
     assert cell is not None, f"Ch{ch} ({ROW_KEY[ch]!r}) has no row in {table}"
@@ -180,11 +188,11 @@ def test_lq_in_table(ch, era, table, request):
 @pytest.mark.parametrize("table", sorted(TABLES))
 @pytest.mark.parametrize("ch,era", PARAMS)
 def test_t_in_table(ch, era, table, request):
-    """The cell prints the box's per-shot count, at the box's significant figures."""
+    """The cell prints the model's per-shot count, rounded to one significant digit."""
     if ch in NO_T:
         pytest.skip(f"Ch{ch} row carries no T-count (NO_T)")
     _xfail(request, (ch, era, "T"))
-    _, want = box(ch, era, HEADLINE[ch, era])
+    want = table_t(ch, era, HEADLINE[ch, era])
     _, ts = _tokens(_cell(ch, era, table))
     assert ts and ts[0] == want, (ch, era, table, want, ts)
 
