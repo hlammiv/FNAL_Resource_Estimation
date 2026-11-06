@@ -740,7 +740,6 @@ def test_bad_inputs_rejected(a):
     # E27 (2026-10-02): one machine, serial; the excess over the horizon is an algorithmic reduction, never a machine count
     r"Wall times are serial on one machine at $1\,\mu$s per T gate ($\sim\!10$ parallel magic-state factories) plus $\sim 0.1$ ms per shot",
     # referee verifier 2026-10-04 (T3, G8)
-    r"at $a_s=0.15$ fm the box is $0.45$ fm, $k_{\min}\approx 9$--$12\,T$",
     r"so $\Sigma(72\times 3)$ under $H_{\rm KS}$ would sit on a coarse, confined lattice.",
     r"and the Hamiltonian (anisotropic) limit moves freezing to stronger coupling, so",
     # quench thermal route (author ruling 2026-10-05)

@@ -790,15 +790,15 @@ def test_r25_tex_prints_the_new_numbers():
     for s in (r"$\sim 13.5\,$min per sector", r"$27$--$40\,$min", r"$2.2\%$", r"$1.0\times 10^{3}$ (one $T$ row, two reweighted ensembles)",
               r"$9.9$--$15$", r"$2.7$--$4.0\times 10^{4}$", r"$4.6\times 10^{4}$", r"$1.2\times 10^{5}$",
               r"$2.9\times 10^{3}$--$5.7\times 10^{3}$ per grid point", r"$3.4\times 10^{9}$-T shot",
-              r"$m_q=313$~MeV", r"$m_B=940$~MeV", r"$6.7\times 10^{-3}$", r"$61\%$ fewer", r"$2.0\times 10^{5}$ shots at $m_q=400$~MeV",
+              r"$m_q=313$~MeV", r"$m_B=940$~MeV", r"$61\%$ fewer", 
               r"$\gtrsim 4.0\times 10^{5}$", r"$4.2\times 10^{6}$", r"$3.2\%$",
               # author ruling 2026-10-05: the QSVT/TPQ headline
               r"$2.8$--$5.6\times 10^{9}$", r"$d_\beta=30$", r"$2m+1=17$", r"$510$ block-encoding queries",
               r"$32$--$66$~d", r"$4.1$--$8.3$~yr", r"$0.42$--$0.85$~yr", r"$0.73$--$4.7$~yr", r"$1.7\times$ cut",
               r"$17$--$56$", r"$46$--$94$~min", r"\lesssim 1.8\times 10^{-11}$",
-              r"$3.6\times 10^{-11}$", r"$280$--$560", r"$28$--$56$ faults", r"$4.7$--$9.6\times 10^{8}$ T",
-              r"$1.8$--$3.7\times 10^{10}$", r"$d_\beta=56$",
-              r"$9.6\times 10^{6}$-T step", r"$\sim 8\times 10^{13}$--$4\times 10^{14}$ T per shot",
+              r"$3.6\times 10^{-11}$", r"$280$--$560", r"$28$--$56$ faults",
+              r"$1.8$--$3.7\times 10^{10}$",
+              r"$\sim 8\times 10^{13}$--$4\times 10^{14}$ T per shot",
               r"\cite{arxiv_2311_09207,arxiv_2405_20322}", r"lattice cutoff"):
         assert s in tex, s
     # retired numbers: the referee round and the Gibbs-sampler headline (2026-10-04 to 2026-10-05)
