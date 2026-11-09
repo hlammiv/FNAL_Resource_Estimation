@@ -2458,7 +2458,7 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,
                  # the Hilbert-Schmidt-norm formula went (described in words), "budget" -> "2033 target"
                  r"$4.9$ times the 2033 target", r"thermal-state systematic not bounded",
-                 r"preprint~\cite{AlvesLammLiu_inprep}"):
+                 r"The state-dependent estimate of Ch.~\ref{ch:overview}~\cite{AlvesLammLiu_inprep}"):   # Q5-5
         assert frag in tex, frag
     assert "in preparation" not in tex and "N_{\\rm coupling}" not in tex
     # referee pass (2026-10-04): no lattice spacing in fm at the 2033 target, no HTL-only classical baseline, no

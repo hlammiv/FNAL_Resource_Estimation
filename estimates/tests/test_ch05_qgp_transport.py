@@ -609,7 +609,7 @@ def test_2033_campaign_split_is_stated(a):
     """ch05-mub-split (R11, option A): mu_B in {0,200,400,600} MeV, 1 of 4 at zero, Stated at app03:150. Since the
     quench ruling (2026-10-05) one thermal route serves every point, so the split moves no cost."""
     assert a.mu_b_zero_fraction.prov is c.Provenance.STATED
-    assert r"\mu_B\in\{0,200,400,600\}$ MeV" in TEX.read_text()
+    assert r"$4$ points at $\mu_B=0$ and $12$ at $\mu_B>0$" in TEX.read_text()   # Q5-9: the mu_B list left the box
     assert a.mu_b_zero_fraction.lo == 1.0 / a.grid_muB.lo == 0.25
     r0 = m.model(a, "2033")
     for f in (0.0, 1.0):
@@ -723,19 +723,19 @@ def test_bad_inputs_rejected(a):
     r"full benchmark: $5.9\times 10^{5}$ ($6$ Trotter steps of $a_t/4$ to $t_{\max} = 0.15$ fm/$c$)",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"Shots & first result $2\times 10^{3}$; full benchmark $7\times 10^{3}$ ($7$ measurement times) \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"first result $1.6$ min; full benchmark $34$ min per $(T,k)$ point on one machine; longest shot $\sim 0.6$ s \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 1000-logical-qubit 2033 target \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"Per-shot T & longest circuit: $6.7\times 10^{9}$--$2.4\times 10^{10}$ ($5.9\times 10^{9}$--$2.3\times 10^{10}$ quench $+$ $7.4\times 10^{8}$--$1.3\times 10^{9}$ evolution); second spacing $3.2\times 10^{10}$ ($\sim 3\times 10^{4}$ s) \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 2033 target \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"Per-shot T & $6.7\times 10^{9}$--$2.4\times 10^{10}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $3.2\times 10^{10}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"The hydrodynamic decay time $\tau=T/((\eta/s)k^{2})\approx 0.07$--$0.09$ fm/$c$ (at $T=225$--$300$ MeV and $\eta/s\approx 0.15$) has no basis at this $k$.",
     r"$4$ points at $\mu_B=0$ and $12$ at $\mu_B>0$, at two lattice spacings, with $3.4$--$3.6\times 10^{4}$ shots per point.",
-    r"Required $\epsilon_l$ & $\lesssim 4.2\times 10^{-12}$ ($1.5\times 10^{-11}$ fast end, $3.2\times 10^{-12}$ 2nd spacing), 0.1 faults/shot \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ ($\mu_B\in\{0,200,400,600\}$ MeV) \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"Required $\epsilon_l$ & $\lesssim 4.2\times 10^{-12}$ ($3.2\times 10^{-12}$ at the second spacing) \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
     r"the eventual first-principles (continuum, larger-volume) $\eta/s$ and $\zeta/s$ at $20\%$",
     r"so $\zeta/s$ adds up to $1\times$ the $\eta/s$ campaign's shots, less where the two operators commute and share a shot set.",
     r"\textbf{Wall time} & first result $3.3$--$11$ yr on one machine;",   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"campaign $270$--$1000$ yr on one machine, $54$--$200\times$ the five-year window; one $20\%$ grid point takes $7$--$26$ yr \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"campaign $270$--$1000$ yr, $54$--$200\times$ the five-year window \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # R-TOL (H. Lamm 2026-09-29): the rule and each circuit's tolerance and T per rotation
-    r"($|G|=648$, 11 qubits/link)",
+    r"on $\Sigma(216\times 3)$ (11 qubits/link)",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
 
     # E27 (2026-10-02): one machine, serial; the excess over the horizon is an algorithmic reduction, never a machine count
     r"Wall times are serial on one machine at $1\,\mu$s per T gate ($\sim\!10$ parallel magic-state factories) plus $\sim 0.1$ ms per shot",
@@ -870,7 +870,7 @@ def test_tex_assumes_one_machine():
                 r"across machines", r"per machine", r"\d\s*\$?\s*machines"):
         assert not re.search(pat, tex), f"multi-machine wording: {pat}"
     assert not re.search(r"parallel(?! magic-state factories)", tex) and tex.count("parallel") == 1
-    assert tex.count("on one machine") >= 4
+    assert tex.count("on one machine") >= 3   # Q5-9: the box campaign row no longer repeats it
 
 
 def test_shots_from_fisher_not_the_old_gloss(a):
@@ -1033,7 +1033,7 @@ def test_g7_2033_step_numbers(r33):
     assert max(abs(x - lam0) for x in i["trotter_sd_lambda"]) < 1e-2 and round(lam0, 1) == 45.8
     lam0k = m.trotter_state_dependent((3, 3, 3), 8, 0.0, 1.0, 0.05, 0.1)["lambda"]
     assert round(lam0k, 1) == 32.8                                            # the H_KS default is unchanged (Ch. 6 uses it)
-    assert "an upper estimate of the part that grows with $t$" in tex
+    assert "with the estimate taken in the thermal state" in tex   # Q5-5: the rule is defined once in Ch. 1
 
 
 def test_g7_improved_dispersion_matches_ch6():
@@ -1220,10 +1220,10 @@ def test_systematics_row_2026_10_12(a):
     if not TEX.exists():
         pytest.skip("chapter .tex not on disk")
     tex = TEX.read_text()
-    for frag in ("Systematics & model differences, not error bars, scaled from Euclidean results: discretization "
-                 "$50$--$100\\%$ at $a_s=0.2$ fm, $35$--$70\\%$ at $0.15$ fm (outside the $a^2$ window); finite volume "
-                 "order one at $LT<1$, not quantified; subgroup $5$--$10\\%$ if $H_I$ keeps $\\Sigma(216\\times 3)$ "
-                 "unfrozen, else uncontrolled",
+    for frag in ("Systematics & model differences, not error bars (Table~\\ref{tab:ch05_systematics}); finite volume not "
+                 "quantified at $LT<1$",   # Q5-9: the percentages stay in Table 5.2
+                 "$50$--$100\\%$ at $0.2$ fm, $35$--$70\\%$ at $0.15$ fm; $30$--$60\\%$ and $20$--$40\\%$ with an improved taste sector",
+                 "$5$--$10\\%$ on $\\eta/s$",
                  "Neither spacing is in the $a^2$ scaling regime: $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm.",
                  "its relation to the infinite-volume $\\eta/s$ is uncontrolled at order one; we assign it no percentage",
                  "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648,arxiv_1906_11213}"):
