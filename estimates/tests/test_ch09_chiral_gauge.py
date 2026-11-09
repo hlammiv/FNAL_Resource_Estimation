@@ -2544,12 +2544,13 @@ def test_ncs_kubo_readout_and_units(r33):
 def test_chapter_open_prints():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex").read_text()
     # symbol pass 2026-10-08: single-use p, d_beta and the alpha restatement went (rule 11); their anchors retired
-    for frag in (r"$\sim 10^{60}$ rounds", r"a further $e^{-1845}$",
+    # C9R-4 (markup board 2026-11-09): Table 9.1 tightened; its 10^60-rounds and e^{-1845} entries retired (model keeps them)
+    for frag in (
                  r"$\lambda\ge 9.2/a$ at $g^2=1$", r"$9.6\times 10^{-4}$, mostly zero-point",
                  r"$\sigma^2\gtrsim 1.1\times 10^{14}$ ($1.2\times 10^{12}$ even for an ideal helicity operator",
                  r"suppressed $\sim 10^{3}$-fold ($0.0023\pm 0.0016$ against $1.68$) already at $L=3/(g^2T)$",
                  r"average over the links $(x,i)$ and $(x-\hat\imath,i)$", r"known cost and controlled bias",
-                 r"orthonormal basis of the Gauss-law sector", r"($5\times 10^{-4}$ and $0.04$ at $n=8$)",
+                 r"orthonormal basis of the Gauss-law sector", r"$5\times 10^{-4}$ and $0.04$ at $n=8$",
                  # style pass 2026-10-08: the box row now points to Algorithm choice ("amplified ... references" retired)
                  r"$a^{-1}\approx 320$~GeV", r"$L=1.5/(g^2T)$ ($0.63/(g^2T)$ at the electroweak $g^2\approx 0.42$)",
                  ):

@@ -44,7 +44,7 @@ def main():
     d_lo, d_hi = i["floor_wall_campaign_yr"]
     y = n - 2
     ax.barh(y, d_hi - d_lo, left=d_lo, height=0.3, color=ff.SKY)
-    ax.text(d_lo / 1.1, y, "depth limit", va="center", ha="right", fontsize=7, color=ff.INK)
+    labels.append((y, "depth limit"))   # C10R-5 (markup board 2026-11-09): row label, not a text beside the bar
     ax.axvline(window, color=ff.INK, ls="--", lw=0.8)
     ax.text(window * 1.07, n - 0.42, "five-year window", fontsize=7, color=ff.INK, va="center")
     ax.set(xscale="log", xlim=(0.15, 5000), ylim=(-0.5, n - 0.15), xlabel="serial campaign on one machine (yr)")
@@ -73,4 +73,5 @@ def main():
 if __name__ == "__main__":
     import sys
     fig = main()
-    fig.savefig(sys.argv[1] + ".pdf"); fig.savefig(sys.argv[1] + ".png", dpi=130)
+    out = sys.argv[1] if len(sys.argv) > 1 else str(ff.FIGDIR / "ch10_campaign")
+    fig.savefig(out + ".pdf"); fig.savefig(out + ".png", dpi=130)

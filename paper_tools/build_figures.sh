@@ -18,8 +18,10 @@ FIGS=(
   fig_ch06_collider
   fig_ch07_curved_space
   fig_ch08_baryogenesis
+  fig_ch08_nucleation
   fig_ch09_chiral
   fig_ch10_finite_density
+  fig_ch10_campaign
   fig_ch11_qudit
   fig_cover_wilson_hall
 )
