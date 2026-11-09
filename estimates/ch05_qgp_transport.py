@@ -374,7 +374,8 @@ class Assumptions:
     grid_t: Tagged = Stated(2, "app03 r23 box (retired r25)", "RECORD: x 2 t-windows; r25: the two fit points of fit_x")
     n_grid_prose: Tagged = Stated(96, "app03 r23 box (retired r25)", "RECORD: N_grid = 96 of the reference campaign")
     mu_b_zero_fraction: Tagged = Stated(0.25, f"{TEX}:78,144",
-                                        "mu_B in {0,200,400,600} MeV: 1 of 4 at mu_B=0; r25 campaign '4 points at "
+                                        "4 canonical N_B sectors, 1 of 4 at N_B = 0 (N_B = 1 is already 4.6 fm^-3 on the 0.6 fm box, "
+                                        "so no mu_B in (0, 600) MeV maps to a single Fock sector; referee ch5-ch6-03); r25 campaign '4 points at "
                                         "mu_B=0 and 12 at mu_B>0' (ch05-mub-split option A). Since the quench ruling "
                                         "(2026-10-05) every point costs the same per shot (one thermal route)")
     n_spacings: Tagged = Stated(2, f"{TEX}:78,187", "x 2 lattice spacings")
@@ -853,7 +854,8 @@ def own_depth_2033(a: Assumptions, _nested: bool = False) -> dict:
     step) + fit evolution to its own fit time (step rule), at its own R-TOL tolerance. Two corners of the band:
     (tau = 1/k, c = quench_c.lo) and (tau = 1/(2 pi T), c = quench_c.hi); the two mixed corners are records.
     First result: one point (T = 1.5 T_c^lat, mu_B = 0) at target_first. Campaign: grid_T x grid_muB points at k_min,
-    target_campaign, n_spacings; every point costs the same (the Fock-state sector fixes N_B, no sampler).
+    target_campaign, n_spacings; every point costs the same (the Fock-state sector fixes N_B, no sampler) and is priced at
+    T = 1.5 T_c^lat: the four grid temperatures are not fixed (referee ch5-ch6-02; see the README's Temperature item).
     Temperature (author ruling 2026-10-05): T = 1.5 T_c^lat with T_c^lat = 150-200 MeV is a third band coordinate.
     The cheap corner is (T hi = 300 MeV, tau = 1/k, c = 2), the expensive one (T lo = 225 MeV, tau = 1/(2 pi T), c =
     2 pi); the other six corners are records. The in-situ T_c^lat diagnostic (tc_diag_*) is priced per corner as
@@ -1075,6 +1077,10 @@ def _model_2028(a: Assumptions) -> Result:
         # verifier r25 item 1: the first result at R1's 30%, priced in the prose only (delta open, box keeps 2e3)
         "shots_first_result_2028_at_30pct": n30,        # 8.458e4 -> "~8.5e4"
         "wall_first_result_2028_at_30pct_h": w30 / 3600,   # 1.115 h -> "~1.1 h" (half the shots at t = 0)
+        # referee ch5-ch6-11: an even correlator falls as t^2, so delta = 0.1 at a_t is ~0.02 at the 0.045 fm/c step;
+        # N ~ 1/delta^2 gives (0.1/0.02)^2 = 25x the shots and the wall
+        "shots_first_result_2028_at_30pct_even_falloff": n30 * (dl / 0.02) ** 2,          # 2.11e6 -> "~25x more"
+        "wall_first_result_2028_at_30pct_even_falloff_h": w30 / 3600 * (dl / 0.02) ** 2,  # 27.9 h
         "wall_first_result_2028_at_30pct_all_one_step_h": w30_one / 3600,   # 2.23 h
         "workspace_2028": w,                            # 16
         "lq_2028_without_workspace": (lq[0] - w, lq[1] - w),   # 161-162 (the r23 box)

@@ -234,7 +234,7 @@ class Assumptions:
     d_2033: Tagged = Stated(3, f"{TEX}:158,162", "3D SU(3)")
     L_2033: Tagged = Stated(2, f"{TEX}:162", "V=2^3")
     n_stag_2033: Tagged = Stated(3, f"{TEX}:163", "3 staggered fields (N_f=4+2 tastes)")
-    n_anc_2033: Tagged = Stated((250, 750), f"{TEX}:93,168",
+    n_anc_2033: Tagged = Stated((250, 750), f"{TEX}:97,179",   # assumed, not itemized (referee ch9-ch10-09); the factory scratch reads ~170 parity ancillas per concurrent hop, so the band is roughly the 2028-style workspace plus 1-4 concurrent hops
                                 "250-750 for the 2033 route: BE workspace and the parity ancilla of parallel hops (was the Gibbs route's BE/bath register; relabelled 2026-10-05)")
     # post-2033 stretch (codesign era): Sigma(72x3) on V=4^3
     group_stretch: Tagged = Stated("S72x3", f"{TEX}:197", "Sigma(72x3), 9 qubits/link (compiled encoding, R1)")
@@ -293,7 +293,10 @@ class Assumptions:
                                                      "'>~1e6 T-gates per shot' as printed before r17; record only")
 
     # ---- step counts ---------------------------------------------------------
-    beta_h_2033: Tagged = Stated(1e2, f"{TEX}:105", "beta||H|| ~ 1e2 for the KMS Gibbs preparation")
+    beta_h_2033: Tagged = Stated(1e2, f"{TEX}:87", "beta||H|| = 1e2: an assumption carried over from the KMS Gibbs route, never derived. "
+                                   "The coupling-independent mass term alone spans V N_c N_stag a m_q = 72 x 0.317 = 22.8/a, so beta||H|| >= 225 at "
+                                   "T = 100 MeV (beta = 9.87 a; hop, electric and magnetic terms add more, but g^2 is not fixed): d_beta >= 46 and the "
+                                   "shot >= 4.3e9 T (referee ch9-ch10-01, 2026-11-09). The chapter now calls it assumed and the shot a lower bound")
     c_mix: Tagged = Stated(20, f"{TEX}:105",
                            "t_mix = c beta||H|| with c ~ 20; 'least controlled constant in the 2033 costing'. Referee F2 "
                            "(2026-10-04): read as c sweeps of the jump set (t_mix ~ c at per-jump rate 1)")
@@ -1295,16 +1298,16 @@ def _model_2033(a: Assumptions) -> Result:
     wall_shot_lo = _wall_shot_at_baseline(a, t_range[0], d_end["low"][1])     # serial: F* >= 17.5 at each end
     wall_shot_hi = _wall_shot_at_baseline(a, t_range[1], d_end["high"][1])
     wall_shot_rng = (wall_shot_lo, wall_shot_hi)                   # 2.8e3 - 5.6e3 s
-    wall_campaign = (shots * wall_shot_lo, shots * wall_shot_hi)   # 23 - 46 yr
-    wall_fr = (fr_n[0] * wall_shot_lo, fr_n[1] * wall_shot_hi)     # 0.26 - 2.8 yr
+    wall_campaign = (shots * wall_shot_lo, shots * wall_shot_hi)   # 4.1 - 8.3 yr (Skellam record 23 - 46)
+    wall_fr = (fr_n[0] * wall_shot_lo, fr_n[1] * wall_shot_hi)     # 32 - 66 d (Skellam record 0.26 - 2.8 yr)
     wall_point = (shots_point * wall_shot_lo, shots_point * wall_shot_hi)
     floor_campaign = (shots * d_end["low"][0] * REACTION_TIME_S, shots * d_end["high"][1] * REACTION_TIME_S)
     horizon_s = a.campaign_horizon_yr.lo * SECONDS_PER_YEAR
     # r23: one machine. What the 5-year horizon holds, and the cut the full grid needs to fit it.
     shots_in_horizon = (horizon_s / wall_shot_hi, horizon_s / wall_shot_lo)
     points_in_horizon = tuple(x / shots_point for x in shots_in_horizon)
-    horizon_reduction = (wall_campaign[0] / horizon_s, wall_campaign[1] / horizon_s)   # 4.5 - 9.2x
-    t_shot_to_fit = (horizon_s / shots - a.shot_overhead_s.lo) / a.t_gate_s.lo   # 6.1e8 T/shot at 2.58e5 shots
+    horizon_reduction = (wall_campaign[0] / horizon_s, wall_campaign[1] / horizon_s)   # 0.82 - 1.7x
+    t_shot_to_fit = (horizon_s / shots - a.shot_overhead_s.lo) / a.t_gate_s.lo   # 3.4e9 T/shot at 4.6e4 shots
     fr_reduction = (wall_fr[0] / horizon_s, wall_fr[1] / horizon_s)              # < 1: the first result fits
 
     eps_l_req = (a.faults_per_shot.lo / t_range[1], a.faults_per_shot.lo / t_range[0])   # 1.8e-11, 3.6e-11
@@ -1485,9 +1488,12 @@ def _model_2033(a: Assumptions) -> Result:
             "HWP(9) 163.6 = 1,309 = 2,760,459 T/step at the 2e3-step tolerance; replaces the Stated 5e5.",
             "Gibbs sampler (referee F2), record: 8.39e13-4.42e14 T per sample (7.6e12-9.5e14 band), 1.5e4-1.6e5x the "
             "QSVT shot; one sentence in the chapter ('~8e13-4e14 T per shot').",
-            "Shots (referee F1) unchanged: 257,603 over the grid at kappa_2(0) = 0.01; 9.08e5 at 0.05; 2.24e6 at 0.1.",
-            "Walls, one machine: 2.8e3-5.6e3 s per shot (46-94 min); first result (one T row, 2,926-15,861 samples) "
-            "0.26-2.8 yr; campaign (5x5 grid, 2.58e5 shots) 23-46 yr, a 4.5-9.2x cut to fit 5 years; depth limit 4.0-26 yr.",
+            "Shots (strong-coupling N_B at m_q = 313 MeV, 2026-10-10): 46,492 over the grid with two reweighted ensembles per "
+            "T row (118,331 sampling every point; 2,940-5,709 per point). Records: Skellam toy 257,603 at kappa_2(0) = 0.01; "
+            "9.08e5 at 0.05; 2.24e6 at 0.1.",
+            "Wall times, one machine: 2.8e3-5.6e3 s per shot (46-94 min); first result (one T row, 1,007 samples from two "
+            "reweighted ensembles) 32-66 d; campaign (5x5 grid, 4.6e4 shots) 4.1-8.3 yr, 0.82-1.7x the five-year window "
+            "(a 1.7x cut at the high end); depth limit 0.73-4.7 yr. Records (Skellam): first result 0.26-2.8 yr, campaign 23-46 yr.",
             "epsilon_l (R3): 0.1 expected faults per shot -> 1.8e-11 (upper end) to 3.6e-11, 280-560x below the RFI rate.",
             "R9: the factory.json T-depth (2e3-step circuit) scaled by each end's T ratio, F* 17.5-56 at either end "
             "(f_star_matched); the cross-paired export is 8.6-114.",

@@ -1100,7 +1100,7 @@ def test_referee_h2_hvp_mapping_and_error_budget():
         assert 0.003 * 713.2 > _m.hypot(st, sy)
     for s_ in (
                "by at most $1.3$--$1.4{\\times}$",
-               "at most a $1.3$--$1.4{\\times}$ cut",
+               "cuts the disconnected-HVP part of it by at most $1.3$--$1.4{\\times}$, the limit of a perfect trace",   # re-pinned 2026-11-09 (referee cards)
                "purely imaginary"):
         assert s_ in TEX, s_
     assert "uncosted HVP estimator" not in TEX and "not yet costed" not in TEX

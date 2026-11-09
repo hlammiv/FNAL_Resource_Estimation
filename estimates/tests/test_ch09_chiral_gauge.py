@@ -2386,6 +2386,7 @@ def test_r25_two_tiers_2033(a, r33):
     lo, hi = (x / yr for x in i["wall_campaign_s"])
     assert rel(lo, 5.8292) <= 1e-3 and rel(hi, 6.4529) <= 1e-3                                  # 2026-10-10 (2Q 2.7090, 3.0627)
     assert (round(lo, 1), round(hi, 1)) == i["wall_yr_campaign_stated"] == (5.8, 6.5)          # '5.8-6.5 yr'
+    assert round(tf["over_horizon"][0], 2) == 1.04                     # the first result alone is 1.04x the five-year window
     olo, ohi = tc_["over_horizon"]
     assert ohi > 1 and (round(olo, 1), round(ohi, 1)) == i["campaign_over_horizon_stated"]      # r26-yukawa: '1.2-1.3 times the five-year window' (was inside)
     assert round(i["wall_yr_method_test_at_campaign_eps"]) == 47                                 # 'the test at 10% would take 47 yr' (2Q: 21)
@@ -2454,7 +2455,7 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  r"has $4.9$ times the relative variance", r"less than $5\%$ between $Ta=0.4$ and $0.6$",
                  r"$\lesssim 2.0\times 10^{-11}$ (condensate), $\lesssim 2.4\times 10^{-12}$ ($N_{CS}$ test, $10a$; "
                  r"$4.7\times 10^{-12}$ at $5a$)",
-                 r"$\lambda=Q(2+y\rho_{\max})=1296$", r"$\beta\lambda=2592$", r"$2\lambda t=1.3\times 10^{4}$ applications",
+                 r"$\lambda=Q(2+y\rho_{\max})=1296$", r"$\beta\lambda=2592$", r"$\lambda t=1.3\times 10^{4}$ applications",
                  # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,
                  # the Hilbert-Schmidt-norm formula went (described in words), "budget" -> "2033 target"
                  r"$4.9$ times the 2033 target", r"thermal-state systematic not bounded",

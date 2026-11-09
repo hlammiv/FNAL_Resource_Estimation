@@ -289,7 +289,7 @@ class Assumptions:
     eps_2028: Tagged = Stated((0.1, 0.3), f"{TEX}:122", "'With eps ~ 0.1-0.3 on a single matrix element'")
     eps_mu2e: Tagged = Stated(0.05, f"{TEX}:92", "'~10% on CR means eps ~ 0.05 on the matrix element'")
     eps_0nubb: Tagged = Stated(0.1, f"{TEX}:92", "'Beating the current factor-2-3 spread needs eps ~ 0.1'")
-    n_op_mu2e: Tagged = Cited(6, "Cirigliano_Kitano_Okada_Tuzon", "six operator categories (app11:8)")
+    n_op_mu2e: Tagged = Stated(6, "app11:8", "six operator classes (scalar, vector, dipole, tensor, gluonic, derivative; CKOT cover three of them)")
     n_op_0nubb: Tagged = Stated(5, f"{TEX}:233", "'5 0nubb operators'")
     n_pairs_cross_check: Tagged = Stated(3, f"{TEX}:233", "'x 3 pairs'")
     n_basis_scans: Tagged = Stated((2, 3), f"{TEX}:233", "'x 2-3 basis-cutoff scans'")
@@ -1907,7 +1907,7 @@ def _model_2033(a: Assumptions) -> Result:
         multiple_mo_ru=s["mo_ru"]["multiple"],
         multiple_mo_ru_large_gap=s["mo_ru"]["multiple_large_gap"],
         multiple_mo_ru_small_gap=s["mo_ru"]["multiple_small_gap"],
-        eps_l_mo_ru=(eps_l(a, s["mo_ru"]["t_small_gap"])[0], eps_l(a, s["mo_ru"]["t_large_gap"])[1]),
+        eps_l_mo_ru=eps_l(a, s["mo_ru"]["t"]),   # generic 1-2 MeV band, as the x6-25 row (referee ch3-ch4-18)
         near_miss_multiple=s["pf"]["multiple"],                      # R16: pf alone (jj44 is co-design)
         prep_plus_insertion_jj44=jj44_with_ins, multiple_jj44_with_insertion=_div(jj44_with_ins, env),
         codesign_multiple=s["jj55"]["multiple"],                     # R15: jj55 alone (Mo/Ru moved below it)
@@ -1985,9 +1985,9 @@ def _model_codesign(a: Assumptions) -> Result:
     e3, e4 = s[f"al_emax{a.emax_first.lo}"], s[f"al_emax{a.emax_first.hi}"]
     lq_anc = (lo["qubits"] + a.n_anc.lo, hi["qubits"] + a.n_anc.hi)                 # 710-1294
     cap_lq = a.rfi_lq_2033.value
-    # first-quantized line of eq:Nq11 (app11:80) for the converged 76Ge pair: 2 A ceil(log2 N_orb)
-    # R14 option A: one register, A ceil(log2 N_orb) = 684-760 (was 2 A ceil(log2 N_orb) = 1368-1520)
-    fq_ge = tuple(a.mass_number_ge.value * math.ceil(math.log2(n)) for n in ge_orbs)       # 684-760
+    # first-quantized line of eq:Nq11 (app11:64) for the converged 76Ge pair: A ceil(log2(4 N_orb)), the
+    # spin-isospin mode label per particle (referee ch3-ch4-05; was A ceil(log2 N_orb) = 684-760 without it)
+    fq_ge = tuple(a.mass_number_ge.value * math.ceil(math.log2(a.qubits_per_orb.value * n)) for n in ge_orbs)   # 836-912
     fq_compression = (ge_qubits[0] / fq_ge[0], ge_qubits[1] / fq_ge[1])                     # x1.7-3.6
     breakdown = (
         Primitive(f"trotter_rotations_prep_al_emax{e_lo}", lo["n_rot"][0], lo["c_T"][0],

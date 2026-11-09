@@ -910,6 +910,9 @@ def _model_2033(a: Assumptions, reg: dict, gt: float) -> Result:
         "dt_sweep_fraction": t_sweep / t_total,                     # 0.24%
         "condensate_amplitude": a.condensate_amplitude_2033.lo,     # 0.31 m_phi
         "condensate_quanta_per_site": a.condensate_amplitude_2033.lo ** 2 * a.lattice_spacing_mphi_2033.lo ** 3 / 2,
+        # rho_c / (3 H^2 M_Pl^2), reduced Planck mass, m_phi = omega_max_Hinf_2033 x H_inf: 0.31^2/2 x 100^4 x 1e-10 / 3 = 1.6e-4
+        "condensate_energy_fraction": (a.condensate_amplitude_2033.lo ** 2 / 2) * a.omega_max_Hinf_2033.lo ** 4
+                                      * a.H_inf_over_Mpl.lo ** 2 / 3,
         "condensate_boost_rotations": n_boost,                      # 500 (U1)
         "t_condensate_boost": t_boost,                              # 1.5e4
         # per-term counts (app04:84)

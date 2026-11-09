@@ -279,7 +279,7 @@ class Assumptions:
     c_t_2028_quoted: Tagged = Stated(1.26e3, "r12 record", "c_T 1263.1 T/site/step at 20 steps (the rotations of a longer shot "
                                      "are synthesized tighter; 1239.8 at 12 steps); derived here, no longer printed since the Oct 6 cut")
     c_t_2033_quoted: Tagged = Stated(2.5e3, f"{TEX}:91,165", "'c_T ~ 2.5e3 (1.6e3 scalar, 8.9e2 fermion)' at the deepest circuit's budget")
-    c_t_range_quoted: Tagged = Stated((2.5e2, 2.5e3), f"{TEX}:85", "'c_T runs from 2.5e2 to 2.5e3 across the instances below'")
+    c_t_range_quoted: Tagged = Stated((1.3e3, 2.5e3), f"{TEX}:82", "'c_T is 1.3e3 (2028, unreduced) and 2.5e3 (2033)'; the unprinted 8^2 N_phi=4 family row has 2.5e2 (family_8x8_nphi4_c_t)")
     ct_reduction: Tagged = Assumed((3, 4), "model-internal sanity span for the banked ~3.3x (not printed in the chapter); "
                                    "assumed development target, not derived or cited", "")
     ct_reduction_banked: Tagged = Assumed(3.3, "assumed development target, not derived or cited: "

@@ -1,5 +1,7 @@
 # Ch. 8: the integrated reflection asymmetry S_int from the free-fermion comparator (2026-10-12)
 
+**Boundary arrival on the 15-site axis (not checked here).** The comparator scatters on an 800-site open chain (packet at N/4, wall at N/2, read at t = 2(z_wall - z_pk)/v_g), so it never tests the chapter's 15 x 8 geometry. There a packet has about 7 sites = 3.5/m_phi between the wall and an open end; at the group velocities in sint_results.json (v_g 0.6-1.0 in lattice units, a = 0.5/m_phi) the fast bins reach the end at t = 3.5-6/m_phi, inside t_max = 10/m_phi. The chapter therefore needs a per-bin readout time before arrival, which neither this script nor the model sets.
+
 `scatter.py` scatters Gaussian packets of the symmetric-phase positive-energy eigenstates of the chapter's two
 2-component Wilson flavours (r = 1, a m_f = 0.5) off the C-violating tanh wall
 |y| phi(z) e^{i theta_C(z)} psi_L^dag beta psi_R + h.c., prof(z) = (1 + tanh((z - z0)/width))/2, theta_C = Delta theta_C x

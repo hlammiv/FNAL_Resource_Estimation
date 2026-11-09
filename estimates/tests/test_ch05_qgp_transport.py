@@ -415,7 +415,8 @@ def test_temperature_is_1p5_tc_lat(a):
     assert r"\cite{arxiv_1903_04801}" in tex and r"\cite{arxiv_1812_08235}" in tex
     assert "160" not in tex.replace("$160$ T per site-step", "")      # no physical-QCD 160 MeV left in the chapter
     assert r"$LT\approx 0.7$--$0.9$" in tex and "a small hot box, not a medium" in tex
-    assert r"(at $T=225$--$300$ MeV and $\eta/s\approx 0.15$)" in tex
+    # re-pinned 2026-11-09 (referee cards, Q5-6): the decay-time sentence became Fig. (eta/s = 0.15 is in the plot label); T stays in the prose
+    assert r"The counts are for $T=225$--$300$ MeV ($1.5\,T_c^{\rm lat}$ over that range)" in tex
 
 
 def test_2033_volume_requirements(r33):
@@ -725,8 +726,8 @@ def test_bad_inputs_rejected(a):
     r"first result $1.6$ min; full benchmark $34$ min per $(T,k)$ point on one machine; longest shot $\sim 0.6$ s \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 2033 target \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Per-shot T & $6.7\times 10^{9}$--$2.4\times 10^{10}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $3.2\times 10^{10}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
-    r"The hydrodynamic decay time $\tau=T/((\eta/s)k^{2})\approx 0.07$--$0.09$ fm/$c$ (at $T=225$--$300$ MeV and $\eta/s\approx 0.15$) has no basis at this $k$.",
-    r"$4$ points at $\mu_B=0$ and $12$ at $\mu_B>0$, at two lattice spacings, with $3.4$--$3.6\times 10^{4}$ shots per point.",
+    r"The hydrodynamic $\tau$ has no basis at this $k$",   # re-pinned 2026-11-09 (referee cards, Q5-6): sentence became the measurement figure; the caption keeps the claim
+    r"$4$ points at $\mu_B=0$ and $12$ at $\mu_B>0$, at two lattice spacings, each estimated at $T=1.5\,T_c^{\rm lat}$, with $3.4$--$3.6\times 10^{4}$ shots per point.",   # re-pinned 2026-11-09 (referee cards)
     r"Required $\epsilon_l$ & $\lesssim 4.2\times 10^{-12}$ ($3.2\times 10^{-12}$ at the second spacing) \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
@@ -1062,8 +1063,10 @@ def test_g7_2028_step_rule(r28):
     assert round(i["trotter_2028_dt_first_max_fm"], 3) == 0.048
     near(i["t_per_shot_2028"], 5.939e5, 1e-3) and near(i["t_first_result_shot_2028"], 9.473e4, 1e-3)
     tex = TEX.read_text()
-    assert r"six steps of $a_t/4$ reach $t_{\max}=0.15$ fm/$c$ at $0.08$ (free field $0.04$)" in tex
-    assert "one step of $0.045$ fm/$c$ ($0.08$)" in tex
+    # re-pinned 2026-11-09 (referee cards, Q5-6): both sentences became rows of Table tab:ch05_trotter
+    assert r"2028 benchmark, six steps of $a_t/4$ & $6$ & $0.08$ & $0.04$ & -- \\" in tex
+    assert r"2028 first result, one step of $0.045$ fm/$c$ & $1$ & $0.08$ & $0.08$ & -- \\" in tex
+    assert r"One 2028 step may be up to $0.048$ fm/$c$" in tex
 
 
 def test_g7_fermions_negligible_in_2033_check():

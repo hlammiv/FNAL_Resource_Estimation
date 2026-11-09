@@ -97,7 +97,7 @@ def test_ct_range_is_the_instances(a, r28, r33):
     instances = (i["c_t"], i["family_8x8_nphi4_c_t"], i["family_8x8_nphi16_c_t"], i["with_fermions_6x6_c_t"],
                  i["interim_c_t"], r33.intermediates["c_t"])
     assert sci(min(instances)) == ("2.5", 2) and sci(max(instances)) == ("2.5", 3)
-    assert (a.c_t_range_quoted.lo, a.c_t_range_quoted.hi) == (2.5e2, 2.5e3)
+    assert (a.c_t_range_quoted.lo, a.c_t_range_quoted.hi) == (1.3e3, 2.5e3)
 
 
 # --- 2028 box (app05:117-150) and T-count summary (app05:91) ---------------------
@@ -868,11 +868,11 @@ def test_ruling_2026_10_11_text_hooks():
         pytest.skip("chapter .tex not on disk")
     tex = TEX.read_text()
     box28 = tex.split("2028 benchmark: pure-scalar")[1].split("end{benchmarkbox}")[0]
-    assert r"$2.8\times 10^{5}$ ($9.1\times 10^{5}$ before" in box28 and r"($10$ and $20$ steps)" in box28
+    assert r"${\gtrsim}\,2.8\times 10^{5}$ ($9.1\times 10^{5}$ before" in box28 and r"($10$ and $20$ steps)" in box28
     assert r"$1.8\times 10^{4}$ at each of two times" in box28 and r"$\lesssim 4\times 10^{-7}$" in box28
     assert r"$\sim 2.1$ h per parameter point ($6.8$ h" in box28
     assert "the 2028 benchmark takes $20$ steps" in tex
     assert r"$6.2\times 10^{4}$ over the $8$ bins" in tex and r"in $8$ bins at $10$ points" in tex
-    assert r"campaign ${\gtrsim}\,3.9$ yr, inside the five-year window" in tex and "$70$ yr" not in tex and "$14$ times" not in tex
+    assert r"campaign ${\gtrsim}\,3.9$ yr, all without Gibbs preparation" in tex and "$70$ yr" not in tex and "$14$ times" not in tex
     assert r"\sigma\approx 1.3\,m_\phi^2" in tex and "stays finite at $T_c$" in tex
     assert "$3$--$20$ sweeps" in tex and "the mixing time is unknown" not in tex

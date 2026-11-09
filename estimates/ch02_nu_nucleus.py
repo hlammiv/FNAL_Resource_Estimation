@@ -2,8 +2,8 @@
 Reproduces applications/app01_neutrino_nucleus.tex after the accepted 2026-10-04 revision.
 
 INPUTS AND SOURCES
-2028: explicit 36-qubit circuits in editorial_review/neutrino_feasibility.
-2033: 908-qubit construction in editorial_review/2033_model_study/TRITON.md.
+2028: explicit 36-qubit circuits in applications/ch02_neutrino_nucleus/neutrino_feasibility.
+2033: 908-qubit construction in applications/ch02_neutrino_nucleus/2033_model_study/TRITON.md.
 Both include deterministic preparation and seven T per Toffoli. Since the 2026-10-12 ruling the
 rotations are priced with the report convention (randomized BRS fit at eps_syn = 1e-2 per circuit,
 E20 / R-TOL); the study files' coherent leading Ross-Selinger count, 3 log2(N_R/0.005), is kept as
@@ -51,7 +51,7 @@ def circuit(a, era, steps, convention='report'):
                          eps_syn = 1e-2 per circuit, eps_R = sqrt(eps_syn/N_R), 1.15 log2(1/eps_R) + 9.2 T per rotation (E20)
     convention='coherent' the same BRS fit with coherently adding errors, eps_R = eps_syn/N_R (sensitivity)
     convention='study'   the chapter authors' leading Ross-Selinger count, 3 log2(N_R/delta) at delta = 0.005
-                         (what the study files editorial_review/{neutrino_feasibility,2033_model_study} record)
+                         (what the study files applications/ch02_neutrino_nucleus/{neutrino_feasibility,2033_model_study} record)
     Returns (total T, T per rotation)."""
     nr,nt,nfixed=counts(era,steps)
     if convention=='study':
@@ -102,7 +102,7 @@ def model(a,era):
         inter.update(first_result_shots=nfirst,first_result_T=first_T,
                      wall_first_result_s=(first_T*tg+nfirst*t0,)*2)
     status=CircuitStatus.COMPILED if era=='2028' else CircuitStatus.SCALING
-    src='editorial_review/neutrino_feasibility/LARGER_BOX.md' if era=='2028' else 'editorial_review/2033_model_study/TRITON.md'
+    src='applications/ch02_neutrino_nucleus/neutrino_feasibility/LARGER_BOX.md' if era=='2028' else 'applications/ch02_neutrino_nucleus/2033_model_study/TRITON.md'
     breakdown=(Primitive('rotations',nr,rate,status,src,'randomized BRS synthesis at eps_R = sqrt(1e-2/N_R) (ruling 2026-10-12); '
                          'the study files price the same rotations coherently at 3 log2(N_R/0.005)'),
                Primitive('Toffoli',nt,7,status,src),Primitive('fixed_T',nfixed,1,status,src))

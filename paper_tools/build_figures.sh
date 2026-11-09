@@ -15,6 +15,7 @@ FIGS=(
   fig_ch04_hybrid_lqcd
   fig_ch05_qgp_transport
   fig_ch05_budget_split
+  fig_ch05_measurement
   fig_ch06_collider
   fig_ch07_curved_space
   fig_ch08_baryogenesis

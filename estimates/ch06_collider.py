@@ -56,7 +56,7 @@ Before r26: r25 (author rulings R1-R10, H. Lamm 2026-10-02; apply_log/r25_ch06.m
       dipole rows of R7) and the full campaign at the physics target, both with one-machine walls.
   R2  the campaign target is the 3-momentum trend at N_sigma = 3 (a 25% trend, Assumed), and the ratio shots carry
       conserved-pair clustering: N = (c / n_s + 1 / n_M) / delta^2, c = 1 (pair rate) to 2 (B + Bbar multiplicity).
-  R4  the evolution window is 30-50 a (3-5 fm/c, 3-5 traversals of the 0.8 fm box; shot audit), not 100 a; the ramp
+  R4  the evolution window is 30-50 a (3-5 fm/c, 3.75-6.25 traversals of the 0.8 fm box; shot audit), not 100 a; the ramp
       range 1e2-1e3 is unchanged. The dipole rows price each shot at its own evolution time.
   R7  2033 first-result rows: the static color-singlet dipole (Im V(r = a, T)) on pure-gauge Sigma(216x3) / H_I 3^3
       (s648; was Sigma(72x3) / H_KS), and the
@@ -406,12 +406,16 @@ class Assumptions:
     # ---- systematics (2033 box, app10:158-161; Objective 6) -------------------
     syst_discretization: Tagged = Stated((0.10, 0.20), f"{TEX}:158", "'O(a^2) ~ 10--20% at a = 0.1 fm'")
     syst_volume: Tagged = Stated(0.30, f"{TEX}:158", "'~30% at L_perp = 4a'")
-    syst_subgroup: Tagged = Stated(0.05, f"{TEX}:108,159", "'~5% at Sigma(72x3)'")
+    syst_subgroup: Tagged = Assumed(0.05, "working value at the upper end of the Sigma(360x3) 3+1D range 0.5-5% (Ch. 5 "
+                                          "tab:ch05_systematics, sys_subgroup); no Sigma(72x3) measurement exists; whether Sigma(72x3) "
+                                          "under H_KS freezes at a = 0.1 fm in 2+1D is unchecked (referee ch5-ch6-01)",
+                                    src="arxiv_1906_11213,arxiv_2112_08482,arxiv_2405_12204")
 
     # ---- clocks (overview, app10:10) -----------------------------------------
     n_z_fcc: Tagged = Cited(6e12, "arxiv_2505_00272", "'6e12 Z bosons' at Tera-Z (app10:10)")
     n_z_lep: Tagged = Cited(1.7e7, "LEPEWWG_Zresonance_2006", "'1.7e7 at LEP' (app10:10)")
-    lep_error_divisor: Tagged = Cited(300, "arxiv_2407_09593", "'the LEP uncertainty divided by approximately 300' (app10:10)")
+    lep_error_divisor: Tagged = Uncited(300, "RETIRED (referee ch5-ch6-05): the chapter now prints sqrt(n_z_fcc / n_z_lep) = 594 "
+                                            "('about 600x', sqrt_z_sample_ratio); arxiv_2407_09593 states no FCC/LEP ratio")
 
     # ---- hopping and mass: rule R-HOP (round-D ruling 3), derived here; app10:88,90 ---------------
     n_pauli_hop_diagonal: Tagged = Stated(8, f"{TEX}:88", "'the dressed hop is 8 Pauli strings per copy' (Z3). DERIVED HERE: Re and "
@@ -452,8 +456,8 @@ class Assumptions:
                                               "... give 1.0e5 T, 0.995x' at eps = 1e-4 with the transpiler U_F")
 
     # ---- r25 rulings R1, R2, R4 (H. Lamm 2026-10-02): tiers, ratio shots, window ----------------
-    window_over_a: Tagged = Stated((30, 50), f"{TEX}:74", "R4 (shot audit): 'the priced window is 30--50a (3--5 fm/c), three to "
-                                                          "five traversals of the 0.8 fm periodic box'; was t_had = 100 a. "
+    window_over_a: Tagged = Stated((30, 50), f"{TEX}:74", "R4 (shot audit): 'the priced window is 30--50a (3--5 fm/c), four to "
+                                                          "six traversals of the 0.8 fm periodic box' (3.75-6.25; referee ch5-ch6-10); was t_had = 100 a. "
                                                           "Steps = window / Delta t at the chapter's Delta t = 0.1 a")
     delta_first_2033: Tagged = Stated(0.30, f"{TEX}:135", "R1: the minimal first result at 30% statistical error (one "
                                                           "sampling configuration)")
@@ -2287,6 +2291,14 @@ def _model_3d_stretch(a: Assumptions) -> Result:
     breakdown = (gauge_primitives(a, gk, D, n_links, n_evo, "evolution")
                  + fermion_primitives(a, gk, n_links, V, n_evo, "evolution"))
     eps_l_req = float(a.clean_shot_faults) / t_total
+    # referee ch5-ch6-04: the q-hat shot count of the light-like dipole instance (the same two-point binomial on the
+    # SU(2) P_s curve as _model_2033's _dipole), in place of Ch. 5's retired 1e3 per grid point
+    r2_dip = (float(a.dipole_a_fm) / float(a.hbarc_GeV_fm)) ** 2
+    rate_q = float(a.qhat_GeV2_fm) * r2_dip / 2
+    f_su2 = 1 / 2 ** 2
+    p_s_q = tuple(float(a.dipole_P0) * (f_su2 + (1 - f_su2) * math.exp(-rate_q / (1 - f_su2) * t))
+                  for t in (float(a.dipole_times_fm.lo), float(a.dipole_times_fm.hi)))
+    n_qhat = two_point_log_shots(p_s_q[0], p_s_q[1], float(a.delta_first_2033))     # 405
     inter = {
         "stage": STAGE,
         "V_3d": V, "n_links_3d": n_links, "n_plaq_3d": n_plaq,            # 64, 192, 192
@@ -2328,11 +2340,14 @@ def _model_3d_stretch(a: Assumptions) -> Result:
         "hop_toffoli_per_link_3d": hl["toffoli"], "hop_rotations_per_link_3d": hl["n_rot"],   # 3,672, 2933
         "rhop_t_per_link_3d": hl["rhop"]["t"],                            # retired R-HOP at this eps
         "pre_r17_t_total_3d": t_total_pre,                                # 9.537e9
-        # R7 (r25): the full q-hat on this lattice is past 2033 (2.4x the register limit); at Ch. 5's 1e3 shots per
-        # temperature, 3 temperatures would take this long on one machine of that size
+        # R7 (r25) / referee ch5-ch6-04: the full q-hat on this lattice is past 2033 (2.4x the register limit); at the
+        # light-like dipole's binomial q-hat shots per temperature (405; Ch. 5's retired 1e3 per grid point gave 3.1 yr),
+        # n_dipole_T temperatures would take this long on one machine of that size
         "past_2033": True,
-        "qhat_full_wall_yr_at_1e3_shots_per_T": 3 * 1e3 * (t_total * float(a.t_gate_s) + float(a.shot_overhead_s))
-                                                 / float(a.seconds_per_year),   # 3.1
+        "qhat_full_shots_per_T": n_qhat,                                  # 405
+        "qhat_full_wall_yr_at_dipole_shots_per_T": int(a.n_dipole_T.value) * n_qhat
+                                                   * (t_total * float(a.t_gate_s) + float(a.shot_overhead_s))
+                                                   / float(a.seconds_per_year),   # 1.25
     }
     notes = (
         f"NOT A BOX. app10:90: '1728+576+100 ~ 2400 LQ' (exact {lq}); {n_links} links x ({gs['per_link']:.4g} gauge + "

@@ -38,7 +38,7 @@ INPUTS AND SOURCES
   N_Trotter 2033                   state-dependent second-order estimate (ruling E26 (ii); Alves, Lamm, Liu,
                                    preprint FERMILAB-PUB-26-0397-T); the weak-coupling evaluation is DERIVED HERE (156 oscillators,
                                    T a = 0.5 Assumed). Worst case: commutator bound (childs2021theory, r21 b), g^2 = 1
-  applications per step            DERIVED HERE r22: Jacobi-Anger order at 2Q dt, QSP error 1e-2 over the shot (Assumed)
+  applications per step            DERIVED HERE r22: Jacobi-Anger order at lambda dt (2Q dt before r26-yukawa), QSP error 1e-2 over the shot (Assumed)
   beta||H|| = 2Q / (T a) = 864     DERIVED HERE (referee C1, 2026-10-04; the r25 Stated 1e2 is a record, beta_H_rule)
   8 AA rounds / 17 filter calls     Stated app06: a PLACEHOLDER (chapter-open pass 2026-10-05): 17 calls = 8 rounds of
                                    standard AA (not fixed-point; 2026-10-09) or 17 post-selection attempts at success 1/17. k rounds call the filter
@@ -51,8 +51,8 @@ INPUTS AND SOURCES
                                    IS cost; verifier 2026-10-05: a Gibbs-marginal product reference amplifies with bias
                                    5e-4 (Ising) and 0.04 (t-V) at n = 8, smaller than a uniformly random basis state's
                                    0.06 and 0.15, but not controlled):
-                                   scratch chopen/app06_chiral_gauge/proxy_tpq.py and ch09_check/proxy_check.py, not in
-                                   the model
+                                   scratch proxy_tpq.py and proxy_check.py, not recovered (2026-11-09: the chapter
+                                   calls them unpublished exploratory numerics), not in the model
   Delta N_CS readout (C3)          DERIVED HERE (chapter-open pass): Kubo form, gauge-invariant E^a B^a on 2O, Hadamard-test
                                    lambda >= 729 g^2/8pi^2 = 9.23/a (sum of ||E^a|| ||B^a||, a lower bound on an LCU
                                    1-norm), sigma^2 = (4/3)(lambda t)^4/<dN^2>^2. Verifier fix (2026-10-05): E^a_i(x) is the
@@ -989,8 +989,9 @@ class Assumptions:
                                          "stays reproducible")
     onsite_term_2028: Tagged = Cited(
         "wilson", "arxiv_2505_20419; FermionPrimitives_unpub section_mass.tex:12",
-        "r17 ruling (f), H. Lamm 2026-10-01: the on-site part of h_DW = gamma^0 D_W, coefficient m + r(1+d) "
-        "(= m + 2 at d=1, r=1; non-zero across the topological window -2 < m < 0), missing before r17. "
+        "r17 ruling (f), H. Lamm 2026-10-01: the on-site part of h_DW = gamma^0 D_W, coefficient r(1+d) - m_0 with m_0 "
+        "the domain-wall height of Eq. Dov (= 2 - m_0 at d=1, r=1; non-zero across the topological window 0 < m_0 < 2; "
+        "the chapter's m = -m_0 before 2026-11-09), missing before r17. "
         "2N R_Z per site at d=1 (groups.wilson_mass_rotations; N = Nc Nf), on each of the V L5 sites: 192 equal-|angle| "
         "Z rotations in the draft's diagonal-gamma^0 encoding, one lattice-wide phasing group (signs are Clifford). "
         "'none' reproduces the pre-r17 step")
@@ -1387,7 +1388,7 @@ class Assumptions:
     count_yukawa_normalization: Tagged = Assumed(
         True, "author ruling 2026-10-10 ('the Hersh yukawa go for'): the projected Yukawa's weight y rho_max Q joins the "
               "fermion kinetic 2Q in the block-encoding normalization, lambda = Q (2 + y rho_max); it enters the "
-              "Jacobi-Anger order (applications per step), the 2 lambda t floor and the thermal filter's beta lambda. "
+              "Jacobi-Anger order (applications per step), the lambda t floor and the thermal filter's beta lambda. "
               "False restores the r25-C1 normalization 2Q (records)")
     # 2026-10-10: every *_stated 2033 value below carries the Yukawa normalization (2 + y rho_max)/2 = 1.5; the
     # pre-10-10 values are in the notes of count_yukawa_normalization and the apply log (batch 5: shot 1.9e10, 19x)
@@ -2233,7 +2234,7 @@ def _model_2033(a: Assumptions) -> Result:
     def _price_sp(n_trot_, d_=d_sgn, per_step_=None, t_=t_over_a, toff_saved_=0, n_sgn_=n_sgn, tpq_=n_dov_tpq, nf_=None,
                   record_=False):
         """One shot in the single-particle architecture: n_trot_ steps of r applications (r = the Jacobi-Anger order
-        at 2Q dt unless given) + the TPQ applications, each (d_ + 1) queries + lift + reflection + Higgs, at this
+        at lambda dt unless given) + the TPQ applications, each (d_ + 1) queries + lift + reflection + Higgs, at this
         circuit's own R-TOL tolerance. r23 levers: t_ = the evolution time in lattice units, toff_saved_ = Toffolis
         removed from one query. record_=True: the Q = 216 circuit before ruling r26-yukawa, for the r22-r25 records."""
         spq_, lift_, outer_, chig_, q_ = ((spq_record, lift_record, outer_record, c_higgs_app_record, lq_doublet) if record_
@@ -2267,7 +2268,7 @@ def _model_2033(a: Assumptions) -> Result:
     n_rot_shot, eps_rot, t_rot = P["n_rot_shot"], P["eps_rot"], P["t_rot"]
     c_sp, t_dov, t_shot = P["c_sp"], P["t_dov"], P["t_shot"]
     t_rot_retired = float(a.t_per_rot.value)          # 30: retired constant, records only
-    n_dov_floor = be_norm * t_over_a                  # 2Q t = 4320 applications (r22: 21,600): no step size goes below
+    n_dov_floor = be_norm * t_over_a                  # lambda t = 12,960 applications (2Q t = 4320 before r26-yukawa; r22: 21,600): no step size goes below
     t_shot_floor = n_dov_floor * t_dov                # 1.2e10 T at the headline application cost
     # r24 records: the r22-r23 headline (kappa 1e2, t = 50a, 5031 steps) and the worst-case step at those inputs
     P_r22 = _price_sp(sd_r22["n_central"], d_=d_sgn_r22, t_=t_over_a_r22, n_sgn_=1, tpq_=n_dov_tpq_r25, nf_=1.0, record_=True)      # 2.00789e11
@@ -2639,7 +2640,8 @@ def _model_2033(a: Assumptions) -> Result:
     wall_first_at_eps_yr = wall_first * (eps_first / eps) ** 2 / SEC_PER_YR
     tiers = {
         "first_result": {"temperatures": 1, "eps": eps_first, "shots": first_shots, "wall_s": wall_first,
-                         "wall_s_parts": wall_first_parts, "wall_yr": first_yr},
+                         "wall_s_parts": wall_first_parts, "wall_yr": first_yr,
+                         "over_horizon": (first_yr / horizon_yr, first_yr / horizon_yr)},   # 1.04: the method test alone exceeds the window
         "campaign": {"temperatures": n_temp, "eps": eps, "eps_growth": eps_first, "shots": camp_shots,
                      "wall_s": wall_camp, "wall_s_parts": wall_camp_parts, "wall_yr": camp_yr,
                      "over_horizon": camp_reduction},
@@ -2991,9 +2993,9 @@ def _model_2033(a: Assumptions) -> Result:
         f"{sd['n_low']} (fastest-mode phase) to {sd['n_high']} (mean kept, Lambda {sd['lambda_full']:.1f}). Worst case "
         f"(childs2021theory, operator norms): Lambda = {tb['lambda']:.1f} a^-3 at g^2 = {g2:g}, {tb['n_steps']} steps "
         f"(dt = {tb['dt_lat']:.2e} a); minimum over g^2 {tb_min['n_steps']} at g^2 = {g2_at_min:.2f}.",
-        f"Applications per step = Jacobi-Anger order at x = 2Q dt = {P['x']:.3f} with QSP error {eps_qsp:g} over the shot: "
+        f"Applications per step = Jacobi-Anger order at x = lambda dt = {P['x']:.3f} with QSP error {eps_qsp:g} over the shot: "
         f"{per_step} (worst-case step {by_rule['bound']['per_step']}, Ch. 5 step {by_rule['step']['per_step']}, 30 steps "
-        f"{by_rule['stated']['per_step']}); floor 2Q t = {n_dov_floor:.0f} applications = {t_shot_floor:.3g} T. Assumes a "
+        f"{by_rule['stated']['per_step']}); floor lambda t = {n_dov_floor:.0f} applications = {t_shot_floor:.3g} T. Assumes a "
         f"self-inverse block encoding, which one CNOT on the orientation bit provides (derived 2026-10-09); without it "
         f"{P_not_self_inverse['t_shot']:.3g} T (record).",
         f"Shot: {n_dov_evol} evolution + {n_dov_tpq} TPQ = {n_dov} applications x {t_dov:.1f} = {t_shot:.6g} T, "

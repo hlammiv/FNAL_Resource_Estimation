@@ -215,7 +215,7 @@ class Assumptions:
     t_gate_s: Tagged = Assumed(1e-6, "1 us per T-gate (hard operation), the report-wide wall-time "
                                      "convention of ruling R8 (H. Lamm, 2026-09-29; convention in "
                                      "Ch. 1); was 10e-6. R9 (2026-10-02) renamed it from logical_cycle_s. "
-                                     "app01 2028 box '~0.10 s'; 2033 box '11-16 min'",
+                                     "app01 2028 box campaign '~1.8 h'; 2033 box '~3.4 min per shot'",
                                f"{TEX}:2028,2033 boxes")
     shot_overhead_s: Tagged = Assumed(1e-4, "per-shot overhead t0 ~ 0.1 ms (register initialization, final readout, "
                                             "decode), the report rule stated in Ch. 1; as Ch. 8 shot_overhead_s. "

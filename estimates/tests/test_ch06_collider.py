@@ -1488,12 +1488,12 @@ PHRASES = [
     r"D^h_q(z,\mu^2) = \frac{z^{d-3}}{2N_c}\int",
     # r27 (2026-10-05): J1 V/PS and calibration, J2 box term, J3 N_h, G8 dipole penalty
     r"so nothing makes the box term cancel in the trend",
-    r"and global analyses combine lattice constraints with collider data~\cite{Ji_LaMET,arxiv_1908_10439,arxiv_1711_07916}",
+    r"and global analyses combine lattice constraints with collider data~\cite{Ji_LaMET,arxiv_1711_07916}",   # re-pinned 2026-11-09 (referee cards): 1908_10439 dropped from the LaMET sentences on purpose
     r"the string wraps the axis $3.9$, $7.7$ and $11.6$ times",
     r"${\gtrsim}\,4.7\times$ the shots if a bin's occupation equals its signal share",
     r"the pair meets again after $0.4$ fm/$c$, before the $0.7$--$1$ fm/$c$ formation time",
     r"\mathcal{N}_h(P_h)\,\bar\psi_q(0)\,W_0^\dagger",
-    r"LaMET-type matching~\cite{Ji_LaMET,arxiv_1908_10439} has no established range of control for it",
+    r"LaMET-type matching~\cite{Ji_LaMET} has no established range of control for it",   # re-pinned 2026-11-09 (referee cards)
     r"the slope of $P_s$ is $0.96$ (SU(3)) and $0.69$ (SU(2)) of that of $|W|^2$",
     r"$\Gamma=2|\mathrm{Im}\,V|N_c^2/(N_c^2-1)$",
     # R1
@@ -1521,7 +1521,7 @@ PHRASES = [
     r"Logical qubits & $230$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # R16 sweep: the 2028 register split and step breakdown live in the plug-in prose (pinned above)
     r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps), $1.3\times$ the $10^{5}$ target \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"Shots & $\sim 10^{3}$ ($\sim 10\%$/channel)",
+    r"Shots & ${\sim}10^{3}$ (${\sim}10\%$ per record class)",   # re-pinned 2026-11-09 (referee cards): '/channel' -> 'per record class'
     r"\textbf{Wall time} & $\sim 2$ min ($\sim 0.13$ s/shot at $1\,\mu$s per T-gate; Ch.~\ref{ch:overview})",
     r"quench-injected source; one adiabatic ramp step, two evolution steps",
     r"Setup & 2+1D SU(3) via $\Sigma(72{\times}3)$ ($q_G{=}9$~\cite{arxiv_2511_17437}), $4{\times}8$, $a{\approx}0.1$ fm",
@@ -1543,7 +1543,8 @@ PHRASES = [
     # r25 (R1, R2, R4, R7, R10)
     r"Baryon number and strangeness are conserved, so baryons and kaons come in pairs",
     # q1 (2026-10-05, rulings A/B): quench-prepared media, E-rho-OQ dropped
-    r"$\Sigma(72\!\times\!3)$ for SU(3) at $\sim 5\%$ truncation accuracy, $\Sigma(216\!\times\!3)$ for the static dipole and $2O$ for SU(2) dipoles",
+    r"$\Sigma(72\!\times\!3)$ for $2{+}1$D SU(3), $\Sigma(216\!\times\!3)$ for the static dipole and $2O$ for SU(2) dipoles",   # re-pinned 2026-11-09 (referee cards): the 5% truncation-accuracy claim was dropped
+    r"subgroup difference $5\%$ assumed at $\Sigma(72{\times}3)$",   # re-pinned 2026-11-09 (referee cards): the 5% now sits in the Systematics box row as an assumption
     r"First: $\mathrm{Im}\,V$, one temperature & static dipole, $\Sigma(216{\times}3)$ $H_I$ $3^3$: $995$ LQ, $5.9\times 10^{9}$--$1.6\times 10^{10}$ T, $653$ shots, $62$--$106$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"First: $\hat q$, one temperature & light-like, $2O$ $3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots, $1.2$--$2.3$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"$7.5\times 10^{4}$--$1.2\times 10^{6}$ shots, ${\geq}\,12$--$1400$ yr \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged

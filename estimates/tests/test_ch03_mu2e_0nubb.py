@@ -598,7 +598,7 @@ def test_dipole_factor_as_printed(tex):
     for frag in ("it is the identity plus $\\Gamma=24$ Pauli strings with $\\lambda=7.79$",
                  "is $18$--$33$, and we count shots at $33$",
                  "$3.3\\times 10^{3}$ shots per operator, or $2.0\\times 10^{4}$ over the six categories",
-                 "after its identity term, a classically known constant, has been subtracted",
+                 "after subtracting its identity term, a known constant",   # re-pinned 2026-11-09 (referee cards)
                  "the dipole's own $24$ strings cost $1.2\\times 10^{3}$ T"):
         assert frag in tex, frag
     assert "=77$" not in tex and "$70$--$130$" not in tex
@@ -847,7 +847,7 @@ def test_2033_mo_ru_small_gap(r33):
     i = r33.intermediates
     _rng(i["multiple_mo_ru_small_gap"], (25.1, 51.1), 0.01)
     assert i["multiple_mo_ru_small_gap"][0] > 10                  # small gap: co-design
-    _rng(i["eps_l_mo_ru"], (2.0e-12, 3.4e-11), 0.03)          # "2.0e-12-3.4e-11 (100Mo/Ru)"
+    _rng(i["eps_l_mo_ru"], (4.0e-12, 1.7e-11), 0.03)          # "4.0e-12-1.7e-11 (100Mo/Ru)"; re-pinned 2026-11-09 (referee cards, REF-ch3-ch4-18)
 
 
 
@@ -1131,10 +1131,11 @@ def test_codesign_ge_converged_registers(rcd):
     assert i["ge_converged_qubits"] == (1144, 2720)
     _rng(i["ge_converged_qubits"], (1100, 2700), 0.05)
     assert i["ge_converged_qubits"][0] > 1000               # "exceeds the 2033 LQ envelope" (JW)
-    # first-quantized line of eq:Nq11: A ceil(log2 N_orb) = 684-760; "compresses ... by factors of a few"
-    assert i["ge_first_quantized_qubits"] == (76 * 9, 76 * 10)
+    # first-quantized line of eq:Nq11 with the spin factor: A ceil(log2 2 N_orb) = 836-912 ("~840-910")
+    # re-pinned 2026-11-09 (referee cards, REF-ch3-ch4-05)
+    assert i["ge_first_quantized_qubits"] == (76 * 11, 76 * 12)
     lo, hi = i["ge_first_quantized_compression"]
-    assert 1.6 <= lo <= 1.7 and 3.5 <= hi <= 3.6, (lo, hi)
+    assert 1.3 <= lo <= 1.4 and 2.9 <= hi <= 3.0, (lo, hi)   # re-pinned 2026-11-09 (referee cards)
     assert i["ge_first_quantized_qubits"][1] < 1000         # "fits the envelope in width"
 
 
@@ -1215,7 +1216,7 @@ def test_printed_strings_are_in_the_tex(a, tex):
         "eps_l_sd:205,240": "$2.3$--$9.5\\times 10^{-10}$",
         "eps_l_pf_jj44:240": "$9.2\\times 10^{-12}$--$5.7\\times 10^{-11}$",
         "eps_l_jj55:240": "$2.0$--$8.2\\times 10^{-12}$",
-        "eps_l_mo_ru_row:246": "$2.0\\times 10^{-12}$--$3.4\\times 10^{-11}$",
+        "eps_l_mo_ru_row:246": "$4.0\\times 10^{-12}$--$1.7\\times 10^{-11}$",   # re-pinned 2026-11-09 (referee cards, REF-ch3-ch4-18)
         "eps_l_flagship:240": "$3\\times 10^{-17}$--$1\\times 10^{-15}$",
         # R-TOL (2026-09-29): the rule sentence and the worked line, app11:90; flagship, app11:152
         "eps_rot_sd:90": "$2.5$--$5.0\\times 10^{-5}$",
@@ -1311,7 +1312,7 @@ def test_al27_dipole_shot_factor(a, r33, tex):
         # style pass 2026-10-08: the lambda = 3.37, 2.79-2.83 and 1.42-1.45 steps are cut (rule 2); pinned above
         for frag in ("fixes the dipole operator to within $\\pm 0.6\\%$",
                      "\\cite{Angeli_Marinova_2013}",
-                     "before the factor $(\\lambda/|\\langle\\hat{\\mathcal{O}}\\rangle|)^2$ of Eq.~\\eqref{eq:Nshot11}"):
+                     "That is $100$--$400$ shots per operator before the prefactors."):   # re-pinned 2026-11-09 (referee cards)
             assert frag in tex, frag
 
 
@@ -1343,7 +1344,7 @@ def test_insertion_share_and_moru_wording(a, tex):
         # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
         assert "0.5$--$2\\%" not in tex
         assert "$\\Gamma=40016$" in tex
-        assert "$12900$ Pauli strings besides the identity" in tex
+        assert "$12900$ (symmetry-restricted) to $49140$ (dense) Pauli strings besides the identity" in tex   # re-pinned 2026-11-09 (referee cards)
         assert "5.4$--$5.6" not in tex and "4.4$--$4.6" not in tex and "scaling by $N_{\\rm orb}^{4}$" not in tex
         assert "same factor of two in Eq." not in tex and "each register spans" not in tex
         assert "register asymmetry" not in tex

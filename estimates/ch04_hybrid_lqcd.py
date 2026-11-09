@@ -371,7 +371,7 @@ class Assumptions:
                                              "report-wide convention by ruling R3 (2026-09-28)")
     eps_l_codesign: Tagged = Stated(1e-12, "app12:180", "eps_l ~ 1e-12")
     V_codesign: Tagged = Stated(24 ** 3 * 48, "app12:180", "V ~ 24^3x48")
-    kappa_codesign: Tagged = Stated(1e3, "app12:180", "kappa ~ 1e3 at physical mass")
+    kappa_codesign: Tagged = Stated(1e3, "app12:180", "kappa ~ 1e3 (am = 0.004, heavier than physical light quarks)")
     d_inv_codesign: Tagged = Assumed(5e3, "kappa ln(1/eps_rel) = 1e3 x 5 at the 2033 tolerance: the LP law, "
                                           "extrapolated (the LP runs out of memory near d ~ 5e3); app12:33,182 "
                                           "'d_inv ~= 5e3' (R11; was 1e4)")
