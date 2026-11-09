@@ -491,9 +491,9 @@ def test_no_split_circuit_route(r33):
     # U4: splitting the shot does not reset accumulated faults; the model carries no split-circuit quantity
     for k in r33.intermediates:
         assert "circuit" not in k or k == "t_qft_readout", k
-    if TEX.exists():
-        tex = TEX.read_text()
-        assert "Splitting the shot does not help" in tex
+    # C7R-1 (markup board 2026-11-09): the paper no longer states this; the README keeps it
+    readme = Path(__file__).resolve().parents[2] / "applications" / "ch07_curved_space" / "README.md"
+    assert "Splitting the shot does not help" in readme.read_text()
 
 
 def test_fault_budget_observable_bias(a, r33):
@@ -664,7 +664,8 @@ def test_shear_encoding_matches_explicit_squeeze():
     assert max(abs(x - y) for x, y in zip(o_c["n_ferm"], o_s["n_ferm"])) < 1e-5
     assert abs(o_c["n_scalar"] - o_s["n_scalar"]) < 1e-4
     if TEX.exists():
-        assert r"-\gamma^2\chi^2/2" in TEX.read_text()
+        # C7R-2 (markup board 2026-11-09): the identity moved to the README; the paper states the result
+        assert "only changes the angles of rotations the step already has" in TEX.read_text()
 
 
 def test_2028_grid_check(a):
