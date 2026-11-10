@@ -3086,6 +3086,23 @@ def model(a: Assumptions, era: str) -> Result:
 #                  count, 2.008e11 vs '~2.0e11', LQ 1010.
 DISPUTED: dict[str, str] = {}
 
+# Error ledger of the 2033 N_CS method test (SR-ch9-2, 2026-11-09). Each entry: (value or status, where it is set,
+# what covers it). The box Systematics row prints the first six; the last three are open and stated in the text.
+ERROR_LEDGER_2033: dict[str, tuple] = {
+    "statistical":        ("30% first result, 10% campaign", "eps_first, eps_obs", "shots sigma^2 / eps^2 (Shots row)"),
+    "trotter":            ("~10%", "eps_trotter", "state-dependent second-order estimate at weak coupling (156 oscillators); "
+                                                   "the inserted-N_CS(0) branch and atypical filtered states are NOT covered"),
+    "qsp_truncation":     ("1e-2 per shot", "eps_qsp", "Jacobi-Anger order at the central step; eps_qsp / N per step"),
+    "synthesis":          ("1e-2 per shot", "eps_syn", "R-TOL, incoherent addition; coherent addition would give t_per_rot_coherent"),
+    "sign_function":      ("1e-3", "delta_sgn", "d_sgn = ceil(kappa ln 1/delta) = 208 at kappa = 30; numerical check: "
+                                                 "applications/ch09_chiral_gauge/check_sign_polynomial.py"),
+    "thermal_filter":     ("1e-4 polynomial error", "delta_beta", "d_beta = 155 at beta lambda = 2592"),
+    "thermal_systematic": ("not bounded", "aa_rounds, 17 filter calls", "placeholder reference; Table 9.1 routes"),
+    "digitization":       ("open", "gauge_group_2033 = 2O, N_rho = 16", "O(a^2) 20-30% and radial truncation ~5% are estimates"),
+    "readout":            ("open", "sigma2_ncs = 1e2 assumed", "Hadamard test needs 1.2e15 shots; no estimator with the "
+                                                            "variance of Delta N_CS itself is known"),
+}
+
 PUBLISHED = {
     "2028": Published(lq=(250, 250), hard_ops=(2.7e5, 2.9e5),
                       src="app06 2028 box ('Logical qubits & 250 = 192 + 16 + 42', r25 R10: three spatial-hop groups per "
@@ -3122,7 +3139,8 @@ def INSTANCE_ROWS(a: Assumptions, era: str, r: Result):
     if era == "2033":
         i = r.intermediates
         return [("3D 3^3 SU(2)/2O overlap + Higgs, TPQ (Chern-Simons growth, method test)", r.lq, r.hard_ops,
-                 {"group": "2O", "shots": r.shots[0], "route": "overlap+QSP",
+                 {"group": "2O", "shots": r.shots[0], "route": "overlap+QSP", "conditional": True,
+                  "note": "SR-ch9-1 (2026-11-09): the 2033 count is conditional on the 17-call thermal filter (placeholder; a typical reference succeeds with ln p = -276) and on a Delta N_CS estimator of variance ~1e2 (none known; the Hadamard test needs 1.2e15 shots). Drawn as a dashed box in the landscape figure, as Chs. 5, 8 and 10.",
                   "sgn_architecture": i["sgn_architecture"], "trotter_rule": i["trotter_rule"],
                   "t_representative": i["t_per_shot"],
                   "t_condensate_arm": i["t_per_shot_condensate"],

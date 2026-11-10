@@ -1232,16 +1232,12 @@ def test_requirements_table(r28, r33):
     assert r33.lq == (964, 964) and r28.lq == (230, 230)    # 'Size 230 LQ (2028) / 964 LQ (2033; dipoles 833--912)'
 
 
-def test_systematics_in_quadrature(r33):
-    """Objective 6 and box: '20% stat, 32--36% syst (~38--42% total)' from 10--20% (+) 30% (+) 5%. R4: the
-    exact 41.5% prints 42 (the pre-ruling 41 came from combining the already-rounded 36)."""
-    i = r33.intermediates
-    near(i["syst_quadrature"][0], 0.3202, 0.001)
-    near(i["syst_quadrature"][1], 0.3640, 0.001)
-    near(i["total_error_quadrature"][0], 0.3775, 0.001)
-    near(i["total_error_quadrature"][1], 0.4153, 0.001)
-    assert [round(100 * x) for x in i["syst_quadrature"]] == [32, 36]
-    assert [round(100 * x) for x in i["total_error_quadrature"]] == [38, 42]
+def test_systematics_are_planning_values_not_combined(a, r33):
+    """Referee SR-ch6-2 (2026-11-09): the 10--20%, 30% and 5% entries are Assumed planning values printed in the
+    box Systematics line; no quadrature total is exported and the paper prints 'systematics not quantified'."""
+    for name in ("syst_discretization", "syst_volume", "syst_subgroup"):
+        assert getattr(a, name).prov is c.Provenance.ASSUMED
+    assert "syst_quadrature" not in r33.intermediates and "total_error_quadrature" not in r33.intermediates
 
 
 def test_clock_numbers(r33):
@@ -1514,9 +1510,9 @@ PHRASES = [
     r"Required $\epsilon_l$ & $\lesssim 3.8\times 10^{-12}$--$2.0\times 10^{-11}$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # R4
     r"$\mathcal{A}\sim 0.05$--$0.2$",
-    r"$32$--$36\%$ syst.\ ($\approx 38$--$42\%$ total)",
-    r"systematics-dominated at $32$--$36\%$ ($\approx 38$--$42\%$ total)",
-    r"20\%/bin stat., $32$--$36\%$ syst.\ ($\approx 38$--$42\%$ total)",   # cut pass 2026-10-06: the requirements accuracy row is cut; the box FCC row carries it
+    r"systematics not quantified, against Lund-string tunes",   # referee SR-ch6-2 (2026-11-09): the 32--36% / 38--42% quadrature bands are retired
+    r"20\%/bin stat., systematics not quantified;",   # referee SR-ch6-2: box FCC row
+    r"planning values, not error bars: $\mathcal{O}(a^2)$ $\sim 10$--$20\%$ at $a{=}0.1$ fm, $\sim 30\%$ at transverse extent $L_\perp{=}4a$",   # referee SR-ch6-2: box Systematics line
     # boxes
     r"Logical qubits & $230$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     # R16 sweep: the 2028 register split and step breakdown live in the plug-in prose (pinned above)

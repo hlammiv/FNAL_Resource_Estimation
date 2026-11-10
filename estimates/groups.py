@@ -563,7 +563,8 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
 # --------------------------------------------------------------------------- #
 # Author ruling (e), H. Lamm 2026-10-01: "adopt the fermion primitive numbers ... estimate or approximate the
 # missing pieces". Source: the unpublished draft "Primitive Quantum Gates for Lattice Gauge Theories with Fermions"
-# (Hidalgo, Murairi, Lamm, Gustafson), work/extracted/Fermion_Primitives/publication_draft/ (FP below); cite as
+# (Hidalgo, Murairi, Lamm, Gustafson), in preparation, not in this repository (FP below; its gate tables are the
+# FERMION_DRAFT constants); cite as
 # unpublished gate counts (private communication), bib key FermionPrimitives_unpub. Every count below is read from
 # FP's gate tables; the full line-by-line record is apply_log/r17_core.md.
 #
@@ -692,7 +693,8 @@ class FermionDraftGroup:
     note: str = ""
 
 
-FP_DIR = "work/extracted/Fermion_Primitives/publication_draft"
+FP_DIR = ("unpublished draft, Hidalgo, Murairi, Lamm, Gustafson, in preparation; gate tables as constants in "
+          "groups.FERMION_DRAFT")   # the draft is not in this repository; its printed tables are the constants below
 FP_KEY = "FermionPrimitives_unpub"
 FP_C_T = (38.8, 4.45)        # diagonalizer, hopping.tex:311, as printed
 FP_DIAG_T, FP_DIAG_ROT = 2, 4  # its reading: 2 T (controlled H) + 4 rotations (38.8 = 2 + 4 x 9.2)

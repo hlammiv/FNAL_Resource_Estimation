@@ -126,8 +126,10 @@ R17 (e) CHECK: the Fermion_Primitives (FP) hop prices gauge-covariant hops; Ch.8
   synthesized to the deepest MLAE circuit's budget (fixed point above); the 2028 box and the interim
   instance are single circuits and keep their own-circuit budget. Since r25 the 2033 nucleation circuits are
   single circuits too and are synthesized to their own budget (2.656e7 T at t, 8.45e6 T at t/3).
-  The f_eq-weighted integrated asymmetry S_int is COMPUTED (2026-10-12, sint/scatter.py): 2.1e-2; until then the first-result tier took S_int = 1e-3 (the
-  chapter's per-k estimate) and its Delta-n wall scales as (1e-3/S_int)^2 (NEEDS_AUTHOR).
+  The f_eq-weighted integrated asymmetry S_int is COMPUTED on the chapter's 15-site axis, read at t_max (2026-11-09,
+  sint/scatter15.py, referee SR-ch8-1): 1.6e-2; 2.1e-2 on the 800-site chain of sint/scatter.py (2026-10-12), which the
+  15-site axis never reaches; until 2026-10-12 the first-result tier took S_int = 1e-3 (the chapter's per-k estimate).
+  The Delta-n wall scales as S_int^-2.
 REFEREE REVISION (2026-10-04; editorial_review/REFEREE_REPORT.md B2, B3, G2; responses/ch08.md)
   G2: the 2033 headline (Result.hard_ops, PUBLISHED, Table 1.1) is the deepest executed circuit, m_max base
   circuits = 33 x 2.958e7 = 9.76e8 T, printed '>~9.8e8' because state preparation is unpriced. The base circuit
@@ -203,10 +205,12 @@ WALL TIME AND FACTORIES
   Mixed-depth runs enter depth_exports as full-circuit equivalents, shots x T_i / T_headline (depth scales with
   T under the ancilla-bound schedule); the walls themselves are summed circuit by circuit.
   2028 (one tier): one parameter point, slope to 20% -> wall_campaign_s ~54 min; wall_first_result_s = None.
-  2033 first result: 3-sigma detection of Delta n at T_c and 0.9 T_c (9/(p0^2 S_int^2 m_top) = 1.5e3 queries per
-  point at S_int = 2.1e-2; 2.73e5 at the earlier 1e-3) plus the slope at both temperatures -> wall_first_result_s ~37 d (record: ~0.58 yr).
-  2033 campaign: 10 Delta-n points at +-1e-3 per bin over 100 bins (3.03e6 queries each) plus the 100-point
-  slope scan -> wall_campaign_s 3.9 yr since eps_c = 3e-3 (2026-10-12; records: 32 yr at 100 bins, 8.6 yr at 8 bins and eps_c = 1e-3); the scan plus the first result 3.3 yr.
+  2033 first result: 3-sigma detection of Delta n at T_c and 0.9 T_c (9/(p0^2 S_int^2 m_top) = 2.6e3 queries per
+  point at S_int = 1.6e-2; 1.5e3 at the 800-site 2.1e-2, 2.73e5 at the earlier 1e-3) plus the slope at both temperatures
+  -> wall_first_result_s ~38 d (records: ~37 d at 2.1e-2, ~0.58 yr at 1e-3).
+  2033 campaign: 10 Delta-n points at +-3e-3 per bin over 7 bins (5.4e4 queries each) plus the 100-point
+  slope scan -> wall_campaign_s 3.8 yr (2026-11-09, 7 bins; records: 3.9 yr at 8 bins since eps_c = 3e-3 on 2026-10-12, 32 yr at
+  100 bins, 8.6 yr at 8 bins and eps_c = 1e-3); the scan plus the first result 3.3 yr.
 """
 
 from __future__ import annotations
@@ -237,7 +241,7 @@ _POSITIVE = ("v_2028", "n_phi", "n_phi_small", "spinor_components", "lz_sites", 
              "accuracy", "t_gate_s", "n_scan_points", "n_dn_points",
              "slope_times", "slope_early_fraction_2028", "slope_early_fraction_2033", "decrement_ref_time_2028",
              "detection_sigma", "n_points_first",
-             "s_int", "t_depth_2028", "t_depth_2028_ref_steps", "t_depth_2033", "t_depth_2033_first",
+             "s_int", "s_int_long_chain", "s_int_readout_band", "t_depth_2028", "t_depth_2028_ref_steps", "t_depth_2033", "t_depth_2033_first",
              "sigma_over_mphi2", "bath_mixing_sweeps", "bath_mixing_sweeps_central", "n_trot_family",
              "horizon_yr", "t_2028_box", "am_f", "beta_mphi", "lr_patch_radius", "idle_cycle_s")
 
@@ -313,8 +317,10 @@ class Assumptions:
     eps_c: Tagged = Stated(3e-3, f"{TEX}:63,115", "target precision on the per-bin asymmetry: a tenth of the comparator's "
                                                    "typical bin (|A_R| 0.03-0.05; author decision 2026-10-12, option 2; was "
                                                    "1e-3, the size the asymmetry itself was then estimated at)")
-    n_bin: Tagged = Stated(8, f"{TEX}:63,115", "'the 8 bins the 15-site axis resolves': floor(15/2) + 1 distinct |k_z| "
-                           "(ruling 2026-10-11, batch 4 item 3b; was 'N_bin ~ 1e2', which the lattice cannot resolve)")
+    n_bin: Tagged = Stated(7, f"{TEX}:63,115", "'the 7 bins the 15-site axis resolves': floor(15/2) incident |k_z| > 0, "
+                           "k_z = 2 pi n/15, n = 1..7, the bins sint/scatter.py samples (referee SR-ch8-1, 2026-11-09; was 8 = "
+                           "floor(15/2) + 1, which counted k_z = 0, a mode with v_g = 0 that is not an incident packet; ruling "
+                           "2026-10-11, batch 4 item 3b, set 8; was 'N_bin ~ 1e2', which the lattice cannot resolve)")
     mlae_queries_per_bin_quoted: Tagged = Stated(7.8e3, f"{TEX}:63", "'~8e3 queries per momentum bin' at eps_c = 3e-3 (C_est = 1, "
                                                  "x 1/p0^2 flag contrast; 2026-10-12, was '~7.0e4' at 1e-3)")
     c_est: Tagged = Stated(1.0, f"{TEX}:63", "author-adopted branch prior |p0 A_R| < sin(pi/66) = 0.048: "
@@ -363,15 +369,28 @@ class Assumptions:
                                                 "cheaper than t/1.5", "shot_audit.json ch8 lever (5)")
     detection_sigma: Tagged = Assumed(3, "the 2033 first result is a 3-sigma detection of Delta n", "H. Lamm 2026-10-02")
     n_points_first: Tagged = Stated(2, f"{TEX}:143", "first result at T = T_c and 0.9 T_c (the box's two temperatures)")
-    s_int: Tagged = Assumed(2.14e-2, "COMPUTED (2026-10-12, sint/scatter.py, after the Bloch-sign fix of the verification "
-                                     "pass; 1.33e-2 before it): f_eq-weighted (Fermi-Dirac at a T = 0.5) mean of A_R "
-                                     "over the incident bins for the comparator at |y| phi = 0.5, width 2a, Delta "
-                                     "theta_C = 0.1; 2.4e-2 at 0.9 T_c; 1.9-2.7e-2 over wall amplitudes 0.3-1.0 and "
-                                     "widths 1-2 a at both temperatures; linear in Delta theta_C, zero at 0; the C' "
-                                     "relation R(hole_L) = R(p_R) holds to 1e-4. Converged in chain length and packet "
-                                     "width. The first-result Delta-n wall scales as S_int^-2", "sint/sint_results.json")
-    s_int_band: Tagged = Assumed((1.9e-2, 2.7e-2), "COMPUTED record: S_int over the comparator's wall amplitudes 0.3-1.0 "
-                                                   "and widths 1-2 a at T_c (1.9-2.4e-2) and 0.9 T_c (2.1-2.7e-2)",
+    s_int: Tagged = Assumed(1.6e-2, "COMPUTED on the chapter's 15-site axis (2026-11-09, sint/scatter15.py; referee SR-ch8-1): "
+                                    "f_eq-weighted (Fermi-Dirac at a T = 0.5) mean of A_R over the 7 x 8 incident (k_z, k_y) bins "
+                                    "for the comparator at |y| phi = 0.5, width 2a, Delta theta_C = 0.1, wall at z = 7 of 15, "
+                                    "packet sigma_z = 1.5 sites at z = 2.5, read at t_max = 10/m_phi = 20 a, the end of the "
+                                    "priced evolution: 1.57e-2 (1.59e-2 at sigma_z = 2.0); 1.7e-2 at 0.9 T_c; 1.5e-2 at width "
+                                    "1 a, 0.8e-2 and 1.9e-2 at |y| phi = 0.3 and 1.0; zero at Delta theta_C = 0. S_int(t) rises "
+                                    "from 0.6e-2 at t = 10 a to 1.4e-2 at 16 a (s_int_readout_band); by t_max the transmitted "
+                                    "part of the fast bins has returned from the open end, as in the priced circuit. The "
+                                    "800-site chain of sint/scatter.py gives 2.14e-2 (s_int_long_chain), never reached on this "
+                                    "axis. The first-result Delta-n wall scales as S_int^-2", "sint/sint15_results.json")
+    s_int_readout_band: Tagged = Assumed((0.6e-2, 1.6e-2), "COMPUTED record (sint/scatter15.py): S_int on the 15-site axis over "
+                                                            "readout times t = 10-20 a (5-10/m_phi), both packet widths; the "
+                                                            "per-bin readout windows are in sint/README.md", "sint/sint15_results.json")
+    s_int_long_chain: Tagged = Assumed(2.14e-2, "COMPUTED record (2026-10-12, sint/scatter.py, after the Bloch-sign fix of the "
+                                                "verification pass; 1.33e-2 before it): the same comparator on an 800-site chain, "
+                                                "sigma = 25 sites, each bin read at 2 (z_wall - z_pk)/v_g; 2.4e-2 at 0.9 T_c; "
+                                                "converged in chain length and packet width; the C' relation R(hole_L) = R(p_R) "
+                                                "holds to 1e-4. Printed by the chapter until 2026-11-09; Fig. ch08_asymmetry "
+                                                "shows this run", "sint/sint_results.json")
+    s_int_band: Tagged = Assumed((1.9e-2, 2.7e-2), "COMPUTED record (800-site chain, sint/scatter.py): S_int over the comparator's "
+                                                   "wall amplitudes 0.3-1.0 and widths 1-2 a at T_c (1.9-2.4e-2) and 0.9 T_c "
+                                                   "(2.1-2.7e-2); the grey band of Fig. ch08_asymmetry(c)",
                                  "sint/sint_results.json")
     label_register_first: Tagged = Assumed(7, "packet-label register of the f_eq-weighted packet superposition, "
                                            "taken from the 10-qubit workspace", "shot_audit.json ch8 lever (1)")
@@ -468,9 +487,9 @@ class Assumptions:
                 raise ValueError(f"{name} is the early time over the late time, in (0, 1)")
         if int(self.slope_times.lo) != 2:
             raise ValueError("the slope is priced from exactly two times")
-        if int(self.n_bin.lo) > int(self.lz_sites.lo) // 2 + 1:
-            raise ValueError(f"n_bin={int(self.n_bin.lo)} exceeds the {int(self.lz_sites.lo) // 2 + 1} distinct |k_z| "
-                             "the scattering axis resolves")
+        if int(self.n_bin.lo) > int(self.lz_sites.lo) // 2:
+            raise ValueError(f"n_bin={int(self.n_bin.lo)} exceeds the {int(self.lz_sites.lo) // 2} incident |k_z| > 0 "
+                             "the scattering axis resolves (k_z = 0 has v_g = 0 and is not an incident packet)")
         if not (self.bath_mixing_sweeps.lo <= self.bath_mixing_sweeps_central.lo <= self.bath_mixing_sweeps.hi):
             raise ValueError("bath_mixing_sweeps_central is outside bath_mixing_sweeps")
         if self.label_register_first.lo > self.n_anc_2033.lo - self.n_bath_anc_2033.lo:
@@ -1205,9 +1224,10 @@ def _model_2033(a: Assumptions) -> Result:
     n_per_depth = per_bin_mlae / sum(depths)                   # 918.3 circuits per depth per bin
     circuits_per_bin = n_per_depth * len(depths)               # 918.3
     lis_n_per_depth = per_bin_lis / sum(mlae_depths(m_top))    # 152.8 (sensitivity)
-    n_bin = int(a.n_bin.lo)                                    # 8 distinct |k_z| (ruling 2026-10-11; was 100)
-    n_bin_distinct_kz = int(a.lz_sites.lo) // 2 + 1            # 8
-    queries = per_bin_mlae * n_bin                             # 6.2e4 (5.6e5 at eps_c = 1e-3; 7.0e6 at 100 bins)
+    n_bin = int(a.n_bin.lo)                                    # 7 incident |k_z| > 0 (SR-ch8-1, 2026-11-09; was 8, then 100)
+    n_bin_distinct_kz = int(a.lz_sites.lo) // 2 + 1            # 8 distinct |k_z| counting k_z = 0 (record)
+    n_bin_incident_kz = int(a.lz_sites.lo) // 2                # 7
+    queries = per_bin_mlae * n_bin                             # 5.4e4 (6.2e4 at 8 bins; 5.6e5 at eps_c = 1e-3; 7.0e6 at 100 bins)
     queries_heisenberg = per_bin_heisenberg * n_bin
     overhead = per_bin_mlae / per_bin_heisenberg               # 30.3
 
@@ -1256,10 +1276,10 @@ def _model_2033(a: Assumptions) -> Result:
     # B2: the label-controlled packets (2^7 x one packet, a bound) lengthen A, so these circuits run shallower.
     sched_first = dn_schedule(a, free_prep(a, int(a.label_register_first.lo)))
     m_first = sched_first["m_top"]                             # 31
-    first_queries = c_est * n_sig ** 2 / (p0 ** 2 * s_int ** 2 * m_first)   # 1.5e3 per point (6.7e5 at S_int = 1e-3)
+    first_queries = c_est * n_sig ** 2 / (p0 ** 2 * s_int ** 2 * m_first)   # 2.6e3 per point (1.5e3 at the 800-site 2.1e-2; 6.7e5 at 1e-3)
     first_circuits = first_queries / m_first                   # 2.2e4 per point
     first_dn_s = first_circuits * circuit_s(a, sched_first)    # 2.2e7 s = 2.5e2 d
-    first_s = n_first * first_dn_s + nucl_s + nucl_s_09        # 37 d (528 d at S_int = 1e-3; T_c and 0.9 T_c slopes)
+    first_s = n_first * first_dn_s + nucl_s + nucl_s_09        # 38 d (37 d at S_int = 2.1e-2, 528 d at 1e-3; T_c and 0.9 T_c slopes)
     # what fits in the horizon on one machine: the nucleation scan (which contains the two first-result
     # temperatures) plus the first-result Delta-n points, then whole campaign Delta-n points
     scan_plus_first_yr = nucl_scan_yr + n_first * first_dn_s / SEC_PER_YR   # 3.3 yr (3.84 at S_int = 1e-3)
@@ -1399,7 +1419,8 @@ def _model_2033(a: Assumptions) -> Result:
         "mlae_single_depth": single_depth, "mlae_estimator_constant": c_est,
         "mlae_branch_bound_needed": branch_bound, "dn_estimate": float(a.dn_estimate.lo),
         "dn_estimate_headroom": branch_bound / (p0 * float(a.dn_estimate.lo)),   # 1.29 on p0 A_R (was 48 on A_R = 1e-3)
-        "s_int_band": (a.s_int_band.lo, a.s_int_band.hi),
+        "s_int_band": (a.s_int_band.lo, a.s_int_band.hi), "s_int_long_chain": float(a.s_int_long_chain.lo),
+        "s_int_readout_band": (a.s_int_readout_band.lo, a.s_int_readout_band.hi), "n_bin_incident_kz": n_bin_incident_kz,
         "mlae_depths": tuple(depths), "mlae_circuits_per_depth_per_bin": n_per_depth,
         "mlae_circuits_per_bin": circuits_per_bin,
         "mlae_lis_circuit_constant": lis_circuit_constant(m_top),
@@ -1509,8 +1530,8 @@ def _model_2033(a: Assumptions) -> Result:
         f"m_max = {m_max}; estimator constant {c_est:.5g} ({'single depth' if single_depth else 'Suzuki LIS 1..' + str(m_top)}; "
         f"|Delta| < {branch_bound:.4f} needed for a single depth: author-adopted prior; no derived bound; "
         f"LIS sensitivity {c_lis:.5g}); "
-        f"{per_bin_mlae:.4g}/bin; {queries:.4g} total over {n_bin} bins (the distinct |k_z| on the 15-site axis; "
-        f"ruling 2026-10-11, was 100); cited to arxiv_1904_10246 and arxiv_2012_03348.",
+        f"{per_bin_mlae:.4g}/bin; {queries:.4g} total over {n_bin} bins (the incident |k_z| > 0 on the 15-site axis; "
+        f"SR-ch8-1 2026-11-09, was 8, then 100); cited to arxiv_1904_10246 and arxiv_2012_03348.",
         "Gibbs prep and the Lindblad dissipator (nucleation circuits) and the Delta-n dressing ramp are not priced; "
         f"headline = deepest circuit {deepest_t:.4g} T, a lower bound (printed '>~9.9e8').",
         f"A = U_evo U_pk U_vac; priced free preparation {sched['t_prep']:.3g} T per application (r_free "
@@ -1534,7 +1555,8 @@ def _model_2033(a: Assumptions) -> Result:
         f"epsilon_l = {eps_l_base:.2e} base circuit, {eps_l_deepest:.2e} deepest MLAE circuit "
         f"({deepest_t:.3g} T); printed '<~3e-9' and '<~1e-10'.",
         f"Tiers: first result {first_s / SEC_PER_DAY:.0f} d (2 x 3-sigma Delta n at {first_dn_s / SEC_PER_DAY:.1f} d, "
-        f"S_int = {s_int:g} from the free-fermion comparator (sint/scatter.py); nucleation slopes {nucl_s / SEC_PER_DAY:.1f} d at T_c and "
+        f"S_int = {s_int:g} from the free-fermion comparator on the 15-site axis at t_max (sint/scatter15.py; "
+        f"{float(a.s_int_long_chain.lo):g} on the 800-site chain); nucleation slopes {nucl_s / SEC_PER_DAY:.1f} d at T_c and "
         f"{nucl_s_09 / SEC_PER_DAY:.0f} d at 0.9 T_c); campaign "
         f"{campaign_serial_yr:.2f} yr, {campaign_over_horizon:.2f}x the horizon; scan + first result {scan_plus_first_yr:.2f} yr fits.",
         f"T-depth {a.t_depth_2033.value} per base circuit (factory.json), F* {dx['f_star'][0]:.1f}-{dx['f_star'][1]:.1f}: "

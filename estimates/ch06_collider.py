@@ -404,8 +404,12 @@ class Assumptions:
     campaign_horizon_yr: Tagged = Stated(5, f"{TEX}:171", "'Campaign horizon 5 years'")
 
     # ---- systematics (2033 box, app10:158-161; Objective 6) -------------------
-    syst_discretization: Tagged = Stated((0.10, 0.20), f"{TEX}:158", "'O(a^2) ~ 10--20% at a = 0.1 fm'")
-    syst_volume: Tagged = Stated(0.30, f"{TEX}:158", "'~30% at L_perp = 4a'")
+    syst_discretization: Tagged = Assumed((0.10, 0.20), "planning value, not an error bar: O(a^2) ~ 10--20% at a = 0.1 fm with "
+                                                       "no second spacing run; printed in the 2033 box Systematics line as a "
+                                                       "planning value, not combined into a total (referee SR-ch6-2)")
+    syst_volume: Tagged = Assumed(0.30, "planning value, not an error bar: ~30% at L_perp = 4a; the box is recollision-"
+                                        "dominated and the string wraps the axis, so no bounded finite-volume error "
+                                        "exists; printed in the 2033 box Systematics line only (referee SR-ch6-2)")
     syst_subgroup: Tagged = Assumed(0.05, "working value at the upper end of the Sigma(360x3) 3+1D range 0.5-5% (Ch. 5 "
                                           "tab:ch05_systematics, sys_subgroup); no Sigma(72x3) measurement exists; whether Sigma(72x3) "
                                           "under H_KS freezes at a = 0.1 fm in 2+1D is unchecked (referee ch5-ch6-01)",
@@ -512,8 +516,8 @@ class Assumptions:
                                              "density (ETH / typicality), so the counts carry no estimator penalty; the "
                                              "E-rho-OQ factor of r26 G8 is retired with the method (ruling A)")
     # ---- q1 (author rulings A and B, 2026-10-05): quench / ETH thermal route for the dipole media ----------------
-    # Pricing basis: scratchpad/quench/cost/price2.py on the live model (same dipole_price, R-TOL eps recomputed for the
-    # longer circuit). Checks (scratchpad/quench/res): exact evolution on Z2 up to 5x3, 2T up to 2x2, fermion toy N = 16.
+    # Pricing basis: the live model (same dipole_price, R-TOL eps recomputed for the longer circuit). Checks: exact
+    # evolution on Z2 up to 5x3, 2T up to 2x2, fermion toy N = 16 (internal study, not archived; nothing on disk).
     quench_ramp_a: Tagged = Stated(1.0, f"{TEX}:98", "coupling ramp from the electric vacuum over one lattice unit a "
                                                      "(priced as a floor): 20 steps at 0.01 fm/c")
     quench_c_range: Tagged = Cited((2.0, 2 * math.pi), "arxiv_2011_09814", "thermalization time t_th = c / T before the "
@@ -1909,11 +1913,6 @@ def _model_2033(a: Assumptions) -> Result:
     d_camp_mean = (d_shot[0], ((n_mom_ - 1) * d_shot[1] + d_top) / n_mom_)
     dx = depth_exports(t_camp_mean, d_camp_mean, shots_trend, gate, t0)   # the trend run on 4x8 (the check is its own circuit)
 
-    # systematics in quadrature
-    syst = (quadrature(a.syst_discretization.lo, float(a.syst_volume), float(a.syst_subgroup)),
-            quadrature(a.syst_discretization.hi, float(a.syst_volume), float(a.syst_subgroup)))   # (0.320, 0.364)
-    total_err = (quadrature(float(a.eps_stat), syst[0]), quadrature(float(a.eps_stat), syst[1]))  # (0.377, 0.415)
-
     ramp_lo = ramp[0]      # breakdown at the low end of the ramp range (the first quoted total, 4.9e9)
     breakdown = (gauge_primitives(a, gk, D, n_links, n_evo, "evolution")
                  + fermion_primitives(a, gk, n_links, V, n_evo, "evolution"))
@@ -2158,9 +2157,6 @@ def _model_2033(a: Assumptions) -> Result:
         "baseline_ok": dx["baseline_ok"],
         "wall_first_result_s": wall_first,
         "wall_campaign_s": wall_camp,
-        # systematics
-        "syst_quadrature": syst,                                          # (0.320, 0.364) -> '32--36%'
-        "total_error_quadrature": total_err,                              # (0.377, 0.415) -> '38--42%' (R4)
         # clocks (not resource numbers)
         "z_sample_ratio_fcc_over_lep": float(a.n_z_fcc) / float(a.n_z_lep),                  # 3.5e5
         "sqrt_z_sample_ratio": math.sqrt(float(a.n_z_fcc) / float(a.n_z_lep)),               # 594; the chapter cites ~300

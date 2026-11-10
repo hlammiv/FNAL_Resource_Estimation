@@ -96,7 +96,7 @@ Output of `python applications/ch04_hybrid_lqcd/dump_assumptions.py`:
 | field | value | provenance | used by | source | note |
 |---|---|---|---|---|---|
 | `V_2033` | 8192 | stated-not-derived | 2033 | app12:144 | V=8^3x16 |
-| `VF_box_2033` | 25000.0 | stated-not-derived | 2033 | app12:144 | 'V_F = N_c V ~= 2.5e4 per flavor' as printed (was 1.6e5; ch04-VF-8x8x8x16) |
+| `VF_box_2033` | 25000.0 | stated-not-derived | 2033 | app12:144 | 'V_F ~= 2.5e4 per flavor' as printed (was 1.6e5; ch04-VF-8x8x8x16) |
 | `Nc_2033` | 3 | stated-not-derived | 2033, codesign | app12:145 | SU(3) staggered |
 | `Nf_2033` | 3 | stated-not-derived | 2033 | app12:145 | N_f=2+1 |
 | `kappa_2033` | 100.0 | stated-not-derived | 2033, codesign | app12:146 | kappa ~ 1e2 (am ~ 0.04, m_pi ~ 600 MeV, near the strange mass; was m_pi ~ 300-400 MeV) |

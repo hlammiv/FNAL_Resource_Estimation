@@ -1,6 +1,6 @@
 # Fully mobile triton response: proposed 2033 benchmark
 
-Prepared 4 October 2026 following the user's instruction to investigate triton. **Study only: the manuscript and its resource tables remain unchanged.**
+Prepared 4 October 2026 following the user's instruction to investigate triton. **Adopted as the 2033 instance on 2026-10-12. The T counts below use the study's coherent synthesis convention; the report headline is 2.07e8 T under the report convention (see ../README.md).**
 
 ## Result for discussion
 

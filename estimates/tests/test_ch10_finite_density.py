@@ -536,7 +536,7 @@ def test_f1_kappa2_records(r33):
     assert round(i["grid_shots_quark_rel"], -4) == 3.9e5
     assert round(100 * i["reweighting_saving_k2_lo"]) == 11               # Skellam: reweighting saved 11% at 0.01 (record)
     assert i["reweighting_ratio_k2_mid"] > 1
-    assert i["hard_ops_is_lower_bound"] is False and i["hsim_bound_is_lower_bound"] is True
+    assert i["hard_ops_is_lower_bound"] is True and i["hsim_bound_is_lower_bound"] is True   # SR-ch10-1 (2026-11-10): beta||H|| floor makes the 2033 T a lower bound
 
 
 def test_2033_wall_time_chain(r33):
@@ -787,7 +787,7 @@ def test_r25_2033_first_result(a, r33):
 
 def test_r25_tex_prints_the_new_numbers():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app07_finite_density.tex").read_text()
-    for s in (r"$\sim 13.5\,$min per sector", r"$27$--$40\,$min", r"$2.2\%$", r"$1.0\times 10^{3}$ (one $T$ row, two reweighted ensembles)",
+    for s in (r"$\gtrsim 13.5\,$min per sector", r"$\gtrsim 27$--$40\,$min", r"$2.2\%$", r"$1.0\times 10^{3}$ (one $T$ row, two reweighted ensembles)",
               r"$9.9$--$15$", r"$2.7$--$4.0\times 10^{4}$", r"$4.6\times 10^{4}$", r"$1.2\times 10^{5}$",
               r"$2.9\times 10^{3}$--$5.7\times 10^{3}$ per grid point", r"$3.4\times 10^{9}$-T shot",
               r"$m_q=313$~MeV", r"$m_B=940$~MeV", r"$61\%$ fewer", 

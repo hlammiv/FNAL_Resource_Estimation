@@ -1,6 +1,6 @@
 # Ch. 8: the integrated reflection asymmetry S_int from the free-fermion comparator (2026-10-12)
 
-**Boundary arrival on the 15-site axis (not checked here).** The comparator scatters on an 800-site open chain (packet at N/4, wall at N/2, read at t = 2(z_wall - z_pk)/v_g), so it never tests the chapter's 15 x 8 geometry. There a packet has about 7 sites = 3.5/m_phi between the wall and an open end; at the group velocities in sint_results.json (v_g 0.6-1.0 in lattice units, a = 0.5/m_phi) the fast bins reach the end at t = 3.5-6/m_phi, inside t_max = 10/m_phi. The chapter therefore needs a per-bin readout time before arrival, which neither this script nor the model sets.
+**The 15-site axis (2026-11-09, `scatter15.py`; referee SR-ch8-1).** The comparator below scatters on an 800-site open chain (packet at N/4, wall at N/2, each bin read at t = 2(z_wall - z_pk)/v_g), which the chapter's 15 x 8 instance cannot do: there the wall sits at z = 7 of 15, the packet starts 4.5 sites before it, and the transmitted part reaches the open far end and returns inside t_max = 10/m_phi = 20 a. `scatter15.py` reruns the same Hamiltonian, wall and packets on the 15-site axis and reads every bin on one time grid; the chapter and the model (`s_int`) take its value at t_max, the end of the priced evolution, which is what the first-result circuit reads. Section 'Results on the 15-site axis' below; `sint15_results.json` holds every bin at every time.
 
 `scatter.py` scatters Gaussian packets of the symmetric-phase positive-energy eigenstates of the chapter's two
 2-component Wilson flavours (r = 1, a m_f = 0.5) off the C-violating tanh wall
@@ -31,3 +31,34 @@ negative-energy component of weight 1 - (M/E)^2 that stayed on the incident side
 1.6-1.7 times larger bin by bin, with the same sign pattern, linearity and zero at Delta theta_C = 0. Converged against N (600 vs 1000) and packet width (sigma 25 vs 40 sites) to four digits except
 at the zone-edge bin (slow, small weight). The comparator is a static prescribed wall in the free theory; the
 interacting, plasma-dressed wall is what the chapter's calculation determines. `sint_results.json` holds every bin.
+
+## Results on the 15-site axis (`scatter15.py`, 2026-11-09)
+
+Same Hamiltonian, wall (|y| phi = 0.5, width 2 a, Delta theta_C = 0.1) and packet construction as `scatter.py`, on N = 15 sites with the wall at z0 = 7.0 (sites 0-6 incident), the packet at z = 2.5 with sigma_z = 1.5 sites (2.0 as a check), and the incident-side weight read at t = 0, 1, ..., 20 a. The 7 incident bins are k_z = 2 pi n/15, n = 1..7 (k_z = 0 has v_g = 0 and is not an incident packet; the chapter printed 8 bins until 2026-11-09), times 8 k_y sectors = 56 bins. A 1.5-site packet has sigma_k ~ 0.33, close to the bin spacing 0.42, so a 15-site bin is a momentum band, not a sharp k_z; the chapter's Eq. (deltan) says so.
+
+S_int(t), f_eq-weighted over the 56 bins (sigma_z = 2.0 in brackets):
+
+| t (a) | t (1/m_phi) | S_int at T_c | at 0.9 T_c |
+|---|---|---|---|
+| 10 | 5 | 5.6e-3 (6.5e-3) | |
+| 12 | 6 | 8.5e-3 (9.5e-3) | |
+| 14 | 7 | 1.14e-2 (1.24e-2) | |
+| 16 | 8 | 1.40e-2 (1.49e-2) | |
+| 18 | 9 | 1.55e-2 | |
+| 20 = t_max | 10 | **1.57e-2 (1.59e-2)** | 1.69e-2 (1.71e-2) |
+
+The model takes **S_int = 1.6e-2** (`s_int`), the t_max value, stable against the packet width; `s_int_readout_band` = (0.6e-2, 1.6e-2) records the sweep over readout times 10-20 a. By t_max the transmitted part of the fast bins has returned from the open end (free-chain R0 below), which is what the priced circuit would also see. The 800-site value 2.14e-2 (`s_int_long_chain`) is never reached on this axis. Over wall profiles at t_max (sigma_z = 1.5): 1.47e-2 at width 1 a, 0.82e-2 at |y| phi = 0.3, 1.92e-2 at 1.0, 0 at Delta theta_C = 0. Largest per-bin |A_R| at t_max 0.027 (0.028 at sigma_z = 2.0), p0 A_R = 0.018, 2.7 times below the depth prior 0.048 (the model's `dn_estimate` keeps the 800-site 0.056, the tighter check of the prior).
+
+Per-bin readout windows at k_y = 0 (t_clear: first time the free packet has left the incident side, R0 < 0.2; t_last: last time before the returning part raises R0 again), with A_R at t_last and at t_max:
+
+| k_z | v_g | f_eq (T_c) | window (a) | A_R at t_last | A_R at t_max | 800-site A_R |
+|---|---|---|---|---|---|---|
+| 0.419 | 0.85 | 0.194 | 10-17 | +0.0267 | +0.0257 | +0.047 |
+| 0.838 | 1.00 | 0.097 | 6-13 | +0.0115 | +0.0132 | +0.001 |
+| 1.257 | 0.94 | 0.045 | 6-15 | +0.0027 | +0.0056 | 0.000 |
+| 1.676 | 0.79 | 0.022 | 7-17 | -0.0023 | -0.0005 | 0.000 |
+| 2.094 | 0.60 | 0.013 | 10-20 | -0.0156 | -0.0156 | -0.045 |
+| 2.513 | 0.37 | 0.008 | 19-20 | -0.0210 | -0.0210 | -0.029 |
+| 2.932 | 0.13 | 0.007 | never inside t_max | | -0.0111 | -0.001 |
+
+The campaign's per-bin estimate reads each bin inside its window (the two slowest bins, 1.5% of the thermal weight, have none inside t_max and are read at t_max); the first result reads the f_eq-weighted superposition once, at t_max. The 800-site chain remains the converged comparator of Fig. ch08_asymmetry; the figure marks the 15-site t_max value on panel (c).

@@ -487,12 +487,12 @@ def test_2028_shots_and_wall_time(r28, tex):
     assert round(nlo / 60) == 6 and round(nhi / 60) == 33
     if tex is not None:
         assert "$\\sim 0.024$--$0.10\\,$s per Hadamard-test shot" in tex
-        assert "$\\sim 8$--$33$ min (Hadamard test) or $\\sim 68$ s (MLAE at $D=10^{2}$) on one machine" in tex
+        assert "$\\sim 8$--$33$ min (Hadamard test) or $\\ge 68$ s (MLAE bound, $D=10^{2}$) on one machine" in tex
         # restructure 2026-10-22: the timing convention parenthetical left the box row; the sentence after the box carries it
         # the 0.1 ms is sourced in the chapter (r17 verifier); the 1 ms bound is retired (r25)
         assert "$0.1$\\,ms per shot for initialization, readout and decoding, as on current superconducting hardware~\\cite{Google_QEC_below_threshold}" in tex
         assert "which we bound at $1$\\,ms" not in tex and "1$\\,ms per-shot bound" not in tex
-        assert ("$2.0\\times 10^{4}$ Hadamard-test shots, or $7.9\\times 10^{2}$ MLAE circuits at "
+        assert ("$2.0\\times 10^{4}$ Hadamard-test shots, or ${\\ge}7.9\\times 10^{2}$ MLAE circuits at "
                 "$D=10^{2}$ ($m_{\\max}=5$, $8.7\\times 10^{4}$ T each)") in tex
         assert "not estimated here" not in tex and "$4.6\\times 10^{4}$" not in tex
     _is(i["fq_light_nucleus_over_cap"], 100)              # "a factor ~1e2 over the 1e5 cap"

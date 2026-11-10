@@ -787,7 +787,7 @@ def test_2033_uncertainty_budget():
 
 
 def test_2033_VF_from_chapter_formula():
-    # app12:48: V_F = n_s N_c N_f V with n_s=1 (staggered); the box prints 'V_F = N_c V ~= 2.5e4 per flavor'.
+    # app12:48: V_F = n_s N_c N_f V with n_s=1 (staggered); the box prints 'V_F ~= 2.5e4 per flavor'.
     assert I33["V_F"] == 1 * 3 * 3 * 8192
     assert I33["V_F_single_flavor"] == 1 * 3 * 8192
     assert I33["V_F_box"] == 2.5e4

@@ -355,7 +355,7 @@ class Assumptions:
     # D 125 / 299 at fidelity 0.99 / 0.999), exact diagonalization in M_L = M_S = 0 (dim 2556). D = number of
     # largest-|c| JW configurations kept. E0 = -26.9 / -26.8 MeV; (0s)^4 weight 0.970. Scratch: chopen/app11/he4D.py.
     he4_d_fid99: Tagged = Assumed((15, 17), "COMPUTED: D for fidelity 0.99 (beta = 10, 2)",
-                                  "scratchpad chopen/app11/he4D_u1.0_s1.0_b{10.0,2.0}.json")
+                                  "applications/ch03_mu2e_0nubb/he4d/he4D_u1.0_s1.0_b{10.0,2.0}.json")
     he4_d_fid999: Tagged = Assumed((77, 103), "COMPUTED: D for fidelity 0.999 (beta = 2, 10)",
                                    "scratchpad chopen/app11/he4D_u1.0_s1.0_b{2.0,10.0}.json")
     he4_d_dipole_1pct: Tagged = Assumed(1, "COMPUTED: the single largest configuration already gives the dipole "
@@ -442,7 +442,7 @@ class Assumptions:
     # spin-independent (SI) elements in sd are pinned classically to +/-0.6% in any state (the derived
     # any-state band); the spin-dependent (SD, tensor) element carries the shots: <O_SD> = 2 <S_p> o_0d.
     # author ruling 2026-10-09 (batch 1 item 8): the three readout inputs are computed in the USDB sd ground state
-    # (J = M = 5/2, exact Lanczos, M-dim 64299; scratch chopen/app11/al27_sd.py, al27_sd_readout.json).
+    # (J = M = 5/2, exact Lanczos, M-dim 64299; applications/ch03_mu2e_0nubb/kb3g/al27_sd.py, al27_sd_readout.json).
     sd_spin_expectation: Tagged = Assumed(0.32620, "COMPUTED: <S_p> = <sum_p sigma_z>/2 in the USDB sd ground state "
                                                    "(was the shot audit's 0.30-0.34); a record, the element below "
                                                    "carries the shots", f"{TEX}:151")
@@ -471,7 +471,7 @@ class Assumptions:
     # 0.4366 vs KB3G 0.4277, i.e. ~2% dearer; printed).
     # Scratch: chopen/app11/{sm.py, run_gaps.py, gap_*.json}.
     gap_0plus_f7p3_ca48_mev: Tagged = Assumed(6.100132, "COMPUTED: 48Ca 0+_2 - 0+_1, KB3G in f7/2 p3/2 (M-dim 57)",
-                                              "scratchpad chopen/app11/gap_kb3g_f7p3_48Ca_J0.0.json")
+                                              "applications/ch03_mu2e_0nubb/kb3g/gap_kb3g_f7p3_48Ca_J0.0.json")
     gap_0plus_f7p3_ti48_mev: Tagged = Assumed(3.684720, "COMPUTED: 48Ti 0+_2 - 0+_1, KB3G in f7/2 p3/2 (M-dim 5296)",
                                               "scratchpad chopen/app11/gap_kb3g_f7p3_48Ti_J0.0.json")
     gap_0plus_f7p3p1_ca48_mev: Tagged = Assumed(5.500798, "COMPUTED: 48Ca, KB3G in f7/2 p3/2 p1/2 (M-dim 325)",
@@ -2193,7 +2193,7 @@ def printed_r25(a: Assumptions) -> dict:
         "walls_2028:127": f"take ${round(w28[0] / 60)}$--${round(w28[1] / 60)}$ min and ${round(wae)}$ s on one machine",
         "box_t_shot_2028:187": f"$\\sim {tsh[0]:.3f}$--${round_sig(tsh[1], 2):.2f}\\,$s per Hadamard-test shot",
         "box_wall_2028:189": f"$\\sim {round(w28[0] / 60)}$--${round(w28[1] / 60)}$ min (Hadamard test) or "
-                             f"$\\sim {round(wae)}$ s (MLAE",
+                             f"$\\ge {round(wae)}$ s (MLAE bound",   # SR-ch3-6 (2026-11-10): Cramer-Rao bound, not a count
         # 2033 deliverable (app11:149-151 and the box)
         # 2026-10-09: <O_SD>, Var(O_SD) and p computed in USDB, so these are single values
         "o_sd:149": f"= {round_sig(i33['o_sd'][0], 2):g}$",
@@ -2202,7 +2202,7 @@ def printed_r25(a: Assumptions) -> dict:
         "sd_shots:149,box": f"${g2(i33['sd_shots_per_hamiltonian'][0] / 1e3)}\\times 10^{{3}}$",
         "t_depth_2033:151": f"${g2(i33['t_depth_per_shot'][0] / 1e6)}\\times 10^{{6}}$--"
                             f"${g2(i33['t_depth_per_shot'][1] / 1e7)}\\times 10^{{7}}$",
-        "f_star_2033:151": f"up to ${round(i33['f_star_per_end'][0])}$ factories stay busy",
+        "f_star_2033:151": f"assumed concurrency of ${round(i33['f_star_per_end'][0])}$",   # SR-ch3-2 (2026-11-10)
         "floor_g1_2033:151": f"below ${round(fl[0] / day)}$ days to ${round_sig(fl[1] / yr, 2):.1f}$ years",
         "first_result_2033:151,box": f"${g2(w1[0] / day)}$--${g2(w1[1] / day)}$ days",
         "shots_campaign_2033:151,box": f"${g2(i33['shots_campaign'][0] / 1e3)}\\times 10^{{3}}$--"

@@ -610,7 +610,7 @@ def test_2033_campaign_split_is_stated(a):
     """ch05-mub-split (R11, option A): mu_B in {0,200,400,600} MeV, 1 of 4 at zero, Stated at app03:150. Since the
     quench ruling (2026-10-05) one thermal route serves every point, so the split moves no cost."""
     assert a.mu_b_zero_fraction.prov is c.Provenance.STATED
-    assert r"$4$ points at $\mu_B=0$ and $12$ at $\mu_B>0$" in TEX.read_text()   # Q5-9: the mu_B list left the box
+    assert r"$4$ points at $N_B=0$ and $12$ at $N_B=1$--$3$" in TEX.read_text()   # SR-ch5-1 (2026-11-10): canonical N_B sectors
     assert a.mu_b_zero_fraction.lo == 1.0 / a.grid_muB.lo == 0.25
     r0 = m.model(a, "2033")
     for f in (0.0, 1.0):
@@ -727,7 +727,7 @@ def test_bad_inputs_rejected(a):
     r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 2033 target \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Per-shot T & $6.7\times 10^{9}$--$2.4\times 10^{10}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $3.2\times 10^{10}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"The hydrodynamic $\tau$ has no basis at this $k$",   # re-pinned 2026-11-09 (referee cards, Q5-6): sentence became the measurement figure; the caption keeps the claim
-    r"$4$ points at $\mu_B=0$ and $12$ at $\mu_B>0$, at two lattice spacings, each estimated at $T=1.5\,T_c^{\rm lat}$, with $3.4$--$3.6\times 10^{4}$ shots per point.",   # re-pinned 2026-11-09 (referee cards)
+    r"$4$ points at $N_B=0$ and $12$ at $N_B=1$--$3$, at two lattice spacings, each estimated at $T=1.5\,T_c^{\rm lat}$, with $3.4$--$3.6\times 10^{4}$ shots per point.",   # re-pinned 2026-11-09 (referee cards)
     r"Required $\epsilon_l$ & $\lesssim 4.2\times 10^{-12}$ ($3.2\times 10^{-12}$ at the second spacing) \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
@@ -1226,7 +1226,7 @@ def test_systematics_row_2026_10_12(a):
     for frag in ("Systematics & model differences, not error bars (Table~\\ref{tab:ch05_systematics}); finite volume not "
                  "quantified at $LT<1$",   # Q5-9: the percentages stay in Table 5.2
                  "$50$--$100\\%$ at $0.2$ fm, $35$--$70\\%$ at $0.15$ fm; $30$--$60\\%$ and $20$--$40\\%$ with an improved taste sector",
-                 "$5$--$10\\%$ on $\\eta/s$",
+                 "not quantified",   # SR-ch5-3 (2026-11-10)
                  "Neither spacing is in the $a^2$ scaling regime: $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm.",
                  "its relation to the infinite-volume $\\eta/s$ is uncontrolled at order one; we assign it no percentage",
                  "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648,arxiv_1906_11213}"):

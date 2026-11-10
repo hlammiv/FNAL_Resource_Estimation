@@ -503,7 +503,7 @@
     94753.39077837099
    ],
    "codesign": false,
-   "src": "app04:2028 box ('220--240', '9.5e4 T-gates', wall '43 s'); requirements summary. Smaller ruling (b) (2026-10-05), option (c): one macro-step at K = 8 (6.475e4 T) + 3e4 prep = 9.475e4 (was four steps at K = 4, 9.437e4, 160-180 LQ).",
+   "src": "app04:2028 box ('222--242', '9.5e4 T-gates', wall '43 s'; was the rounded '220--240' until 2026-11-09, referee SR-ch7-4); requirements summary. Smaller ruling (b) (2026-10-05), option (c): one macro-step at K = 8 (6.475e4 T) + 3e4 prep = 9.475e4 (was four steps at K = 4, 9.437e4, 160-180 LQ).",
    "shots": 450,
    "wall_time_s": 42.68402585026694,
    "t_evolution": 64753.39077837099,
@@ -660,6 +660,8 @@
    "group": "2O",
    "shots": 1111.111111111111,
    "route": "overlap+QSP",
+   "conditional": true,
+   "note": "SR-ch9-1 (2026-11-09): the 2033 count is conditional on the 17-call thermal filter (placeholder; a typical reference succeeds with ln p = -276) and on a Delta N_CS estimator of variance ~1e2 (none known; the Hadamard test needs 1.2e15 shots). Drawn as a dashed box in the landscape figure, as Chs. 5, 8 and 10.",
    "sgn_architecture": "single_particle_lift",
    "trotter_rule": "state",
    "t_representative": 41470438398.1214,

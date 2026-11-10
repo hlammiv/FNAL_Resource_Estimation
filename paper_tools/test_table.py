@@ -77,7 +77,7 @@ HEADLINE = {
     (7, "2033"): H(keep_zeros=True),                 # box '1050' (prose 1030-1050), '1.5e10' (1.486e10; referee U2 step m_phi dt = 0.05, 2026-10-04; was '1.0e9')
     (8, "2033"): H(t_rel=r"\gtrsim"),                # box '1000', deepest MLAE circuit '>~9.9e8' (33 x 3.0056e7 + 16 x 7.42e4 = 9.930e8; free preparation and reflections priced 2026-10-05; G2 2026-10-04, was the 3.0e7 base circuit; lower bound, dressing ramp unpriced)
     (9, "2033"): H(keep_zeros=True),                 # box '1235', N_CS method test '4.1e10' (r26-yukawa: gauge-singlet fermions, 4.1470e10; before 1015, 2.5e10; Yukawa weight in the normalization 2026-10-10: 2.4534e10; before 1.9e10 / 1.8909e10; r25 '1.6e10'); the condensate (4.9e9) is not the cell
-    (10, "2033"): H(t="t_per_shot_range"),           # box '~500-1000' (514-1014), '2.8-5.6e9' (author ruling 2026-10-05: QSVT/TPQ thermal state, 17 filter calls of degree 30, 2-4 c_step per query, 2.7726e9-5.6340e9, conditional on the reference; was the Gibbs sampler 8.4e13-4.4e14, open item 1(a) 2026-10-04; before that '>~5.5e9')
+    (10, "2033"): H(t="t_per_shot_range", t_rel=r"\gtrsim"),           # box '~500-1000' (514-1014), '2.8-5.6e9' (author ruling 2026-10-05: QSVT/TPQ thermal state, 17 filter calls of degree 30, 2-4 c_step per query, 2.7726e9-5.6340e9, conditional on the reference; was the Gibbs sampler 8.4e13-4.4e14, open item 1(a) 2026-10-04; before that '>~5.5e9')
 }
 
 # second instances a cell prints after the headline one: (chapter, column) -> model era

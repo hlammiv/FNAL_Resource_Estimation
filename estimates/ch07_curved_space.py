@@ -742,8 +742,8 @@ def _model_2028(a: Assumptions, reg: dict, gt: float) -> Result:
     if abs(dx["wall_serial_s"][0] - wall_s) > 1e-9 * wall_s:
         raise AssertionError("depth_exports serial wall disagrees with the model wall")
     notes = (
-        f"LQ: {reg['system_qubits']} + (30-50) = {reg['lq'][0]}-{reg['lq'][1]}, no Hadamard qubits (R6); box 220-240 "
-        "(app04:70, box). Option (c) (smaller ruling (b), 2026-10-05): one step at K = 8.",
+        f"LQ: {reg['system_qubits']} + (30-50) = {reg['lq'][0]}-{reg['lq'][1]}, no Hadamard qubits (R6); box 222-242 "
+        "(app04:70, box; was the rounded 220-240 until 2026-11-09). Option (c) (smaller ruling (b), 2026-10-05): one step at K = 8.",
         f"T/step derived here (app04:84): B/2 D B/2 on 4^3, n_q = {s['n_q']}: D = {s['diag_block']}, B = {s['pi2_block']}, "
         f"QFT pair {s['qft_pair_rot']} rotations; {n_steps:g} step(s): N_rot = {sc['n_rot']:.0f} "
         f"at eps {sc['eps_rot']:.2e} ({sc['t_per_rot']:.2f} T), + {sc['t_exact']['qft_cs']:.0f} T controlled-S "
@@ -1637,8 +1637,9 @@ def twopi_lo(lam: float, g: float, rec=(1000.0,), L: int = 3, b: float = 3.46, P
 
 
 PUBLISHED = {
-    "2028": Published(lq=(220, 240), hard_ops=(9.5e4, 9.5e4),
-                      src="app04:2028 box ('220--240', '9.5e4 T-gates', wall '43 s'); requirements "
+    "2028": Published(lq=(222, 242), hard_ops=(9.5e4, 9.5e4),
+                      src="app04:2028 box ('222--242', '9.5e4 T-gates', wall '43 s'; was the rounded '220--240' until "
+                          "2026-11-09, referee SR-ch7-4); requirements "
                           "summary. Smaller ruling (b) (2026-10-05), option (c): one macro-step at K = 8 "
                           "(6.475e4 T) + 3e4 prep = 9.475e4 (was four steps at K = 4, 9.437e4, 160-180 LQ).",
                       rel_tol=0.10),

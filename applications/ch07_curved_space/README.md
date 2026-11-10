@@ -26,6 +26,8 @@ python -m estimates --chapter ch07                  # assumptions, resources.jso
 python -m estimates --chapter ch07 --intermediates  # also every named intermediate the model records
 python -m pytest estimates/tests/test_ch07_curved_space.py -q
 python applications/ch07_curved_space/dump_assumptions.py   # the tables in Section 3
+OMP_NUM_THREADS=2 python applications/ch07_curved_space/full_step_check.py          # full-window exact step check, ~1.7 h (Section 4)
+OMP_NUM_THREADS=2 python applications/ch07_curved_space/full_step_check.py --quick  # t = 12.5 only, ~1 min
 ```
 
 `--chapter ch07` prints three blocks. ASSUMPTIONS lists the 87 inputs with value, provenance tag and source. INSTANCES shows the two rows the chapter writes to `resources.json`. EXPORTS gives, per era, the headline logical qubits and T count against the box as printed (`[ok]` when inside the 10% tolerance), shots, wall time, $\epsilon_l$, the T-depth and factory keys, and the primitive-by-primitive T breakdown with its circuit status; under each era the model's notes follow, one line per arithmetic step. The command is read-only.
@@ -168,7 +170,7 @@ All figures below are printed by `python -m estimates --chapter ch07 --intermedi
 
 $N_q = V(\lceil\log_2 K\rceil + 4N_f) + N_{\rm anc} + N_{\rm Had}$, with $N_{\rm anc} = 30$-$50$ (Stated) and no Hadamard-test qubit, since every observable is an equal-time two-point function read by direct measurement.
 
-- 2028: $64 \times 3 = 192$ system qubits, 222-242 in all (`lq_sum`). The box prints 220-240.
+- 2028: $64 \times 3 = 192$ system qubits, 222-242 in all (`lq_sum`). The box and Table 1.1 print the same range (the rounded 220-240 until 2026-11-09).
 - 2033: $125 \times (4 + 4) = 1000$ system qubits, 1030-1050 (`lq_sum`). The box prints 1050.
 
 ### Term counts for one Trotter step (`step_terms`, lines 518-546)
@@ -224,7 +226,7 @@ All synthesized rotations in one shot share one tolerance under the report-wide 
 
 These functions do not enter the cost arithmetic. They justify the inputs it uses, and the tests rerun short versions of each.
 
-- 2033 step: `verlet_proxy` runs the circuit's kick-drift-kick map on the condensate, the linear scalar fluctuations and the free fermion modes. On fermion shells with $n_k > 0.1$, $m_\phi\Delta t = 1$ fails and $0.05$ gives at most 1.6% (`proxy_step_err_2033`; `test_step_proxy_rejects_omega_dt_1_and_accepts_0p05`). `exact_reduced_step` runs the exact splitting on a 3-site ring at $K = 16$ with one Wilson fermion, giving at most 0.31% step error (`exact_step_err_reduced_2033`). That is at most 1.23 times the proxy (`exact_over_proxy_step_2033`), or 2% when scaled to $5^3$ (`step_err_extrapolated`). The same run shows that a field grid fixed at $a(t_{\rm in})$ fails (30% error at $m_\phi t = 50$), so the register holds $\chi = a^{3/2}\phi$. Its squeeze is absorbed into angle changes on existing rotations, checked by `enc="shear"` against the explicit squeeze (`test_shear_encoding_matches_explicit_squeeze`).
+- 2033 step: `verlet_proxy` runs the circuit's kick-drift-kick map on the condensate, the linear scalar fluctuations and the free fermion modes. On fermion shells with $n_k > 0.1$, $m_\phi\Delta t = 1$ fails and $0.05$ gives at most 1.6% (`proxy_step_err_2033`; `test_step_proxy_rejects_omega_dt_1_and_accepts_0p05`). `exact_reduced_step` runs the exact splitting on a 3-site ring at $K = 16$ with one Wilson fermion, giving at most 0.31% step error (`exact_step_err_reduced_2033`). That is at most 1.23 times the proxy (`exact_over_proxy_step_2033`), or 2% when scaled to $5^3$ (`step_err_extrapolated`); the box prints '${\sim}2\%$ (scaled from a reduced instance)'. The tests rerun set 1 at $t = 12.5$ only; `full_step_check.py` reruns the whole study (three coupling sets, $\Delta t$, $\Delta t/2$, $\Delta t/4$, eight read times from $t = 12.5$ to $1000/m_\phi$, about 1.7 h on one core) and prints each read time's Richardson ratio, exact step error, ring-proxy error and their ratio, then a summary against the three recorded constants. Its proxy error is `verlet_proxy` at the ring's two $|k|$ with Richardson from the same three steps; the 2026-10-04 run's proxy definition and read grid were in scratch scripts (`open/ch07/`) that are not in this repository, so the ratios it prints are its own definition, not a regression test of 1.23. The same run shows that a field grid fixed at $a(t_{\rm in})$ fails (30% error at $m_\phi t = 50$), so the register holds $\chi = a^{3/2}\phi$. Its squeeze is absorbed into angle changes on existing rotations, checked by `enc="shear"` against the explicit squeeze (`test_shear_encoding_matches_explicit_squeeze`).
 - Constructor guards (lines 426-444): the 2033 step must satisfy $m_\phi\Delta t \le 0.05$, and both the step and the ramp step must stay inside the Stormer-Verlet window $\omega\Delta t < 2$.
 - 2028 grid: `ds2028_grid_check` evolves the digitized free field exactly on a 4-site ring. With the grid refit every step, $K = 8$ holds every shell to 0.10-0.14% after one step for $m \approx 1$-$1.5\,H_{\rm inf}$ (`grid_2028_k8_one_step`). `ds2028_map_vs_exact` shows that the one-step map itself is 13-25% from exact de Sitter at $m = 1$-$1.4\,H_{\rm inf}$ (28% at 1.5; `map_vs_desitter_2028_one_step`), which is why the validation target is the map and not de Sitter.
 - Register capacity: `digitized_site` and `coherent_fidelity` show that $K = 16$ holds a condensate of about two quanta per site (`condensate_quanta_per_site` = 1.99).
@@ -236,7 +238,7 @@ Rows in `resources.json` (`instances`, `"ch": 7`), as written by `INSTANCE_ROWS`
 
 | quantity | 2028 | 2033 | box / Table 1.1 | pinned by |
 |---|---|---|---|---|
-| `lq` | [222, 242] | [1030, 1050] | 220-240; 1050 | `test_2028_register`, `test_2033_register`, `test_published_is_the_box_as_printed` |
+| `lq` | [222, 242] | [1030, 1050] | 222-242; 1050 | `test_2028_register`, `test_2033_register`, `test_published_is_the_box_as_printed` |
 | `t` (per shot) | 94753.39 | 1.4855018e10 | $9.5\times10^4$; $1.5\times10^{10}$ | `test_2028_hard_ops_derived`, `test_2033_per_step_derived`, `test_2033_per_shot_total_is_sum_of_box_lines` |
 | `t_evolution` / `t_evolution_net` | 64753.39 | 1.4492401e10 | "6.5e4 per step"; "1.45e10 of evolution" | `test_2028_hard_ops_derived`, `test_2033_evolution_has_no_lever` |
 | `t_prep` | 30000 | 3.6231002e8 | prep; "3.6e8 switch-on" | `test_2028_hard_ops_derived`, `test_2033_ramp_window_ruling` |
@@ -246,7 +248,7 @@ Rows in `resources.json` (`instances`, `"ch": 7`), as written by `INSTANCE_ROWS`
 | `wall_first_result_s` | (one tier) | [259449, 518899] | 3.0-6.0 days | `test_2033_shots_wall_time_campaign` |
 | `conditional`, `t_bound` | | false, null | a point estimate, no lever | `test_instance_rows` |
 
-Other exports the chapter prints, with their tests: $\epsilon_l = 6.73\times10^{-12}$ and about 149 faults at $10^{-8}$ (`test_2033_error_rate_argument`); T-depth and $F^*$ (`test_2028_depth_exports`, `test_2033_depth_exports`); the one-shot time of $1.5\times10^4$ s for the requirements summary (`test_2033_shots_wall_time_campaign`); and the utility, $0.03 \times \$109$M/yr $= \$3.27$M/yr, rounded to \$3M/yr and \$15M over 5 years (`utility`, `test_utility_box`). Table 1.1 of the paper quotes the same box values (220-240 LQ, $9.5\times10^4$ T; 1050 LQ, $1.5\times10^{10}$ T). In `test_common.py`, `test_model_reproduces_published[7]` requires the model to land within 10% of the `PUBLISHED` box values (lines 1628-1640), and `test_model_contract[7]` and `test_model_exports_depth[7]` check the shared contract.
+Other exports the chapter prints, with their tests: $\epsilon_l = 6.73\times10^{-12}$ and about 149 faults at $10^{-8}$ (`test_2033_error_rate_argument`); T-depth and $F^*$ (`test_2028_depth_exports`, `test_2033_depth_exports`); the one-shot time of $1.5\times10^4$ s for the requirements summary (`test_2033_shots_wall_time_campaign`); and the utility, $0.03 \times \$109$M/yr $= \$3.27$M/yr, rounded to \$3M/yr and \$15M over 5 years (`utility`, `test_utility_box`). Table 1.1 of the paper quotes the same box values (222-242 LQ, $9.5\times10^4$ T; 1050 LQ, $1.5\times10^{10}$ T). In `test_common.py`, `test_model_reproduces_published[7]` requires the model to land within 10% of the `PUBLISHED` box values (lines 1628-1640), and `test_model_contract[7]` and `test_model_exports_depth[7]` check the shared contract.
 
 ## 6. Circuit status
 

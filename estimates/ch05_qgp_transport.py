@@ -92,9 +92,9 @@ WHAT IS NOT DERIVED HERE
     FP hop + mass 2.34e5; E21 sharing) and the mu_B=0 shot 1.09e10 (r18 verifier; earlier rounds priced eps = 1e-8 per
     rotation; at share='draft' 4.10e5 and 1.33e10)
     (app03:78 states this; intermediates *_at_papers_fiducial_eps).
-  The Sigma(72x3) electric term is the paper's LOWER BOUND for a fast transform that has not
-    been constructed (CircuitStatus.CONJECTURE in groups.py). The compiled dense U_F is
-    ~270x larger (490x the magnetic term) at the 2033 eps; both are intermediates.
+  The Sigma(216x3) electric term is the paper's COMPILED group FFT (arxiv_2611_08161 Tables 9 and 11; an upper
+    bound as the paper states it), 8.858e4 T per link-step at the 2033 eps; electric_dense == electric, so the
+    *_dense intermediates equal the headline. The Sigma(72x3) LOWER BOUND (CONJECTURE) is retired from Ch. 5.
   Trotter step counts: 6 at 2028 (the full benchmark), so its deepest shot lands 5.9x over the 1e5-T envelope and the
     box says so (app03 2028 box; gap bullet). Ruling (b) 2026-10-01: the benchmark needs a >=5.9x cut and the named
     levers give 3-10x, so only the upper part of that range closes it. Since r25 the one-step first result fits.
@@ -105,8 +105,8 @@ WHAT IS NOT DERIVED HERE
     result of 0.045 fm/c, at the same T as before.
   Quench thermalization time c / T with c in [2, 2 pi] (quench_c, Assumed): ETH at the chapter's couplings on 3^3,
     the relaxation of the momentum density within t_th and the thermal variance of the prepared state are ASSUMED;
-    checked only by exact evolution on toys (Z2 up to 5x3, 2T up to 2x2, Z2 + staggered fermion N = 16; scratchpad
-    quench/). The ramp length (one a_s) is a floor. The preparation runs at the grid step, not the state-dependent
+    checked only by exact evolution on toys (Z2 up to 5x3, 2T up to 2x2, Z2 + staggered fermion N = 16; internal
+    study, not archived). The ramp length (one a_s) is a floor. The preparation runs at the grid step, not the state-dependent
     fit rule (it needs energy conservation, O(dt^2), not a faithful unitary); a coarser prep step (2-5x) is an
     UNPRICED lever (NEEDS_AUTHOR). The E-rho-OQ penalties (G8, computed 2026-10-05) and the 1e9 Gibbs prep are
     retired from the model with the methods (author ruling 2026-10-05; the computed values stay in NEEDS_AUTHOR).
@@ -359,8 +359,8 @@ class Assumptions:
     quench_ramp_a_s: Tagged = Assumed(1.0, "energy tuning of the initial state by a coupling ramp of one a_s (lattice "
                                            "time unit), priced as ceil(a_s / dt) steps of the same Trotter circuit, a "
                                            "FLOOR (a single magnetic layer is the alternative). On 2T 2x2 a ramp of a "
-                                           "few a_s moves T_eff from 0.80 to 0.30 (scratchpad quench/res "
-                                           "out_2tramp_2x2)", "scratchpad quench/run/g2t_ramp2.py")
+                                           "few a_s moves T_eff from 0.80 to 0.30 (internal study, not archived; "
+                                           "no script or output is on disk)", "internal study, not archived")
     be_trim: Tagged = Stated(10, f"{TEX}:91,147", "qubitized BE trims 10x; Sigma(72x3) BE not yet synthesized")
     ceiling_2033_t: Tagged = Cited(RFI_T_2033, RFI_SRC, "'the RFI's ~1e9-hard-op 2033 envelope' (app03 budget split (classical-sample rail),149); R3: the ceiling")
     rfi_eps_l: Tagged = Cited(RFI_EPS_L, RFI_SRC, "the RFI's logical error rate; eps_l is printed as a requirement instead")
@@ -439,8 +439,11 @@ class Assumptions:
                                                     "(arxiv_2401_01169); the e^{-mL} expansion (arxiv_0905_1663, "
                                                     "arxiv_hep-lat_0503014) has mL = 1-2.6 here",
                                               "arxiv_2401_01169,arxiv_1802_07718,arxiv_0905_1663")
-    sys_subgroup: Tagged = Assumed((0.05, 0.10), "subgroup difference on eta/s, conditional on H_I keeping Sigma(216x3) "
-                                                 "in the scaling regime at a_s = 0.2 fm (otherwise uncontrolled): "
+    sys_subgroup: Tagged = Assumed((0.05, 0.10), "CONTEXT ONLY, not printed: the chapter lists the subgroup (digitization) "
+                                                 "dependence of Gamma(k_min) as not quantified (no thermal-correlator study, "
+                                                 "different action); the range is the two nearest Euclidean studies', kept "
+                                                 "for comparison. Conditional on H_I keeping Sigma(216x3) in the scaling "
+                                                 "regime at a_s = 0.2 fm (otherwise uncontrolled): "
                                                  "Sigma(360x3) with the two-coupling action reproduces T_c sqrt(t0), "
                                                  "glueballs and Casimir scaling to 0.5-5% at a = 0.08-0.16 fm "
                                                  "(arxiv_1906_11213, arxiv_2112_08482, arxiv_2405_12204); SU(2) "

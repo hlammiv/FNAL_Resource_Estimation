@@ -146,7 +146,7 @@ def test_2028_register(r28):
     assert i["system_qubits"] == 192         # "192 system qubits (64 x 3)"
     assert i["n_anc"] == (30, 50)            # "30-50 ramp/out-mode/..."   app04:120
     assert i["n_hadamard"] == (0, 0)         # R6 (r25): no Hadamard test
-    assert i["lq_sum"] == (222, 242)         # "222--242 in all"; box prints 220-240 (2 sig figs)
+    assert i["lq_sum"] == (222, 242)         # "222--242 in all"; box and Table 1.1 print the same since 2026-11-09
     assert r28.lq == (222, 242)
     assert i["log2_hilbert_dim"] == 192      # "dimension ~ K^V" = 8^64 = 2^192
 
@@ -527,8 +527,9 @@ def test_headline_ratio_2033_over_2028(r28, r33):
 
 
 def test_published_is_the_box_as_printed():
-    # 2028 option (c), one step at K = 8: 220-240 LQ, 9.5e4 (smaller ruling (b), 2026-10-05; was 160-180, 9.4e4)
-    assert ch7.PUBLISHED["2028"].lq == (220, 240)
+    # 2028 option (c), one step at K = 8: 222-242 LQ (exact since 2026-11-09, SR-ch7-4; was the rounded 220-240),
+    # 9.5e4 (smaller ruling (b), 2026-10-05; was 160-180, 9.4e4)
+    assert ch7.PUBLISHED["2028"].lq == (222, 242)
     assert ch7.PUBLISHED["2028"].hard_ops == (9.5e4, 9.5e4)
     assert ch7.PUBLISHED["2033"].lq == (1050, 1050)
     assert ch7.PUBLISHED["2033"].hard_ops == (1.5e10, 1.5e10)

@@ -15,6 +15,7 @@ import estimates
 import fnalfig as ff
 
 DATA = Path(__file__).resolve().parent.parent / "applications/ch08_baryogenesis/sint/sint_results.json"
+DATA15 = Path(__file__).resolve().parent.parent / "applications/ch08_baryogenesis/sint/sint15_results.json"
 
 
 def s_int(rows, aT):
@@ -39,6 +40,7 @@ def main():
     wanted = [r for r in runs if (r["wall"], r["width"], r["dtheta"]) == (0.5, 2.0, 0.1)]
     assert len(wanted) == 1
     run = wanted[0]
+    r15 = next(r for r in json.loads(DATA15.read_text()) if (r["wall"], r["width"], r["dtheta"], r["sigma"]) == (0.5, 2.0, 0.1, 1.5))
     m = estimates.load(8)
     i = m.model(m.Assumptions(), "2033").intermediates
     a = m.Assumptions()
@@ -48,6 +50,7 @@ def main():
     # the printed values
     assert f"{s_int(run['rows'], 0.5):.1e}" == "2.1e-02" and f"{s_int(run['rows'], 0.45):.2e}"[:4] in ("2.35", "2.36", "2.34")
     assert round(i["dn_estimate_headroom"], 1) == 1.3
+    assert f"{r15['S_int']:.1e}" == "1.6e-02" and f"{r15['S_int_09']:.1e}" == "1.7e-02" and i["s_int_taken"] == 1.6e-2   # SR-ch8-1
     assert round(amax, 2) == 0.06 and round(p0 * amax, 3) == 0.037 and round(i["dn_estimate"], 3) == 0.056
     band = [r for r in runs if r["dtheta"] == 0.1]
     vals = [s_int(r["rows"], t) for r in band for t in (0.5, 0.45)]
@@ -97,14 +100,16 @@ def main():
         axc.plot(j, 100 * s_int(r["rows"], 0.45), "s", color=ff.ORANGE, ms=3.2)
     axc.plot(1, 100 * s_int(run["rows"], 0.5), "o", mfc="none", mec=ff.INK, ms=7, mew=0.7)
     axc.plot(1, 100 * s_int(run["rows"], 0.45), "o", mfc="none", mec=ff.INK, ms=7, mew=0.7)
-    axc.set(xlim=(-0.6, 3.6), ylim=(1.55, 3.3), xticks=range(4), yticks=[2, 2.5, 3], ylabel=r"$S_{\rm int}\;(10^{-2})$")
+    axc.plot(1, 100 * r15["S_int"], "D", color=ff.INK, ms=4)
+    axc.text(1.3, 100 * r15["S_int"], r"$1.6$, 15-site axis at $t_{\max}$", fontsize=6.3, va="center", color=ff.INK)
+    axc.set(xlim=(-0.6, 3.6), ylim=(1.3, 3.3), xticks=range(4), yticks=[1.5, 2, 2.5, 3], ylabel=r"$S_{\rm int}\;(10^{-2})$")
     axc.set_xticklabels(labels, fontsize=6.5)
     axc.set_xlabel(r"$|y|\phi$, width$/a$", labelpad=1)
     axc.yaxis.labelpad = 1
     axc.tick_params(axis="x", pad=2)
     axc.text(0.03, 0.965, r"(c) $2.1$ at $T_c$", transform=axc.transAxes, va="top", fontsize=6.8, color=ff.BLUE)
     axc.text(0.03, 0.875, r"$2.4$ at $0.9\,T_c$", transform=axc.transAxes, va="top", fontsize=6.8, color=ff.ORANGE)
-    axc.text(3.5, 1.62, "band $1.9$\u2013$2.7$", fontsize=6.5, ha="right", va="bottom", color=ff.DARKGREY)
+    axc.text(3.5, 1.35, "band $1.9$\u2013$2.7$", fontsize=6.5, ha="right", va="bottom", color=ff.DARKGREY)
     return fig
 
 

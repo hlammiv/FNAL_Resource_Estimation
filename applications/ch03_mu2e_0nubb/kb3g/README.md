@@ -39,7 +39,9 @@ column). The chapter keeps the 0.3-0.5 MeV band and prints both.
 - `rabi_kb3g.py <snt> <space> <theta|M| list>`: the Rabi check (logs `rabi_kb3g_f7p3*.log`).
 - `implications.py [snt]`: pushes the JSON results through `estimates/ch03_mu2e_0nubb.py` and prints the rows
   before and after.
-- `fetch_snt.sh`: downloads `kb3g.snt` and `gxpf1a.snt` from the KSHELL distribution (not mirrored).
+- `fetch_snt.sh`: downloads `kb3g.snt`, `gxpf1a.snt` and `usdb.snt` from the KSHELL distribution at a pinned commit and checks their sha256 (not mirrored).
+- `run_gaps.py`: the 0+ gap driver for `sm.py`; writes the six `gap_kb3g_*_J0.0.json` and the two `gap_usdb_sd_27Al_*.json` files.
+- `al27_sd.py`: the 27Al USDB readout inputs (<S_p>, <O_SD>, Var(O_SD), p for the 0d5/2 reference) by exact Lanczos at J = M = 5/2; writes `al27_sd_readout.json`.
 
 Full pf needs numpy >= 2 (`np.bitwise_count`) and about 1.5 GB; the 48Ti Lanczos took 31 min (KB3G) and 15 min
 (GXPF1A) on one core.

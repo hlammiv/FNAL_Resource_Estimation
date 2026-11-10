@@ -385,9 +385,11 @@ class Assumptions:
                                           "referee F1; scratchpad referee/run2.py")
     n_T: Tagged = Stated(5, f"{TEX}:56,165", "5 temperatures, T in [100,200] MeV")
     n_mu: Tagged = Stated(5, f"{TEX}:56,165", "5 chemical potentials, mu_B in [0,600] MeV")
-    eps_pressure_target: Tagged = Stated(0.05, f"{TEX}:56,167,224",
-                                         "'5% on p', not separately costed: chi4 at eps=0.1 sets the shots, p "
-                                         "inherited (ruling ch10-pressure-5pct a)")
+    eps_pressure_target: Tagged = Stated(0.05, f"{TEX} (RECORD; the '5% on p' print retired 2026-11-09, SR-ch10-2)",
+                                         "RECORD: never separately costed (ruling ch10-pressure-5pct a); chi4 at eps=0.1 sets "
+                                         "the shots and the chapter now prints 'precision not estimated' for p. A 400-replica "
+                                         "MBAR Monte Carlo of the campaign rows (verifier 2026-11-09) gave Delta p 5-9% at "
+                                         "mu_B = 150 MeV for T <= 175 MeV and 1-4.5% at mu_B >= 300 MeV")
     eps_chi4_chi2_target: Tagged = Stated(0.10, f"{TEX}:167", "'10% on chi4/chi2'")
     t_gate_s: Tagged = Stated(1e-6, f"{TEX}:151,175", "1 us per T-gate")
     shot_overhead_s: Tagged = Assumed(1e-4, "per-shot overhead ~0.1 ms (register init, final readout, decode), "
@@ -1380,7 +1382,7 @@ def _model_2033(a: Assumptions) -> Result:
         hop_allowance_t_per_step_superseded=c_be_old - _gauge_t_per_step(a, d, L, 1e-4, papers=True),   # record, old 1e-4
         c_be_gauge_t_per_step_papers_convention=_gauge_t_per_step(a, d, L, e, papers=True),   # legacy record (R2)
         t_reference_2033=a.t_ref_2033.lo, reference_fraction=(t_range[0] / a.t_ref_2033.lo, t_range[1] / a.t_ref_2033.lo),
-        hard_ops_is_lower_bound=False, hard_ops_is_conditional=True,
+        hard_ops_is_lower_bound=True, hard_ops_is_conditional=True,
         t_hsim_lower_bound=t_hsim_bound, hsim_bound_is_lower_bound=True,
         beta_h=beta_h, c_mix=a.c_mix.lo, n_gibbs_steps=n_steps, c_be_t_per_step=c_be,
         # ---- headline: QSVT/TPQ thermal state (author ruling 2026-10-05) ----
