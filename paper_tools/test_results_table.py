@@ -36,7 +36,7 @@ NEAR = 3.0
 SECONDS = {"d": 86400.0, "yr": YEAR, "mo": YEAR / 12}
 
 # Not results: removed before numbers are read.
-NOT_NUMBERS = (r"\\fits(?:yes|near|no)",)
+NOT_NUMBERS = (r"\\fits(?:yes|near|no|open)",)
 NUMBER = re.compile(r"(\\sim\s*)?(\d+(?:\.\d+)?)(?:\\times\s*10\^\{(\d+)\})?")
 UNIT = re.compile(r"\$?\s*(\\times|\\%|yr\b|d\b|mo\b|LQ\b)")
 
@@ -72,19 +72,26 @@ def campaign_over_window(ch, end=1):
     return x(ch, "2033", "wall_campaign_s", end) / WINDOW_S
 
 
-def status(ratio):
-    """The symbol for a value as a multiple of its target."""
+# Cells whose per-shot count is a lower bound (the table prints ${\gtrsim}$; test_table.py t_rel). A campaign is a lower
+# bound when its 2033 shot is. Referee follow-up F6 (2026-11-11): a lower bound settles only a red mark.
+LOWER_BOUND = {(8, "2028"), (10, "2028"), (6, "2033"), (8, "2033"), (10, "2033")}
+
+
+def status(ratio, lower_bound=False):
+    """The symbol for a value as a multiple of its target; a lower bound that is not already more than NEAR over is open."""
     rounded = float(f"{ratio:.2g}")
+    if lower_bound and rounded < NEAR:
+        return r"\fitsopen"
     return r"\fitsyes" if rounded <= 1.0 else r"\fitsnear" if rounded < NEAR else r"\fitsno"
 
 
 def machine_status(ch, era):
     """The worse of register and hard operations, at the upper end of each range."""
-    return status(max(over(ch, era), lq(ch, era) / LQ_TARGET[era]))
+    return status(max(over(ch, era), lq(ch, era) / LQ_TARGET[era]), (ch, era) in LOWER_BOUND)
 
 
 def campaign_status(ch):
-    return status(campaign_over_window(ch))
+    return status(campaign_over_window(ch), (ch, "2033") in LOWER_BOUND)
 
 
 def wall_sources(ch, key):
@@ -166,7 +173,7 @@ def test_wall_times_match_the_models(ch, col, key):
 @pytest.mark.parametrize("col", ["2028", "2033", "campaign"])
 def test_status_symbols_match_the_models(ch, col):
     cell = table_rows()[ch][col]
-    printed = re.findall(r"\\fits(?:yes|near|no)\b", cell)
+    printed = re.findall(r"\\fits(?:yes|near|no|open)\b", cell)
     assert len(printed) == 1, f"Ch. {ch} {col}: expected one symbol: {cell}"
     wanted = campaign_status(ch) if col == "campaign" else machine_status(ch, col)
     assert printed[0] == wanted, f"Ch. {ch} {col}: prints {printed[0]}, model gives {wanted}"
@@ -202,10 +209,11 @@ def test_co_design_band_in_bullet():
 
 
 def test_machine_time_bullet():
-    within = [ch for ch in DIGITAL if campaign_over_window(ch) <= 1]
-    assert within == [2, 3, 7, 8]       # r26-yukawa: Ch. 9 left (5.8-6.5 yr)
+    within = [ch for ch in DIGITAL if campaign_over_window(ch) <= 1 and (ch, "2033") not in LOWER_BOUND]
+    assert within == [2, 3, 7]          # r26-yukawa: Ch. 9 left (5.8-6.5 yr); F6 2026-11-11: Ch. 8 is a lower bound
+    assert [ch for ch in DIGITAL if campaign_status(ch) == r"\fitsopen"] == [8, 10]
     text = top_line()
-    assert "Four of the nine campaigns fit the five-year window on one machine." in text
+    assert "Three of the nine campaigns fit the five-year window on one machine and two give lower bounds." in text
     assert f"{float(f'{campaign_over_window(5):.2g}'):.0f}\\times$ (Ch." in text
 
 
