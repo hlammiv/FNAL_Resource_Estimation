@@ -33,11 +33,11 @@ The test file runs 57 tests and skips 15 in this repository. The skips are the p
 
 `Assumptions` (lines 233-546) is one frozen dataclass of 104 `Tagged` fields:
 
-- 23 Cited: a published source gives the value, and the source column is its bibliography key.
-- 33 Assumed: a working assumption the chapter declares.
+- 21 Cited: a published source gives the value, and the source column is its bibliography key.
+- 40 Assumed: a working assumption the chapter declares.
 - 43 Stated-not-derived: the chapter prints the value without derivation. The source is `app11:NN`, a reference into the chapter source; the tests match the printed strings by content, not by line.
 
-Fields marked COMPUTED in the note are Assumed because they come from exact diagonalizations run outside this repository; the source names the output file. `insertion_t_per_toffoli` (7 T per Toffoli) is the report-wide convention stated in the top-level README; its source string names an entry in the paper's convention log. That log is not shipped. What `kb3g/` ships: the pinned, checksummed KB3G and GXPF1A interaction download (`fetch_snt.sh`), the shell-model driver `sm.py`, and `kb3g_lam.py`/`rabi_kb3g.py`, which regenerate the $\lambda/|M|$ ladder and the Rabi preparation logs in this folder. What is not shipped: the $^4$He (`he4D_*`) and $^{27}$Al (`gap_usdb_*`) diagonalizations and the $pf$-shell gap scans (`gap_kb3g_*`) named by the gap and overlap fields. Their drivers and outputs were scratch files that no longer exist, so those fields are external inputs: their source strings name the lost file, and the chapter's costs take them as given. There is no `reproduce.sh`. `__post_init__` (lines 527-546) rejects a non-positive value in any field, a range in any of the 69 fields listed in `_SCALAR_FIELDS`, a mis-ordered gap band, a Trotter step longer than the shortest τ_gs, an LCU of fewer than two terms, and a fault budget outside (0, 1].
+Fields marked COMPUTED in the note are Assumed because they come from exact diagonalizations run outside this repository; the source names the output file. `insertion_t_per_toffoli` (7 T per Toffoli) is the report-wide convention stated in the top-level README; its source string names an entry in the paper's convention log. That log is not shipped. The diagonalizations named by the COMPUTED fields are in `gaps/`: the 48Ca/48Ti gaps, the 27Al gaps and readout inputs, and the 4He data size, with their drivers, `gaps/reproduce.sh` to regenerate them, and `gaps/compare.py`, which checks each output against the model (all 20 match; see `gaps/README.md`). `kb3g/` holds the pinned interaction download and the lambda/|M| ladder. `__post_init__` (lines 527-546) rejects a non-positive value in any field, a range in any of the 69 fields listed in `_SCALAR_FIELDS`, a mis-ordered gap band, a Trotter step longer than the shortest τ_gs, an LCU of fewer than two terms, and a fault budget outside (0, 1].
 
 The table below is the output of `dump_assumptions.py`, which reads the live dataclass. Field, value, provenance and source are printed exactly as the code holds them. The note column drops internal decision labels and previous values from the code's notes; `--raw` prints the notes verbatim. The script exits with an error if a field is missing from its grouping, so the table cannot fall behind the code.
 
@@ -91,7 +91,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `eps_2028` | (0.1, 0.3) | Stated-not-derived | app11:122 | 'With eps ~ 0.1-0.3 on a single matrix element' |
 | `eps_mu2e` | 0.05 | Stated-not-derived | app11:92 | '~10% on CR means eps ~ 0.05 on the matrix element' |
 | `eps_0nubb` | 0.1 | Stated-not-derived | app11:92 | 'Beating the current factor-2-3 spread needs eps ~ 0.1' |
-| `n_op_mu2e` | 6 | Cited | Cirigliano_Kitano_Okada_Tuzon | six operator categories |
+| `n_op_mu2e` | 6 | Stated-not-derived | app11:8 | six operator classes (scalar, vector, dipole, tensor, gluonic, derivative; CKOT cover three of them) |
 | `n_op_0nubb` | 5 | Stated-not-derived | app11:233 | '5 0nubb operators' |
 | `n_pairs_cross_check` | 3 | Stated-not-derived | app11:233 | 'x 3 pairs' |
 | `n_basis_scans` | (2, 3) | Stated-not-derived | app11:233 | 'x 2-3 basis-cutoff scans' |
@@ -115,9 +115,9 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `qrom_t_per_amplitude` | 7 | Cited | Babbush_PRX_2018 | 'D-1 Toffolis per QROM pass' from the source, at the report's 7 T per Toffoli; used only in the lookup-only comparison |
 | `d_amplitudes` | 600 | Stated-not-derived | app11:126 | 'the total stays under the cap for D <~ 600' |
 | `d_plausible` | (100.0, 1000.0) | Stated-not-derived | app11:124 | lower end of the priced D band (1e2); D = 1e3 is kept only as a comparison point (composed_fraction_at_d_hi) |
-| `he4_d_fid99` | (15, 17) | Assumed | scratchpad chopen/app11/he4D_u1.0_s1.0_b{10.0,2.0}.json | COMPUTED: D for fidelity 0.99 (beta = 10, 2) |
-| `he4_d_fid999` | (77, 103) | Assumed | scratchpad chopen/app11/he4D_u1.0_s1.0_b{2.0,10.0}.json | COMPUTED: D for fidelity 0.999 (beta = 2, 10) |
-| `he4_d_dipole_1pct` | 1 | Assumed | scratchpad chopen/app11/he4D_u1.0_s1.0_b{2.0,10.0}.json | COMPUTED: the single largest configuration already gives the dipole <O> within 1% (0.1% needs D = 11), both beta |
+| `he4_d_fid99` | (15, 17) | Assumed | applications/ch03_mu2e_0nubb/gaps/he4D_u1.0_s1.0_b{10.0,2.0}.json | COMPUTED: D for fidelity 0.99 (beta = 10, 2) |
+| `he4_d_fid999` | (77, 103) | Assumed | applications/ch03_mu2e_0nubb/gaps/he4D_u1.0_s1.0_b{2.0,10.0}.json | COMPUTED: D for fidelity 0.999 (beta = 2, 10) |
+| `he4_d_dipole_1pct` | 1 | Assumed | applications/ch03_mu2e_0nubb/gaps/he4D_u1.0_s1.0_b{2.0,10.0}.json | COMPUTED: the single largest configuration already gives the dipole <O> within 1% (0.1% needs D = 11), both beta |
 | `qrom_passes` | (2, 3) | Assumed | app11:126 | lookup-only accounting (load, uncompute, optional verification pass), kept for comparison; the priced shot makes one complete load (loads_per_shot) |
 | `loads_per_shot` | 1 | Assumed | app11:126 | derived here: one complete load per shot; it erases its own index and the test measures, so nothing is uncomputed |
 | `load_angle_error` | 0.01 | Assumed | arxiv_1709_06648 | angle-rounding error of the load, 2 pi L / 2^b (Low, Kliuchnikov and Schaeffer); set equal to the per-shot synthesis budget |
@@ -150,19 +150,19 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `projection_success` | 0.27359 | Assumed | app11:151 | heralded ground-state projection success p for deformed 27Al (estimate; computable exactly in sd); sensitivity band 0.1-0.9 |
 | `first_result_scans` | 1 | Stated-not-derived | app11:153 | the first result uses one Hamiltonian (one basis-cutoff scan) |
 | `eps_first_generic` | 0.3 | Assumed | app11:151 | report-wide first-result statistical error, quoted for comparison only |
-| `gap_al27_usdb_mev` | 2.327866 | Assumed | scratchpad chopen/app11/gap_usdb_sd_27Al_J-1.0.json | COMPUTED: first excited state reachable from an M = 5/2 reference (J >= 5/2; the 7/2+), USDB in sd |
-| `gap_al27_usdb_same_j_mev` | 2.698773 | Assumed | scratchpad chopen/app11/gap_usdb_sd_27Al_J2.5.json | COMPUTED: 5/2+_2 - 5/2+_1, USDB in sd (comparison only) |
+| `gap_al27_usdb_mev` | 2.327866 | Assumed | applications/ch03_mu2e_0nubb/gaps/gap_usdb_sd_27Al_J-1.0.json | COMPUTED: first excited state reachable from an M = 5/2 reference (J >= 5/2; the 7/2+), USDB in sd |
+| `gap_al27_usdb_same_j_mev` | 2.698773 | Assumed | applications/ch03_mu2e_0nubb/gaps/gap_usdb_sd_27Al_J2.5.json | COMPUTED: 5/2+_2 - 5/2+_1, USDB in sd (comparison only) |
 
 #### 2033 0nubb validation stage: 48Ca/48Ti truncation ladder and resonant-drive readout
 
 | field | value | provenance | source | note |
 |---|---|---|---|---|
-| `gap_0plus_f7p3_ca48_mev` | 6.100132 | Assumed | scratchpad chopen/app11/gap_kb3g_f7p3_48Ca_J0.0.json | COMPUTED: 48Ca 0+_2 - 0+_1, KB3G in f7/2 p3/2 (M-dim 57) |
-| `gap_0plus_f7p3_ti48_mev` | 3.68472 | Assumed | scratchpad chopen/app11/gap_kb3g_f7p3_48Ti_J0.0.json | COMPUTED: 48Ti 0+_2 - 0+_1, KB3G in f7/2 p3/2 (M-dim 5296) |
-| `gap_0plus_f7p3p1_ca48_mev` | 5.500798 | Assumed | scratchpad chopen/app11/gap_kb3g_f7p3p1_48Ca_J0.0.json | COMPUTED: 48Ca, KB3G in f7/2 p3/2 p1/2 (M-dim 325) |
-| `gap_0plus_f7p3p1_ti48_mev` | 3.603676 | Assumed | scratchpad chopen/app11/gap_kb3g_f7p3p1_48Ti_J0.0.json | COMPUTED: 48Ti, KB3G in f7/2 p3/2 p1/2 (M-dim 24453) |
-| `gap_0plus_pf_ca48_mev` | 5.174846 | Assumed | scratchpad chopen/app11/gap_kb3g_pf_48Ca_J0.0.json | COMPUTED: 48Ca, KB3G in full pf (M-dim 12022) |
-| `gap_0plus_pf_ti48_mev` | 4.264629 | Assumed | scratchpad chopen/app11/gap_kb3g_pf_48Ti_J0.0.json | COMPUTED: 48Ti, KB3G in full pf (M-dim 634744) |
+| `gap_0plus_f7p3_ca48_mev` | 6.100132 | Assumed | applications/ch03_mu2e_0nubb/gaps/gap_kb3g_f7p3_48Ca_J0.0.json | COMPUTED: 48Ca 0+_2 - 0+_1, KB3G in f7/2 p3/2 (M-dim 57) |
+| `gap_0plus_f7p3_ti48_mev` | 3.68472 | Assumed | applications/ch03_mu2e_0nubb/gaps/gap_kb3g_f7p3_48Ti_J0.0.json | COMPUTED: 48Ti 0+_2 - 0+_1, KB3G in f7/2 p3/2 (M-dim 5296) |
+| `gap_0plus_f7p3p1_ca48_mev` | 5.500798 | Assumed | applications/ch03_mu2e_0nubb/gaps/gap_kb3g_f7p3p1_48Ca_J0.0.json | COMPUTED: 48Ca, KB3G in f7/2 p3/2 p1/2 (M-dim 325) |
+| `gap_0plus_f7p3p1_ti48_mev` | 3.603676 | Assumed | applications/ch03_mu2e_0nubb/gaps/gap_kb3g_f7p3p1_48Ti_J0.0.json | COMPUTED: 48Ti, KB3G in f7/2 p3/2 p1/2 (M-dim 24453) |
+| `gap_0plus_pf_ca48_mev` | 5.174846 | Assumed | applications/ch03_mu2e_0nubb/gaps/gap_kb3g_pf_48Ca_J0.0.json | COMPUTED: 48Ca, KB3G in full pf (M-dim 12022) |
+| `gap_0plus_pf_ti48_mev` | 4.264629 | Assumed | applications/ch03_mu2e_0nubb/gaps/gap_kb3g_pf_48Ti_J0.0.json | COMPUTED: 48Ti, KB3G in full pf (M-dim 634744) |
 | `gap_0plus_ensdf_ca48_mev` | 4.283 | Cited | ENSDF | 48Ca first excited 0+ (4283 keV); comparison only, the priced gaps are KB3G |
 | `gap_0plus_ensdf_ti48_mev` | 2.997 | Cited | ENSDF | 48Ti first excited 0+ (2997 keV); comparison only, the priced gaps are KB3G |
 | `eps_simplified` | 0.3 | Assumed | app11:161 | 30% statistical error on \|M\| for the 0nubb first light |
@@ -190,7 +190,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `ext_qubitization_pb208_toffoli` | 30000000000.0 | Cited | arxiv_2607_21563 | '~3e10 ... 102-orbital 208Pb-core space' |
 | `nme_spread` | 3 | Cited | arxiv_2308_15634 | 'factor-three spread across nuclear models' |
 
-104 fields: Cited 22, Stated-not-derived 42, Assumed 40
+104 fields: Cited 21, Stated-not-derived 43, Assumed 40
 
 ## 4. How the numbers are built
 

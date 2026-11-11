@@ -901,7 +901,7 @@ def test_2033_shots_as_printed(a, r33, tex):
     # SI elements pinned classically: the any-state band is +/-0.61%
     assert round(100 * i["si_pinned_fraction"], 2) == 0.61
     # 2026-10-09 (author ruling, batch 1 item 8): <O_SD> = 0.36681, <S_p> = 0.32620, Var(O_SD) = 0.45116 and
-    # p = 0.27359 computed in the USDB sd ground state (chopen/app11/al27_sd.py); 2 <S_p> o_0d = 0.3646 is the record
+    # p = 0.27359 computed in the USDB sd ground state (applications/ch03_mu2e_0nubb/gaps/al27_sd.py); 2 <S_p> o_0d = 0.3646 is the record
     _rng(i["o_sd"], (0.36681, 0.36681), 1e-12)
     assert round(i["sd_element_from_spin_check"], 4) == 0.3646 and round(2 * 0.32620 * d["o_0d"], 4) == 0.3646
     assert a.sd_element_expectation.prov is c.Provenance.ASSUMED and "COMPUTED" in a.sd_element_expectation.note
@@ -1507,7 +1507,7 @@ def test_referee_text_corrections(a, tex):
 
 def test_referee_m3_he4_data_size(a, r28, tex):
     """Referee M3 (2026-10-05): D for the 4He ground state, computed for a schematic stand-in (Minnesota NN,
-    Lawson beta = 2 and 10, exact diagonalization in the 40-mode space; scratch chopen/app11/he4D.py). The
+    Lawson beta = 2 and 10, exact diagonalization in the 40-mode space; applications/ch03_mu2e_0nubb/gaps/he4D.py). The
     computed D is at or below the priced band D = 1e2-600 and below the fit's end (596); the headline is unchanged."""
     i = r28.intermediates["d_he4_computed"]
     assert i["fid99"] == (15, 17) and i["fid999"] == (77, 103) and i["dipole_1pct"] == 1

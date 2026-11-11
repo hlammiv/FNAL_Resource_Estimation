@@ -117,7 +117,7 @@ REFEREE PASS (2026-10-04; editorial_review/responses/ch03.md)
     to D = 128 (unchanged), 3 to D = 221 (228 without), then 1 to D = 596 (mlae_m_max_last_d_with_load_angles).
   Max subroutine time: 0.10 s per 2028 shot, 1.8-7.3 min per 2033 27Al shot, ~16 min per f7p3p1 resonant-drive
     shot (max_subroutine_time_s; the requirements row no longer says N/A).
-REFEREE M3 FOLLOW-UP (2026-10-05; scratch chopen/app11, exact diagonalization, interactions from KSHELL snt files)
+REFEREE M3 FOLLOW-UP (2026-10-05; applications/ch03_mu2e_0nubb/gaps, exact diagonalization, interactions from KSHELL snt files)
   0+ gaps of the truncated Hamiltonians, KB3G restricted to the kept orbits (48Ca / 48Ti): f7p3 6.100 / 3.685,
     f7p3p1 5.501 / 3.604, pf 5.175 / 4.265 MeV, replacing ENSDF 4.283 / 2.997 in simplified_0nubb (GXPF1A, the
     record, gives a smaller 1/Delta sum in every space). f7p3 projection rung 1.19e8-2.44e8 -> 9.10e7-1.86e8 T,
@@ -353,14 +353,14 @@ class Assumptions:
     # (Thompson, LeMere, Tang, NPA 286 (1977) 53; u = 1, no Coulomb) + intrinsic kinetic energy at the chapter's b,
     # Lawson c.m. term beta = 2 and 10 (without it the ground state is c.m.-contaminated: (0s)^4 weight 0.83,
     # D 125 / 299 at fidelity 0.99 / 0.999), exact diagonalization in M_L = M_S = 0 (dim 2556). D = number of
-    # largest-|c| JW configurations kept. E0 = -26.9 / -26.8 MeV; (0s)^4 weight 0.970. Scratch: chopen/app11/he4D.py.
+    # largest-|c| JW configurations kept. E0 = -26.9 / -26.8 MeV; (0s)^4 weight 0.970. Driver: applications/ch03_mu2e_0nubb/gaps/he4D.py.
     he4_d_fid99: Tagged = Assumed((15, 17), "COMPUTED: D for fidelity 0.99 (beta = 10, 2)",
-                                  "scratchpad chopen/app11/he4D_u1.0_s1.0_b{10.0,2.0}.json (not shipped; external input)")
+                                  "applications/ch03_mu2e_0nubb/gaps/he4D_u1.0_s1.0_b{10.0,2.0}.json")
     he4_d_fid999: Tagged = Assumed((77, 103), "COMPUTED: D for fidelity 0.999 (beta = 2, 10)",
-                                   "scratchpad chopen/app11/he4D_u1.0_s1.0_b{2.0,10.0}.json")
+                                   "applications/ch03_mu2e_0nubb/gaps/he4D_u1.0_s1.0_b{2.0,10.0}.json")
     he4_d_dipole_1pct: Tagged = Assumed(1, "COMPUTED: the single largest configuration already gives the dipole "
                                            "<O> within 1% (0.1% needs D = 11), both beta",
-                                        "scratchpad chopen/app11/he4D_u1.0_s1.0_b{2.0,10.0}.json")
+                                        "applications/ch03_mu2e_0nubb/gaps/he4D_u1.0_s1.0_b{2.0,10.0}.json")
     qrom_passes: Tagged = Assumed((2, 3), "R11-R14 lookup-only accounting (load, uncompute, optional "
                                           "verification pass), kept as the record of the retired print; R15 "
                                           "prices one complete load per shot (loads_per_shot)",
@@ -442,7 +442,7 @@ class Assumptions:
     # spin-independent (SI) elements in sd are pinned classically to +/-0.6% in any state (the derived
     # any-state band); the spin-dependent (SD, tensor) element carries the shots: <O_SD> = 2 <S_p> o_0d.
     # author ruling 2026-10-09 (batch 1 item 8): the three readout inputs are computed in the USDB sd ground state
-    # (J = M = 5/2, exact Lanczos, M-dim 64299; applications/ch03_mu2e_0nubb/kb3g/al27_sd.py, al27_sd_readout.json).
+    # (J = M = 5/2, exact Lanczos, M-dim 64299; applications/ch03_mu2e_0nubb/gaps/al27_sd.py, al27_sd_readout.json).
     sd_spin_expectation: Tagged = Assumed(0.32620, "COMPUTED: <S_p> = <sum_p sigma_z>/2 in the USDB sd ground state "
                                                    "(was the shot audit's 0.30-0.34); a record, the element below "
                                                    "carries the shots", f"{TEX}:151")
@@ -469,28 +469,28 @@ class Assumptions:
     # gives the larger sum 1/Delta_Ca + 1/Delta_Ti in both truncated spaces; GXPF1A (Honma et al., EPJA 25 s01,
     # 499) is the record: f7p3 6.0595 / 4.0233, f7p3p1 5.6371 / 3.8668, pf 5.2749 / 4.0477 (pf: 1/Delta sum
     # 0.4366 vs KB3G 0.4277, i.e. ~2% dearer; printed).
-    # Scratch: chopen/app11/{sm.py, run_gaps.py, gap_*.json}.
+    # Drivers and outputs: applications/ch03_mu2e_0nubb/gaps/{sm.py, run_gaps.py, gap_*.json}.
     gap_0plus_f7p3_ca48_mev: Tagged = Assumed(6.100132, "COMPUTED: 48Ca 0+_2 - 0+_1, KB3G in f7/2 p3/2 (M-dim 57)",
-                                              "applications/ch03_mu2e_0nubb/kb3g/gap_kb3g_f7p3_48Ca_J0.0.json")
+                                              "applications/ch03_mu2e_0nubb/gaps/gap_kb3g_f7p3_48Ca_J0.0.json")
     gap_0plus_f7p3_ti48_mev: Tagged = Assumed(3.684720, "COMPUTED: 48Ti 0+_2 - 0+_1, KB3G in f7/2 p3/2 (M-dim 5296)",
-                                              "scratchpad chopen/app11/gap_kb3g_f7p3_48Ti_J0.0.json")
+                                              "applications/ch03_mu2e_0nubb/gaps/gap_kb3g_f7p3_48Ti_J0.0.json")
     gap_0plus_f7p3p1_ca48_mev: Tagged = Assumed(5.500798, "COMPUTED: 48Ca, KB3G in f7/2 p3/2 p1/2 (M-dim 325)",
-                                                "scratchpad chopen/app11/gap_kb3g_f7p3p1_48Ca_J0.0.json")
+                                                "applications/ch03_mu2e_0nubb/gaps/gap_kb3g_f7p3p1_48Ca_J0.0.json")
     gap_0plus_f7p3p1_ti48_mev: Tagged = Assumed(3.603676, "COMPUTED: 48Ti, KB3G in f7/2 p3/2 p1/2 (M-dim 24453)",
-                                                "scratchpad chopen/app11/gap_kb3g_f7p3p1_48Ti_J0.0.json")
+                                                "applications/ch03_mu2e_0nubb/gaps/gap_kb3g_f7p3p1_48Ti_J0.0.json")
     gap_0plus_pf_ca48_mev: Tagged = Assumed(5.174846, "COMPUTED: 48Ca, KB3G in full pf (M-dim 12022)",
-                                            "scratchpad chopen/app11/gap_kb3g_pf_48Ca_J0.0.json")
+                                            "applications/ch03_mu2e_0nubb/gaps/gap_kb3g_pf_48Ca_J0.0.json")
     gap_0plus_pf_ti48_mev: Tagged = Assumed(4.264629, "COMPUTED: 48Ti, KB3G in full pf (M-dim 634744)",
-                                            "scratchpad chopen/app11/gap_kb3g_pf_48Ti_J0.0.json")
+                                            "applications/ch03_mu2e_0nubb/gaps/gap_kb3g_pf_48Ti_J0.0.json")
     # 27Al: the 2033 deliverable keeps the generic band (its Hamiltonians are VS-IMSRG sd interactions, not
     # computed here); USDB (Brown & Richter, PRC 74, 034315; KSHELL usdb.snt, whose header is mislabelled USDA but
     # whose single-particle energies 2.1117 / -3.9257 / -3.2079 MeV are USDB's; (18/A)^0.3 at A = 27) is the check.
     # Exact Lanczos, M = 1/2 (dim 80115): 1/2+ 0.882, 3/2+ 1.063, 7/2+ 2.328, 5/2+ 2.699 MeV; M = 5/2 (dim 64299).
     gap_al27_usdb_mev: Tagged = Assumed(2.327866, "COMPUTED: first excited state reachable from an M = 5/2 "
                                                   "reference (J >= 5/2; the 7/2+), USDB in sd",
-                                        "scratchpad chopen/app11/gap_usdb_sd_27Al_J-1.0.json")
+                                        "applications/ch03_mu2e_0nubb/gaps/gap_usdb_sd_27Al_J-1.0.json")
     gap_al27_usdb_same_j_mev: Tagged = Assumed(2.698773, "COMPUTED: 5/2+_2 - 5/2+_1, USDB in sd (record)",
-                                               "scratchpad chopen/app11/gap_usdb_sd_27Al_J2.5.json")
+                                               "applications/ch03_mu2e_0nubb/gaps/gap_usdb_sd_27Al_J2.5.json")
     gap_0plus_ensdf_ca48_mev: Tagged = Cited(4.283, "ENSDF", "48Ca first excited 0+ (4283 keV); record (was priced "
                                                              "until referee M3)")
     gap_0plus_ensdf_ti48_mev: Tagged = Cited(2.997, "ENSDF", "48Ti first excited 0+ (2997 keV); record")
