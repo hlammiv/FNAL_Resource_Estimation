@@ -1,0 +1,4 @@
+1 1 exact 1.38e-03 proxy ring 1.42e-03 ratio 0.973 full 0.0146 extrap 0.0142
+3 0.5 exact 3.05e-03 proxy ring 2.48e-03 ratio 1.230 full 0.0033 extrap 0.0040
+1 2 exact 1.14e-03 proxy ring 2.20e-03 ratio 0.518 full 0.0163 extrap 0.0085
+largest ratio 1.230; largest full proxy 0.0163; model's product 0.0201; largest per-set extrap 0.0142
