@@ -732,7 +732,7 @@ def test_bad_inputs_rejected(a):
     r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
     r"the eventual first-principles (continuum, larger-volume) $\eta/s$ and $\zeta/s$ at $20\%$",
-    r"so $\zeta/s$ adds up to $1\times$ the $\eta/s$ campaign's shots, less where the two operators commute and share a shot set.",
+    r"so $\zeta/s$ adds up to $1\times$ the $\eta/s$ campaign's shots, less where the operators commute and share shots.",
     r"\textbf{Wall time} & first result $3.3$--$11$ yr on one machine;",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"campaign $270$--$1000$ yr, $54$--$200\times$ the five-year window \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # R-TOL (H. Lamm 2026-09-29): the rule and each circuit's tolerance and T per rotation

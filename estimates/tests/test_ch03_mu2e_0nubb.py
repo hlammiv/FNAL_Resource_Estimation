@@ -1015,7 +1015,7 @@ def test_simplified_0nubb_rows(a, r33, tex):
                  "$74$--$174$ LQ, $0.91$--$1.9\\times 10^{8}$ T, projection estimate: $120$--$240$ days",
                  "($\\times 0.74$--$1.5$ at the model $0^+$ gaps)",
                  "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$",
-                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$, so $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ projection shots, $130$--$260$ years",
+                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$, so $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ shots, $130$--$260$ years",
                  "with per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
                  "We take the daughter projection at the parent's cost; a daughter with a smaller gap raises it"):
         assert frag in tex, frag

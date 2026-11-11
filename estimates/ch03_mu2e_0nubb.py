@@ -2212,7 +2212,7 @@ def printed_r25(a: Assumptions) -> dict:
         "first_30pct_2033:151": f"${round_sig(w30[0] / 3600, 2):.1f}$--${g2(w30[1] / 3600)}$ hours",
         # R7 first light (app11:156-158 and the box)
         "pf_0plus_t:156": f"${round_sig(apf['t'][0] / 1e9, 2):.2f}$--${round_sig(apf['t'][1] / 1e9, 2):.1f}\\times 10^{{9}}$ T",
-        "pf_0plus_shots:156": f"${g2(apf['shots_lower_bound'][0] / 1e6)}\\times 10^{{6}}$ projection shots",   # single value since 2026-10-12
+        "pf_0plus_shots:156": f"${g2(apf['shots_lower_bound'][0] / 1e6)}\\times 10^{{6}}$ shots",   # single value since 2026-10-12
         "pf_0plus_years:156": f"${g2(apf['wall_s'][0] / yr)}$--${g2(apf['wall_s'][1] / yr)}$ years",
         "f7p3_t:156,box": fact(b["t"], 8),
         "f7p3_shots:156": f"${g2(b['shots'][0] / 1e5)}\\times 10^{{5}}$ shots",
