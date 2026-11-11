@@ -62,3 +62,39 @@ Per-bin readout windows at k_y = 0 (t_clear: first time the free packet has left
 | 2.932 | 0.13 | 0.007 | never inside t_max | | -0.0111 | -0.001 |
 
 The campaign's per-bin estimate reads each bin inside its window (the two slowest bins, 1.5% of the thermal weight, have none inside t_max and are read at t_max); the first result reads the f_eq-weighted superposition once, at t_max. The 800-site chain remains the converged comparator of Fig. ch08_asymmetry; the figure marks the 15-site t_max value on panel (c).
+
+## Readout study (`window_study.py`, 2026-11-11; referee follow-up F2)
+
+The referee asked whether the first result's single readout at t_max, after the fast bins' transmitted parts have
+returned from the open far end, still measures reflection, whether the first result and the campaign need separate
+signal calibrations, and whether the flag efficiency p0 holds at the readout time. `window_study.py` answers all three
+on the comparator above (same wall, packets and 56 bins); `window_study.json` holds every bin.
+
+**Far-end returns are a 1% effect.** The same wall and packets on an axis padded with 45 sites at both ends (nothing
+returns inside 20 a; 80 sites gives the same to five digits) separate the parts of the 15-site value at T_c:
+
+| quantity | S_int |
+|---|---|
+| 15-site axis at t_max (what the first result reads; the model's `s_int`) | 1.568e-2 |
+| padded axis at t_max (no returns) | 1.556e-2 |
+| far-end return contribution | +1.2e-4 (0.8%) |
+| padded axis at 60 a (scattering complete, these packets) | 1.647e-2 |
+| 800-site chain, sharp k (`s_int_long_chain`) | 2.14e-2 |
+| campaign estimator (each bin at its t_last, slowest bins at t_max) | 1.499e-2 |
+
+So the first-result signal is reflection from the wall to within 1%. What separates it from the converged 2.14e-2 is
+the 1.5-site packets' momentum band (23%) and incomplete scattering at t_max (5%), not the boundary. An absorbing
+boundary or a longer axis is not needed for the first result. At 0.9 T_c the return part is 2e-6.
+
+**Separate calibrations.** First result: 1.568e-2 at t_max, the value the model prices (9 / (p0^2 S_int^2 m_top)).
+Campaign: each bin is read in its own window; the per-bin query count 1 / (p0^2 eps_C^2 m_top) is set by the absolute
+precision eps_C = 3e-3, not by the signal, so the campaign's cost does not depend on the readout calibration. Its
+windowed estimator 1.499e-2 is recorded, not priced.
+
+**Flag efficiency at the readout time.** The model's a = 1/2 + p0 A_R/2 takes the vacuum charge fluctuation on the
+incident half as independent of the packet. The exact many-body state here is the wall vacuum (every negative-energy
+orbital of all 8 k_y sectors) plus the packet's positive-energy part (at least 97% of its weight), evolved to the
+readout time; the incident-half charge distribution is its full counting statistics. The effective efficiency
+p_eff = (a_part + a_anti - 1) / A_R is 0.669 for the first result at t_max and 0.662 for the campaign readout (per bin
+0.640-0.675 where |A_R| > 5e-3), against the model's free-vacuum p0 = 0.658 and the wall-vacuum 0.644 the same code
+gives with no packet. The model's p0 is thus within 2% and on the conservative side; nothing is repriced.

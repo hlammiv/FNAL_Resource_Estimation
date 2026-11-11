@@ -376,7 +376,9 @@ class Assumptions:
                                     "priced evolution: 1.57e-2 (1.59e-2 at sigma_z = 2.0); 1.7e-2 at 0.9 T_c; 1.5e-2 at width "
                                     "1 a, 0.8e-2 and 1.9e-2 at |y| phi = 0.3 and 1.0; zero at Delta theta_C = 0. S_int(t) rises "
                                     "from 0.6e-2 at t = 10 a to 1.4e-2 at 16 a (s_int_readout_band); by t_max the transmitted "
-                                    "part of the fast bins has returned from the open end, as in the priced circuit. The "
+                                    "part of the fast bins has returned from the open end, as in the priced circuit; on an axis "
+                                    "padded so nothing returns the same readout gives 1.556e-2, so the returns are 0.8% of it "
+                                    "(sint/window_study.py, referee follow-up F2, 2026-11-11). The "
                                     "800-site chain of sint/scatter.py gives 2.14e-2 (s_int_long_chain), never reached on this "
                                     "axis. The first-result Delta-n wall scales as S_int^-2", "sint/sint15_results.json")
     s_int_readout_band: Tagged = Assumed((0.6e-2, 1.6e-2), "COMPUTED record (sint/scatter15.py): S_int on the 15-site axis over "

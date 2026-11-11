@@ -881,3 +881,19 @@ def test_ruling_2026_10_11_text_hooks():
     assert r"$S_{\rm int}=1.6\times 10^{-2}$ on the 15-site axis at $t_{\max}$" in tex and r"$2.6\times 10^{3}$ queries" in tex
     assert r"\sigma\approx 1.3\,m_\phi^2" in tex and "stays finite at $T_c$" in tex
     assert "$3$--$20$ sweeps" in tex and "the mixing time is unknown" not in tex
+
+
+def test_readout_study_supports_s_int_and_p0():
+    """Referee follow-up F2 (2026-11-11, sint/window_study.py): far-end returns are < 2% of the first-result signal at
+    t_max, the signal equals the model's s_int, and the exact many-body flag efficiency at the readout times is within
+    3% of the model's free-vacuum p0."""
+    import json
+    from pathlib import Path
+    from estimates import ch08_baryogenesis as m
+    a = m.Assumptions()
+    s = json.loads((Path(__file__).resolve().parents[2] / "applications" / "ch08_baryogenesis" / "sint" / "window_study.json").read_text())["summary"]["Tc"]
+    assert abs(s["return_part_tmax"]) < 0.02 * s["S15_tmax"]
+    assert round(s["S15_tmax"], 3) == a.s_int.lo
+    p0 = m.flag_contrast(a)["p0"]
+    for key in ("p_eff_first", "p_eff_campaign"):
+        assert abs(s[key] / p0 - 1) < 0.03
