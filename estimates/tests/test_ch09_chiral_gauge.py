@@ -2603,3 +2603,20 @@ def test_yukawa_other_choice_one_dirac_singlet(a):
     assert rel(i["tiers"]["campaign"]["wall_yr"][1], 5.2209) <= 1e-3
     with pytest.raises(ValueError):
         dataclasses.replace(a, fermion_content_2033=c.Assumed("three", "test"))
+
+
+def test_sign_polynomial_check_meets_priced_error():
+    """ERROR_LEDGER_2033['sign_function']: an odd, bounded polynomial of the priced degree reaches delta_sgn = 1e-3 at
+    kappa = 30 (referee follow-up 2026-11-11, F1: the advertised check must exist and run)."""
+    import importlib.util, math
+    from pathlib import Path
+    f = Path(__file__).resolve().parents[2] / "applications" / "ch09_chiral_gauge" / "check_sign_polynomial.py"
+    spec = importlib.util.spec_from_file_location("check_sign_polynomial", f)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    kappa, delta = 30.0, 1e-3
+    assert math.ceil(kappa * math.log(1 / delta)) == 208
+    for d in (207, 209):
+        chk = m.dense_check(m.minimax(kappa, d)[0], kappa)
+        assert chk["max_abs"] <= 1.0
+        assert chk["err_band"] <= delta

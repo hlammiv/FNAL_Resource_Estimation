@@ -1,0 +1,13 @@
+{
+ "kappa": 30.0,
+ "delta": 0.001,
+ "d_priced": 208,
+ "d_checked": 209,
+ "lp_error": 0.0005410429198565959,
+ "lp_peak_before_rescale": 1.0000025317702093,
+ "dense_error": 0.0005455829970607562,
+ "dense_max_abs": 1.0,
+ "dense_error_at_d_minus_2": 0.0005859951305818845,
+ "passes": true,
+ "smallest_odd_degree_found": 193
+}

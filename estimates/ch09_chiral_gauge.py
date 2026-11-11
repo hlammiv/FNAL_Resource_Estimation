@@ -3094,8 +3094,10 @@ ERROR_LEDGER_2033: dict[str, tuple] = {
                                                    "the inserted-N_CS(0) branch and atypical filtered states are NOT covered"),
     "qsp_truncation":     ("1e-2 per shot", "eps_qsp", "Jacobi-Anger order at the central step; eps_qsp / N per step"),
     "synthesis":          ("1e-2 per shot", "eps_syn", "R-TOL, incoherent addition; coherent addition would give t_per_rot_coherent"),
-    "sign_function":      ("1e-3", "delta_sgn", "d_sgn = ceil(kappa ln 1/delta) = 208 at kappa = 30; numerical check: "
-                                                 "applications/ch09_chiral_gauge/check_sign_polynomial.py"),
+    "sign_function":      ("1e-3", "delta_sgn", "d_sgn = ceil(kappa ln 1/delta) = 208 at kappa = 30; numerical check "
+                                                 "applications/ch09_chiral_gauge/check_sign_polynomial.py (LP minimax, odd, "
+                                                 "|p| <= 1: 5.5e-4 at degree 209, 5.9e-4 at 207, 1e-3 first reached at 193; "
+                                                 "QSP phases not computed)"),
     "thermal_filter":     ("1e-4 polynomial error", "delta_beta", "d_beta = 155 at beta lambda = 2592"),
     "thermal_systematic": ("not bounded", "aa_rounds, 17 filter calls", "placeholder reference; Table 9.1 routes"),
     "digitization":       ("open", "gauge_group_2033 = 2O, N_rho = 16", "O(a^2) 20-30% and radial truncation ~5% are estimates"),

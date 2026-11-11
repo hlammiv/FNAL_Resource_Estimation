@@ -355,7 +355,7 @@ class Assumptions:
     # D 125 / 299 at fidelity 0.99 / 0.999), exact diagonalization in M_L = M_S = 0 (dim 2556). D = number of
     # largest-|c| JW configurations kept. E0 = -26.9 / -26.8 MeV; (0s)^4 weight 0.970. Scratch: chopen/app11/he4D.py.
     he4_d_fid99: Tagged = Assumed((15, 17), "COMPUTED: D for fidelity 0.99 (beta = 10, 2)",
-                                  "applications/ch03_mu2e_0nubb/he4d/he4D_u1.0_s1.0_b{10.0,2.0}.json")
+                                  "scratchpad chopen/app11/he4D_u1.0_s1.0_b{10.0,2.0}.json (not shipped; external input)")
     he4_d_fid999: Tagged = Assumed((77, 103), "COMPUTED: D for fidelity 0.999 (beta = 2, 10)",
                                    "scratchpad chopen/app11/he4D_u1.0_s1.0_b{2.0,10.0}.json")
     he4_d_dipole_1pct: Tagged = Assumed(1, "COMPUTED: the single largest configuration already gives the dipole "
