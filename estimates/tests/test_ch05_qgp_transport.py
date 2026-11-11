@@ -739,7 +739,6 @@ def test_bad_inputs_rejected(a):
     r"on $\Sigma(216\times 3)$ (11 qubits/link)",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
 
     # E27 (2026-10-02): one machine, serial; the excess over the horizon is an algorithmic reduction, never a machine count
-    r"Wall times are serial on one machine at $1\,\mu$s per T gate ($\sim\!10$ parallel magic-state factories) plus $\sim 0.1$ ms per shot",
     # referee verifier 2026-10-04 (T3, G8)
     r"so $\Sigma(72\times 3)$ under $H_{\rm KS}$ would sit on a coarse, confined lattice.",
     r"and the Hamiltonian (anisotropic) limit moves freezing to stronger coupling, so",
@@ -870,7 +869,7 @@ def test_tex_assumes_one_machine():
     for pat in (r"\bmachines\b", r"machine-years", r"shot-parallel", r"embarrassingly", r"fold parallelism",
                 r"across machines", r"per machine", r"\d\s*\$?\s*machines"):
         assert not re.search(pat, tex), f"multi-machine wording: {pat}"
-    assert not re.search(r"parallel(?! magic-state factories)", tex) and tex.count("parallel") == 1
+    assert not re.search(r"parallel(?! magic-state factories)", tex) and tex.count("parallel") <= 1   # CUT-pinned 2026-11-11: the schedule sentence with the factories went
     assert tex.count("on one machine") >= 3   # Q5-9: the box campaign row no longer repeats it
 
 

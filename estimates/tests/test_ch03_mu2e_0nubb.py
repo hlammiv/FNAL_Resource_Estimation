@@ -490,7 +490,7 @@ def test_2028_shots_and_wall_time(r28, tex):
         assert "$\\sim 8$--$33$ min (Hadamard test) or $\\ge 68$ s (MLAE bound, $D=10^{2}$) on one machine" in tex
         # restructure 2026-10-22: the timing convention parenthetical left the box row; the sentence after the box carries it
         # the 0.1 ms is sourced in the chapter (r17 verifier); the 1 ms bound is retired (r25)
-        assert "$0.1$\\,ms per shot for initialization, readout and decoding, as on current superconducting hardware~\\cite{Google_QEC_below_threshold}" in tex
+        # CUT-pinned (H. Lamm 2026-11-11): the wall-time sentence restating the overview schedule was cut (anchor retired)
         assert "which we bound at $1$\\,ms" not in tex and "1$\\,ms per-shot bound" not in tex
         assert ("$2.0\\times 10^{4}$ Hadamard-test shots, or ${\\ge}7.9\\times 10^{2}$ MLAE circuits at "
                 "$D=10^{2}$ ($m_{\\max}=5$, $8.7\\times 10^{4}$ T each)") in tex
@@ -1267,7 +1267,7 @@ def test_printed_strings_are_in_the_tex(a, tex):
         # plain multiples are set as '$\times 1.7$--$6.8$' or '14--54' in the prose; accept either spelling
         assert v in tex or v.replace("--", "$--$") in tex, f"{k}: {v!r} not in app11_mu2e_0nubb.tex"
     assert "c_T\\approx 27" not in tex     # the R-TOL rule sentence now lives in Ch. 1 (SYN-2, 2026-11-06)
-    assert "0.1/N_{\\rm gate}^{\\rm shot}" in tex                    # R3 definition, app11:93
+    # CUT-pinned (H. Lamm 2026-11-11): the eps_l = 0.1/N sentence restating the overview fault budget was cut (anchor retired)
 
 
 def test_instance_rows(a, r28, r33, rcd):

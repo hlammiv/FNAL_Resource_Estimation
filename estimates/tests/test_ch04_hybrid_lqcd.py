@@ -828,8 +828,8 @@ def test_codesign_24x48_instance():
     assert near(ICD["d_inv_ratio_vs_2033_formula_ln"], 12.5, 1e-9)
     assert RCD.breakdown_total() == RCD.hard_ops[0]
     # style pass 2026-10-08: the 'column index' register and 'unit-prefactor count' sentences went (anchors retired)
-    for s in ("costs $2.6\\times 10^{11}$ T",
-              "past 2033"):
+    # CUT-pinned (H. Lamm 2026-11-11): the post-2033 restatement was cut ('past 2033' anchor retired)
+    for s in ("costs $2.6\\times 10^{11}$ T",):
         assert s in TEX, s
 
 
