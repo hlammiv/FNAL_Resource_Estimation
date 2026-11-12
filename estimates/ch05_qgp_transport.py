@@ -334,7 +334,9 @@ class Assumptions:
                                       "(tc_diag_*) before the campaign", "arxiv_1903_04801,arxiv_1812_08235")
     T_over_Tc_2033: Tagged = Stated(1.5, f"{TEX}:42,135", "T = 1.5 T_c^lat, the same convention as the 2028 benchmark "
                                                          "(author ruling 2026-10-05; was T = 160 MeV, physical QCD)")
-    tc_diag_points: Tagged = Assumed(10, "in-situ T_c^lat diagnostic: ramp energies scanned to locate the crossover "
+    tc_diag_points: Tagged = Assumed(10, "record only since 2026-11-12 (card RF3-ch5-M2): the chapter takes T_c^lat and e(T) from "
+                                         "Euclidean simulation (arXiv:2107.01166), not from this scan. "
+                                         "in-situ T_c^lat diagnostic: ramp energies scanned to locate the crossover "
                                          "(the staggered condensate drop / susceptibility peak); each point is the quench "
                                          "preparation alone, read out in the computational basis (the mass term is diagonal)")
     tc_diag_shots_per_point: Tagged = Assumed(100, "shots per diagnostic energy: one shot reads all 243 fermion modes, so "
