@@ -2444,14 +2444,14 @@ def test_r25_chapter_prints_the_model(r28, r33):
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex").read_text()
     for frag in (r"$1235 = 432$ fermion ($216$ doublet, $216$ singlet) $+\,486$ gauge $+\,270$ Higgs $+\,47$ ancilla",
                  r"$250 = 192$ fermion $+\,16$ gauge $+\,42$ ancilla",
-                 r"$417$ queries per application and $1.9\times 10^{6}$ T",
+                 r"An application is thus $417$ queries and $1.9\times 10^{6}$ T",
                  r"$4.1\times 10^{10}$ at $t=10a$ ($3.4$--$5.1\times 10^{10}$ over the Yukawa-weight band); $2.2\times 10^{10}$ at $t=5a$",
                  r"first result $36$~s; campaign $13$~min",
                  r"first result $5.2$~yr;", r"$5.8$--$6.5$~yr for $4$--$8$ temperatures",
                  r"$1.1\times 10^{3}$ at $10a$ $+$ $5.5\times 10^{3}$ at $5a$, one temperature",
                  r"With the Hadamard test this needs $1.2\times 10^{15}$ shots at $10a$",
-                 r"no zero-point part: $1.3\times 10^{-4}$ at $10a$",
-                 r"checks the evolution and the estimator, not the thermal state", r"($430$--$2400\times$)", r"The test at $10\%$ would take $47$~yr",
+                 r"no zero-point part. The latter is $1.3\times 10^{-4}$ at $10a$",
+                 r"checks the evolution and the estimator but not the thermal state", r"($430$--$2400\times$)", r"The test at $10\%$ would take $47$~yr",
                  r"has $4.9$ times the relative variance", r"less than $5\%$ between $Ta=0.4$ and $0.6$",
                  r"$\lesssim 2.0\times 10^{-11}$ (condensate), $\lesssim 2.4\times 10^{-12}$ ($N_{CS}$ test, $10a$; "
                  r"$4.7\times 10^{-12}$ at $5a$)",

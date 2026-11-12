@@ -808,7 +808,7 @@ def test_referee_text_hooks():
     import pathlib
     tex = (pathlib.Path(__file__).resolve().parents[3] / "applications" / "app05_baryogenesis.tex").read_text()
     assert r"${\gtrsim}\,9.9\times 10^{8}$ T at depth $33$" in tex              # G2 box headline
-    assert r"any dressing with $r>0.007$ forces a shallower schedule" in tex              # B3: bound at the priced schedule
+    assert r"Any dressing with $r>0.007$ forces a shallower schedule" in tex              # B3: bound at the priced schedule
     assert r"$p_0=0.66$" in tex                                                   # B2 flag contrast (box)
     assert "flavor-summed asymmetry vanishes" in tex                               # C'
     assert "unquantified" not in tex and "is not priced. We write $r$ for the full" not in tex

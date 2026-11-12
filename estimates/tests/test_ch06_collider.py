@@ -1537,7 +1537,7 @@ PHRASES = [
     r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps",
     r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps",
     # r25 (R1, R2, R4, R7, R10)
-    r"Baryon number and strangeness are conserved, so baryons and kaons come in pairs",
+    r"since baryon number and strangeness are conserved, baryons and kaons come in pairs",
     # q1 (2026-10-05, rulings A/B): quench-prepared media, E-rho-OQ dropped
     r"$\Sigma(72\!\times\!3)$ for $2{+}1$D SU(3), $\Sigma(216\!\times\!3)$ for the static dipole and $2O$ for SU(2) dipoles",   # re-pinned 2026-11-09 (referee cards): the 5% truncation-accuracy claim was dropped
     r"subgroup difference $5\%$ assumed at $\Sigma(72{\times}3)$",   # re-pinned 2026-11-09 (referee cards): the 5% now sits in the Systematics box row as an assumption
@@ -2046,7 +2046,7 @@ def test_pair_convention_and_baseline_2026_10_12(a, r33):
     if TEX.exists():
         tex = TEX.read_text()
         for frag in ("after $\\big(2/\\bar n_s+1/\\bar n_M\\big)/\\delta_{\\rm rel}^2$ shots, where $\\bar n_s$ counts $B+\\bar B$",
-                     "$1.1$--$1.5$ for $b/\\bar n_s=0.002$--$0.04$; it is not included below.",
+                     "$1.1$--$1.5$ for $b/\\bar n_s=0.002$--$0.04$. This factor is not included below.",
                      "($6.0$--$6.3\\times 10^{3}$ shots each)", "First result & $\\approx 240$ shots, $13$--$103$ d",
                      "$2.4$--$2.5\\times 10^{4}$ shots, $3.3$--$26$ yr", "10 bins (about 3 resolvable at $L_\\parallel=8$)"):
             assert frag in tex, frag

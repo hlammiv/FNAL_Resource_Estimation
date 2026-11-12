@@ -289,7 +289,7 @@ class Assumptions:
     eps_2028: Tagged = Stated((0.1, 0.3), f"{TEX}:122", "'With eps ~ 0.1-0.3 on a single matrix element'")
     eps_mu2e: Tagged = Stated(0.05, f"{TEX}:92", "'~10% on CR means eps ~ 0.05 on the matrix element'")
     eps_0nubb: Tagged = Stated(0.1, f"{TEX}:92", "'Beating the current factor-2-3 spread needs eps ~ 0.1'")
-    n_op_mu2e: Tagged = Stated(6, "app11:8", "six operator classes (scalar, vector, dipole, tensor, gluonic, derivative; CKOT cover three of them)")
+    n_op_mu2e: Tagged = Stated(6, "app11:8", "six nuclear responses (Haxton et al., arXiv:2208.07945: one charge, two spin, three velocity-dependent; card RF3-ch3-M1, 2026-11-12)")
     n_op_0nubb: Tagged = Stated(5, f"{TEX}:233", "'5 0nubb operators'")
     n_pairs_cross_check: Tagged = Stated(3, f"{TEX}:233", "'x 3 pairs'")
     n_basis_scans: Tagged = Stated((2, 3), f"{TEX}:233", "'x 2-3 basis-cutoff scans'")
@@ -1642,7 +1642,7 @@ def _model_2028(a: Assumptions) -> Result:
         Primitive("sos_load_complete", sos_load_toffoli(d_range[0]), t_tof, CircuitStatus.COMPILED,
                   "arxiv_2310_18410",
                   f"complete sparse load, (2L-2)D + 2^(L+1) + D Toffolis at D = {int(d_range[0])} (initial.tex:350); "
-                  "7 T each (R5); amplitude-angle rotations not itemized by the source (next two rows)"),
+                  "7 T each (R5); amplitude-angle rotations: the source counts (c-3) log D Toffolis at c bits; we count phase-gradient additions (next two rows; card CIT-ch3-e2, 2026-11-12)"),
         Primitive("load_angle_cadd", ang[d_range[0]]["toffoli"], t_tof, CircuitStatus.COMPILED,
                   "arxiv_1812_00954",
                   f"amplitude angles: L = {ang[d_range[0]]['L']} phase-gradient additions of b = {ang[d_range[0]]['b']} "

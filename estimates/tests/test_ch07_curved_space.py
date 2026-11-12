@@ -724,7 +724,7 @@ def test_twopi_leading_order_comparator(a):
     assert abs(1 - ns3 / 0.0339) >= a.twopi_lo_scalar_err_early.lo - 0.005
     if TEX.exists():
         tex = TEX.read_text()
-        assert r"we therefore treat the $5^3$ instance as a cross-check, not an advantage" in tex
+        assert r"we thus treat the $5^3$ instance as a cross-check and claim no advantage" in tex
         assert "Neither the two-loop truncation nor a 3D lattice was run" in tex
         assert "within reach of 2PI" not in tex
         assert "contingent on that error exceeding" not in tex

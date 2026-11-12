@@ -1010,14 +1010,14 @@ def test_simplified_0nubb_rows(a, r33, tex):
         pytest.skip("chapter .tex not on disk")
     # style pass 2026-10-08: the truncated-space gaps and the generic-band comparison are cut (rule 2); box rows
     # follow the vocabulary of rule 12 (readout -> estimate, resonant drive -> resonant transition); numbers unchanged
-    for frag in ("are $5.17$ and $4.26$ MeV ($4.28$ and $3.00$ MeV measured~\\cite{ENSDF})",
+    for frag in ("are $5.17$ and $4.26$ MeV, against the measured $4.28$ and $3.00$ MeV~\\cite{ENSDF}",
                  "so KB3G is the conservative choice", "\\cite{arxiv_nucl-th_0012077}",
                  "$74$--$174$ LQ, $0.91$--$1.9\\times 10^{8}$ T, projection estimate: $120$--$240$ days",
                  "($\\times 0.74$--$1.5$ at the model $0^+$ gaps)",
                  "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$",
-                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$, so $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ shots, $130$--$260$ years",
+                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$, and thus $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ shots, or $130$--$260$ years",
                  "with per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
-                 "We take the daughter projection at the parent's cost; a daughter with a smaller gap raises it"):
+                 "We take the daughter projection at the parent's cost. A daughter with a smaller gap raises it"):
         assert frag in tex, frag
 
 
@@ -1062,7 +1062,7 @@ def test_single_machine_serial_campaign(a, r28, r33, tex):
     # reworded "closely paralleling Ch. 2" to "as in Ch. 2"
     import re
     assert sorted(re.findall(r"parallel\w*", low)) == ["parallel"]
-    assert "the parallel Hadamard test~\\cite{arxiv_2607_12344}" in tex
+    assert "The parallel Hadamard test~\\cite{arxiv_2607_12344}" in tex
     # 'machines' (plural) appears nowhere; 'machine' only as one machine / machine time / the RFI machine
     assert not re.search(r"\bmachines\b", low)
     assert "shot-parallel" not in low and "VS-IMSRG Hamiltonians \\\\" in tex
@@ -1312,7 +1312,7 @@ def test_al27_dipole_shot_factor(a, r33, tex):
         # style pass 2026-10-08: the lambda = 3.37, 2.79-2.83 and 1.42-1.45 steps are cut (rule 2); pinned above
         for frag in ("fixes the dipole operator to within $\\pm 0.6\\%$",
                      "\\cite{Angeli_Marinova_2013}",
-                     "That is $100$--$400$ shots per operator before the prefactors."):   # re-pinned 2026-11-09 (referee cards)
+                     "correspond to $100$--$400$ shots per operator before the prefactors."):   # re-pinned 2026-11-09 (referee cards)
             assert frag in tex, frag
 
 
@@ -1416,7 +1416,7 @@ def test_r17_registers_printed_and_load_count(r33, tex):
     assert "Logical qubits & $74$--$174$ \\\\" in tex
     assert "$^{48}$Ca/Ti & $pf$ & 40 & 90--190" in tex and "$^{76}$Ge/Se & $jj44$ & 44 & 94--194" in tex   # moved to the survey table
     # referee M3 (2026-10-04): the angle rotations are now estimated in the text (load_angle_cost)
-    assert ("That source does not itemize the rotations that apply the amplitude angles;") in tex   # style pass: L dropped
+    assert ("That source counts the amplitude-angle rotations as $(c-3)\\log D$ Toffolis at $c$ bits, and we count them as phase-gradient additions") in tex   # style pass: L dropped
     assert "and we do not price them" not in tex
 
 
@@ -1476,7 +1476,7 @@ def test_referee_text_corrections(a, tex):
         pytest.skip("chapter .tex not on disk")
     # M4
     assert "zero-background" not in tex
-    assert "An established conversion signal would demonstrate charged LFV." in tex
+    assert "An established conversion signal would demonstrate charged LFV" in tex
     # M1: the half-life formula is the light-exchange mechanism; other mechanisms enter separately
     assert "For $0\\nu\\beta\\beta$ mediated by light-Majorana-neutrino exchange alone," in tex
     assert "at comparable weight" not in tex
@@ -1488,7 +1488,7 @@ def test_referee_text_corrections(a, tex):
     # G5: no 0nubb spread transferred to Mu2e; the 3^4 range is not a realized gain
     assert "degraded by a factor $2$--$3$ by NME uncertainty alone" not in tex
     assert "is equivalent to a factor $3^{4}" not in tex and "more leverage than any feasible" not in tex
-    assert "A precise NME does not supply that exposure." in tex
+    assert "A precise NME fixes where in that range a given experiment's reach lies, but it does not supply that exposure." in tex
     # editorial: no glossary clash (qudit error, qudit dimension); terminology
     assert "\\epsilon_q" not in tex and "degree-$d$" not in tex
     assert "first light" not in tex and "rung" not in tex
@@ -1499,7 +1499,7 @@ def test_referee_text_corrections(a, tex):
     assert "Target observable & spin-dependent element to $5\\%$" in tex
     assert "all six categories (other five at the dipole's shot factor and $\\Gamma\\le 128$)" in tex
     assert "whose string counts are not derived here" in tex
-    assert "an expression of interest was submitted in 2018" in tex
+    assert "An expression of interest for the upgrade was submitted in 2018~\\cite{Mu2e_II}" in tex
     assert "nEXO was not selected" not in tex and "We do not date them here." not in tex
     assert "pre-loaded" not in tex and "---" not in tex
     assert "so it isolates the operators that couple to nuclear spin~\\cite{arxiv_2208_07945}" in tex
@@ -1534,7 +1534,7 @@ def test_referee_m3_al27_usdb_gap(a, r33, tex):
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     assert "in full $pf$ GXPF1A costs about $2\\%$ more" in tex
-    assert ("$2.33$ MeV above the ground state (the $7/2^+$), which would lower the preparation to "
+    assert ("$2.33$ MeV above the ground state, the $7/2^+$, which would lower the preparation to "
             "$0.89$--$1.8\\times 10^{8}$ T") in tex and "\\cite{Brown_Richter_USDB_2006}" in tex
 
 

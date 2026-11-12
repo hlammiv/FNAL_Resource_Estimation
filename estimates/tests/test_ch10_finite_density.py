@@ -789,12 +789,12 @@ def test_r25_tex_prints_the_new_numbers():
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app07_finite_density.tex").read_text()
     for s in (r"$\gtrsim 13.5\,$min per sector", r"$\gtrsim 27$--$40\,$min", r"$2.2\%$", r"$1.0\times 10^{3}$ (one $T$ row, two reweighted ensembles)",
               r"$9.9$--$15$", r"$2.7$--$4.0\times 10^{4}$", r"$4.6\times 10^{4}$", r"$1.2\times 10^{5}$",
-              r"$2.9\times 10^{3}$--$5.7\times 10^{3}$ per grid point", r"$3.4\times 10^{9}$-T shot",
+              r"$2.9\times 10^{3}$--$5.7\times 10^{3}$ per grid point", r"the shot reduced by $1.7\times$, to $3.4\times 10^{9}$ T at the same shot count",
               r"$m_q=313$~MeV", r"$m_B=940$~MeV", r"$61\%$ fewer", 
               r"$\gtrsim 4.0\times 10^{5}$", r"$4.2\times 10^{6}$", r"$3.2\%$",
               # author ruling 2026-10-05: the QSVT/TPQ headline
               r"$2.8$--$5.6\times 10^{9}$", r"$d_\beta=30$", r"$2m+1=17$", r"$510$ block-encoding queries",
-              r"$32$--$66$~d", r"$4.1$--$8.3$~yr", r"$0.42$--$0.85$~yr", r"$0.73$--$4.7$~yr", r"$1.7\times$ cut",
+              r"$32$--$66$~d", r"$4.1$--$8.3$~yr", r"$0.42$--$0.85$~yr", r"$0.73$--$4.7$~yr", r"reduced by $1.7\times$",
               r"$17$--$56$", r"$46$--$94$~min", r"\lesssim 1.8\times 10^{-11}$",
               r"$3.6\times 10^{-11}$", r"$280$--$560", r"$28$--$56$ faults",
               r"$1.8$--$3.7\times 10^{10}$",

@@ -414,7 +414,7 @@ def test_temperature_is_1p5_tc_lat(a):
     assert r"$T=1.5\,T_c^{\rm lat}$" in tex and r"$T_c^{\rm lat}$" in tex
     assert r"\cite{arxiv_1903_04801}" in tex and r"\cite{arxiv_1812_08235}" in tex
     assert "160" not in tex.replace("$160$ T per site-step", "")      # no physical-QCD 160 MeV left in the chapter
-    assert r"$LT\approx 0.7$--$0.9$" in tex and "a small hot box, not a medium" in tex
+    assert r"$LT\approx 0.7$--$0.9$" in tex and "With $LT<1$ the box is smaller than the thermal wavelength, so it is not a medium" in tex
     # re-pinned 2026-11-09 (referee cards, Q5-6): the decay-time sentence became Fig. (eta/s = 0.15 is in the plot label); T stays in the prose
     assert r"The counts are for $T=225$--$300$ MeV ($1.5\,T_c^{\rm lat}$ over that range)" in tex
 
@@ -732,7 +732,7 @@ def test_bad_inputs_rejected(a):
     r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
     r"the eventual first-principles (continuum, larger-volume) $\eta/s$ and $\zeta/s$ at $20\%$",
-    r"so $\zeta/s$ adds up to $1\times$ the $\eta/s$ campaign's shots, less where the operators commute and share shots.",
+    r"so $\zeta/s$ adds up to $1\times$ the $\eta/s$ campaign's shots, and less where the operators commute and share shots.",
     r"\textbf{Wall time} & first result $3.3$--$11$ yr on one machine;",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"campaign $270$--$1000$ yr, $54$--$200\times$ the five-year window \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # R-TOL (H. Lamm 2026-09-29): the rule and each circuit's tolerance and T per rotation
@@ -741,7 +741,7 @@ def test_bad_inputs_rejected(a):
     # E27 (2026-10-02): one machine, serial; the excess over the horizon is an algorithmic reduction, never a machine count
     # referee verifier 2026-10-04 (T3, G8)
     r"so $\Sigma(72\times 3)$ under $H_{\rm KS}$ would sit on a coarse, confined lattice.",
-    r"and the Hamiltonian (anisotropic) limit moves freezing to stronger coupling, so",
+    r"The Hamiltonian (anisotropic) limit moves freezing to stronger coupling, so",
     # quench thermal route (author ruling 2026-10-05)
     r"\cite{arxiv_cond-mat_9403051,arxiv_0708_1324,arxiv_1509_06411,arxiv_0902_0927}",
     r"\cite{arxiv_2303_14264,arxiv_2308_16202}",
@@ -1222,12 +1222,12 @@ def test_systematics_row_2026_10_12(a):
     if not TEX.exists():
         pytest.skip("chapter .tex not on disk")
     tex = TEX.read_text()
-    for frag in ("Systematics & model differences, not error bars (Table~\\ref{tab:ch05_systematics}); finite volume not "
+    for frag in ("Systematics & model differences and not error bars (Table~\\ref{tab:ch05_systematics}); finite volume not "
                  "quantified at $LT<1$",   # Q5-9: the percentages stay in Table 5.2
                  "$50$--$100\\%$ at $0.2$ fm, $35$--$70\\%$ at $0.15$ fm; $30$--$60\\%$ and $20$--$40\\%$ with an improved taste sector",
                  "not quantified",   # SR-ch5-3 (2026-11-10)
-                 "Neither spacing is in the $a^2$ scaling regime: $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm.",
-                 "its relation to the infinite-volume $\\eta/s$ is uncontrolled at order one; we assign it no percentage",
+                 "Neither spacing is in the $a^2$ scaling regime, since $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm.",
+                 "Its relation to the infinite-volume $\\eta/s$ is uncontrolled at order one, and we assign it no percentage",
                  "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648,arxiv_1906_11213}"):
         assert frag in tex, frag
 

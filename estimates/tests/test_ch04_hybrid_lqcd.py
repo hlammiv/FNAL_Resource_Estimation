@@ -714,7 +714,7 @@ def test_2033_depth_factories_and_walls():
         assert I33[k] == dx[k]
     assert near(I33["floor_wall_s"][1], I33["wall_campaign_s"][1] - s2[1] * 1e-4, 1e-9)
     for s in ("\\textbf{Wall time} & $530$--$2100\\,$s per shot \\\\", "$86\\,$d--$2.7$ yr on one machine", "$1.6$--$18$ yr on one machine",
-              "rather than $213\\,$s"):
+              "instead of $213\\,$s"):
         assert s in TEX, s
     # the model follows its inputs: F* = 10 everywhere restores the baseline wall
     r = m.model(replace(A, parallelism_2033=c.Cited((10, 10), "x")), "2033")
@@ -741,7 +741,7 @@ def test_2033_banks_casher_demonstration():
     assert rows[1][2] == t and "Banks-Casher" in rows[1][0]
     assert ("$1.8$--$2.7\\times 10^{8}$ T-gates per shot, $1.1$--$1.7\\times 10^{4}$ shots; $58\\,$d--$1.5$ yr "
             "($29\\,$d--$3.0$ yr within the $2\\times$ on $P$)") in TEX
-    assert "there are 18--27 modes below $\\Lambda$" in TEX and "$\\sin(\\pi/16)=0.195$" in TEX
+    assert "we find 18--27 modes below $\\Lambda$" in TEX and "$\\sin(\\pi/16)=0.195$" in TEX
     assert abs(math.sin(math.pi / 16) - 0.195) < 5e-4
 
 
@@ -970,7 +970,7 @@ def test_alpha_be_is_a_fiducial_subnormalization():
     # author (2026-10-02): "say we take fiducial"; Eq. B11 of arxiv_2407_13080 is the spectral bound
     # style pass 2026-10-08: alpha_BE renamed s (one symbol); the alpha_BE sentence anchor is retired
     # verifier fix 2026-10-08: s is the paper's minimum 2(m0^2+2K^2), not the spectral bound
-    assert "the paper's free-circuit block encoding needs subnormalization $s\\ge 2(m_0^2+2K^2)$, and we use that minimum" in TEX
+    assert "The free-circuit block encoding of that work needs subnormalization $s\\ge 2(m_0^2+2K^2)$, and we use that minimum" in TEX
     assert near(I28["be_subnormalization_s"], 2 * (0.16 + 2), 1e-12)
 
 
@@ -983,10 +983,10 @@ def test_referee_h1_h4_scope_and_drafting_history():
     # H3: the device is not inside the HMC force or accept/reject step
     assert "stays classical and unchanged" not in TEX
     assert "The device does not enter the HMC force or accept/reject step" in TEX
-    assert "it supplies no HMC forces or accept/reject decisions" in TEX
+    assert "It supplies no HMC forces or accept/reject decisions" in TEX
     # H4: the post-2033 stage is defined by eps_l, not width
     assert "$10^4$-LQ" not in TEX and "10000 LQ" not in TEX
-    assert "defined by its error rate rather than its width" in TEX
+    assert "We define the post-2033 stage by its error rate, $\\epsilon_l{\\sim}10^{-12}$" in TEX
     # editorial: no drafting history, no 'rung', the G6 heading
     low = TEX.lower()
     for word in ("retired", "earlier plan", "rung", "lever (ii), a tighter"):
