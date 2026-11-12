@@ -466,7 +466,7 @@ def test_chapter_text_assumes_one_machine():
         assert banned not in tex, banned
     for s in (r"$3.0$--$6.0$ days", r"$0.73$--$2.9$~yr", r"$17$--$34$", r"$450$ shots",
               r"$1.5$--$6.0\times 10^{3}$", r"$\epsilon_l\lesssim 7\times 10^{-12}$", r"$222$--$242$",
-              r"$1030$--$1050$", r"\approx 270$--$910$", r"$1.5\times 10^{10}$ T-gates",
+              r"$1030$--$1050$", r"\approx 270$--$910$", r"$1.5\times 10^{10}$ T gates",
               r"$m_\phi\Delta t=0.05$", r"$1.6$--$5.6\times 10^{7}$"):
         assert s in tex, s
 

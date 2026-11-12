@@ -920,7 +920,7 @@ def test_2033_shots_as_printed(a, r33, tex):
     assert ("$4.9\\times 10^{3}$ per Hamiltonian; "
             "$9.8\\times 10^{3}$--$1.5\\times 10^{4}$ over the $2$--$3$ VS-IMSRG Hamiltonians") in tex
     assert "$\\sim 1.8$--$7.3$ min per shot" in tex and "T-depth & $8.9\\times 10^{6}$--$3.7\\times 10^{7}$" in tex
-    assert "Flagship $^{27}$Al & $e_{\\max}{=}8$--$10$: $\\approx 700$--$1100$ LQ, $\\times 8.5\\times 10^{4}$--$3.3\\times 10^{6}$ the 2033 target" in tex   # box row; multiple_flagship is in retired
+    assert "Flagship $^{27}$Al & $e_{\\max}{=}8$--$10$: $\\approx 700$--$1100$ system qubits, $\\times 8.5\\times 10^{4}$--$3.3\\times 10^{6}$ the 2033 target" in tex   # re-pinned 2026-11-12 (batch 6): the box row says 'system qubits', was 'LQ'; box row; multiple_flagship is in retired
     assert "(all six categories at the dipole's shot factor)" not in tex and "estimand;" not in tex
     assert "per basis scan" not in tex
     assert "2$--$8\\times 10^{3}$ across the survey" not in tex
@@ -1496,7 +1496,7 @@ def test_referee_text_corrections(a, tex):
     assert "on $\\mathrm{CR}(\\mu^-\\to e^-,{}^{27}\\mathrm{Al})$; $5\\%$" not in tex
     # style pass 2026-10-08 (rules 9, 10): box rows carry no scope disclaimers or "not derived" tags; the
     # five-category assumption is stated once in the 2028 prose
-    assert "Target observable & spin-dependent element to $5\\%$" in tex
+    assert "Target observable & spin-dependent proxy $\\sum_p o(q)\\,\\sigma_z$ to $5\\%$ (statistical)" in tex   # re-pinned 2026-11-12 (batch 6): 'element' -> 'proxy sum_p o(q) sigma_z', '(statistical)' added
     assert "all six categories (other five at the dipole's shot factor and $\\Gamma\\le 128$)" in tex
     assert "whose string counts are not derived here" in tex
     assert "An expression of interest for the upgrade was submitted in 2018~\\cite{Mu2e_II}" in tex

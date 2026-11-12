@@ -258,7 +258,7 @@ def test_2028_ancilla_budget_accounting(r28):
     tex = Path(__file__).resolve().parents[3] / "applications" / "app07_finite_density.tex"
     if tex.exists():
         text = tex.read_text()
-        assert r"primitive workspace $29$--$56$" in text and r"algorithmic register is $106$--$133$ LQ" in text
+        assert r"primitive workspace $29$--$56$" in text and r"so $106$--$133$ of the $\sim 180$ LQ are accounted for" in text   # re-pinned 2026-11-12 (batch 6): was 'algorithmic register is 106--133 LQ of the ~180 allocated' 
         assert r"$31$--$60$" not in text and r"$108$--$137$" not in text
 
 
@@ -794,7 +794,7 @@ def test_r25_tex_prints_the_new_numbers():
               r"$\gtrsim 4.0\times 10^{5}$", r"$4.2\times 10^{6}$", r"$3.2\%$",
               # author ruling 2026-10-05: the QSVT/TPQ headline
               r"$2.8$--$5.6\times 10^{9}$", r"$d_\beta=30$", r"$2m+1=17$", r"$510$ block-encoding queries",
-              r"$32$--$66$~d", r"$4.1$--$8.3$~yr", r"$0.42$--$0.85$~yr", r"$0.73$--$4.7$~yr", r"reduced by $1.7\times$",
+              r"first result: $\gtrsim 32$--$66$~d", r"campaign: $\gtrsim 4.1$--$8.3$~yr", r"$0.42$--$0.85$~yr", r"$0.73$--$4.7$~yr", r"reduced by $1.7\times$",
               r"$17$--$56$", r"$46$--$94$~min", r"\lesssim 1.8\times 10^{-11}$",
               r"$3.6\times 10^{-11}$", r"$280$--$560", r"$28$--$56$ faults",
               r"$1.8$--$3.7\times 10^{10}$",

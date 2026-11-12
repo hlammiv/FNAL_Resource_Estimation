@@ -2445,13 +2445,13 @@ def test_r25_chapter_prints_the_model(r28, r33):
     for frag in (r"$1235 = 432$ fermion ($216$ doublet, $216$ singlet) $+\,486$ gauge $+\,270$ Higgs $+\,47$ ancilla",
                  r"$250 = 192$ fermion $+\,16$ gauge $+\,42$ ancilla",
                  r"An application is thus $417$ queries and $1.9\times 10^{6}$ T",
-                 r"$4.1\times 10^{10}$ at $t=10a$ ($3.4$--$5.1\times 10^{10}$ over the Yukawa-weight band); $2.2\times 10^{10}$ at $t=5a$",
+                 r"$N_{CS}$ test $\gtrsim 4.1\times 10^{10}$ at $t=10a$ ($3.4$--$5.1\times 10^{10}$ over the Yukawa-weight band); $2.2\times 10^{10}$ at $t=5a$",
                  r"first result $36$~s; campaign $13$~min",
                  r"first result $5.2$~yr;", r"$5.8$--$6.5$~yr for $4$--$8$ temperatures",
                  r"$1.1\times 10^{3}$ at $10a$ $+$ $5.5\times 10^{3}$ at $5a$, one temperature",
                  r"With the Hadamard test this needs $1.2\times 10^{15}$ shots at $10a$",
                  r"no zero-point part. The latter is $1.3\times 10^{-4}$ at $10a$",
-                 r"checks the evolution and the estimator but not the thermal state", r"($430$--$2400\times$)", r"The test at $10\%$ would take $47$~yr",
+                 r"checks the evolution and the estimator but not the thermal state", r"or $430$--$2400\times$)", r"The test at $10\%$ would take $47$~yr",
                  r"has $4.9$ times the relative variance", r"less than $5\%$ between $Ta=0.4$ and $0.6$",
                  r"$\lesssim 2.0\times 10^{-11}$ (condensate), $\lesssim 2.4\times 10^{-12}$ ($N_{CS}$ test, $10a$; "
                  r"$4.7\times 10^{-12}$ at $5a$)",
@@ -2459,7 +2459,7 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,
                  # the Hilbert-Schmidt-norm formula went (described in words), "budget" -> "2033 target"
                  r"$4.9$ times the 2033 target", r"thermal-state systematic not bounded",
-                 r"The state-dependent estimate of Ch.~\ref{ch:overview}~\cite{AlvesLammLiu_inprep}"):   # Q5-5
+                 r"state-dependent estimate $\Lambda_{\rm sd}$ of Ch.~\ref{ch:overview}~\cite{AlvesLammLiu_inprep}"):   # Q5-5; re-pinned 2026-11-12 (batch 6): word order, and '($430$--$2400\times$)' above moved inside the preceding parenthesis
         assert frag in tex, frag
     assert "in preparation" not in tex and "N_{\\rm coupling}" not in tex
     # referee pass (2026-10-04): no lattice spacing in fm at the 2033 target, no HTL-only classical baseline, no
@@ -2547,16 +2547,16 @@ def test_chapter_open_prints():
     # symbol pass 2026-10-08: single-use p, d_beta and the alpha restatement went (rule 11); their anchors retired
     # C9R-4 (markup board 2026-11-09): Table 9.1 tightened; its 10^60-rounds and e^{-1845} entries retired (model keeps them)
     for frag in (
-                 r"$\lambda\ge 9.2/a$ at $g^2=1$", r"$9.6\times 10^{-4}$, mostly zero-point",
+                 r"$\lambda_N\ge 9.2/a$ at $g^2=1$", r"$9.6\times 10^{-4}$, mostly zero-point",
                  r"$\sigma^2\gtrsim 1.1\times 10^{14}$ ($1.2\times 10^{12}$ even for an ideal helicity operator",
-                 r"suppressed $\sim 10^{3}$-fold ($0.0023\pm 0.0016$ against $1.68$) already at $L=3/(g^2T)$",
+                 r"suppressed $\sim 10^{3}$-fold ($0.0023\pm 0.0016$ against $1.68$, or $430$--$2400\times$) already at $L=3/(g^2T)$",   # re-pinned 2026-11-12 (batch 6); lambda -> lambda_N two lines up
                  r"average over the links $(x,i)$ and $(x-\hat\imath,i)$", r"known cost and controlled bias",
                  r"orthonormal basis of the Gauss-law sector", r"$5\times 10^{-4}$ and $0.04$ at $n=8$",
                  # style pass 2026-10-08: the box row now points to Algorithm choice ("amplified ... references" retired)
                  r"$a^{-1}\approx 320$~GeV", r"$L=1.5/(g^2T)$ ($0.63/(g^2T)$ at the electroweak $g^2\approx 0.42$)",
                  ):
         assert frag in tex, frag
-    for gone in (r"$\sim 3\times 10^{7}$ amplification rounds", r"suppressed $730$-fold", r"$\lambda=9.2/a$",
+    for gone in (r"$\sim 3\times 10^{7}$ amplification rounds", r"suppressed $730$-fold", r"$\lambda=9.2/a$", r"$\lambda_N=9.2/a$",
                  r"$8.9\times 10^{-3}$, mostly zero-point", r"for a product reference the bias does not shrink", r"filtered amplitude of order $0.1$",
                  r"total systematic $\sim 40\%$", r"$\gtrsim 30\%$; $\Gamma_{\rm sph}$ at $3^3$ is validation-quality"):
         assert gone not in tex, gone

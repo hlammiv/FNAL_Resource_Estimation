@@ -54,6 +54,8 @@ class Headline:
     box_t: tuple | None = None         # box headline count when it is not PUBLISHED.hard_ops
     t_bound: bool = False              # the box states the count as an upper bound (\lesssim)
     t_rel: str = ""                    # relation the box prints before a one-sided count, e.g. r"\gtrsim" (lower bound, referee G2)
+    cell_digits: int = 0               # decimals the TABLE CELL prints on the mantissa (0: one significant digit, ruling 2026-11-05)
+    cell_range: bool = False           # the TABLE CELL prints the model's range, not its upper end alone
 
 
 H = Headline
@@ -61,7 +63,8 @@ HEADLINE = {
     # ---- first generation -------------------------------------------------------------
     (2, "2028"): H(t_digits=2),                      # box '36', '3.89e4 T' (ruling 2026-10-12: report synthesis convention; study 8.03e4)
     (3, "2028"): H(keep_zeros=True),                 # box '~120-170', '1.7e4-1.0e5 T' (insertion + complete load + load-angle rotations, D = 1e2-600; M3 ruling 2026-10-04 folded the angles in, conditional on D; G2 1.6e4-9.9e4; was the 5.4e3 insertion)
-    (4, "2028"): H(),                                # box '18', '1.9-3.5e4' (1.898e4-3.544e4)
+    # card RF3-ch1-tbl, 2026-11-12 (H. Lamm): the cell prints the range '2--4e4', an accepted exception to one-digit rounding of the upper end
+    (4, "2028"): H(cell_range=True),                 # box '18', '1.9-3.5e4' (1.898e4-3.544e4)
     (5, "2028"): H(lq="lq_2028_hi"),                 # box '178', first result '9.5e4' / full benchmark '5.9e5' (r25: 16 workspace LQ, R10; each timeslice at its own depth, R4; was 162, '5.9e5')
     (6, "2028"): H(lq="lq_2028"),                    # box '230' (64 + 144 + 22; r25 R10, was 216 = 64 + 144 + 8), '1.3e5' (E20, 1 ramp + 2 evo: 132,174.9)
     (7, "2028"): H(),                                # box '220-240' (222-242), '9.5e4' (94,753; option (c): one step at K = 8, smaller ruling (b) 2026-10-05; was '160-180', '9.4e4')
@@ -74,9 +77,12 @@ HEADLINE = {
     (4, "2033"): H(),                                # box '83', '2.1e8' (2.12992e8; r25 R3: M at D V log2 V; was '~85', '~9e8')
     (5, "2033"): H(keep_zeros=True),                 # box '~1280 (1234-1334)', cell prints the range 1234--1334 (referee front-10, 2026-11-09); deepest shot 6.3e9-2.2e10 (quench route, T = 225-300 MeV x c = 2-2pi, temperature ruling 2026-10-05; 3.0e10 on the second spacing's late shot; was 1.1e10-3.1e10 at 160 MeV); s648 2026-10-05: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm, second spacing 0.15 fm own step, 48 steps on its slow late shot (was 1120, 1.3-3.2e8 at rulings2 g^2 = 3.5; 2.2-9.6e8 with Sigma(72x3) at 0.2 fm)
     (6, "2033"): H(t_rel=r"\gtrsim"),                # box '964', '4.9e9-2.6e10', cell marked a lower bound (electric term; referee front-11, 2026-11-09) (step rule 2026-10-04: 4.65 GeV point 575 steps; 4.9014e9-2.6159e10; r26 J1 2.5381e10; r25 3.9e9-1.5e10); electric term a lower bound
-    (7, "2033"): H(keep_zeros=True),                 # box '1050' (prose 1030-1050), '1.5e10' (1.486e10; referee U2 step m_phi dt = 0.05, 2026-10-04; was '1.0e9')
+    # card RF3-ch1-tbl, 2026-11-12 (H. Lamm): the cell prints '1.5e10' as the box does, an accepted exception to one-digit rounding (was '10^10')
+    (7, "2033"): H(keep_zeros=True, cell_digits=1),  # box '1050' (prose 1030-1050), '1.5e10' (1.486e10; referee U2 step m_phi dt = 0.05, 2026-10-04; was '1.0e9')
     (8, "2033"): H(t_rel=r"\gtrsim"),                # box '1000', deepest MLAE circuit '>~9.9e8' (33 x 3.0056e7 + 16 x 7.42e4 = 9.930e8; free preparation and reflections priced 2026-10-05; G2 2026-10-04, was the 3.0e7 base circuit; lower bound, dressing ramp unpriced)
-    (9, "2033"): H(keep_zeros=True),                 # box '1235', N_CS method test '4.1e10' (r26-yukawa: gauge-singlet fermions, 4.1470e10; before 1015, 2.5e10; Yukawa weight in the normalization 2026-10-10: 2.4534e10; before 1.9e10 / 1.8909e10; r25 '1.6e10'); the condensate (4.9e9) is not the cell
+    # card RF3-ch1-tbl, 2026-11-12 (H. Lamm): box and cell mark the N_CS count a lower bound ('>~4.1e10', cell '>~4e10'); the chapter says
+    # the 2033 T-counts are lower bounds on this circuit (Higgs terms of each step and the filter's gauge and Higgs terms omitted)
+    (9, "2033"): H(keep_zeros=True, t_rel=r"\gtrsim"),  # box '1235', N_CS method test '4.1e10' (r26-yukawa: gauge-singlet fermions, 4.1470e10; before 1015, 2.5e10; Yukawa weight in the normalization 2026-10-10: 2.4534e10; before 1.9e10 / 1.8909e10; r25 '1.6e10'); the condensate (4.9e9) is not the cell
     (10, "2033"): H(t="t_per_shot_range", t_rel=r"\gtrsim"),           # box '~500-1000' (514-1014), '2.8-5.6e9' (author ruling 2026-10-05: QSVT/TPQ thermal state, 17 filter calls of degree 30, 2-4 c_step per query, 2.7726e9-5.6340e9, conditional on the reference; was the Gibbs sampler 8.4e13-4.4e14, open item 1(a) 2026-10-04; before that '>~5.5e9')
 }
 
@@ -151,10 +157,13 @@ def expected(ch: int, era: str, h: Headline) -> tuple[tuple[float, float], str]:
 
 def table_t(ch: int, era: str, h: Headline) -> str:
     """The table's spelling of the hard-operation count: the upper end of the model's range at one
-    significant digit (H. Lamm, 2026-11-05). The boxes keep their ranges and precision, checked separately."""
+    significant digit (H. Lamm, 2026-11-05). The boxes keep their ranges and precision, checked separately.
+    Two accepted exceptions (card RF3-ch1-tbl, 2026-11-12) are set per cell in HEADLINE: cell_range
+    (Ch. 4, 2028) and cell_digits (Ch. 7, 2033)."""
     _, r = _model(ch, era)
     t = _pair(r.intermediates[h.t]) if h.t else _pair(r.hard_ops)
-    return _fmt_t((t[1], t[1]), Headline(t_digits=0, t_rel=h.t_rel, t_bound=h.t_bound))
+    ends = t if h.cell_range else (t[1], t[1])
+    return _fmt_t(ends, Headline(t_digits=h.cell_digits, t_rel=h.t_rel, t_bound=h.t_bound))
 
 
 def _cell(ch: int, era: str, table: str) -> str:
@@ -188,7 +197,8 @@ def test_lq_in_table(ch, era, table, request):
 @pytest.mark.parametrize("table", sorted(TABLES))
 @pytest.mark.parametrize("ch,era", PARAMS)
 def test_t_in_table(ch, era, table, request):
-    """The cell prints the upper end of the model's per-shot count, at one significant digit."""
+    """The cell prints the upper end of the model's per-shot count, at one significant digit
+    (exceptions: the HEADLINE entries carrying cell_range or cell_digits)."""
     if ch in NO_T:
         pytest.skip(f"Ch{ch} row carries no T-count (NO_T)")
     _xfail(request, (ch, era, "T"))
@@ -257,6 +267,8 @@ def test_table_copies_agree(ch):
 def test_every_cell_is_specified():
     assert set(HEADLINE) == {(ch, era) for ch in ROW_KEY for era in ERAS}
     assert not NO_T
+    # the exceptions to one-digit rounding are exactly the two accepted on card RF3-ch1-tbl (2026-11-12)
+    assert {k for k, h in HEADLINE.items() if h.cell_range or h.cell_digits} == {(4, "2028"), (7, "2033")}
     assert {k[:2] for k in XFAIL} <= set(HEADLINE)
 
 

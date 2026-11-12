@@ -528,7 +528,7 @@ def test_2028_depth_and_factories():
     tex = (Path(__file__).resolve().parents[3] / "applications" / "app12_hybrid_lqcd.tex").read_text()
     # style pass 2026-10-08: the T-depth arithmetic and the box's 'single-config demo' wording went (prose anchors retired)
     for s_ in ("$2.6$--$4.8$ factories",
-               "$6.5$ h once three to five factories feed it ($17$--$31$ h on one)"):
+               "$6.5$ h with three to five factories and $17$--$31$ h with one"):   # re-pinned 2026-11-12 (batch 6): sentence reworded, numbers unchanged
         assert s_ in tex, s_
 
 
@@ -680,8 +680,8 @@ def test_2033_p_readout_two_tiers():
     assert round(e[0]) == 6 and round(e[1]) == 18
     for s in ("$P=2.7$--$8.0\\times 10^{-4}$", "$1.4$--$4.0\\times 10^{4}$ shots", "$310$--$910\\times$ more",
               "$4.3\\times 10^{6}$--$3.7\\times 10^{7}$ shots",
-              "$0.94$--$2.7\\times 10^{5}$ shots, $2.0$--$5.8\\times 10^{13}$ T-gates",
-              "$3.0$--$8.6\\times 10^{12}$ T-gates", "$am\\!\\approx\\!0.04$"):
+              "$0.94$--$2.7\\times 10^{5}$ shots, $2.0$--$5.8\\times 10^{13}$ T gates",   # re-pinned 2026-11-12 (batch 6): 'T-gates' -> 'T gates' here and in the next two pins
+              "$3.0$--$8.6\\times 10^{12}$ T gates", "$am\\!\\approx\\!0.04$"):
         assert s in TEX, s
 
 
@@ -739,7 +739,7 @@ def test_2033_banks_casher_demonstration():
     assert round(I33["bc_wall_band_days"][0]) == 29 and round(I33["bc_wall_band_yr"][1], 1) == 3.0
     rows = m.INSTANCE_ROWS(A, "2033", R33)
     assert rows[1][2] == t and "Banks-Casher" in rows[1][0]
-    assert ("$1.8$--$2.7\\times 10^{8}$ T-gates per shot, $1.1$--$1.7\\times 10^{4}$ shots; $58\\,$d--$1.5$ yr "
+    assert ("$1.8$--$2.7\\times 10^{8}$ T gates per shot, $1.1$--$1.7\\times 10^{4}$ shots; $58\\,$d--$1.5$ yr "
             "($29\\,$d--$3.0$ yr within the $2\\times$ on $P$)") in TEX
     assert "we find 18--27 modes below $\\Lambda$" in TEX and "$\\sin(\\pi/16)=0.195$" in TEX
     assert abs(math.sin(math.pi / 16) - 0.195) < 5e-4
@@ -756,7 +756,7 @@ def test_e27_no_multiple_machines_in_tex_or_model():
     # 'machines' survives only as the successive hardware generations ('10^3- and 10^4-LQ machines')
     assert all(low[max(0, i.start() - 3):i.start()] == "lq " for i in re.finditer(r"\bmachines\b", low))
     assert low.count("machines") <= 1
-    assert "The campaign runs serially on one machine, and it is depth-bound." in TEX
+    assert "The campaign runs serially on one machine and is depth-bound" in TEX   # re-pinned 2026-11-12 (batch 6): reworded, F* definition appended
     assert "\\textbf{Wall time} & $74\\,$ms per shot; $6.5$ h on one machine for one configuration \\\\" in TEX                  # boxes carry final numbers only (E29)
     # style pass 2026-10-08: 'horizon' sentence went (prose anchor retired)
     s = m.Assumptions()
@@ -958,7 +958,7 @@ def test_r16_rms_shot_convention_in_tex():
     # R16: no confidence-1-delta language survives in the chapter; Eq. Nshot is sigma^2/eps^2.
     assert "\\delta" not in TEX and "confidence" not in TEX
     assert "\\sigma^{2}/\\varepsilon^{2}\\cdot N_\\mathrm{cfg}" in TEX
-    assert "$\\sim 3.1\\!\\times\\!10^5$" in TEX and "$\\gtrsim 10^7$" in TEX
+    assert "$\\sim 3.1\\!\\times\\!10^5$" in TEX and "even $10^7$ shots, too few to resolve the trace" in TEX   # re-pinned 2026-11-12 (batch 6): was '$\gtrsim 10^7$ shots' 
     for old in ("4.6\\times 10^{4}", "4.6\\times 10^7", "4\\times 10^{15}", "1.4\\!\\times\\!10^6",
                 "\\sim 9\\times 10^{14}", "85 LQ", "92-LQ", "sub-percent precision on the normalized trace"):
         assert old not in TEX, old

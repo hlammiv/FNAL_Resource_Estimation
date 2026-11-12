@@ -213,8 +213,10 @@ def test_machine_time_bullet():
     assert within == [2, 3, 7]          # r26-yukawa: Ch. 9 left (5.8-6.5 yr); F6 2026-11-11: Ch. 8 is a lower bound
     assert [ch for ch in DIGITAL if campaign_status(ch) == r"\fitsopen"] == [8, 10]
     text = top_line()
-    assert "Three of the nine campaigns fit the five-year window on one machine and two give lower bounds." in text
+    assert "Three of the nine campaigns fit the five-year window on one machine and two give lower bounds" in text   # re-pinned 2026-11-12 (batch 6): the sentence now continues with Ch. 8's scan
     assert f"{float(f'{campaign_over_window(5):.2g}'):.0f}\\times$ (Ch." in text
+    lo, hi = result(8, "2033").intermediates["nucleation_scan_yr_with_prep_band"]      # batch 6, 2026-11-12: new clause, Ch. 8 model (78.1-501.9 yr)
+    assert f"scan reaching ${round(lo)}$--${round(hi, -1):.0f}$ yr with Gibbs preparation" in text
 
 
 def test_far_end_bullet():

@@ -722,8 +722,8 @@ def test_bad_inputs_rejected(a):
     r"Logical qubits & $178$ \\",
     r"Per-shot T & first result: $9.5\times 10^{4}$ (one step of $0.045$ fm/$c$)",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"full benchmark: $5.9\times 10^{5}$ ($6$ Trotter steps of $a_t/4$ to $t_{\max} = 0.15$ fm/$c$)",   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"Shots & first result $2\times 10^{3}$; full benchmark $7\times 10^{3}$ ($7$ measurement times) \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"first result $1.6$ min; full benchmark $34$ min per $(T,k)$ point on one machine; longest shot $\sim 0.6$ s \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"Shots & first result $2\times 10^{3}$ ($8.5\times 10^{4}$ for $30\%$); full benchmark $7\times 10^{3}$ ($7$ measurement times) \\",   # re-pinned 2026-11-12 (batch 6): the 30% count added (shots_first_result_2028_at_30pct = 8.458e4);   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"first result $1.6$ min; full benchmark $34$ min per $k$ on one machine; longest shot $\sim 0.6$ s \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 2033 target \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Per-shot T & $6.7\times 10^{9}$--$2.4\times 10^{10}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $3.2\times 10^{10}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"The hydrodynamic $\tau$ has no basis at this $k$",   # re-pinned 2026-11-09 (referee cards, Q5-6): sentence became the measurement figure; the caption keeps the claim
@@ -732,8 +732,8 @@ def test_bad_inputs_rejected(a):
     r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
     r"the eventual first-principles (continuum, larger-volume) $\eta/s$ and $\zeta/s$ at $20\%$",
-    r"so $\zeta/s$ adds up to $1\times$ the $\eta/s$ campaign's shots, and less where the operators commute and share shots.",
-    r"\textbf{Wall time} & first result $3.3$--$11$ yr on one machine;",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"so it adds up to $1\times$ the $\eta/s$ campaign's shots, and the subtraction for $\zeta$ is not counted.",
+    r"\textbf{Wall time} & shot $1.9$--$6.6$ h, first result $3.3$--$11$ yr on one machine;",   # re-pinned 2026-11-12 (batch 6): per-shot wall added to the row;   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"campaign $270$--$1000$ yr, $54$--$200\times$ the five-year window \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # R-TOL (H. Lamm 2026-09-29): the rule and each circuit's tolerance and T per rotation
     r"on $\Sigma(216\times 3)$ (11 qubits/link)",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
