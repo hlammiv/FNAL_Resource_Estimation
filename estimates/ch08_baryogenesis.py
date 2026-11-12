@@ -208,9 +208,10 @@ WALL TIME AND FACTORIES
   2033 first result: 3-sigma detection of Delta n at T_c and 0.9 T_c (9/(p0^2 S_int^2 m_top) = 2.6e3 queries per
   point at S_int = 1.6e-2; 1.5e3 at the 800-site 2.1e-2, 2.73e5 at the earlier 1e-3) plus the slope at both temperatures
   -> wall_first_result_s ~38 d (records: ~37 d at 2.1e-2, ~0.58 yr at 1e-3).
-  2033 campaign: 10 Delta-n points at +-3e-3 per bin over 7 bins (5.4e4 queries each) plus the 100-point
-  slope scan -> wall_campaign_s 3.8 yr (2026-11-09, 7 bins; records: 3.9 yr at 8 bins since eps_c = 3e-3 on 2026-10-12, 32 yr at
-  100 bins, 8.6 yr at 8 bins and eps_c = 1e-3); the scan plus the first result 3.3 yr.
+  2033 campaign: 10 Delta-n points at +-3e-3 per bin over 7 bins (5.4e4 queries each) plus the slope at the
+  same 10 temperatures at one Delta theta_C (ruling 2026-11-12, card RF3-ch8-M3) -> wall_campaign_s 0.85 yr (records: 3.8 yr
+  with the 100-point (T, Delta theta_C) scan, 2026-11-09, 7 bins; 3.9 yr at 8 bins since eps_c = 3e-3 on 2026-10-12, 32 yr at
+  100 bins, 8.6 yr at 8 bins and eps_c = 1e-3); the scan plus the first result 0.33 yr (was 3.3).
 """
 
 from __future__ import annotations
@@ -354,8 +355,13 @@ class Assumptions:
     # ---- wall time and campaign -------------------------------------------------
     t_gate_s: Tagged = Stated(1e-6, f"{TEX}:89,91", "'1 us per T-gate' (seconds per T)")
     shot_overhead_s: Tagged = Assumed(1e-4, "per-shot overhead t0 ~ 0.1 ms: register initialization (~1 logical cycle, 10 us), final transversal readout and decode (63 us decoder latency, Google_QEC_below_threshold); the wall is gate-limited, with no separate shot rate", f"{TEX}:130")
-    n_scan_points: Tagged = Stated(100, f"{TEX}:89,151,176", "'~100-point (T, Delta theta_C) scan'")
-    n_dn_points: Tagged = Stated(10, f"{TEX}:89", "Delta n arm 'at ~10 representative points'")
+    n_scan_points: Tagged = Stated(10, f"{TEX}:107,158", "10 temperatures at one Delta theta_C (0.1): author ruling "
+                                   "2026-11-12 (card RF3-ch8-M3), a choice, not derived. Gamma/V depends on T through the "
+                                   "potential; Delta theta_C enters only the Yukawa coupling and the asymmetry is linear in "
+                                   "it, so one value fixes it. Was 100, '~100-point (T, Delta theta_C) scan', which nothing "
+                                   "derived")
+    n_dn_points: Tagged = Stated(10, f"{TEX}:107,158", "the per-bin Delta n at each of the 10 scan temperatures (ruling "
+                                 "2026-11-12, card RF3-ch8-M3; was 'at ~10 points of the ~100-point scan')")
     horizon_yr: Tagged = Stated(5, f"{TEX}:89,151,175", "'5-year campaign horizon', one machine, serial (no machine count is formed)")
 
     # ---- two-tier schedule (shot audit and factory analysis) ----------------
@@ -1266,9 +1272,9 @@ def _model_2033(a: Assumptions) -> Result:
     dn_point_yr = dn_arm_s / SEC_PER_YR                        # 2.84
     dn_campaign_yr = n_dn * dn_point_yr                        # 28.4 yr serial
     n_scan = float(a.n_scan_points.lo)
-    nucl_scan_yr = n_scan * nucl_s / SEC_PER_YR                # 3.33 yr serial
-    campaign_serial_yr = dn_campaign_yr + nucl_scan_yr         # 3.9 yr serial on one machine (31.7 at 100 bins and eps_c = 1e-3)
-    campaign_over_horizon = campaign_serial_yr / horizon       # 6.35: cost reduction needed to fit the horizon
+    nucl_scan_yr = n_scan * nucl_s / SEC_PER_YR                # 0.33 yr serial (10 temperatures; 3.29 at 100 points)
+    campaign_serial_yr = dn_campaign_yr + nucl_scan_yr         # 0.85 yr serial on one machine (3.8 with the 100-point scan)
+    campaign_over_horizon = campaign_serial_yr / horizon       # 0.17 of the window (0.76 with the 100-point scan)
 
     # R25 first result (R1/R2): 3-sigma detection of the f_eq-weighted Delta n at the two box temperatures, plus
     # the nucleation slope at both. Queries (1 - S^2)/(sigma^2 m) with sigma = S/3; S_int computed (sint/scatter.py).
@@ -1284,10 +1290,10 @@ def _model_2033(a: Assumptions) -> Result:
     first_s = n_first * first_dn_s + nucl_s + nucl_s_09        # 38 d (37 d at S_int = 2.1e-2, 528 d at 1e-3; T_c and 0.9 T_c slopes)
     # what fits in the horizon on one machine: the nucleation scan (which contains the two first-result
     # temperatures) plus the first-result Delta-n points, then whole campaign Delta-n points
-    scan_plus_first_yr = nucl_scan_yr + n_first * first_dn_s / SEC_PER_YR   # 3.3 yr (3.84 at S_int = 1e-3)
-    dn_points_in_horizon = min(n_dn, math.floor((horizon - nucl_scan_yr) / dn_point_yr))   # 0
+    scan_plus_first_yr = nucl_scan_yr + n_first * first_dn_s / SEC_PER_YR   # 0.33 yr (3.3 with the 100-point scan)
+    dn_points_in_horizon = min(n_dn, math.floor((horizon - nucl_scan_yr) / dn_point_yr))   # 10
     fits_in_horizon_yr = scan_plus_first_yr
-    lis_campaign_yr = n_dn * lis_dn_arm_s / SEC_PER_YR + nucl_scan_yr   # 44.7 yr serial (sensitivity)
+    lis_campaign_yr = n_dn * lis_dn_arm_s / SEC_PER_YR + nucl_scan_yr   # 1.1 yr serial (sensitivity)
 
     # R9 exports. Campaign: Delta-n base circuits plus nucleation circuits as full-circuit equivalents.
     # (equivalents in units of the evolution, whose T-depth factory.json gives; the preparation and reflections add
@@ -1350,7 +1356,7 @@ def _model_2033(a: Assumptions) -> Result:
     # verifier 2026-10-05: the null route costed. It removes only the bias common to the signal and null circuits
     # (different circuits). Delta-n queries x 4 at each first-result point; nucleation unchanged.
     first_null_yr = (n_first * null_control_factor * first_dn_s + nucl_s + nucl_s_09) / SEC_PER_YR   # ~5.5 yr
-    scan_plus_first_null_yr = nucl_scan_yr + n_first * null_control_factor * first_dn_s / SEC_PER_YR   # ~8.7 yr
+    scan_plus_first_null_yr = nucl_scan_yr + n_first * null_control_factor * first_dn_s / SEC_PER_YR   # 0.35 yr
     # B5 (derived here from the arxiv_2311_09207 cost model): one unit of Lindblad time = one filtered jump on a
     # patch; ||sum A+ A|| <= 1 with adjoints included means a sweep over >= 2V scalar jumps (a_x and a_x^dag) is 2V
     # units. Nucleation circuits are single circuits at their own budget (c_T at m = 1).
@@ -1499,6 +1505,8 @@ def _model_2033(a: Assumptions) -> Result:
         "prep_r1_m_max": sens_r1["m_max"], "prep_r1_m_top": sens_r1["m_top"],
         "prep_r1_dn_point_yr": sens_r1["dn_point_yr"], "prep_r1_first_dn_point_days": sens_r1["first_dn_point_days"],
         "prep_r1_dn_wall_ratio": sens_r1["dn_point_yr"] / (dn_arm_s / SEC_PER_YR),
+        # the campaign with a dressing ramp at r = 1: the Delta-n points at depth 15 plus the undressed scan (2.6 yr)
+        "prep_r1_campaign_serial_yr": n_dn * sens_r1["dn_point_yr"] + nucl_scan_yr,
         "prep_r02_m_top": sens_r02["m_top"], "prep_r02_dn_point_yr": sens_r02["dn_point_yr"],
         "prep_r02_first_dn_point_days": sens_r02["first_dn_point_days"],
         # B3/G2: headroom left at depth 33 for the unpriced ramp, in Trotter steps per application (< 1)

@@ -452,7 +452,7 @@ def test_lis_resolves_the_branch(r33):
     _close(i["mlae_lis_branch_margin_sigma"], (math.pi / 12) * 2 * math.sqrt(n), 1e-12)
 
 
-def test_2033_wall_time_and_campaign(r33):
+def test_2033_wall_time_and_campaign(a, r33):
     # E27 (r23): one machine everywhere; every wall time is serial, shots x (T x 1 us + t0)
     i = r33.intermediates
     assert round(i["base_circuit_s"]) == 30                     # base circuit '~30 s'
@@ -477,22 +477,26 @@ def test_2033_wall_time_and_campaign(r33):
     assert round(i["nucleation_point_days"]) == 12              # '~12 days per nucleation point' (T_c)
     _close(i["dn_campaign_serial_yr"], 10 * i["dn_arm_yr"], 1e-12)
     assert round(i["dn_campaign_serial_yr"], 1) == 0.5          # the ten Delta-n points at 7 bins, 0.52 yr (0.59 at 8 bins; was 5.3)
-    _close(i["nucleation_scan_serial_yr"], 100 * i["nucleation_point_days"] / 365.25, 1e-12)
-    assert round(i["nucleation_scan_serial_yr"], 1) == 3.3      # 'the nucleation scan ~3.3 yr'
+    # ruling 2026-11-12 (card RF3-ch8-M3): 10 temperatures at one Delta theta_C, Delta n at each (was 100 points, 10 with Delta n)
+    assert a.n_scan_points.value == 10 == a.n_dn_points.value and a.n_scan_points.prov is Provenance.STATED
+    assert "RF3-ch8-M3" in a.n_scan_points.note and "2026-11-12" in a.n_scan_points.note
+    _close(i["nucleation_scan_serial_yr"], 10 * i["nucleation_point_days"] / 365.25, 1e-12)
+    assert round(i["nucleation_scan_serial_yr"], 2) == 0.33     # the nucleation scan, 10 temperatures (3.3 yr at 100 points)
     _close(i["campaign_serial_yr"], i["dn_campaign_serial_yr"] + i["nucleation_scan_serial_yr"], 1e-12)
-    assert round(i["campaign_serial_yr"], 1) == 3.8             # box and :65: 'campaign >~3.8 yr' (3.9 at 8 bins; was 8.6)
+    assert round(i["campaign_serial_yr"], 2) == 0.85            # box: 'campaign >~0.85 yr' (3.8 with the 100-point scan)
+    assert round(i["campaign_shots_full_equiv"], -4) == 9.0e5   # full-circuit equivalents (4.06e6 with the 100-point scan)
     assert i["horizon_yr"] == 5
     _close(i["campaign_over_horizon"], i["campaign_serial_yr"] / 5, 1e-12)
-    assert round(i["campaign_over_horizon"], 1) == 0.8          # inside the five-year window (was 1.7 times)
+    assert round(i["campaign_over_horizon"], 2) == 0.17         # inside the five-year window (0.76 with the 100-point scan)
     # what fits in 5 years on one machine: the scan, the first result and three campaign Delta-n points
     assert i["dn_points_in_horizon"] == 10     # was 3 at eps_c = 1e-3
     _close(i["fits_in_horizon_yr"], i["nucleation_scan_serial_yr"] + 2 * i["first_dn_point_days"] / 365.25, 1e-12)
-    assert round(i["fits_in_horizon_yr"], 1) == 3.3             # box: 'nucleation scan and first result >~3.3 yr' (was 4.6)
+    assert round(i["fits_in_horizon_yr"], 2) == 0.33            # box: 'nucleation scan and first result >~0.33 yr' (was 3.3)
     assert i["nucleation_scan_serial_yr"] + 10 * i["dn_arm_yr"] < 5      # inside the window since 2026-10-12
     # LIS sensitivity (not printed): 0.78 yr per point, 11 yr serial, 2.2x the horizon
     assert round(i["mlae_lis_dn_arm_yr"], 2) == 0.08             # 7 bins (0.09 at 8)
-    assert round(i["mlae_lis_campaign_serial_yr"], 1) == 4.0     # 7 bins (4.1 at 8)
-    assert round(i["mlae_lis_campaign_over_horizon"], 1) == 0.8   # was 2.2 at eps_c = 1e-3
+    assert round(i["mlae_lis_campaign_serial_yr"], 1) == 1.1     # 10-temperature scan (4.0 at 100 points)
+    assert round(i["mlae_lis_campaign_over_horizon"], 1) == 0.2   # was 0.8 at 100 points
 
 
 def test_2033_first_result_tier(a, r33):
@@ -528,7 +532,7 @@ def test_2033_depth_exports(r33):
     _close(i["wall_campaign_s"], i["campaign_serial_yr"] * 365.25 * 86400, 1e-12)
     _close(i["campaign_serial_yr_check"][0], i["campaign_serial_yr"], 1e-4)   # full-circuit equivalents agree
     _close(i["floor_wall_s"][1], i["campaign_shots_full_equiv"] * 2.87e6 * 1e-5, 1e-12)
-    assert round(i["factories_for_1yr"][0]) == 38 < i["f_star"][1]           # a 1-yr campaign is within the depth-allowed factories since 2026-10-12 (39 at 8 bins; was 86 > F*)
+    assert round(i["factories_for_1yr"][0], 1) == 8.5 < i["f_star"][0]       # a 1-yr campaign needs fewer than the 10 baseline factories at 10 temperatures (38 with the 100-point scan)
     # a campaign Delta-n point at 7 bins: 0.5 factories for a year (0.6 at 8 bins)
     assert round(i["dn_point_factories_for_1yr"][0], 1) == 0.5
     _close(i["dn_point_floor_wall_s"][1],
@@ -725,6 +729,9 @@ def test_b3_preparation_sensitivity(a, r33):
     _close(s0["deepest_t"], r33.hard_ops[0], 1e-12)
     assert (i["prep_r1_m_max"], i["prep_r1_m_top"]) == (16, 15)
     assert round(i["prep_r1_dn_point_yr"], 2) == 0.23          # 7 bins at eps_c 3e-3 (0.26 at 8 bins; was 2.3)
+    # chapter: 'to a ~2.6 yr campaign at r = 1': ten dressed Delta-n points plus the 10-temperature scan (5.5 at 100 points)
+    _close(i["prep_r1_campaign_serial_yr"], 10 * i["prep_r1_dn_point_yr"] + i["nucleation_scan_serial_yr"], 1e-12)
+    assert round(i["prep_r1_campaign_serial_yr"], 1) == 2.6
     assert i["prep_r02_m_top"] == 27
     # walls grow roughly as (1 + r)^2
     assert 3.5 < i["prep_r1_dn_wall_ratio"] < 5
@@ -778,7 +785,7 @@ def test_g4_fault_bias_model(a, r33):
     assert sci(i["epsilon_l_with_idle_first_bias"], 0) == ("1", -12)   # S_int 1.6e-2 (2e-12 at 2.14e-2; 7e-14 at 1e-3)
     assert i["null_control_query_factor"] == 4.0
     # null route costed (verifier 2026-10-05): first result ~5.5 yr, ~8.7 yr with the scan, past the horizon
-    assert round(i["first_result_null_yr"], 2) == 0.12 and round(i["scan_plus_first_null_yr"], 1) == 3.3   # 0.11 at S_int 2.14e-2
+    assert round(i["first_result_null_yr"], 2) == 0.12 and round(i["scan_plus_first_null_yr"], 2) == 0.35   # 0.11 at S_int 2.14e-2; 3.3 with the 100-point scan
     assert i["scan_plus_first_null_yr"] < i["horizon_yr"]
     tex = TEX.read_text()
     assert "$\\lesssim 7\\times 10^{-13}$ per location" in tex and "7\\times 10^{-14}" not in tex   # per-bin target 3e-3 (2026-10-12)
@@ -858,7 +865,8 @@ def test_bath_mixing_band_is_words_only(a, r33):
     assert not i["bath_mixing_sensitivity"]["central"]["fits_envelope"]   # 8 sweeps: 1.1e9 > 1e9
     assert i["bath_mixing_sensitivity"]["lo"]["fits_envelope"]
     s_lo, s_hi = i["nucleation_scan_yr_with_prep_band"]
-    assert round(s_lo) == 78 and round(s_hi, -1) == 500          # omission sentence: '78-500 yr'
+    assert round(s_lo, 1) == 7.8 and round(s_hi) == 50           # box: '7.8--50 yr' (78-500 with the 100-point scan)
+    assert s_lo > i["horizon_yr"]                                # the scan with the preparation still misses the window
     f_lo, f_hi = i["first_result_yr_with_prep_band"]
     assert round(f_lo, 1) == 2.4 and round(f_hi) == 15                           # box '2.4--15 yr' (2.3 at S_int 2.14e-2)
     # the printed walls do not carry the preparation
@@ -876,8 +884,10 @@ def test_ruling_2026_10_11_text_hooks():
     assert r"$1.8\times 10^{4}$ at each of two times" in box28 and r"$\lesssim 4\times 10^{-7}$" in box28
     assert r"$\sim 2.1$ h per parameter point ($6.8$ h" in box28
     assert "the 2028 benchmark takes $20$ steps" in tex
-    assert r"$5.4\times 10^{4}$ over the $7$ bins" in tex and r"in $7$ bins at $10$ points" in tex
-    assert r"campaign ${\gtrsim}\,3.8$ yr, all without Gibbs preparation" in tex and "$70$ yr" not in tex and "$14$ times" not in tex
+    assert r"$5.4\times 10^{4}$ over the $7$ bins" in tex and r"on a $10$-temperature scan; $\Delta n$ to $\pm 3\times 10^{-3}$ in $7$ bins at each" in tex
+    assert "$10$ temperatures, all at $\\Delta\\theta_C=0.1$" in tex and "100$-point" not in tex and "$(T,\\Delta\\theta_C)$ scan" not in tex   # card RF3-ch8-M3, 2026-11-12
+    assert r"$\sim 2.6$~yr campaign at $r=1$" in tex and "5.5$~yr" not in tex
+    assert r"nucleation scan and first result ${\gtrsim}\,0.33$ yr; campaign ${\gtrsim}\,0.85$ yr, all without Gibbs preparation" in tex and r"scan $7.8$--$50$ yr" in tex and "$78$--$500$" not in tex and "3.8$ yr" not in tex and "$70$ yr" not in tex and "$14$ times" not in tex
     assert r"$S_{\rm int}=1.6\times 10^{-2}$ on the 15-site axis at $t_{\max}$" in tex and r"$2.6\times 10^{3}$ queries" in tex
     assert r"\sigma\approx 1.3\,m_\phi^2" in tex and "stays finite at $T_c$" in tex
     assert "$3$--$20$ sweeps" in tex and "the mixing time is unknown" not in tex

@@ -19,9 +19,9 @@ def main():
     (lo, hi), (tlo, thi) = i["nucleation_scan_yr_with_prep_band"], i["nucleation_shot_t_with_prep_band"]
     null_days = (i["first_result_null_yr"] - first) * 365.25
     # the printed values
-    assert round(i["first_result_days"]) == 38 and round(plus, 1) == 3.3 and round(camp, 1) == 3.8
-    assert round(lo) == 78 and float(f"{hi:.1g}") == 500 and f"{tlo:.1e}"[:3] == "4.2" and f"{thi:.1e}"[:3] == "2.7"
-    assert round(null_days) == 6 and round(i["scan_plus_first_null_yr"], 1) == 3.3
+    assert round(i["first_result_days"]) == 38 and round(plus, 2) == 0.33 and round(camp, 2) == 0.85
+    assert round(lo, 1) == 7.8 and round(hi) == 50 and f"{tlo:.1e}"[:3] == "4.2" and f"{thi:.1e}"[:3] == "2.7"
+    assert round(null_days) == 6 and round(i["scan_plus_first_null_yr"], 2) == 0.35
     assert i["bath_mixing_sweeps"] == (3.0, 20.0)
     window = i["campaign_serial_yr"] / i["campaign_over_horizon"]
 
@@ -33,10 +33,10 @@ def main():
         ax.annotate("", xy=(v * 1.9, y), xytext=(v, y), arrowprops=dict(arrowstyle="-|>", color=ff.BLUE, lw=1.1, mutation_scale=7, shrinkA=0, shrinkB=0))
         ax.plot(v, y, "o", color=ff.BLUE, ms=4)
     ax.text(first * 2.1, n - 1, r"$\gtrsim 38$ d; null circuit $+6$ d", va="center", fontsize=7)
-    ax.text(plus / 1.2, n - 2, r"$\gtrsim 3.3$ yr", va="center", ha="right", fontsize=7)
-    ax.text(camp / 1.2, n - 3, r"$\gtrsim 3.8$ yr", va="center", ha="right", fontsize=7)
+    ax.text(plus / 1.2, n - 2, r"$\gtrsim 0.33$ yr", va="center", ha="right", fontsize=7)
+    ax.text(camp / 1.2, n - 3, r"$\gtrsim 0.85$ yr", va="center", ha="right", fontsize=7)
     ax.barh(0, hi - lo, left=lo, height=0.42, color=ff.ORANGE)
-    ax.text(hi * 1.12, 0, "$78$\u2013$500$ yr", va="center", fontsize=7)
+    ax.text(hi * 1.12, 0, "$7.8$\u2013$50$ yr", va="center", fontsize=7)
     ax.text(window / 1.15, 0, "$0.4$\u2013$2.7\\times 10^{9}$ T per shot", va="center", ha="right", fontsize=7)
     ax.axvline(window, color=ff.INK, ls="--", lw=0.8)
     ax.text(window * 1.1, n - 0.72, "five-year window", fontsize=7, color=ff.INK, va="center")
