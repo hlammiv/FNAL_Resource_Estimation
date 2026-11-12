@@ -1,0 +1,122 @@
+
+== Published SU(4) lemmas converted to the report convention (evolution only, tau=0.20, eps=0.00731) ==
+| A | PF2 steps (bound) | PF2 T/step | PF2 T | PF2 LQ | GQSP queries | GQSP T/query | GQSP T | GQSP LQ |
+|---|---|---|---|---|---|---|---|---|
+| 12 | 23132 | 8.51e+04 | 1.97e+09 | 199 | 3461 | 5714 | 1.98e+07 | 216 |
+| 16 | 26711 | 1.61e+05 | 4.29e+09 | 245 | 4607 | 7228 | 3.33e+07 | 268 |
+| 40 | 42233 | 1.80e+06 | 7.61e+10 | 513 | 11483 | 1.64e+04 | 1.89e+08 | 581 |
+  paper point A=16 t=0.0618 eps=0.1: PF2 1.85e+08 (paper conv. 1.13e+08), GQSP 1.02e+07 (paper conv. 5.93e+06)
+  paper point A=40 t=0.0624 eps=0.1: PF2 3.49e+09 (paper conv. 2.22e+09), GQSP 5.84e+07 (paper conv. 3.37e+07)
+
+== Complete circuits, chapter Hamiltonian (C_t != C_s, D), baseline assumptions ==
+| instance | method | encoding | LQ | T/step | T evol (0.20) | T filter/attempt | T deepest circuit | E[T]/accepted shot | campaign shots | first result | campaign | eps_l | fits 1e9 T | fits 5 yr |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 3H 8^3 | PF2 cal. | labeled | 48 | 3878 | 3.89e+05 | 0.00e+00 | 2.61e+07 | 2.61e+07 | 1.64e+05 | 2.1 d | 49.4 d | 3.8e-09 | yes | yes |
+| 3H 6^3 | PF2 cal. | labeled | 48 | 1.05e+04 | 1.05e+06 | 0.00e+00 | 2.68e+07 | 2.68e+07 | 1.64e+05 | 2.1 d | 50.2 d | 3.7e-09 | yes | yes |
+| 3H 8^3 | PF2 bound | labeled | 48 | 3937 | 2.13e+07 | 0.00e+00 | 4.75e+07 | 4.75e+07 | 1.64e+05 | 3.0 d | 73.5 d | 2.1e-09 | yes | yes |
+| 3H 8^3 | GQSP | labeled | 104 | 3539 | 2.01e+06 | 0.00e+00 | 2.77e+07 | 2.77e+07 | 1.64e+05 | 2.2 d | 51.2 d | 3.6e-09 | yes | yes |
+| 12C 6^3 | PF2 cal. | labeled | 160 | 7.46e+04 | 1.50e+07 | 5.65e+08 | 5.80e+08 | 1.32e+09 | 1.64e+05 | 106.8 d | 6.9 yr | 1.7e-10 | yes | near |
+| 12C 8^3 | PF2 cal. | labeled | 160 | 4.57e+04 | 9.16e+06 | 3.46e+08 | 3.56e+08 | 8.13e+08 | 1.64e+05 | 65.6 d | 4.2 yr | 2.8e-10 | yes | yes |
+| 12C 8^3 | PF2 bound | labeled | 160 | 4.78e+04 | 5.17e+08 | 1.96e+10 | 2.01e+10 | 4.56e+10 | 1.64e+05 | 10.1 yr | 236.3 yr | 5.0e-12 | no | no |
+| 12C 8^3 | GQSP | labeled | 223 | 8482 | 1.98e+07 | 1.64e+08 | 1.85e+08 | 1.67e+09 | 1.64e+05 | 134.6 d | 8.6 yr | 5.4e-10 | yes | near |
+| 16O 8^3 | PF2 cal. | labeled | 208 | 7.57e+04 | 1.75e+07 | 4.86e+08 | 5.05e+08 | 1.15e+09 | 1.64e+05 | 92.8 d | 6.0 yr | 2.0e-10 | yes | near |
+| 16O 8^3 | PF2 bound | labeled | 208 | 7.86e+04 | 9.84e+08 | 2.73e+10 | 2.83e+10 | 6.38e+10 | 1.64e+05 | 14.1 yr | 330.4 yr | 3.5e-12 | no | no |
+| 16O 8^3 | GQSP | labeled | 275 | 1.06e+04 | 3.37e+07 | 2.05e+08 | 2.41e+08 | 2.10e+09 | 1.64e+05 | 169.3 d | 10.9 yr | 4.2e-10 | yes | near |
+| 40Ar 8^3 | PF2 cal. | labeled | 496 | 4.17e+05 | 1.53e+08 | 1.75e+10 | 1.77e+10 | 4.06e+10 | 1.64e+05 | 9.0 yr | 211.4 yr | 5.6e-12 | no | no |
+| 40Ar 8^3 | PF2 bound | labeled | 496 | 4.26e+05 | 8.42e+09 | 9.68e+11 | 9.77e+11 | 2.24e+12 | 1.64e+05 | 495.9 yr | 11631.9 yr | 1.0e-13 | no | no |
+| 40Ar 8^3 | GQSP | labeled | 589 | 2.36e+04 | 2.12e+08 | 5.38e+09 | 5.60e+09 | 5.41e+10 | 1.64e+05 | 12.0 yr | 281.5 yr | 1.8e-11 | no | no |
+| 12C 8^3 | GQSP | eq5 | 235 | 8483 | 1.98e+07 | 1.64e+08 | 1.86e+08 | 1.68e+09 | 2.63e+06 | 5.9 yr | 139.1 yr | 5.4e-10 | yes | no |
+| 16O 8^3 | GQSP | eq5 | 291 | 1.06e+04 | 3.37e+07 | 2.05e+08 | 2.42e+08 | 2.12e+09 | 2.63e+06 | 7.5 yr | 175.5 yr | 4.1e-10 | yes | no |
+| 40Ar 8^3 | GQSP | eq5 | 629 | 2.36e+04 | 2.12e+08 | 5.38e+09 | 5.61e+09 | 5.42e+10 | 4.01e+06 | 293.3 yr | 6879.2 yr | 1.8e-11 | no | no |
+| 3H 6^3 occupation (current) | PF2 | charge | 908 | 1.7e6 | 1.8e8 | none | 2.07e8 | 2.07e8 | 1.64e+05 | 9.4 d | 250.0 d | 4.8e-10 | yes | yes |
+
+== Registers ==
+3H PF2 {'system': 30, 'counters': 0, 'flag_ladder': 8, 'and_chain': 5, 'pair_flags': 3, 'rus_hadamard_filter': 2, 'total': 48}
+3H GQSP {'system': 30, 'block_encoding_and_phase': 65, 'second_selection_and_flags': 9, 'total': 104}
+12C PF2 {'system': 120, 'counters': 24, 'flag_ladder': 8, 'and_chain': 5, 'pair_flags': 0, 'rus_hadamard_filter': 3, 'total': 160}
+12C GQSP {'system': 120, 'block_encoding_and_phase': 85, 'second_selection_and_flags': 18, 'total': 223}
+16O PF2 {'system': 160, 'counters': 32, 'flag_ladder': 8, 'and_chain': 5, 'pair_flags': 0, 'rus_hadamard_filter': 3, 'total': 208}
+16O GQSP {'system': 160, 'block_encoding_and_phase': 93, 'second_selection_and_flags': 22, 'total': 275}
+40Ar PF2 {'system': 400, 'counters': 80, 'flag_ladder': 8, 'and_chain': 5, 'pair_flags': 0, 'rus_hadamard_filter': 3, 'total': 496}
+40Ar GQSP {'system': 400, 'block_encoding_and_phase': 143, 'second_selection_and_flags': 46, 'total': 589}
+
+== Sensitivity: campaign wall in years (deepest-circuit T); rows overlap^2, columns gap (MeV) ==
+
+12C PF2 (calibrated steps)
+| overlap^2 | gap 1.0 | gap 2.0 | gap 4.44 | gap 8.0 |
+|---|---|---|---|---|
+| 0.9 | 4.2 (7.84e+08) | 2.1 (3.94e+08) | 0.95 (1.81e+08) | 0.54 (1.05e+08) |
+| 0.5 | 7.6 (1.23e+09) | 3.8 (6.17e+08) | 1.7 (2.81e+08) | 0.96 (1.59e+08) |
+| 0.2 | 12 (1.46e+09) | 6.1 (7.28e+08) | 2.8 (3.31e+08) | 1.5 (1.87e+08) |
+| 0.1 | 19 (1.57e+09) | 9.4 (7.84e+08) | 4.2 (3.56e+08) | 2.4 (2.01e+08) |
+| 0.01 | 1.3e+02 (1.91e+09) | 63 (9.52e+08) | 29 (4.31e+08) | 16 (2.42e+08) |
+| 0.001 | 1.2e+03 (2.36e+09) | 6e+02 (1.18e+09) | 2.7e+02 (5.31e+08) | 1.5e+02 (2.97e+08) |
+
+12C GQSP
+| overlap^2 | gap 1.0 | gap 2.0 | gap 4.44 | gap 8.0 |
+|---|---|---|---|---|
+| 0.9 | 2.5 (4.44e+08) | 1.3 (2.32e+08) | 0.62 (1.16e+08) | 0.37 (7.34e+07) |
+| 0.5 | 6.1 (5.97e+08) | 3.1 (3.09e+08) | 1.4 (1.50e+08) | 0.82 (9.25e+07) |
+| 0.2 | 18 (6.94e+08) | 8.8 (3.57e+08) | 4 (1.72e+08) | 2.3 (1.05e+08) |
+| 0.1 | 38 (7.50e+08) | 19 (3.85e+08) | 8.6 (1.85e+08) | 4.8 (1.12e+08) |
+| 0.01 | 4.7e+02 (9.17e+08) | 2.3e+02 (4.69e+08) | 1.1e+02 (2.22e+08) | 59 (1.32e+08) |
+| 0.001 | 5.5e+03 (1.08e+09) | 2.8e+03 (5.49e+08) | 1.2e+03 (2.58e+08) | 6.9e+02 (1.52e+08) |
+
+16O PF2 (calibrated steps)
+| overlap^2 | gap 1.0 | gap 2.0 | gap 6.05 | gap 8.0 |
+|---|---|---|---|---|
+| 0.9 | 8 (1.50e+09) | 4 (7.57e+08) | 1.4 (2.61e+08) | 1 (2.01e+08) |
+| 0.5 | 15 (2.36e+09) | 7.3 (1.18e+09) | 2.4 (4.00e+08) | 1.8 (3.06e+08) |
+| 0.2 | 24 (2.79e+09) | 12 (1.40e+09) | 3.9 (4.70e+08) | 3 (3.59e+08) |
+| 0.1 | 36 (3.01e+09) | 18 (1.50e+09) | 6 (5.05e+08) | 4.5 (3.86e+08) |
+| 0.01 | 2.4e+02 (3.66e+09) | 1.2e+02 (1.83e+09) | 40 (6.10e+08) | 31 (4.65e+08) |
+| 0.001 | 2.3e+03 (4.52e+09) | 1.1e+03 (2.26e+09) | 3.8e+02 (7.51e+08) | 2.9e+02 (5.71e+08) |
+
+16O GQSP
+| overlap^2 | gap 1.0 | gap 2.0 | gap 6.05 | gap 8.0 |
+|---|---|---|---|---|
+| 0.9 | 4.3 (7.58e+08) | 2.2 (3.97e+08) | 0.8 (1.54e+08) | 0.63 (1.25e+08) |
+| 0.5 | 10 (1.02e+09) | 5.2 (5.27e+08) | 1.8 (1.98e+08) | 1.4 (1.58e+08) |
+| 0.2 | 30 (1.18e+09) | 15 (6.09e+08) | 5.1 (2.25e+08) | 3.9 (1.78e+08) |
+| 0.1 | 65 (1.28e+09) | 33 (6.57e+08) | 11 (2.41e+08) | 8.3 (1.90e+08) |
+| 0.01 | 8e+02 (1.57e+09) | 4e+02 (8.00e+08) | 1.3e+02 (2.88e+08) | 1e+02 (2.26e+08) |
+| 0.001 | 9.4e+03 (1.84e+09) | 4.7e+03 (9.37e+08) | 1.6e+03 (3.33e+08) | 1.2e+03 (2.60e+08) |
+
+40Ar PF2 (calibrated steps)
+| overlap^2 | gap 1.0 | gap 2.0 | gap 1.46 | gap 8.0 |
+|---|---|---|---|---|
+| 0.9 | 69 (1.30e+10) | 35 (6.54e+09) | 48 (8.91e+09) | 9 (1.74e+09) |
+| 0.5 | 1.2e+02 (2.03e+10) | 62 (1.02e+10) | 86 (1.39e+10) | 16 (2.65e+09) |
+| 0.2 | 2e+02 (2.40e+10) | 1e+02 (1.20e+10) | 1.4e+02 (1.65e+10) | 26 (3.11e+09) |
+| 0.1 | 3.1e+02 (2.58e+10) | 1.5e+02 (1.30e+10) | 2.1e+02 (1.77e+10) | 39 (3.34e+09) |
+| 0.01 | 2.1e+03 (3.14e+10) | 1e+03 (1.57e+10) | 1.4e+03 (2.15e+10) | 2.6e+02 (4.02e+09) |
+| 0.001 | 2e+04 (3.88e+10) | 9.8e+03 (1.94e+10) | 1.3e+04 (2.65e+10) | 2.5e+03 (4.94e+09) |
+
+40Ar GQSP
+| overlap^2 | gap 1.0 | gap 2.0 | gap 1.46 | gap 8.0 |
+|---|---|---|---|---|
+| 0.9 | 27 (4.79e+09) | 14 (2.50e+09) | 19 (3.35e+09) | 4 (7.92e+08) |
+| 0.5 | 65 (6.43e+09) | 33 (3.33e+09) | 45 (4.48e+09) | 8.8 (9.98e+08) |
+| 0.2 | 1.9e+02 (7.47e+09) | 95 (3.85e+09) | 1.3e+02 (5.19e+09) | 24 (1.13e+09) |
+| 0.1 | 4.1e+02 (8.08e+09) | 2.1e+02 (4.15e+09) | 2.8e+02 (5.60e+09) | 52 (1.20e+09) |
+| 0.01 | 5e+03 (9.88e+09) | 2.5e+03 (5.05e+09) | 3.5e+03 (6.83e+09) | 6.3e+02 (1.43e+09) |
+| 0.001 | 5.9e+04 (1.16e+10) | 3e+04 (5.91e+09) | 4.1e+04 (8.02e+09) | 7.5e+03 (1.64e+09) |
+
+== Overlap^2 needed for a five-year campaign at the baseline gap ==
+{'nucleus': '12C', 'route': 'PF2', 'steps': 'calibrated', 'overlap2_needed_for_5yr': 0.07722782215707497}
+{'nucleus': '12C', 'route': 'PF2', 'steps': 'bound', 'overlap2_needed_for_5yr': None}
+{'nucleus': '12C', 'route': 'GQSP', 'steps': 'calibrated', 'overlap2_needed_for_5yr': 0.1644380250409341}
+{'nucleus': '16O', 'route': 'PF2', 'steps': 'calibrated', 'overlap2_needed_for_5yr': 0.1262823500033966}
+{'nucleus': '16O', 'route': 'PF2', 'steps': 'bound', 'overlap2_needed_for_5yr': None}
+{'nucleus': '16O', 'route': 'GQSP', 'steps': 'calibrated', 'overlap2_needed_for_5yr': 0.20289008016316826}
+{'nucleus': '40Ar', 'route': 'PF2', 'steps': 'calibrated', 'overlap2_needed_for_5yr': None}
+{'nucleus': '40Ar', 'route': 'PF2', 'steps': 'bound', 'overlap2_needed_for_5yr': None}
+{'nucleus': '40Ar', 'route': 'GQSP', 'steps': 'calibrated', 'overlap2_needed_for_5yr': 0.9987519140873029}
+
+== PF2 steps at tau=0.20, eps=0.00731 ==
+{'nucleus': '3H', 'calibrated': 100, 'bound': 5416, 'ratio': 54.16}
+{'nucleus': '12C', 'calibrated': 200, 'bound': 10831, 'ratio': 54.155}
+{'nucleus': '16O', 'calibrated': 231, 'bound': 12506, 'ratio': 54.13852813852814}
+{'nucleus': '40Ar', 'calibrated': 366, 'bound': 19774, 'ratio': 54.02732240437158}
+
+First-quantized triton 8^3: 2.51e+05 steps of 0.002 fit in 1e9 T (tau = 502 MeV^-1, energy resolution 2 pi/tau = 12.5 keV)

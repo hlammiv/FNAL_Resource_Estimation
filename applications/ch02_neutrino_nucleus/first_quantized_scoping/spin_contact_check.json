@@ -1,0 +1,59 @@
+{
+ "V_full_minus_V_excl_on_antisym_eta3_M3": 6.161982448507557e-15,
+ "V_full_minus_V_excl_on_antisym_eta4_M2": 2.464264391734906e-14,
+ "max_commutator_exclusive_pair_terms_full_space": 0.0,
+ "max_commutator_plain_pair_terms_full_space": 0.4132633975676439,
+ "antisym_dim_eta3_M2": 56,
+ "antisym_spectrum_eta3_M2_distinct": [
+  -136.77879,
+  -93.62604,
+  -82.19588
+ ],
+ "expected_levels": {
+  "zero": 0.0,
+  "C_t": -93.62604,
+  "C_s": -82.19588,
+  "triple": -136.77879,
+  "quad": -19.6494
+ },
+ "chapter_onsite_energies_by_occupation": {
+  "3": [
+   -136.77879,
+   -136.77879,
+   -136.77879,
+   -136.77879
+  ],
+  "2": [
+   -93.62604,
+   -93.62604,
+   -93.62604,
+   -82.19588,
+   -82.19588,
+   -82.19588
+  ],
+  "4": [
+   -19.6494
+  ],
+  "1": [
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "0": [
+   0.0
+  ]
+ },
+ "one_proton_sector_dim_full_vs_labeled": [
+  24,
+  24
+ ],
+ "one_proton_sector_spectrum_max_difference": 1.4210854715202004e-13,
+ "two_qubit_gadget_error": 2.482534153247273e-16,
+ "hopping_dispersion_walsh_terms_m3": {
+  "100": 0.25,
+  "101": 0.25,
+  "110": 0.603553,
+  "111": -0.103553
+ }
+}

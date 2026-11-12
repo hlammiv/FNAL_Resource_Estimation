@@ -1,0 +1,2921 @@
+{
+ "conventions": {
+  "T_per_toffoli": 7,
+  "eps_syn": 0.01,
+  "t_gate_s": 1e-06,
+  "shot_overhead_s": 0.0001,
+  "faults_per_shot": 0.1,
+  "target_LQ": 1000,
+  "target_T": 1000000000.0,
+  "window_yr": 5.0
+ },
+ "current_triton": {
+  "lq": 908,
+  "t_shot": 207000000.0,
+  "first_d": 9.4,
+  "campaign_d": 250.0
+ },
+ "inputs": [
+  {
+   "name": "t_hop, C_t, C_s, D",
+   "value": "10.5794, -93.62604, -82.19588, 126.95409 MeV",
+   "tag": "Cited",
+   "source": "app01_neutrino_nucleus.tex 2033 model; TRITON.md",
+   "note": "Chapter couplings, fitted for A<=3 in the 6^3 box. Not refitted for A>=12 or for 8^3."
+  },
+  {
+   "name": "lattice spacing",
+   "value": "1.4 fm",
+   "tag": "Cited",
+   "source": "app01; arXiv:1911.06368",
+   "note": ""
+  },
+  {
+   "name": "time grid",
+   "value": "0.05, 0.10, 0.20 MeV^-1",
+   "tag": "Cited",
+   "source": "app01 2033 box",
+   "note": "Kept. q = 2 pi/(8a) = 110.7 MeV on 8^3."
+  },
+  {
+   "name": "shots",
+   "value": "7012 first result; 27404 x 6 campaign",
+   "tag": "Cited",
+   "source": "app01 Eq. (Nshot)",
+   "note": "Hoeffding plus union bound; +-0.05 (2 estimates) and +-0.02 (6 estimates), 95% simultaneous."
+  },
+  {
+   "name": "system register",
+   "value": "(3m+2) A qubits, m=3",
+   "tag": "Cited",
+   "source": "arXiv:2507.22814 Eq. (5)",
+   "note": "Labeled triton: (3m+1) A = 30."
+  },
+  {
+   "name": "Lemma 1, Lemma 3, Thm 2-5, App. A, Eqs. (90), (108), (217)",
+   "value": "formulas",
+   "tag": "Cited",
+   "source": "arXiv:2507.22814",
+   "note": "Implemented in spagnoli_lemmas.py; Table 5 reproduced (README section 2)."
+  },
+  {
+   "name": "7 T/Toffoli, RUS synthesis, eps_syn=1e-2",
+   "value": "common.py",
+   "tag": "Cited",
+   "source": "main-overview.tex conventions; estimates/common.py",
+   "note": ""
+  },
+  {
+   "name": "1 us per T, 0.1 ms per shot, 0.1 faults per shot",
+   "value": "report",
+   "tag": "Cited",
+   "source": "main-overview.tex",
+   "note": "Serial T count on one machine; no T-depth derived."
+  },
+  {
+   "name": "spin-dependent contact, exclusive-pair form",
+   "value": "V_excl",
+   "tag": "Computed",
+   "source": "spin_contact_check.py",
+   "note": "Equal to the chapter's on-site interaction on antisymmetric states; all terms commute. Circuit is a construction-level count, not compiled."
+  },
+  {
+   "name": "potential layer counts",
+   "value": "P(6(dm-1)+14) Toffoli, P+6A rotations",
+   "tag": "Computed",
+   "source": "scoping.py potential_layer",
+   "note": "Three equality sweeps; compute and uncompute both counted at 7 T per Toffoli."
+  },
+  {
+   "name": "kinetic layer counts (8^3)",
+   "value": "14 rotations + 12 T per coordinate",
+   "tag": "Computed",
+   "source": "scoping.py kinetic_layer; Walsh count in spin_contact_check.py",
+   "note": "Exact QFT_8 (2 CS + 1 CT each way) and 4 controlled Walsh phases for the hopping dispersion."
+  },
+  {
+   "name": "kinetic layer counts (6^3)",
+   "value": "<= 40 rotations + 16 Toffoli per coordinate",
+   "tag": "Computed (bound)",
+   "source": "scoping.py kinetic_layer",
+   "note": "CRT relabeling, generic two-qubit QFT_3; no circuit constructed."
+  },
+  {
+   "name": "generalized alpha_2 for C_t != C_s",
+   "value": "Eq. (217) with C -> Cbar and +|dC| terms",
+   "tag": "Computed",
+   "source": "scoping.py alpha2_chapter",
+   "note": "Our extension of the paper's semi-norm bound; hopping dispersion uses max single-particle kinetic energy 12 t."
+  },
+  {
+   "name": "block-encoding norm",
+   "value": "lambda = A(6t + (3|Cbar|+4D)/2) + |dC| A(A-1)/2",
+   "tag": "Computed (bound)",
+   "source": "scoping.py lam_chapter",
+   "note": "Paper Eq. (90) form with hopping kinetic LCU and a pair-SWAP LCU. The paper leaves the SWAP block encoding to future work."
+  },
+  {
+   "name": "spin SELECT cost",
+   "value": "2(A-1)(dm+2)+2(dm-1)+5 Toffoli plus a second PREPARE",
+   "tag": "Computed (bound)",
+   "source": "scoping.py walk_step",
+   "note": "Second swap network and comparator; construction-level, self-inverse property not verified."
+  },
+  {
+   "name": "Slater-determinant preparation",
+   "value": "A^2 orbital unitaries, A(A-1)/2 swap+C^kX, A^2-4A+3 rotations",
+   "tag": "Cited",
+   "source": "arXiv:2509.07279 Sec. 2-3",
+   "note": "Each orbital unitary costed here as a 511-rotation real loader on 9 spatial qubits (Computed)."
+  },
+  {
+   "name": "eigenstate filter degree",
+   "value": "2 l, l = ln(2/eps_f) lambda sqrt(2)/gap",
+   "tag": "Cited",
+   "source": "arXiv:1910.14596 Lemma 2",
+   "note": "Needs E_0 known to much better than the gap. That knowledge is Assumed."
+  },
+  {
+   "name": "evolution error target",
+   "value": "0.00731",
+   "tag": "Assumed",
+   "source": "this study",
+   "note": "Half the +-0.02 tolerance; chapter measured 0.0073. T scales as eps^-1/2 (PF) or log (QSP)."
+  },
+  {
+   "name": "PF step count, calibrated",
+   "value": "100 sqrt(A/3) (tau/0.2)^1.5 sqrt(0.00731/eps)",
+   "tag": "Assumed",
+   "source": "chapter triton bias, extensive scaling",
+   "note": "No A>=12 numerics exist. Range: this value up to the rigorous bound (60-110 times more steps)."
+  },
+  {
+   "name": "PF step count, bound",
+   "value": "sqrt(4 tau^3 alpha_2/eps)",
+   "tag": "Cited",
+   "source": "arXiv:2507.22814 Lemma 7",
+   "note": "Worst-case semi-norm; 100 times above the triton's measured need."
+  },
+  {
+   "name": "ground-state gap",
+   "value": "4.44 (12C), 6.05 (16O), 1.46 (40Ar) MeV",
+   "tag": "Assumed",
+   "source": "physical first excited states as proxies",
+   "note": "The model's finite-volume gap is unknown. Range 1-8 MeV; LO pionless nuclei may sit near cluster thresholds."
+  },
+  {
+   "name": "mean-field overlap squared",
+   "value": "0.1",
+   "tag": "Assumed",
+   "source": "no source",
+   "note": "Range 1e-3 to 0.5. Sets attempts per accepted shot."
+  },
+  {
+   "name": "filter infidelity",
+   "value": "0.001",
+   "tag": "Assumed",
+   "source": "this study",
+   "note": "Enters logarithmically."
+  },
+  {
+   "name": "rodeo filter time",
+   "value": "N_cyc x 0.8 x 3/gap",
+   "tag": "Assumed",
+   "source": "arXiv:2009.04092 cycle factor [1+exp(-gap^2 sigma^2/2)]/2, sigma=3/gap",
+   "note": "Product-formula route only. Constants from the published cycle factor; schedule not optimized."
+  },
+  {
+   "name": "charge-operator LCU norm",
+   "value": "(A/Z)^2 on the correlator, (A/Z)^4 on shots",
+   "tag": "Computed",
+   "source": "scoping.py shot_factor",
+   "note": "Antisymmetrized registers carry no proton label. Isoscalar density has factor 1."
+  },
+  {
+   "name": "qubitized-route extra qubits",
+   "value": "A + 6",
+   "tag": "Assumed",
+   "source": "this study",
+   "note": "Second unary register and flags; not laid out."
+  },
+  {
+   "name": "current triton numbers",
+   "value": "908 LQ, 2.07e8 T, 9.4 d, 250 d",
+   "tag": "Cited",
+   "source": "app01 2033 box",
+   "note": ""
+  }
+ ],
+ "table5_check": [
+  {
+   "method": "PF2",
+   "eta": 16,
+   "t_cross": 0.3889102154365305,
+   "t_response": 0.061807603808118824,
+   "ratio_cross_wH1": 1.0955751016997735,
+   "ratio_resp_wH1": 1.0687023682100043,
+   "ratio_cross_potential_only": 0.9827712616997734,
+   "ratio_resp_potential_only": 0.9640108560148822,
+   "T_cross": 1875462992.2097054,
+   "T_cross_pub": 1300000000.0,
+   "ratio_cross": 1.4426638401613119,
+   "q_cross": 207,
+   "q_cross_pub": 196,
+   "T_resp": 113387706.19322035,
+   "T_resp_pub": 82000000.0,
+   "ratio_resp": 1.3827769047953702,
+   "q_resp": 201,
+   "q_resp_pub": 190,
+   "q_resp_eq5": 233
+  },
+  {
+   "method": "PF2",
+   "eta": 40,
+   "t_cross": 0.3889102154365305,
+   "t_response": 0.062424369988037055,
+   "ratio_cross_wH1": 1.0127442977455712,
+   "ratio_resp_wH1": 1.0001438623787309,
+   "ratio_cross_potential_only": 0.9942784941092075,
+   "ratio_resp_potential_only": 0.9823776909501595,
+   "T_cross": 35322989985.60385,
+   "T_cross_pub": 33000000000.0,
+   "ratio_cross": 1.0703936359273893,
+   "q_cross": 427,
+   "q_cross_pub": 416,
+   "T_resp": 2215098910.9953346,
+   "T_resp_pub": 2100000000.0,
+   "ratio_resp": 1.0548090052358736,
+   "q_resp": 423,
+   "q_resp_pub": 410,
+   "q_resp_eq5": 503
+  },
+  {
+   "method": "QSP",
+   "eta": 16,
+   "t_cross": 0.3889102154365305,
+   "t_response": 0.061807603808118824,
+   "T_cross": 69777409.87520465,
+   "T_cross_pub": 70000000.0,
+   "ratio_cross": 0.9968201410743521,
+   "q_cross": 234,
+   "q_cross_pub": 235,
+   "T_resp": 11060291.88744424,
+   "T_resp_pub": 11200000.0,
+   "ratio_resp": 0.9875260613789499,
+   "q_resp": 233,
+   "q_resp_pub": 234,
+   "q_resp_eq5": 265
+  },
+  {
+   "method": "QSP",
+   "eta": 40,
+   "t_cross": 0.3889102154365305,
+   "t_response": 0.062424369988037055,
+   "T_cross": 400798816.5803857,
+   "T_cross_pub": 400000000.0,
+   "ratio_cross": 1.0019970414509642,
+   "q_cross": 499,
+   "q_cross_pub": 500,
+   "T_resp": 63999530.251772836,
+   "T_resp_pub": 64000000.0,
+   "ratio_resp": 0.9999926601839506,
+   "q_resp": 497,
+   "q_resp_pub": 498,
+   "q_resp_eq5": 577
+  },
+  {
+   "method": "GQSP",
+   "eta": 16,
+   "t_cross": 0.3889102154365305,
+   "t_response": 0.061807603808118824,
+   "T_cross": 37431187.79025753,
+   "T_cross_pub": 37500000.0,
+   "ratio_cross": 0.9981650077402008,
+   "q_cross": 235,
+   "q_cross_pub": 235,
+   "T_resp": 5933969.020584091,
+   "T_resp_pub": 5990000.0,
+   "ratio_resp": 0.9906459132861587,
+   "q_resp": 234,
+   "q_resp_pub": 234,
+   "q_resp_eq5": 266
+  },
+  {
+   "method": "GQSP",
+   "eta": 40,
+   "t_cross": 0.3889102154365305,
+   "t_response": 0.062424369988037055,
+   "T_cross": 211064182.2475683,
+   "T_cross_pub": 211000000.0,
+   "ratio_cross": 1.0003041812680962,
+   "q_cross": 500,
+   "q_cross_pub": 500,
+   "T_resp": 33707153.47211963,
+   "T_resp_pub": 33800000.0,
+   "ratio_resp": 0.9972530613053144,
+   "q_resp": 498,
+   "q_resp_pub": 498,
+   "q_resp_eq5": 578
+  }
+ ],
+ "su4_converted": [
+  {
+   "A": 12,
+   "tau": 0.2,
+   "eps": 0.00731,
+   "PF2": {
+    "steps": 23132,
+    "T_V_step": 42561.8037042482,
+    "T_T_step": 42588.0,
+    "T_step": 85149.8037042482,
+    "T_total": 1969727847.2866693,
+    "T_paper_convention": 1205243568.7839785,
+    "qubits": 199
+   },
+   "GQSP": {
+    "Q": 3461,
+    "lambda_MeV": 8595.434924286914,
+    "T_step": 5713.772592105626,
+    "T_total": 19775366.94127757,
+    "T_paper_convention": 11681845.867722616,
+    "qubits": 216
+   }
+  },
+  {
+   "A": 16,
+   "tau": 0.2,
+   "eps": 0.00731,
+   "PF2": {
+    "steps": 26711,
+    "T_V_step": 102282.53185604306,
+    "T_T_step": 58464.0,
+    "T_step": 160746.53185604306,
+    "T_total": 4293759076.4067664,
+    "T_paper_convention": 2678739912.5773096,
+    "qubits": 245
+   },
+   "GQSP": {
+    "Q": 4607,
+    "lambda_MeV": 11460.579899049219,
+    "T_step": 7228.306870256325,
+    "T_total": 33300809.75127089,
+    "T_paper_convention": 19542101.50067291,
+    "qubits": 268
+   }
+  },
+  {
+   "A": 40,
+   "tau": 0.2,
+   "eps": 0.00731,
+   "PF2": {
+    "steps": 42233,
+    "T_V_step": 1647234.1414691107,
+    "T_T_step": 154560.0,
+    "T_step": 1801794.1414691107,
+    "T_total": 76095326536.66495,
+    "T_paper_convention": 49567391414.637924,
+    "qubits": 513
+   },
+   "GQSP": {
+    "Q": 11483,
+    "lambda_MeV": 28651.449747623046,
+    "T_step": 16448.515418049083,
+    "T_total": 188878302.54545763,
+    "T_paper_convention": 109249533.85727094,
+    "qubits": 581
+   }
+  }
+ ],
+ "su4_converted_at_paper_point": [
+  {
+   "A": 16,
+   "tau": 0.061807603808118824,
+   "eps": 0.1,
+   "PF2": {
+    "steps": 1241,
+    "T_V_step": 100551.23899968273,
+    "T_T_step": 48384.0,
+    "T_step": 148935.2389996827,
+    "T_total": 184877015.59860626,
+    "T_paper_convention": 113387706.19322035,
+    "qubits": 233
+   },
+   "GQSP": {
+    "Q": 1432,
+    "lambda_MeV": 11460.579899049219,
+    "T_step": 7106.070233015779,
+    "T_total": 10175892.573678596,
+    "T_paper_convention": 5933969.020584091,
+    "qubits": 266
+   }
+  },
+  {
+   "A": 40,
+   "tau": 0.062424369988037055,
+   "eps": 0.1,
+   "PF2": {
+    "steps": 1992,
+    "T_V_step": 1620227.0668801,
+    "T_T_step": 133560.0,
+    "T_step": 1753787.0668801,
+    "T_total": 3493677397.225159,
+    "T_paper_convention": 2215098910.9953346,
+    "qubits": 503
+   },
+   "GQSP": {
+    "Q": 3592,
+    "lambda_MeV": 28651.449747623046,
+    "T_step": 16270.092725420367,
+    "T_total": 58442173.06970996,
+    "T_paper_convention": 33707153.47211963,
+    "qubits": 578
+   }
+  }
+ ],
+ "fully_antisymmetrized_eq5_variant": [
+  {
+   "nucleus": "12C",
+   "A": 12,
+   "lattice": "8^3",
+   "route": "GQSP",
+   "steps_mode": "calibrated",
+   "encoding": "eq5",
+   "gap_MeV": 4.44,
+   "gamma2": 0.1,
+   "lambda_MeV": 5768.20752,
+   "walk_queries": {
+    "0.05": 600,
+    "0.1": 1176,
+    "0.2": 2330
+   },
+   "per_step": {
+    "rot": 17,
+    "toffoli": 1154.0,
+    "fixed_T": 0
+   },
+   "filter": {
+    "kind": "eigenstate filter (QSVT), one flag at the end, no early stop",
+    "degree": 19276
+   },
+   "register": {
+    "system": 132,
+    "block_encoding_and_phase": 85,
+    "second_selection_and_flags": 18,
+    "total": 235
+   },
+   "c_T": 23.83718321419932,
+   "rotations_deepest": 460268.0,
+   "toffolis_deepest": 24934710.0,
+   "T_prep_deterministic": 1766097.1707718486,
+   "T_filter_per_attempt": 163982291.62264752,
+   "T_evolution": {
+    "0.05": 5090010.780334475,
+    "0.1": 9976352.478367915,
+    "0.2": 19766002.338664077
+   },
+   "T_per_step": 8483.232114641389,
+   "T_deepest_circuit": 185514465.6436331,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 165748388.79341936,
+   "T_expected_per_accepted_shot": {
+    "0.05": 1662573973.2260778,
+    "0.1": 1667460314.9241111,
+    "0.2": 1677249964.7844074
+   },
+   "shot_factor": 16.0,
+   "shots_first": 112192.0,
+   "shots_campaign": 2630784.0,
+   "T_first_result": 187075707651965.88,
+   "T_campaign": 4391027765357429.5,
+   "wall_shot_s": 185.5145656436331,
+   "wall_first_d": 2165.2293963421976,
+   "wall_campaign_d": 50822.11106645173,
+   "wall_campaign_yr": 139.14335678699996,
+   "eps_l": 5.390415224659438e-10,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "no"
+  },
+  {
+   "nucleus": "16O",
+   "A": 16,
+   "lattice": "8^3",
+   "route": "GQSP",
+   "steps_mode": "calibrated",
+   "encoding": "eq5",
+   "gap_MeV": 6.05,
+   "gamma2": 0.1,
+   "lambda_MeV": 7873.825920000001,
+   "walk_queries": {
+    "0.05": 810,
+    "0.1": 1597,
+    "0.2": 3172
+   },
+   "per_step": {
+    "rot": 17,
+    "toffoli": 1458.0,
+    "fixed_T": 0
+   },
+   "filter": {
+    "kind": "eigenstate filter (QSVT), one flag at the end, no early stop",
+    "degree": 19310
+   },
+   "register": {
+    "system": 176,
+    "block_encoding_and_phase": 93,
+    "second_selection_and_flags": 22,
+    "total": 291
+   },
+   "c_T": 23.958144230757043,
+   "rotations_deepest": 532522.0,
+   "toffolis_deepest": 32781276.0,
+   "T_prep_deterministic": 3156420.4338157107,
+   "T_filter_per_attempt": 205405255.72987077,
+   "T_evolution": {
+    "0.05": 8596835.520490216,
+    "0.1": 16949493.532153517,
+    "0.2": 33665422.84393203
+   },
+   "T_per_step": 10613.28845192287,
+   "T_deepest_circuit": 242227173.8820512,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 208561676.16368648,
+   "T_expected_per_accepted_shot": {
+    "0.05": 2094213672.0317879,
+    "0.1": 2102566330.043451,
+    "0.2": 2119282259.3552296
+   },
+   "shot_factor": 16.0,
+   "shots_first": 112192.0,
+   "shots_campaign": 2630784.0,
+   "T_first_result": 235891121700234.88,
+   "T_campaign": 5538731846791698.0,
+   "wall_shot_s": 242.22727388205118,
+   "wall_first_d": 2730.222614493459,
+   "wall_campaign_d": 64105.7231200891,
+   "wall_campaign_yr": 175.51190450400847,
+   "eps_l": 4.128355972509239e-10,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "no"
+  },
+  {
+   "nucleus": "40Ar",
+   "A": 40,
+   "lattice": "8^3",
+   "route": "GQSP",
+   "steps_mode": "calibrated",
+   "encoding": "eq5",
+   "gap_MeV": 1.46,
+   "gamma2": 0.1,
+   "lambda_MeV": 22427.803200000002,
+   "walk_queries": {
+    "0.05": 2265,
+    "0.1": 4508,
+    "0.2": 8994
+   },
+   "per_step": {
+    "rot": 17,
+    "toffoli": 3306.0,
+    "fixed_T": 0
+   },
+   "filter": {
+    "kind": "eigenstate filter (QSVT), one flag at the end, no early stop",
+    "degree": 227918
+   },
+   "register": {
+    "system": 440,
+    "block_encoding_and_phase": 143,
+    "second_selection_and_flags": 46,
+    "total": 629
+   },
+   "c_T": 25.828242423958134,
+   "rotations_deepest": 5074472.0,
+   "toffolis_deepest": 783247452.0,
+   "T_prep_deterministic": 21269101.15964594,
+   "T_filter_per_attempt": 5380439366.250349,
+   "T_evolution": {
+    "0.05": 53411223.95926178,
+    "0.1": 106303586.67112973,
+    "0.2": 212088312.09486562
+   },
+   "T_per_step": 23581.080121207287,
+   "T_deepest_circuit": 5613796859.989588,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 5401708467.409995,
+   "T_expected_per_accepted_shot": {
+    "0.05": 54070495978.54394,
+    "0.1": 54123388341.255806,
+    "0.2": 54229173066.67954
+   },
+   "shot_factor": 24.386526444139616,
+   "shots_first": 170998.32342630698,
+   "shots_campaign": 4009730.224051212,
+   "T_first_result": 9255008664505672.0,
+   "T_campaign": 2.1709088076179014e+17,
+   "wall_shot_s": 5613.796959989588,
+   "wall_first_d": 107118.15781833329,
+   "wall_campaign_d": 2512625.981151856,
+   "wall_campaign_yr": 6879.195020265177,
+   "eps_l": 1.7813255893300257e-11,
+   "fits_LQ": true,
+   "fits_T": "no",
+   "fits_window": "no"
+  }
+ ],
+ "instances": [
+  {
+   "nucleus": "12C",
+   "A": 12,
+   "lattice": "8^3",
+   "route": "PF2",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": 4.44,
+   "gamma2": 0.1,
+   "steps": {
+    "0.05": 50,
+    "0.1": 100,
+    "0.2": 200
+   },
+   "per_step": {
+    "rot": 642,
+    "toffoli": 4092.0,
+    "fixed_T": 432.0
+   },
+   "filter": {
+    "kind": "rodeo, rejected attempts stop at the first failed cycle",
+    "cycles": 14,
+    "time_MeV_inv": 7.5675675675675675,
+    "steps": 7568,
+    "cycles_before_abort": 2.0223234955927936
+   },
+   "register": {
+    "system": 120,
+    "counters": 24,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 0,
+    "rus_hadamard_filter": 3,
+    "total": 160
+   },
+   "c_T": 25.81997876822642,
+   "rotations_deepest": 5024173.0,
+   "toffolis_deepest": 31795410.0,
+   "T_prep_deterministic": 954733.2582036332,
+   "T_filter_per_attempt": 345530157.2188674,
+   "T_evolution": {
+    "0.05": 2314854.2955088513,
+    "0.1": 4597475.61396892,
+    "0.2": 9162718.250889055
+   },
+   "T_per_step": 45652.42636920136,
+   "T_deepest_circuit": 355647689.18789643,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 50867144.35674559,
+   "T_expected_per_accepted_shot": {
+    "0.05": 806604124.4432266,
+    "0.1": 808886745.7616866,
+    "0.2": 813451988.3986068
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 5671913861280.946,
+   "T_campaign": 133125500194341.72,
+   "wall_shot_s": 355.64778918789636,
+   "wall_first_d": 65.64723232964059,
+   "wall_campaign_d": 1540.8063034530292,
+   "wall_campaign_yr": 4.218497750726979,
+   "eps_l": 2.8117713973720724e-10,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "yes"
+  },
+  {
+   "nucleus": "12C",
+   "A": 12,
+   "lattice": "8^3",
+   "route": "PF2",
+   "steps_mode": "bound",
+   "encoding": "labeled",
+   "gap_MeV": 4.44,
+   "gamma2": 0.1,
+   "steps": {
+    "0.05": 2708,
+    "0.1": 5416,
+    "0.2": 10831
+   },
+   "per_step": {
+    "rot": 642,
+    "toffoli": 4092.0,
+    "fixed_T": 432.0
+   },
+   "filter": {
+    "kind": "rodeo, rejected attempts stop at the first failed cycle",
+    "cycles": 14,
+    "time_MeV_inv": 7.5675675675675675,
+    "steps": 409822,
+    "cycles_before_abort": 2.0223234955927936
+   },
+   "register": {
+    "system": 120,
+    "counters": 24,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 0,
+    "rus_hadamard_filter": 3,
+    "total": 160
+   },
+   "c_T": 29.125334156808986,
+   "rotations_deepest": 270096343.0,
+   "toffolis_deepest": 1721320830.0,
+   "T_prep_deterministic": 1076443.0543220204,
+   "T_filter_per_attempt": 19579059702.245285,
+   "T_evolution": {
+    "0.05": 129405942.36508986,
+    "0.1": 258779192.3087319,
+    "0.2": 517477917.7314874
+   },
+   "T_per_step": 47774.464528671364,
+   "T_deepest_circuit": 20097614153.407097,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 2829304475.7303705,
+   "T_expected_per_accepted_shot": {
+    "0.05": 45173282459.61403,
+    "0.1": 45302655709.55768,
+    "0.2": 45561354434.98043
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 317662221835418.44,
+   "T_campaign": 7455931933048370.0,
+   "wall_shot_s": 20097.614253407097,
+   "wall_first_d": 3676.646167215491,
+   "wall_campaign_d": 86295.51038741168,
+   "wall_campaign_yr": 236.26423104014148,
+   "eps_l": 4.9757149896843486e-12,
+   "fits_LQ": true,
+   "fits_T": "no",
+   "fits_window": "no"
+  },
+  {
+   "nucleus": "12C",
+   "A": 12,
+   "lattice": "8^3",
+   "route": "GQSP",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": 4.44,
+   "gamma2": 0.1,
+   "lambda_MeV": 5768.20752,
+   "walk_queries": {
+    "0.05": 600,
+    "0.1": 1176,
+    "0.2": 2330
+   },
+   "per_step": {
+    "rot": 17,
+    "toffoli": 1154.0,
+    "fixed_T": 0
+   },
+   "filter": {
+    "kind": "eigenstate filter (QSVT), one flag at the end, no early stop",
+    "degree": 19276
+   },
+   "register": {
+    "system": 120,
+    "block_encoding_and_phase": 85,
+    "second_selection_and_flags": 18,
+    "total": 223
+   },
+   "c_T": 23.767936526484803,
+   "rotations_deepest": 423407.0,
+   "toffolis_deepest": 24933894.0,
+   "T_prep_deterministic": 879172.9587782234,
+   "T_filter_per_attempt": 163958265.1686579,
+   "T_evolution": {
+    "0.05": 5089304.2563797245,
+    "0.1": 9974967.890847065,
+    "0.2": 19763259.26962364
+   },
+   "T_per_step": 8482.054920950242,
+   "T_deepest_circuit": 184600771.70086935,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 164837438.12743613,
+   "T_expected_per_accepted_shot": {
+    "0.05": 1653463759.8345506,
+    "0.1": 1658349423.469018,
+    "0.2": 1668137714.8477945
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 11628346157364.754,
+   "T_campaign": 272941148825879.94,
+   "wall_shot_s": 184.60087170086933,
+   "wall_first_d": 134.5874209417217,
+   "wall_campaign_d": 3159.042977429166,
+   "wall_campaign_yr": 8.64898830233858,
+   "eps_l": 5.417095447577107e-10,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "near"
+  },
+  {
+   "nucleus": "16O",
+   "A": 16,
+   "lattice": "8^3",
+   "route": "PF2",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": 6.05,
+   "gamma2": 0.1,
+   "steps": {
+    "0.05": 58,
+    "0.1": 116,
+    "0.2": 231
+   },
+   "per_step": {
+    "rot": 888,
+    "toffoli": 7440.0,
+    "fixed_T": 576.0
+   },
+   "filter": {
+    "kind": "rodeo, rejected attempts stop at the first failed cycle",
+    "cycles": 14,
+    "time_MeV_inv": 5.553719008264463,
+    "steps": 6415,
+    "cycles_before_abort": 2.0223234955927936
+   },
+   "register": {
+    "system": 160,
+    "counters": 32,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 0,
+    "rus_hadamard_filter": 3,
+    "total": 208
+   },
+   "c_T": 25.962727770530797,
+   "rotations_deepest": 5967577.0,
+   "toffolis_deepest": 49462184.0,
+   "T_prep_deterministic": 1707435.4889588156,
+   "T_filter_per_attempt": 485743515.38949907,
+   "T_evolution": {
+    "0.05": 4448946.243019624,
+    "0.1": 8840178.574113041,
+    "0.2": 17546932.334039647
+   },
+   "T_per_step": 75710.90226023135,
+   "T_deepest_circuit": 504997964.1006808,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 71873901.48924622,
+   "T_expected_per_accepted_shot": {
+    "0.05": 1138765091.4128768,
+    "0.1": 1143156323.7439704,
+    "0.2": 1151863077.5038967
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 8015812142092.721,
+   "T_campaign": 188198860473750.03,
+   "wall_shot_s": 504.9980641006808,
+   "wall_first_d": 92.77568465385093,
+   "wall_campaign_d": 2178.2294548350696,
+   "wall_campaign_yr": 5.963667227474524,
+   "eps_l": 1.9802060029704026e-10,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "near"
+  },
+  {
+   "nucleus": "16O",
+   "A": 16,
+   "lattice": "8^3",
+   "route": "PF2",
+   "steps_mode": "bound",
+   "encoding": "labeled",
+   "gap_MeV": 6.05,
+   "gamma2": 0.1,
+   "steps": {
+    "0.05": 3127,
+    "0.1": 6253,
+    "0.2": 12506
+   },
+   "per_step": {
+    "rot": 888,
+    "toffoli": 7440.0,
+    "fixed_T": 576.0
+   },
+   "filter": {
+    "kind": "rodeo, rejected attempts stop at the first failed cycle",
+    "cycles": 14,
+    "time_MeV_inv": 5.553719008264463,
+    "steps": 347275,
+    "cycles_before_abort": 2.0223234955927936
+   },
+   "register": {
+    "system": 160,
+    "counters": 32,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 0,
+    "rus_hadamard_filter": 3,
+    "total": 208
+   },
+   "c_T": 29.26481429819925,
+   "rotations_deepest": 319551457.0,
+   "toffolis_deepest": 2676786584.0,
+   "T_prep_deterministic": 1923649.5106174906,
+   "T_filter_per_attempt": 27310860526.41365,
+   "T_evolution": {
+    "0.05": 245975576.45239925,
+    "0.1": 491814079.28499895,
+    "0.2": 983569728.1052952
+   },
+   "T_per_step": 78643.15509680094,
+   "T_deepest_circuit": 28296353994.824005,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 3947023287.1837664,
+   "T_expected_per_accepted_shot": {
+    "0.05": 63081969427.825005,
+    "0.1": 63327807930.65761,
+    "0.2": 63819563579.477905
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 444054589209771.1,
+   "T_campaign": 1.042608971812774e+16,
+   "wall_shot_s": 28296.354094824004,
+   "wall_first_d": 5139.520789603833,
+   "wall_campaign_d": 120672.33660360808,
+   "wall_campaign_yr": 330.3828517552583,
+   "eps_l": 3.534024207440015e-12,
+   "fits_LQ": true,
+   "fits_T": "no",
+   "fits_window": "no"
+  },
+  {
+   "nucleus": "16O",
+   "A": 16,
+   "lattice": "8^3",
+   "route": "GQSP",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": 6.05,
+   "gamma2": 0.1,
+   "lambda_MeV": 7873.825920000001,
+   "walk_queries": {
+    "0.05": 810,
+    "0.1": 1597,
+    "0.2": 3172
+   },
+   "per_step": {
+    "rot": 17,
+    "toffoli": 1458.0,
+    "fixed_T": 0
+   },
+   "filter": {
+    "kind": "eigenstate filter (QSVT), one flag at the end, no early stop",
+    "degree": 19310
+   },
+   "register": {
+    "system": 160,
+    "block_encoding_and_phase": 93,
+    "second_selection_and_flags": 22,
+    "total": 275
+   },
+   "c_T": 23.849209008190744,
+   "rotations_deepest": 466989.0,
+   "toffolis_deepest": 32779820.0,
+   "T_prep_deterministic": 1569046.5074383134,
+   "T_filter_per_attempt": 205367391.91627595,
+   "T_evolution": {
+    "0.05": 8595335.15566981,
+    "0.1": 16946535.722990394,
+    "0.2": 33659548.2941847
+   },
+   "T_per_step": 10611.436553139243,
+   "T_deepest_circuit": 240596061.265526,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 206936438.42371425,
+   "T_expected_per_accepted_shot": {
+    "0.05": 2077959793.9404392,
+    "0.1": 2086310994.5077598,
+    "0.2": 2103024007.0789542
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 14629212693488.412,
+   "T_campaign": 343497893153252.2,
+   "wall_shot_s": 240.59616126552598,
+   "wall_first_d": 169.319672517227,
+   "wall_campaign_d": 3975.6719626996783,
+   "wall_campaign_yr": 10.88479661245634,
+   "eps_l": 4.1563440180194084e-10,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "near"
+  },
+  {
+   "nucleus": "40Ar",
+   "A": 40,
+   "lattice": "8^3",
+   "route": "PF2",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": 1.46,
+   "gamma2": 0.1,
+   "steps": {
+    "0.05": 92,
+    "0.1": 183,
+    "0.2": 366
+   },
+   "per_step": {
+    "rot": 2700,
+    "toffoli": 48360.0,
+    "fixed_T": 1440.0
+   },
+   "filter": {
+    "kind": "rodeo, rejected attempts stop at the first failed cycle",
+    "cycles": 14,
+    "time_MeV_inv": 23.01369863013699,
+    "steps": 42116,
+    "cycles_before_abort": 2.0223234955927936
+   },
+   "register": {
+    "system": 400,
+    "counters": 80,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 0,
+    "rus_hadamard_filter": 3,
+    "total": 496
+   },
+   "c_T": 28.41786957054369,
+   "rotations_deepest": 115117001.0,
+   "toffolis_deepest": 2054533536.0,
+   "T_prep_deterministic": 11803054.617941778,
+   "T_filter_per_attempt": 17549610178.544155,
+   "T_evolution": {
+    "0.05": 38702853.44615458,
+    "0.1": 76621483.99963716,
+    "0.2": 152875433.3544428
+   },
+   "T_per_step": 416688.24784046796,
+   "T_deepest_circuit": 17714288754.77015,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 2546873697.6582475,
+   "T_expected_per_accepted_shot": {
+    "0.05": 40521979453.78609,
+    "0.1": 40559898084.33957,
+    "0.2": 40636152033.69438
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 284406005367389.06,
+   "T_campaign": 6671121764772313.0,
+   "wall_shot_s": 17714.288854770148,
+   "wall_first_d": 3291.7362543910767,
+   "wall_campaign_d": 77212.05936569806,
+   "wall_campaign_yr": 211.395097510467,
+   "eps_l": 5.64516032138585e-12,
+   "fits_LQ": true,
+   "fits_T": "no",
+   "fits_window": "no"
+  },
+  {
+   "nucleus": "40Ar",
+   "A": 40,
+   "lattice": "8^3",
+   "route": "PF2",
+   "steps_mode": "bound",
+   "encoding": "labeled",
+   "gap_MeV": 1.46,
+   "gamma2": 0.1,
+   "steps": {
+    "0.05": 4944,
+    "0.1": 9887,
+    "0.2": 19774
+   },
+   "per_step": {
+    "rot": 2700,
+    "toffoli": 48360.0,
+    "fixed_T": 1440.0
+   },
+   "filter": {
+    "kind": "rodeo, rejected attempts stop at the first failed cycle",
+    "cycles": 14,
+    "time_MeV_inv": 23.01369863013699,
+    "steps": 2275365,
+    "cycles_before_abort": 2.0223234955927936
+   },
+   "register": {
+    "system": 400,
+    "counters": 80,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 0,
+    "rus_hadamard_filter": 3,
+    "total": 496
+   },
+   "c_T": 31.724386871937075,
+   "rotations_deepest": 6197290901.0,
+   "toffolis_deepest": 110993026056.0,
+   "T_prep_deterministic": 13170438.395794602,
+   "T_filter_per_attempt": 968431767498.8762,
+   "T_evolution": {
+    "0.05": 2104615646.07511,
+    "0.1": 4208434765.7066693,
+    "0.2": 8416498620.8143425
+   },
+   "T_per_step": 425615.8445542301,
+   "T_deepest_circuit": 976861436656.2595,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 139904764530.64114,
+   "T_expected_per_accepted_shot": {
+    "0.05": 2229692434457.2905,
+    "0.1": 2231796253576.922,
+    "0.2": 2236004317432.03
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 1.5649355330081376e+16,
+   "T_campaign": 3.670761966435938e+17,
+   "wall_shot_s": 976861.4367562594,
+   "wall_first_d": 181126.79788302517,
+   "wall_campaign_d": 4248567.092685391,
+   "wall_campaign_yr": 11631.942758892243,
+   "eps_l": 1.0236866381202871e-13,
+   "fits_LQ": true,
+   "fits_T": "no",
+   "fits_window": "no"
+  },
+  {
+   "nucleus": "40Ar",
+   "A": 40,
+   "lattice": "8^3",
+   "route": "GQSP",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": 1.46,
+   "gamma2": 0.1,
+   "lambda_MeV": 22427.803200000002,
+   "walk_queries": {
+    "0.05": 2265,
+    "0.1": 4508,
+    "0.2": 8994
+   },
+   "per_step": {
+    "rot": 17,
+    "toffoli": 3306.0,
+    "fixed_T": 0
+   },
+   "filter": {
+    "kind": "eigenstate filter (QSVT), one flag at the end, no early stop",
+    "degree": 227918
+   },
+   "register": {
+    "system": 400,
+    "block_encoding_and_phase": 143,
+    "second_selection_and_flags": 46,
+    "total": 589
+   },
+   "c_T": 25.759154397417134,
+   "rotations_deepest": 4668971.0,
+   "toffolis_deepest": 783238368.0,
+   "T_prep_deterministic": 10703564.227816677,
+   "T_filter_per_attempt": 5380155930.894263,
+   "T_evolution": {
+    "0.05": 53408563.51753574,
+    "0.1": 106298291.83386365,
+    "0.2": 212077748.46651947
+   },
+   "T_per_step": 23579.90562475609,
+   "T_deepest_circuit": 5602937323.866063,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 5390859495.122081,
+   "T_expected_per_accepted_shot": {
+    "0.05": 53962003595.0158,
+    "0.1": 54014893323.33213,
+    "0.2": 54120672779.96479
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 378752431983204.9,
+   "T_campaign": 8884243600025123.0,
+   "wall_shot_s": 5602.937423866063,
+   "wall_first_d": 4383.708784666723,
+   "wall_campaign_d": 102826.89542186483,
+   "wall_campaign_yr": 281.5246965691029,
+   "eps_l": 1.7847781301076444e-11,
+   "fits_LQ": true,
+   "fits_T": "no",
+   "fits_window": "no"
+  }
+ ],
+ "triton_first_quantized": [
+  {
+   "nucleus": "3H",
+   "A": 3,
+   "lattice": "8^3",
+   "route": "PF2",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": null,
+   "gamma2": 1.0,
+   "steps": {
+    "0.05": 25,
+    "0.1": 50,
+    "0.2": 100
+   },
+   "per_step": {
+    "rot": 136,
+    "toffoli": 62.0,
+    "fixed_T": 108.0
+   },
+   "register": {
+    "system": 30,
+    "counters": 0,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 3,
+    "rus_hadamard_filter": 2,
+    "total": 48
+   },
+   "c_T": 24.5309175205955,
+   "rotations_deepest": 1062189.0,
+   "toffolis_deepest": 6306.0,
+   "T_prep_deterministic": 25722814.839158427,
+   "T_filter_per_attempt": 0.0,
+   "T_evolution": {
+    "0.05": 97658.95966275125,
+    "0.1": 194614.07923277596,
+    "0.2": 388524.3183728254
+   },
+   "T_per_step": 3878.204782800988,
+   "T_deepest_circuit": 26111415.750283815,
+   "attempts_per_accepted_shot": 1.0,
+   "T_rejected_attempt": 0.0,
+   "T_expected_per_accepted_shot": {
+    "0.05": 25820550.391573742,
+    "0.1": 25917505.511143766,
+    "0.2": 26111415.750283815
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 181733548644.14008,
+   "T_campaign": 4266773842357.6963,
+   "wall_shot_s": 26.111515750283814,
+   "wall_first_d": 2.103405669492362,
+   "wall_campaign_d": 49.384146814325184,
+   "wall_campaign_yr": 0.13520642522744747,
+   "eps_l": 3.829742552313084e-09,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "yes"
+  },
+  {
+   "nucleus": "3H",
+   "A": 3,
+   "lattice": "6^3",
+   "route": "PF2",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": null,
+   "gamma2": 1.0,
+   "steps": {
+    "0.05": 25,
+    "0.1": 50,
+    "0.2": 100
+   },
+   "per_step": {
+    "rot": 370,
+    "toffoli": 206.0,
+    "fixed_T": 0.0
+   },
+   "register": {
+    "system": 30,
+    "counters": 0,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 3,
+    "rus_hadamard_filter": 2,
+    "total": 48
+   },
+   "c_T": 24.549010137714802,
+   "rotations_deepest": 1085610.0,
+   "toffolis_deepest": 20742.0,
+   "T_prep_deterministic": 25742553.83436719,
+   "T_filter_per_attempt": 0.0,
+   "T_evolution": {
+    "0.05": 263832.3828853768,
+    "0.1": 526960.7266592387,
+    "0.2": 1053217.4142069626
+   },
+   "T_per_step": 10525.133750954477,
+   "T_deepest_circuit": 26795847.895604566,
+   "attempts_per_accepted_shot": 1.0,
+   "T_rejected_attempt": 0.0,
+   "T_expected_per_accepted_shot": {
+    "0.05": 26006462.86428298,
+    "0.1": 26269591.20805684,
+    "0.2": 26795847.895604566
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 184202373550.89456,
+   "T_campaign": 4333772803059.0957,
+   "wall_shot_s": 26.795947895604563,
+   "wall_first_d": 2.1319800318390576,
+   "wall_campaign_d": 50.15959774836916,
+   "wall_campaign_yr": 0.1373294941776021,
+   "eps_l": 3.73192146744509e-09,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "yes"
+  },
+  {
+   "nucleus": "3H",
+   "A": 3,
+   "lattice": "8^3",
+   "route": "PF2",
+   "steps_mode": "bound",
+   "encoding": "labeled",
+   "gap_MeV": null,
+   "gamma2": 1.0,
+   "steps": {
+    "0.05": 1354,
+    "0.1": 2708,
+    "0.2": 5416
+   },
+   "per_step": {
+    "rot": 136,
+    "toffoli": 62.0,
+    "fixed_T": 108.0
+   },
+   "register": {
+    "system": 30,
+    "counters": 0,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 3,
+    "rus_hadamard_filter": 2,
+    "total": 48
+   },
+   "c_T": 24.961602256694214,
+   "rotations_deepest": 1785165.0,
+   "toffolis_deepest": 335898.0,
+   "T_prep_deterministic": 26174420.086313136,
+   "T_filter_per_attempt": 0.0,
+   "T_evolution": {
+    "0.05": 5331105.863581523,
+    "0.1": 10661503.149538223,
+    "0.2": 21322297.72145162
+   },
+   "T_per_step": 3936.777906910413,
+   "T_deepest_circuit": 47496795.69257153,
+   "attempts_per_accepted_shot": 1.0,
+   "T_rejected_attempt": 0.0,
+   "T_expected_per_accepted_shot": {
+    "0.05": 31505603.834701426,
+    "0.1": 36836001.12065813,
+    "0.2": 47496795.69257153
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 258294039858.0548,
+   "T_campaign": 6348871062711.807,
+   "wall_shot_s": 47.49689569257153,
+   "wall_first_d": 2.9895224659497086,
+   "wall_campaign_d": 73.48249427212738,
+   "wall_campaign_yr": 0.2011841047833741,
+   "eps_l": 2.105405186641674e-09,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "yes"
+  },
+  {
+   "nucleus": "3H",
+   "A": 3,
+   "lattice": "8^3",
+   "route": "GQSP",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": null,
+   "gamma2": 1.0,
+   "lambda_MeV": 1364.8983,
+   "walk_queries": {
+    "0.05": 159,
+    "0.1": 296,
+    "0.2": 569
+   },
+   "per_step": {
+    "rot": 17,
+    "toffoli": 446.0,
+    "fixed_T": 0
+   },
+   "register": {
+    "system": 30,
+    "block_encoding_and_phase": 65,
+    "second_selection_and_flags": 9,
+    "total": 104
+   },
+   "c_T": 24.527838653005983,
+   "rotations_deepest": 1058254.0,
+   "toffolis_deepest": 253818.0,
+   "T_prep_deterministic": 25719586.415575746,
+   "T_filter_per_attempt": 0.0,
+   "T_evolution": {
+    "0.05": 562770.3313950342,
+    "0.1": 1047609.6676178852,
+    "0.2": 2013749.366806486
+   },
+   "T_per_step": 3538.973257101102,
+   "T_deepest_circuit": 27733412.365898192,
+   "attempts_per_accepted_shot": 1.0,
+   "T_rejected_attempt": 0.0,
+   "T_expected_per_accepted_shot": {
+    "0.05": 26282433.33048674,
+    "0.1": 26767272.66670959,
+    "0.2": 27733412.365898192
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 187692115938.96765,
+   "T_campaign": 4427561151244.484,
+   "wall_shot_s": 27.73351236589819,
+   "wall_first_d": 2.1723705687380517,
+   "wall_campaign_d": 51.2451110375519,
+   "wall_campaign_yr": 0.1403014675908334,
+   "eps_l": 3.605758955322891e-09,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "yes"
+  }
+ ],
+ "12C_6cubed": [
+  {
+   "nucleus": "12C",
+   "A": 12,
+   "lattice": "6^3",
+   "route": "PF2",
+   "steps_mode": "calibrated",
+   "encoding": "labeled",
+   "gap_MeV": 4.44,
+   "gamma2": 0.1,
+   "steps": {
+    "0.05": 50,
+    "0.1": 100,
+    "0.2": 200
+   },
+   "per_step": {
+    "rot": 1578,
+    "toffoli": 4668.0,
+    "fixed_T": 0.0
+   },
+   "filter": {
+    "kind": "rodeo, rejected attempts stop at the first failed cycle",
+    "cycles": 14,
+    "time_MeV_inv": 7.5675675675675675,
+    "steps": 7568,
+    "cycles_before_abort": 2.0223234955927936
+   },
+   "register": {
+    "system": 120,
+    "counters": 24,
+    "flag_ladder": 8,
+    "and_chain": 5,
+    "pair_flags": 0,
+    "rus_hadamard_filter": 3,
+    "total": 160
+   },
+   "c_T": 26.56237055550818,
+   "rotations_deepest": 12295021.0,
+   "toffolis_deepest": 36269778.0,
+   "T_prep_deterministic": 982069.6085949222,
+   "T_filter_per_attempt": 564540580.1772225,
+   "T_evolution": {
+    "0.05": 3761907.206336811,
+    "0.1": 7491478.243166407,
+    "0.2": 14950620.316825598
+   },
+   "T_per_step": 74591.42073659191,
+   "T_deepest_circuit": 580473352.7897547,
+   "attempts_per_accepted_shot": 10.0,
+   "T_rejected_attempt": 82530903.85916525,
+   "T_expected_per_accepted_shot": {
+    "0.05": 1312062774.4117532,
+    "0.1": 1315792345.4485826,
+    "0.2": 1323251487.522242
+   },
+   "shot_factor": 1.0,
+   "shots_first": 7012.0,
+   "shots_campaign": 164424.0,
+   "T_first_result": 9226335926285.46,
+   "T_campaign": 216552250937424.34,
+   "wall_shot_s": 580.4734527897547,
+   "wall_first_d": 106.78637660052617,
+   "wall_campaign_d": 2506.3936963127817,
+   "wall_campaign_yr": 6.862131954312886,
+   "eps_l": 1.722731965548462e-10,
+   "fits_LQ": true,
+   "fits_T": "yes",
+   "fits_window": "near"
+  }
+ ],
+ "sensitivity_overlap_gap": [
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 1.0,
+   "T_deepest": 784189160.7949214,
+   "campaign_yr": 4.194775527313728,
+   "first_d": 65.27716433602137
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 2.0,
+   "T_deepest": 394096180.7670618,
+   "campaign_yr": 2.0977435453881164,
+   "first_d": 32.613456560034436
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 4.44,
+   "T_deepest": 181476460.133717,
+   "campaign_yr": 0.9548513926042463,
+   "first_d": 14.811866892445757
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 8.0,
+   "T_deepest": 104513584.07769488,
+   "campaign_yr": 0.5412159974605678,
+   "first_d": 8.369307272910063
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 1.0,
+   "T_deepest": 1232774931.8185372,
+   "campaign_yr": 7.578628027864517,
+   "first_d": 117.98506235148896
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 2.0,
+   "T_deepest": 616647664.2269831,
+   "campaign_yr": 3.778666589616755,
+   "first_d": 58.79585835528658
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 4.44,
+   "T_deepest": 280831982.47696674,
+   "campaign_yr": 1.70760701722481,
+   "first_d": 26.536776397094187
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 8.0,
+   "T_deepest": 159309429.06233457,
+   "campaign_yr": 0.9582030393722208,
+   "first_d": 14.864165342863817
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 1.0,
+   "T_deepest": 1457860546.7531905,
+   "campaign_yr": 12.289311806866214,
+   "first_d": 191.36040940971742
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 2.0,
+   "T_deepest": 728338952.3952521,
+   "campaign_yr": 6.123296819525558,
+   "first_d": 95.31662424029517
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 4.44,
+   "T_deepest": 330717922.6595056,
+   "campaign_yr": 2.7625661186989205,
+   "first_d": 42.969119160020895
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 8.0,
+   "T_deepest": 186839983.82117933,
+   "campaign_yr": 1.5465071046670924,
+   "first_d": 24.02770879216746
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 1.0,
+   "T_deepest": 1570483420.079156,
+   "campaign_yr": 18.777473066084614,
+   "first_d": 292.4225123000975
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 2.0,
+   "T_deepest": 784189351.8662014,
+   "campaign_yr": 9.354347841362427,
+   "first_d": 145.64469534926016
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 4.44,
+   "T_deepest": 355647689.18789643,
+   "campaign_yr": 4.218497750726979,
+   "first_d": 65.64723232964059
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 8.0,
+   "T_deepest": 200554245.59702036,
+   "campaign_yr": 2.3597067275486854,
+   "first_d": 36.69437646955004
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 1.0,
+   "T_deepest": 1909013593.1538668,
+   "campaign_yr": 126.95790170029818,
+   "first_d": 1977.4833482579124
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 2.0,
+   "T_deepest": 952138730.0456393,
+   "campaign_yr": 63.248218192632294,
+   "first_d": 985.1167138728078
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 4.44,
+   "T_deepest": 430643741.1414374,
+   "campaign_yr": 28.52366202653249,
+   "first_d": 444.233910595602
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 8.0,
+   "T_deepest": 241896501.43931046,
+   "campaign_yr": 15.9536141546891,
+   "first_d": 248.438301496363
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 1.0,
+   "T_deepest": 2361467314.1285067,
+   "campaign_yr": 1196.1294751694304,
+   "first_d": 18631.320832958776
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 2.0,
+   "T_deepest": 1176631332.2960997,
+   "campaign_yr": 595.9482006300035,
+   "first_d": 9282.66135071616
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 4.44,
+   "T_deepest": 530835396.1429831,
+   "campaign_yr": 268.78193265980474,
+   "first_d": 4186.591236983141
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 8.0,
+   "T_deepest": 297189318.0681216,
+   "campaign_yr": 150.38881722689257,
+   "first_d": 2342.453840552292
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 1.0,
+   "T_deepest": 444357732.0240234,
+   "campaign_yr": 2.5184764789639758,
+   "first_d": 39.09597044558201
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 2.0,
+   "T_deepest": 232258052.81005487,
+   "campaign_yr": 1.2906438680982324,
+   "first_d": 19.970902132365936
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 4.44,
+   "T_deepest": 115827771.40500815,
+   "campaign_yr": 0.6166622250595974,
+   "first_d": 9.472838281659891
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 8.0,
+   "T_deepest": 73405174.88596977,
+   "campaign_yr": 0.3711041528079589,
+   "first_d": 5.648014901518697
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 1.0,
+   "T_deepest": 597346265.831737,
+   "campaign_yr": 6.0789583425107985,
+   "first_d": 94.55537540798346
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 2.0,
+   "T_deepest": 308668355.7439177,
+   "campaign_yr": 3.0709253873306417,
+   "first_d": 47.70120925467745
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 4.44,
+   "T_deepest": 150216499.6742773,
+   "campaign_yr": 1.4199296504423609,
+   "first_d": 21.984796948280053
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 8.0,
+   "T_deepest": 92467922.97003672,
+   "campaign_yr": 0.8182603538952633,
+   "first_d": 12.613053278827536
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 1.0,
+   "T_deepest": 693900265.1225281,
+   "campaign_yr": 17.62175358440383,
+   "first_d": 274.3504692553292
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 2.0,
+   "T_deepest": 356891344.41386586,
+   "campaign_yr": 8.842681863273135,
+   "first_d": 137.60433141928374
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 4.44,
+   "T_deepest": 171905567.1372866,
+   "campaign_yr": 4.024059342112287,
+   "first_d": 62.547719863457594
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 8.0,
+   "T_deepest": 104504397.8537434,
+   "campaign_yr": 2.2685000368727706,
+   "first_d": 35.20253464303708
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 1.0,
+   "T_deepest": 750402222.1155667,
+   "campaign_yr": 38.1266806809768,
+   "first_d": 593.7432749033319
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 2.0,
+   "T_deepest": 385110452.9328203,
+   "campaign_yr": 19.09499152483369,
+   "first_d": 297.2983295981928
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 4.44,
+   "T_deepest": 184600771.70086935,
+   "campaign_yr": 8.64898830233858,
+   "first_d": 134.5874209417217
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 8.0,
+   "T_deepest": 111536599.24487717,
+   "campaign_yr": 4.8428698454390275,
+   "first_d": 75.30192043504192
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 1.0,
+   "T_deepest": 917489257.8710681,
+   "campaign_yr": 467.77491306959575,
+   "first_d": 7286.113362114252
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 2.0,
+   "T_deepest": 468558863.3922468,
+   "campaign_yr": 233.8806615153109,
+   "first_d": 3642.8845000535925
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 4.44,
+   "T_deepest": 222149026.38427296,
+   "campaign_yr": 105.50627332891214,
+   "first_d": 1643.2746122703923
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 8.0,
+   "T_deepest": 132364635.94010341,
+   "campaign_yr": 58.73413640496584,
+   "first_d": 914.7334857879296
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 1.0,
+   "T_deepest": 1078629423.4742942,
+   "campaign_yr": 5516.761863546903,
+   "first_d": 85931.12315186691
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 2.0,
+   "T_deepest": 549044846.4181428,
+   "campaign_yr": 2757.5898335305806,
+   "first_d": 42953.172762616894
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 4.44,
+   "T_deepest": 258343628.53589392,
+   "campaign_yr": 1243.0780611671846,
+   "first_d": 19362.540902898865
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 8.0,
+   "T_deepest": 152448227.19891095,
+   "campaign_yr": 691.4166679803169,
+   "first_d": 10769.645819334157
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 1.0,
+   "T_deepest": 1504028181.0048308,
+   "campaign_yr": 8.045380756329646,
+   "first_d": 125.20005250727532
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 2.0,
+   "T_deepest": 756794823.3690916,
+   "campaign_yr": 4.028407583105193,
+   "first_d": 62.63086572984896
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 6.05,
+   "T_deepest": 260514382.04232016,
+   "campaign_yr": 1.3607290826294132,
+   "first_d": 21.079243474359934
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 8.0,
+   "T_deepest": 201175504.1979429,
+   "campaign_yr": 1.0418095447878646,
+   "first_d": 16.111913110963762
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 1.0,
+   "T_deepest": 2362502494.265717,
+   "campaign_yr": 14.52338910221001,
+   "first_d": 226.10355553158234
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 2.0,
+   "T_deepest": 1183289417.1643934,
+   "campaign_yr": 7.2505383505341285,
+   "first_d": 112.81954313394732
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 6.05,
+   "T_deepest": 400070306.10080844,
+   "campaign_yr": 2.420183090579925,
+   "first_d": 37.58123957045026
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 8.0,
+   "T_deepest": 306436452.7035432,
+   "campaign_yr": 1.8427542054647805,
+   "first_d": 28.58727648057139
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 1.0,
+   "T_deepest": 2792814452.9485197,
+   "campaign_yr": 23.540704457184145,
+   "first_d": 366.56062395067596
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 2.0,
+   "T_deepest": 1397010284.4593565,
+   "campaign_yr": 11.743103522094136,
+   "first_d": 182.7973218767693
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 6.05,
+   "T_deepest": 469996730.075176,
+   "campaign_yr": 3.9077877502259764,
+   "first_d": 60.75257616608374
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 8.0,
+   "T_deepest": 359205277.8161543,
+   "campaign_yr": 2.971350052048008,
+   "first_d": 46.16655330092231
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 1.0,
+   "T_deepest": 3008249527.7150383,
+   "campaign_yr": 35.9637611884235,
+   "first_d": 560.0669662506843
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 2.0,
+   "T_deepest": 1504028374.798726,
+   "campaign_yr": 17.93674254350693,
+   "first_d": 279.2718004759661
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 6.05,
+   "T_deepest": 504997964.1006808,
+   "campaign_yr": 5.963667227474524,
+   "first_d": 92.77568465385093
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 8.0,
+   "T_deepest": 385579883.35250795,
+   "campaign_yr": 4.532388362174836,
+   "first_d": 70.48182210155242
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 1.0,
+   "T_deepest": 3655464461.036805,
+   "campaign_yr": 243.05426091816037,
+   "first_d": 3785.789955812087
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 2.0,
+   "T_deepest": 1825572842.2192402,
+   "campaign_yr": 121.21806601229905,
+   "first_d": 1888.0221657558266
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 6.05,
+   "T_deepest": 610210613.8574064,
+   "campaign_yr": 40.28924657579708,
+   "first_d": 627.4442199391889
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 8.0,
+   "T_deepest": 464954988.0572567,
+   "campaign_yr": 30.615017081054337,
+   "first_d": 476.754913759601
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 1.0,
+   "T_deepest": 4519964005.247869,
+   "campaign_yr": 2288.9267581767012,
+   "first_d": 35653.10572045303
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 2.0,
+   "T_deepest": 2255015530.3449836,
+   "campaign_yr": 1141.613727275095,
+   "first_d": 17782.106740441923
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 6.05,
+   "T_deepest": 750656170.3274134,
+   "campaign_yr": 379.4714484218764,
+   "first_d": 5910.679587396338
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 8.0,
+   "T_deepest": 570935020.7866721,
+   "campaign_yr": 288.39695793274063,
+   "first_d": 4492.067750189406
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 1.0,
+   "T_deepest": 758432434.462655,
+   "campaign_yr": 4.298547082921094,
+   "first_d": 66.72933793099018
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 2.0,
+   "T_deepest": 396525160.44030243,
+   "campaign_yr": 2.2034669829309736,
+   "first_d": 34.09572765584574
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 6.05,
+   "T_deepest": 154478259.27990782,
+   "campaign_yr": 0.8023089068014523,
+   "first_d": 12.270984260903855
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 8.0,
+   "T_deepest": 125379114.47948393,
+   "campaign_yr": 0.6338683976330647,
+   "first_d": 9.647338492748892
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 1.0,
+   "T_deepest": 1019461791.9477154,
+   "campaign_yr": 10.374993757132982,
+   "first_d": 161.37837983491275
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 2.0,
+   "T_deepest": 526926764.98759013,
+   "campaign_yr": 5.242707864942009,
+   "first_d": 81.43606174938749
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 6.05,
+   "T_deepest": 197531552.87125537,
+   "campaign_yr": 1.8105139529021648,
+   "first_d": 27.975121876359324
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 8.0,
+   "T_deepest": 157927165.96040517,
+   "campaign_yr": 1.3978752383330137,
+   "first_d": 21.54775466238467
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 1.0,
+   "T_deepest": 1184184302.7909403,
+   "campaign_yr": 30.074085949233027,
+   "first_d": 468.2191568534325
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 2.0,
+   "T_deepest": 609215103.1212388,
+   "campaign_yr": 15.095982277667632,
+   "first_d": 234.91450476522343
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 6.05,
+   "T_deepest": 224706589.7710701,
+   "campaign_yr": 5.079925636541017,
+   "first_d": 78.9007331319279
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 8.0,
+   "T_deepest": 178473315.83415747,
+   "campaign_yr": 3.8756847550371933,
+   "first_d": 60.14306151337492
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 1.0,
+   "T_deepest": 1280561050.3012822,
+   "campaign_yr": 65.06648379783692,
+   "first_d": 1013.2745084123616
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 2.0,
+   "T_deepest": 657349744.4069071,
+   "campaign_yr": 32.59682248095965,
+   "first_d": 507.51446472997435
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 6.05,
+   "T_deepest": 240596061.265526,
+   "campaign_yr": 10.88479661245634,
+   "first_d": 169.319672517227
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 8.0,
+   "T_deepest": 190482934.76217654,
+   "campaign_yr": 8.27420051306441,
+   "first_d": 128.65605938019556
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 1.0,
+   "T_deepest": 1565605445.2734365,
+   "campaign_yr": 798.249182461986,
+   "first_d": 12433.617006462558
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 2.0,
+   "T_deepest": 799753894.182965,
+   "campaign_yr": 399.2339759394411,
+   "first_d": 6218.399150176235
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 6.05,
+   "T_deepest": 287611435.3959114,
+   "campaign_yr": 132.41528986096003,
+   "first_d": 2062.326465920648
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 8.0,
+   "T_deepest": 226027111.78199792,
+   "campaign_yr": 100.33301587507962,
+   "first_d": 1562.6003907966485
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 1.0,
+   "T_deepest": 1840448077.1807895,
+   "campaign_yr": 9413.5350950291,
+   "first_d": 146628.7043859827
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 2.0,
+   "T_deepest": 937049688.0725678,
+   "campaign_yr": 4706.727441397513,
+   "first_d": 73313.61429003162
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 6.05,
+   "T_deepest": 332931697.71662307,
+   "campaign_yr": 1559.3281369203316,
+   "first_d": 24288.483074721204
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 8.0,
+   "T_deepest": 260299926.22357017,
+   "campaign_yr": 1180.9472211993861,
+   "first_d": 18394.672931560042
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 1.0,
+   "T_deepest": 12953985951.854445,
+   "campaign_yr": 69.29171333860478,
+   "first_d": 1078.279689265415
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 2.0,
+   "T_deepest": 6535250357.163965,
+   "campaign_yr": 34.78492816235886,
+   "first_d": 540.7921811305279
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 1.46,
+   "T_deepest": 8906753497.572407,
+   "campaign_yr": 47.53390540566858,
+   "first_d": 739.3735682270946
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.9,
+   "gap": 8.0,
+   "T_deepest": 1744103420.6446145,
+   "campaign_yr": 9.029369765505797,
+   "first_d": 139.6206628541421
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 1.0,
+   "T_deepest": 20311348782.05771,
+   "campaign_yr": 124.84766611092135,
+   "first_d": 1943.6386104448989
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 2.0,
+   "T_deepest": 10200760670.15561,
+   "campaign_yr": 62.48914321828499,
+   "first_d": 972.321496041012
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 1.46,
+   "T_deepest": 13935771891.843092,
+   "campaign_yr": 85.52530545260649,
+   "first_d": 1331.1401118588235
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.5,
+   "gap": 8.0,
+   "T_deepest": 2654342632.023057,
+   "campaign_yr": 15.946412869839358,
+   "first_d": 247.36097780555193
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 1.0,
+   "T_deepest": 23995554633.107765,
+   "campaign_yr": 202.19643124892167,
+   "first_d": 3148.4525262523034
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 2.0,
+   "T_deepest": 12036141070.559021,
+   "campaign_yr": 101.11231746782845,
+   "first_d": 1573.930360926109
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 1.46,
+   "T_deepest": 16453977896.482933,
+   "campaign_yr": 138.45312941746363,
+   "first_d": 2155.563831353245
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.2,
+   "gap": 8.0,
+   "T_deepest": 3109917790.7822533,
+   "campaign_yr": 25.664210146231518,
+   "first_d": 398.72835386707084
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 1.0,
+   "T_deepest": 25838394711.398758,
+   "campaign_yr": 308.75669428055136,
+   "first_d": 4808.276753984629
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 2.0,
+   "T_deepest": 12953986154.784908,
+   "campaign_yr": 154.34569377562536,
+   "first_d": 2403.113996170318
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 1.46,
+   "T_deepest": 17714288754.77015,
+   "campaign_yr": 211.395097510467,
+   "first_d": 3291.7362543910767
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.1,
+   "gap": 8.0,
+   "T_deepest": 3337425890.15679,
+   "campaign_yr": 39.09235313643947,
+   "first_d": 607.8900139151305
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 1.0,
+   "T_deepest": 31372598981.221268,
+   "campaign_yr": 2084.3697199306916,
+   "first_d": 32465.923682715737
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 2.0,
+   "T_deepest": 15711180786.495121,
+   "campaign_yr": 1041.6255525152212,
+   "first_d": 16223.733560012392
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 1.46,
+   "T_deepest": 21496697629.272724,
+   "campaign_yr": 1426.8337923451286,
+   "first_d": 22223.88712561409
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.01,
+   "gap": 8.0,
+   "T_deepest": 4022084983.6948915,
+   "campaign_yr": 263.2738659780326,
+   "first_d": 4099.828555634599
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 1.0,
+   "T_deepest": 38758923208.362976,
+   "campaign_yr": 19610.87922021396,
+   "first_d": 305465.7391811809
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 2.0,
+   "T_deepest": 19390827919.965904,
+   "campaign_yr": 9800.114723857674,
+   "first_d": 152649.41019842145
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 1.46,
+   "T_deepest": 26545753093.435585,
+   "campaign_yr": 13424.458066495408,
+   "first_d": 209103.60820164595
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "gamma2": 0.001,
+   "gap": 8.0,
+   "T_deepest": 4935357564.892258,
+   "campaign_yr": 2476.795175580133,
+   "first_d": 38578.5073848899
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 1.0,
+   "T_deepest": 4787117887.804888,
+   "campaign_yr": 27.131584480839265,
+   "first_d": 421.1815730925582
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 2.0,
+   "T_deepest": 2503863922.8485894,
+   "campaign_yr": 13.913560861666191,
+   "first_d": 215.29291090250692
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 1.46,
+   "T_deepest": 3348275613.201815,
+   "campaign_yr": 18.801945362330514,
+   "first_d": 291.43610309725733
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.9,
+   "gap": 8.0,
+   "T_deepest": 792145766.421491,
+   "campaign_yr": 4.004368455298997,
+   "first_d": 60.94414011542133
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 1.0,
+   "T_deepest": 6433282598.324165,
+   "campaign_yr": 65.4740477886882,
+   "first_d": 1018.4186558263169
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 2.0,
+   "T_deepest": 3326645462.0852094,
+   "campaign_yr": 33.101689255543526,
+   "first_d": 514.1745522585546
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 1.46,
+   "T_deepest": 4475501785.193832,
+   "campaign_yr": 45.07317610583473,
+   "first_d": 700.6469242072121
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.5,
+   "gap": 8.0,
+   "T_deepest": 997690645.0826188,
+   "campaign_yr": 8.833535336152423,
+   "first_d": 136.16502149286603
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 1.0,
+   "T_deepest": 7472010410.898594,
+   "campaign_yr": 189.7764127494883,
+   "first_d": 2954.6011431903003
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 2.0,
+   "T_deepest": 3845789371.1406846,
+   "campaign_yr": 95.31000229296171,
+   "first_d": 1483.1556352745288
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 1.46,
+   "T_deepest": 5186846034.2835455,
+   "campaign_yr": 130.24563908261655,
+   "first_d": 2027.3266479827416
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.2,
+   "gap": 8.0,
+   "T_deepest": 1127398458.858601,
+   "campaign_yr": 24.494926254008778,
+   "first_d": 380.11294621815154
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 1.0,
+   "T_deepest": 8079648636.168445,
+   "campaign_yr": 410.5662316670214,
+   "first_d": 6393.710281698071
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 2.0,
+   "T_deepest": 4149491860.5316153,
+   "campaign_yr": 205.7977722064847,
+   "first_d": 3204.1566093771216
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 1.46,
+   "T_deepest": 5602937323.866063,
+   "campaign_yr": 281.5246965691029,
+   "first_d": 4383.708784666723
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.1,
+   "gap": 8.0,
+   "T_deepest": 1203300383.9914172,
+   "campaign_yr": 52.29908223528085,
+   "first_d": 813.2013949081393
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 1.0,
+   "T_deepest": 9876633333.757347,
+   "campaign_yr": 5036.117094815617,
+   "first_d": 78443.11263236578
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 2.0,
+   "T_deepest": 5047633508.724401,
+   "campaign_yr": 2520.1129406077725,
+   "first_d": 39252.84126281731
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 1.46,
+   "T_deepest": 6833502037.945153,
+   "campaign_yr": 3450.5825658365293,
+   "first_d": 53746.202472571655
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.01,
+   "gap": 8.0,
+   "T_deepest": 1427666796.4232368,
+   "campaign_yr": 634.0771097322179,
+   "first_d": 9875.20504211623
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 1.0,
+   "T_deepest": 11609161226.05712,
+   "campaign_yr": 59382.215212947485,
+   "first_d": 924959.346819061
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 2.0,
+   "T_deepest": 5913553065.304003,
+   "campaign_yr": 29706.9082167342,
+   "first_d": 462725.0747908029
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 1.46,
+   "T_deepest": 8019875834.031121,
+   "campaign_yr": 40681.25719770433,
+   "first_d": 633665.8576987464
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "gamma2": 0.001,
+   "gap": 8.0,
+   "T_deepest": 1644023850.8255303,
+   "campaign_yr": 7462.175534697281,
+   "first_d": 116232.35599705616
+  }
+ ],
+ "overlap_needed_for_window": [
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "steps": "calibrated",
+   "overlap2_needed_for_5yr": 0.07722782215707497
+  },
+  {
+   "nucleus": "12C",
+   "route": "PF2",
+   "steps": "bound",
+   "overlap2_needed_for_5yr": null
+  },
+  {
+   "nucleus": "12C",
+   "route": "GQSP",
+   "steps": "calibrated",
+   "overlap2_needed_for_5yr": 0.1644380250409341
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "steps": "calibrated",
+   "overlap2_needed_for_5yr": 0.1262823500033966
+  },
+  {
+   "nucleus": "16O",
+   "route": "PF2",
+   "steps": "bound",
+   "overlap2_needed_for_5yr": null
+  },
+  {
+   "nucleus": "16O",
+   "route": "GQSP",
+   "steps": "calibrated",
+   "overlap2_needed_for_5yr": 0.20289008016316826
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "steps": "calibrated",
+   "overlap2_needed_for_5yr": null
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "PF2",
+   "steps": "bound",
+   "overlap2_needed_for_5yr": null
+  },
+  {
+   "nucleus": "40Ar",
+   "route": "GQSP",
+   "steps": "calibrated",
+   "overlap2_needed_for_5yr": 0.9987519140873029
+  }
+ ],
+ "pf_steps_tau0.2": [
+  {
+   "nucleus": "3H",
+   "calibrated": 100,
+   "bound": 5416,
+   "ratio": 54.16
+  },
+  {
+   "nucleus": "12C",
+   "calibrated": 200,
+   "bound": 10831,
+   "ratio": 54.155
+  },
+  {
+   "nucleus": "16O",
+   "calibrated": 231,
+   "bound": 12506,
+   "ratio": 54.13852813852814
+  },
+  {
+   "nucleus": "40Ar",
+   "calibrated": 366,
+   "bound": 19774,
+   "ratio": 54.02732240437158
+  }
+ ],
+ "triton_8cubed_steps_within_1e9": 251218.60234961117,
+ "triton_8cubed_tau_within_1e9_MeV_inv": 502.4372046992224
+}
