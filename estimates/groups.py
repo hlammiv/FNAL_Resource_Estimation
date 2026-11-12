@@ -567,6 +567,12 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
 # FERMION_DRAFT constants); cite as
 # unpublished gate counts (private communication), bib key FermionPrimitives_unpub. Every count below is read from
 # FP's gate tables; the full line-by-line record is apply_log/r17_core.md.
+# Draft version (card RF3-ch10-nq1-t, compared 2026-11-12): the source carries no date or version number (preprint
+# number unassigned). Every count and file:line below was read from the source exported 2026-10-01
+# (Fermion_Primitives.zip, sha256 f9c7a49f929bad1a...; newest figure in it dated 2026-04-03). An earlier export of
+# 2026-04-21 (sha256 87eed43f313eb516...) prints the same value for every count used here; its line numbers differ.
+# All counts for 2T, 2O, Sigma(36x3) and Sigma(72x3) match the draft. The draft also has a Sigma(216x3) row that
+# the models do not use yet (Ch. 5 2033 carries Sigma(72x3) as a placeholder).
 #
 # STRUCTURE of one gauge-covariant hop on a link (FP section_hamiltonian.tex:42-62, mapping_circuits/
 # FinalDiagonalizations.tex, HoppingDiag.tex):
