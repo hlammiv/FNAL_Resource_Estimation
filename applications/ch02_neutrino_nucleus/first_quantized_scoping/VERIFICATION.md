@@ -1,10 +1,8 @@
 # Independent check of the first-quantized scoping study
 
 Date 2026-11-12. Read-only check of `README.md`, `scoping.py`, `spagnoli_lemmas.py`, `spin_contact_check.py`,
-`results.json`. Nothing in the study, the model or the paper was changed. `scoping.py` was not imported. Scripts and
-their outputs are in
-`/tmp/claude-1000/-home-hlamm-Desktop-fnalqc/f9f2b399-0d50-45d4-b0a6-215551082d2c/scratchpad/verify_fq/scripts/`
-(`v_table5.py`, `v_counts.py`, `v_spin_contact.py`, `v_gqsp40.py`); each runs in under a minute on two threads.
+`results.json`. Nothing in the study, the model or the paper was changed. `scoping.py` was not imported. The verification scripts
+(`v_table5.py`, `v_counts.py`, `v_spin_contact.py`, `v_gqsp40.py`, each under a minute on two threads) were run outside the repository and are not shipped.
 Source paper: arXiv:2507.22814, fetched and read as text.
 
 ## Verdicts
