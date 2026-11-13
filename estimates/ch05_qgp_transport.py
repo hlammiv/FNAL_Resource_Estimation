@@ -40,9 +40,11 @@ INPUTS AND SOURCES
   Sigma(72x3) electric term per link-step                2 x U_FFT LOWER BOUND (532 + 448 rot, arxiv_2511_17437 :905)
                                                           + U_phi (256 rot) = 3.39e4 T at the full fit; no FFT exists, a floor
   N_stag=3, N_c=3                                        app03:72,138
-  staggered hop per link-step (FP draft, r17; E21)       groups.hop_link_cost("S72x3", 3): 3,672 Toffoli + 360 T + 2,933
-                                                          rotations at the full fit = 1.098e5 T at eps=8.68e-6 (unpublished
-                                                          gate counts, FermionPrimitives_unpub; squish held per link, E21 (1);
+  staggered hop per link-step (FP draft, r17; E21)       groups.hop_link_cost("S216x3", 3): 20,068 Toffoli + 792 T + 4,925
+                                                          rotations at the full fit = 2.838e5 T at eps=6.79e-6 (unpublished
+                                                          gate counts, FermionPrimitives_unpub, its Sigma(216x3) row since card
+                                                          RF3-ch5-s216, 2026-11-12; was the Sigma(72x3) row as a placeholder,
+                                                          3,672 + 360 + 2,933, 1.101e5 T; squish held per link, E21 (1);
                                                           frame undo ESTIMATED here: FP draws V_C^dag but does not count it)
   staggered mass per site-step (r17, option M-B)          groups.staggered_mass_site(3, 3): one HWP(9) = 4 rot + 7 Toffoli
   dt = a_t/10 = 0.01 fm/c; t_max = 4 fm/c is the reference shot (per-step prices); each priced shot runs only to
@@ -122,19 +124,27 @@ WHAT IS NOT DERIVED HERE
   The 2033 staggered hop (app03:85 'Trotter evolution of the electric, magnetic, and fermion-hopping
     terms') is priced from the unpublished gate counts of the Fermion_Primitives draft (FermionPrimitives_unpub,
     r17 ruling (e), H. Lamm 2026-10-01: "adopt the fermion primitive numbers ... estimate or approximate the
-    missing pieces"), through the shared groups.hop_link_cost("S72x3", n_stag=3) with its defaults
-    (share="link", undo=True, mcx="mbu", phasing="hwp"; E21 (1), 2026-10-01, "make the switch"): per link per
-    step the color squish (2 x 1,219 Toffoli at MBU, compute + uncompute) and parity flags (892) computed ONCE
-    and held through V_g(x), V_g(y), hop, V_g^dag(x), V_g^dag(y) (3,330 Toffoli); 4 color-frame applications
-    x 3 fields x 184 color rotations (2 N_angles, E21 (3); 2,208 rotations), the V_g^dag half ESTIMATED HERE
+    missing pieces"), through the shared groups.hop_link_cost("S216x3", n_stag=3) with its defaults
+    (share="link", undo=True, mcx="mbu", phasing="hwp"; E21 (1), 2026-10-01, "make the switch"). Card RF3-ch5-s216
+    (2026-11-12): the draft's own Sigma(216x3) row (groups.FERMION_DRAFT["S216x3"], file:line there) replaces the
+    Sigma(72x3) placeholder. Per link per
+    step the color squish (2 x 7,881 Toffoli at MBU, compute + uncompute) and parity flags (1,402) computed ONCE
+    and held through V_g(x), V_g(y), hop, V_g^dag(x), V_g^dag(y) (17,164 Toffoli); 4 color-frame applications
+    x 3 fields x 278 color rotations (2 N_angles, E21 (3); 3,336 rotations), the V_g^dag half ESTIMATED HERE
     (FP draws V_C^dag in big_fig_group_agnostic.pdf, section_hamiltonian.tex:86-91, but its 2 C^G is two sites
-    forward only, resources.tex:15,37-41); the hop squish + flags once per link (326 Toffoli); 2 x 10 classes
-    x 3 colors x 3 fields = 180 controlled diagonalizers (360 T + 720 rotations); one HWP(18) phasing group
-    (16 Toffoli + 5 rotations). In all 3,672 Toffoli + 360 T + 2,933 rotations per link-step, 1.098e5 T at the
-    2033 eps (15.7x the retired R-HOP 6.97e3 at the same eps). The undo is 1,104 rotations, 3.15e4 T.
+    forward only, resources.tex:15,37-41); the hop squish + flags once per link (2 x (1,224 + 220) = 2,888
+    Toffoli); 2 x 22 classes x 3 colors x 3 fields = 396 controlled diagonalizers (792 T + 1,584 rotations); one
+    HWP(18) phasing group (16 Toffoli + 5 rotations). In all 20,068 Toffoli + 792 T + 4,925 rotations per
+    link-step, 2.838e5 T at the 2033 eps 6.790e-6 (18.3x the retired R-HOP 1.554e4 at the same eps, now with the
+    Sigma(216x3) U_mul). The undo is 1,668 rotations, 4.83e4 T.
     Sensitivities at the same eps: share="draft" (the r17 headline, squish + parity per frame application and
-    hop squish per field: 14,314 Toffoli) 1.843e5, shot 7.683e9; no undo (the draft's 2 C^G
-    rotation layers, squish per link) 7.83e4; no undo at share="draft" 1.061e5.
+    hop squish per field: 77,336 Toffoli) 6.847e5, reference shot 3.434e10; no undo (the draft's 2 C^G
+    rotation layers, squish per link) 2.355e5.
+    With the Sigma(72x3) placeholder (before 2026-11-12): 3,672 Toffoli + 360 T + 2,933 rotations, 1.101e5 T,
+    link-step 4.846e5 (hop 23%), deepest shot 6.7e9-2.4e10, first result 3.3-11 yr, campaign 271-999 yr.
+    Squish scratch: the draft's Sigma(216x3) color squish lists 29 ancilla (su3_diag.tex:105; 24 for Sigma(72x3)),
+    groups.FP_SQUISH_ANCILLA. The register is not resized: N_anc is the Stated 100-200 allowance and the depth
+    schedule reads no ancilla count (step_depth_2033), as before; 29 + 16 (HWP(18)) fit one link's hop in it.
   The staggered mass (r17, option M-B): one R_Z per color-flavor copy per site (FP section_mass.tex:3-10), the
     9 copies on a site as one HWP(9) group, 4 rotations + 7 Toffoli = 163 T per site-step, 4.4e3 T per step
     (0.02% of the step). mu_B N_B commutes with H and folds into the same angle at no cost.
@@ -151,15 +161,15 @@ WALL TIME AND FACTORIES
   T-depth per shot from factory.json (Ch. 5 runs; schedules re-evaluated here at each shot's own t_rot by
     step_depth_2028 / step_depth_2033, which reproduce factory.json's 628 / 3882 (2028, 64 workspace) and 4.68e4 /
     6.05e5 (2033) per step), low/high; the quench prep is the same circuit, so its depth scales with its steps.
-    F* = N_T / D_T: 2028 10.7-57 with 16 workspace qubits (R10; ~1.7 without); 2033 ~35 (high, every shot, quench included).
+    F* = N_T / D_T: 2028 10.7-57 with 16 workspace qubits (R10; ~1.7 without); 2033 ~32 (high, every shot, quench included).
   2028. First result: t = 0 and one step, 2e3 shots, 94.9 s -> wall_first_result_s. Full benchmark: 7 timeslices,
     7e3 shots, 2059 s (34.3 min) -> wall_campaign_s. Exports are the full benchmark, shot-averaged.
   2033 (s648 Sigma(216x3), H_I, a_s = 0.2 fm; quench prep 2026-10-05). Two corners: (tau = 1/k, c = 2) and
     (tau = 1/(2 pi T), c = 2 pi), at T = 300 and 225 MeV (temperature ruling 2026-10-05). First result: Gamma(k_min),
-    T = 1.5 T_c^lat, mu_B = 0, 30%: 1.60e4-1.53e4 shots, 3.3-11.4 yr -> wall_first_result_s (the other six corners
-    3.7-11.7 yr, first_result_corners). Campaign: 20%, 16 points x 2 spacings (0.2 and 0.15 fm, each at its own
-    step), 1.15e6-1.14e6 shots -> wall_campaign_s, 271-999 yr, 54-200x the five-year window, a co-design gap; 5 yr do not
-    cover one 20% grid point (7.5-26 yr). Exports: the campaign at the (300 MeV, 1/k, c = 2) corner over both
+    T = 1.5 T_c^lat, mu_B = 0, 30%: 1.60e4-1.53e4 shots, 4.5-15.6 yr -> wall_first_result_s (the other six corners
+    5.0-16.0 yr, first_result_corners). Campaign: 20%, 16 points x 2 spacings (0.2 and 0.15 fm, each at its own
+    step), 1.15e6-1.14e6 shots -> wall_campaign_s, 368-1358 yr, 74-272x the five-year window, a co-design gap; 5 yr do not
+    cover one 20% grid point (10-35 yr). [271-999 yr, 54-200x, with the Sigma(72x3) placeholder hop, before 2026-11-12.] Exports: the campaign at the (300 MeV, 1/k, c = 2) corner over both
     spacings, shot-averaged. (At the retired 160 MeV: first result 5.3-15.3 yr, campaign 435-1325 yr; before the
     quench: deepest 6.8e8-3.0e9 with 1e8 Gibbs prep on the mu_B > 0 rail, first result 107-283 d, campaign 23.9-75.7 yr.)
 """
@@ -177,7 +187,7 @@ from estimates.common import (Assumed, Cited, Stated, Uncited, Tagged, Primitive
                               depth_exports, REACTION_TIME_S, FACTORY_BASELINE, FACTORY_SRC)
 from estimates.groups import (GROUPS, PRIMCOST, MAGNETIC, magnetic_per_link, electric_per_link,
                               rhop_link, fermion_hop_counts, hop_link_cost, staggered_mass_site,
-                              FP_KEY, FP_DIR, FERMION_DRAFT)
+                              FP_KEY, FP_DIR, FERMION_DRAFT, FP_SQUISH_ANCILLA)
 
 ETH_KEYS = ("arxiv_cond-mat_9403051,arxiv_0708_1324,arxiv_1509_06411,arxiv_0902_0927,arxiv_2303_14264,"
             "arxiv_2308_16202,arxiv_2011_09814")
@@ -283,11 +293,12 @@ class Assumptions:
     group_2033: Tagged = Stated("S216x3", f"{TEX}:137", "s648 ruling (2026-10-05): Sigma(216x3) subset SU(3), |G| = 648, "
                                                          "11 qubits/link in the published qubit encoding (arxiv_2611_08161, "
                                                          "Table 11). Was Sigma(72x3), |G| = 216, 9 qubits/link")
-    hop_group_2033: Tagged = Assumed("S72x3", "s648: no hop circuit exists for Sigma(216x3) (the Fermion_Primitives draft "
-                                              "covers 2T, 2O, Sigma(36x3), Sigma(72x3)). The 2033 hop is priced at the "
-                                              "Sigma(72x3) counts as a PLACEHOLDER, not a bound: Sigma(216x3) has 24 classes "
-                                              "against 16 and a wider register, so its color frame is likely larger. "
-                                              "NEEDS_AUTHOR")
+    hop_group_2033: Tagged = Cited("S216x3", "FermionPrimitives_unpub",
+                                   "card RF3-ch5-s216 (2026-11-12): the unpublished Fermion_Primitives draft prints a "
+                                   "complete Sigma(216x3) row (su3_diag.tex:91, :105, :126, :134, :198, :213; "
+                                   "hopping.tex:63-75, :264, :279, :347; resources.tex:41, :67), now "
+                                   "groups.FERMION_DRAFT['S216x3']. The 2033 hop uses it. Was Assumed 'S72x3', the "
+                                   "Sigma(72x3) counts as a placeholder (s648, 2026-10-05)")
     # s648 (author ruling 2026-10-05, (2)): freezing from the literature, not Monte Carlo
     beta_f_S72x3: Tagged = Cited(3.18, "arxiv_2511_17437", "isotropic Wilson 3+1D freezing beta_f = 3.18(3); g^2_f = 6 / "
                                                             "beta_f = 1.89")
@@ -590,8 +601,9 @@ def ham_for(a: Assumptions, group: str) -> str:
 
 
 def hop_group(a: Assumptions, group: str) -> str:
-    """The Fermion_Primitives entry a gauge group's hop is priced from. Sigma(216x3) has none (s648): the 2033 hop
-    is priced at hop_group_2033 (Sigma(72x3)) counts as a PLACEHOLDER (Assumed, NEEDS_AUTHOR)."""
+    """The Fermion_Primitives entry a gauge group's hop is counted from: the group's own row. Since card
+    RF3-ch5-s216 (2026-11-12) Sigma(216x3) has one (hop_group_2033 = 'S216x3'; the Sigma(72x3) placeholder is
+    retired); the hop_group_2033 branch only serves a 2033 group without a row."""
     if group in FERMION_DRAFT:
         return group
     if group == a.group_2033.value:
@@ -1250,7 +1262,7 @@ def _intermediates_2033(a: Assumptions, c: dict) -> dict:
         "log10_hilbert_dim_2033": c["links"] * math.log10(g.order) + c["fq"] * math.log10(2),  # 216^81 2^243
         "dt_2033_fm": c["dt"],                                           # 0.01
         "trotter_steps_2033": c["steps"],                                # 400
-        "n_rot_per_link_step_2033": c["n_rot_link_step"],                # 4093.33 = 1159 gauge + 2933 FP hop + 4/3 mass
+        "n_rot_per_link_step_2033": c["n_rot_link_step"],                # 6695.33 = 1769 gauge + 4925 FP hop + 4/3 mass
         "n_rot_per_shot_2033": c["n_rot"],                               # 1.567e8 synthesized rotations (R-TOL, quench in the circuit)
         "eps_rot_2033": c["eps"],                                        # 7.99e-6 = sqrt(1e-2 / 1.5658e8), chapter "8.0e-6"
         "synthesis_error_per_shot_2033": c["n_rot"] * c["eps"] ** 2,     # 1e-2
@@ -1267,24 +1279,25 @@ def _intermediates_2033(a: Assumptions, c: dict) -> dict:
         "electric_over_magnetic_2033": pc["electric_per_link"] / pc["magnetic_per_link"],   # 1.80
         "fft_compiled_2033": pc["fft_compiled"],                         # False: no Sigma(72x3) FFT
         "gauge_t_per_link_step_2033": pc["gauge_per_link"],              # 5.281e4 (magnetic + electric floor)
-        "hop_t_per_link_step_2033": pc["hop_per_link"],                  # 1.0976e5 (FP draft counts, squish per link, full fit)
-        "hop_toffoli_per_link_step_2033": c["hl"]["toffoli"],            # 3,672 (E21: 14,314 at share='draft')
-        "hop_t_direct_per_link_step_2033": c["hl"]["t_direct"],          # 360
-        "hop_n_rot_per_link_step_2033": c["hl"]["n_rot"],                # 2,933
-        "hop_t_toffoli_per_link_step_2033": c["hl"]["t_toffoli"],        # 25,704
-        "hop_t_rotations_per_link_step_2033": c["hl"]["t_rotations"],    # 83,694
+        "hop_t_per_link_step_2033": pc["hop_per_link"],                  # 2.838e5 (FP draft Sigma(216x3) counts, squish per link, full fit; 1.101e5 with the Sigma(72x3) placeholder)
+        "hop_toffoli_per_link_step_2033": c["hl"]["toffoli"],            # 20,068 (E21: 77,336 at share='draft')
+        "hop_t_direct_per_link_step_2033": c["hl"]["t_direct"],          # 792
+        "hop_n_rot_per_link_step_2033": c["hl"]["n_rot"],                # 4,925
+        "hop_t_toffoli_per_link_step_2033": c["hl"]["t_toffoli"],        # 140,476
+        "hop_t_rotations_per_link_step_2033": c["hl"]["t_rotations"],    # 142,547
         "hop_items_t_per_link_step_2033": {it["name"]: it["t"] for it in c["hl"]["items"]},
-        "hop_undo_t_per_link_step_2033": pc["hop_per_link"] - c["hop_no_undo"],   # 3.150e4, the ESTIMATED V_g^dag (1,104 rotations)
-        "hop_t_per_link_step_2033_share_draft": c["hop_share_draft"],    # 1.8425e5 (r17 headline, per-application squish)
-        "t_per_shot_2033_mu0_evolution_share_draft": c["t_evol_share_draft"],   # 7.683e9 (the r18 box value)
-        "hop_t_per_link_step_2033_no_undo": c["hop_no_undo"],            # 7.826e4 (the draft's 2 C^G, squish per link)
-        "rhop_t_per_link_step_2033_retired": c["rhop_old"],              # 6972.7 (R-HOP, slope-only, same eps)
-        "hop_over_rhop_2033": pc["hop_per_link"] / c["rhop_old"],        # 15.7
+        "hop_undo_t_per_link_step_2033": pc["hop_per_link"] - c["hop_no_undo"],   # 4.828e4, the ESTIMATED V_g^dag (1,668 rotations)
+        "hop_t_per_link_step_2033_share_draft": c["hop_share_draft"],    # 6.847e5 (r17 headline, per-application squish)
+        "t_per_shot_2033_mu0_evolution_share_draft": c["t_evol_share_draft"],   # 3.434e10 (gap bullet "3.4e10")
+        "hop_t_per_link_step_2033_no_undo": c["hop_no_undo"],            # 2.355e5 (the draft's 2 C^G, squish per link)
+        "rhop_t_per_link_step_2033_retired": c["rhop_old"],              # 1.554e4 (R-HOP, slope-only, same eps, Sigma(216x3) U_mul)
+        "hop_over_rhop_2033": pc["hop_per_link"] / c["rhop_old"],        # 18.3
+        "hop_squish_ancilla_2033": FP_SQUISH_ANCILLA.get(hop_group(a, a.group_2033.value)),   # 29 (su3_diag.tex:105; inside 100-200, register not resized)
         "hop_phasing_hwp_ancilla_2033": hwp_ancilla(2 * int(a.n_c.lo) * int(a.n_stag.lo)),   # 16 = 18 - w(18) (E26, r22; was 21), inside 100-200
-        "hop_t_per_step_2033": c["links"] * pc["hop_per_link"],          # 8.890e6
-        "hop_t_per_shot_2033": c["links"] * pc["hop_per_link"] * c["steps"],   # 3.556e9
-        "hop_over_gauge_2033": pc["hop_per_link"] / pc["gauge_per_link"],       # 2.08
-        "hop_share_of_step_2033": pc["hop_per_link"] / pc["per_link"],          # 0.675 -> "67%"
+        "hop_t_per_step_2033": c["links"] * pc["hop_per_link"],          # 2.299e7
+        "hop_t_per_shot_2033": c["links"] * pc["hop_per_link"] * c["steps"],   # 9.196e9
+        "hop_over_gauge_2033": pc["hop_per_link"] / pc["gauge_per_link"],       # 0.757
+        "hop_share_of_step_2033": pc["hop_per_link"] / pc["per_link"],          # 0.431 -> "43%"
         "mass_t_per_site_step_2033": c["ms"]["t"],                       # 163.1 = 4 x 28.54 + 7 x 7
         "mass_hwp_k_2033": c["ms"]["k"],                                 # 9
         "mass_hwp_ancilla_2033": c["ms"]["ancilla"],                     # 7 = 9 - w(9) (E26, r22; was 11)
@@ -1296,7 +1309,7 @@ def _intermediates_2033(a: Assumptions, c: dict) -> dict:
         "t_per_step_2033": c["t_per_step"],                              # 1.317e7 -> "1.3e7"
         "t_per_shot_2033_mu0_evolution": c["t_evol"],                    # 5.269e9 -> box "5.3e9"
         "t_per_shot_2033_mu0_evolution_dense_fourier": c["t_evol_dense"],   # 3.040e11 -> "~3.0e11"
-        "t_per_shot_2033_be": c["t_be"],                                 # 1.541e9 at the BE's own eps -> "~1.5e9"
+        "t_per_shot_2033_be": c["t_be"],                                 # 2.093e9 at the BE's own eps -> "~2.1e9"
         "L_2033_fm": c["Lfm"],                                           # 0.6
         "k_min_2033_GeV": c["kmin"] / 1e3,                               # 2.07 -> "~2.1"
         # temperature band (author ruling 2026-10-05): T = 1.5 T_c^lat, T_c^lat = 150-200 MeV; pairs are (T lo, T hi)
@@ -1346,7 +1359,7 @@ def _intermediates_2033(a: Assumptions, c: dict) -> dict:
         "t_per_link_step_2033_at_papers_fiducial_eps": c["mag_fid"] + c["elec_fid"] + c["hop_fid"],   # 3.356e5 -> "3.4e5" (app03:78)
         "t_per_shot_2033_mu0_evolution_at_papers_fiducial_eps": c["t_evol_fid"],        # 1.087e10 -> "1.1e10" (app03:78)
         "campaign_horizon_stated_yr": a.campaign_horizon_yr.lo,          # 5
-        "shot_time_2033_reference_s": c["t_evol"] * c["gate_s"] + c["t0"],   # 1.570e4 s (reference shot, record)
+        "shot_time_2033_reference_s": c["t_evol"] * c["gate_s"] + c["t0"],   # 2.135e4 s (reference shot, record)
         "shot_overhead_s": c["t0"],                                      # 1e-4 (report rule)
         "n_subroutine_calls": c["n_calls"],                              # 1.92e5 -> "~2e5" (app03:198)
         # the retired working figure, for the record (groups.py S72x3.plaquette_t, Stated 5e3)
@@ -1359,17 +1372,20 @@ _NOTES_2033 = (
     "fm, counted from the published paper (arxiv_2611_08161 Table 11, groups.py 'S216x3', qubit encoding). Register: "
     "81 links x 11 qubits = 891 gauge + 243 fermion + 100-200 ancilla = 1234-1334; box '~1280 (1234-1334)', 1.23-1.33x "
     "the 1000-LQ reference (under 1.5x: optimization caveat). Was 9 qubits/link, 1072-1172, with Sigma(72x3).",
-    "Per-link-step gauge cost at H_I (Table 13 H_I row; U_Ph twice) at the reference shot's R-TOL eps = 8.101e-6 "
-    "(1.524e8 rotations per 400-step shot, 4703.33 per link-step = 1769 gauge + 2933 hop + 4/3 mass; 28.65 T per "
-    "rotation): multiplication / inversion / trace 2.859e5 + 4 U_FFT + 2 U_Ph 8.858e4 = 3.745e5, '3.7e5' (= Table 14's "
+    "Per-link-step gauge cost at H_I (Table 13 H_I row; U_Ph twice) at the reference shot's R-TOL eps = 6.790e-6 "
+    "(2.169e8 rotations per 400-step shot, 6695.33 per link-step = 1769 gauge + 4925 hop + 4/3 mass; 28.94 T per "
+    "rotation): multiplication / inversion / trace 2.859e5 + 4 U_FFT + 2 U_Ph 8.909e4 = 3.750e5, '3.7e5' (= Table 14's "
     "closed form, groups.c_t_full). The paper builds every level of its U_FFT and states the total as an upper bound; "
-    "no dense / fast split remains (electric_dense == electric). H_KS for the same group would be 1.183e5 (3.2x less).",
-    "Staggered hop: no Fermion_Primitives entry for Sigma(216x3); priced at the Sigma(72x3) counts (hop_group_2033, "
-    "PLACEHOLDER): 3,672 Toffoli + 360 T + 2,933 rotations = 1.1010e5 T per link-step (undo 3.163e4); share='draft' "
-    "1.846e5, reference shot 1.812e10. Mass one HWP(9) per site, 163.6 T. Link-step 3.745e5 + 1.1010e5 + 54.5 = "
-    "4.846e5, '4.8e5'; hop 23%.",
-    "Reference shot (mu_B=0, 400 steps of 0.01 fm/c, every shot to 4 fm/c; records) = 81 x 4.846e5 x 400 = 1.570e10, "
-    "'1.6e10'; the step rule would need 1914 steps. BE (N_rot / 10 at its own eps) 1.541e9, '1.5e9'.",
+    "no dense / fast split remains (electric_dense == electric). H_KS for the same group would be 1.186e5 (3.2x less).",
+    "Staggered hop (card RF3-ch5-s216, 2026-11-12): the Sigma(216x3) row of the unpublished Fermion_Primitives draft "
+    "(hop_group_2033, groups.FERMION_DRAFT['S216x3']; su3_diag.tex:91, :105, :126, :134, :198, :213; hopping.tex:63-75, "
+    ":264, :279, :347): 20,068 Toffoli + 792 T + 4,925 rotations = 2.8381e5 T per link-step (undo 4.828e4); "
+    "share='draft' 6.847e5, reference shot 3.434e10. Mass one HWP(9) per site, 164.8 T. Link-step 3.750e5 + 2.8381e5 + "
+    "54.9 = 6.589e5, '6.6e5'; hop 43%. Before 2026-11-12 the hop carried the Sigma(72x3) row as a placeholder: 3,672 "
+    "Toffoli + 360 T + 2,933 rotations = 1.1010e5 T, link-step 4.846e5, hop 23%. Squish scratch 29 qubits "
+    "(su3_diag.tex:105), inside the 100-200 allowance; the register is not resized.",
+    "Reference shot (mu_B=0, 400 steps of 0.01 fm/c, every shot to 4 fm/c; records) = 81 x 6.589e5 x 400 = 2.135e10, "
+    "'2.1e10'; the step rule would need 1914 steps. BE (N_rot / 10 at its own eps) 2.093e9, '2.1e9'.",
     "Trotter step rule at H_I (trotter_dispersion_2033 = 'I'): Lambda_sd = 45.79 a_s^-3 on the tree-level improved "
     "dispersion (32.76 at H_KS, 1.40x; T a_s = 0.23-0.30 moves it by < 1e-2). Deepest fit shots (19, 32) steps on the "
     "(18, 26)-step a_t/10 grid, estimate (0.092, 0.098), free field (0.015, 0.019); worst case at g^2 = 1 with the H_I "
@@ -1388,7 +1404,7 @@ _NOTES_2033 = (
     "thermal route for every grid point.",
     "TEMPERATURE (author ruling 2026-10-05): T = 1.5 T_c^lat, T_c^lat the crossover of the simulated theory (unknown; "
     "150-200 MeV ASSUMED, bracketed by HotQCD's chiral-limit 132 MeV and physical 156.5 MeV; heavier pions raise it, "
-    "extra tastes lower it), measured in situ from prep-only diagnostic shots (10 energies x 100 shots, 0.18-0.67 yr, "
+    "extra tastes lower it), measured in situ from prep-only diagnostic shots (10 energies x 100 shots, 0.25-0.97 yr, "
     "~6% of the first result). T = 225-300 MeV: 1/T = 65.8-87.7 steps, LT = 0.68-0.91 (< 1: a small hot box, not a "
     "medium), k_min = 6.9-9.2 T, tau slow end 1/(2 pi T) = 0.140 fm/c at 225 MeV. The cheap corner of every band "
     "sits at 300 MeV, the expensive one at 225 MeV. Was T = 160 MeV (physical QCD): 123.3 steps, LT = 0.49, k_min = 13 T.",
@@ -1407,14 +1423,14 @@ _NOTES_2033_R25 = (
     "spacing) and 3.60e4 / 3.47e4 (second) shots per point. Shots unchanged by the quench ruling; the walls carry the "
     "quench prep in every shot (see the quench note and the wall intermediates).",
     "Walls charge each shot max(N_T x 1 us, D_T x 10 us) + 0.1 ms at the high depth schedule (factory.json); every "
-    "shot feeds the factories (F* = 36.9-37.2), so no shot is charged its depth.",
+    "shot feeds the factories (F* = 31.8-32.1), so no shot is charged its depth.",
 )
 
 
 def _own_breakdown(a: Assumptions, o: dict) -> tuple[Primitive, ...]:
     """One shot at a_s = 0.2 fm at the deepest fit point of the slow corner (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi):
     the quench preparation (572 steps) and the fit evolution (32 steps) are the same Trotter primitives, so the
-    breakdown is the evolution primitives at 604 steps (the box's '2.4e10'). The second spacing's late shot is
+    breakdown is the evolution primitives at 604 steps (the box's '3.2e10'). The second spacing's late shot is
     t_deepest_campaign."""
     return o["r"][1]["pts"][-1]["evo"]["prims"]
 
@@ -1457,7 +1473,7 @@ def _own_intermediates_2033(a: Assumptions, o: dict) -> dict:
         "t_fit_fit_points": (tuple(p["t_fit"] for p in lo["pts"]), tuple(p["t_fit"] for p in hi["pts"])),
         "f_star_fit_points_hi": (tuple(p["t"] / p["depth"][1] for p in lo["pts"]),
                                  tuple(p["t"] / p["depth"][1] for p in hi["pts"])),   # ~35 (high schedule)
-        "t_deepest": pair("t_shot_max"),                               # 6.667e9, 2.379e10: box "6.7e9-2.4e10"
+        "t_deepest": pair("t_shot_max"),                               # 9.061e9, 3.235e10: box "9.1e9-3.2e10"
         "t_fit_deepest": pair("t_fit_max"),                            # 6.9e8, 1.2e9: the fit evolution alone
         "t_earliest": pair("t_shot_min"),                              # the early fit point's shot
         "ratio_deepest_to_budget": tuple(x / a.ceiling_2033_t.lo for x in pair("t_shot_max")),   # 6.3, 22.3
@@ -1487,13 +1503,13 @@ def _own_intermediates_2033(a: Assumptions, o: dict) -> dict:
         "shots_campaign": pair("shots_campaign"),                      # 1.152e6, 1.145e6 (16 points x 2 spacings)
         "n_points_campaign": o["n_pts"], "n_points_mu0": o["n_mu0"], "n_points_mupos": o["n_mup"],   # 16, 4, 12
         "wall_first_result_d": (lo["first_s"] / 86400, hi["first_s"] / 86400),   # 1139, 3924 d (20/80 shot weights)
-        "wall_first_result_yr": (lo["first_s"] / yr, hi["first_s"] / yr),        # 3.32, 11.44 yr: box "3.3-11 yr"
+        "wall_first_result_yr": (lo["first_s"] / yr, hi["first_s"] / yr),        # 4.52, 15.56 yr: box "4.5-16 yr"
         "wall_first_result_d_baseline": (lo["first_s_baseline"] / 86400, hi["first_s_baseline"] / 86400),
         "first_result_over_horizon": (lo["first_s"] / hz, hi["first_s"] / hz),   # 0.62, 2.1: the cheap corner fits 5 yr
         "campaign_per_spacing_yr_own": (lo["per_spacing_s"] / yr, hi["per_spacing_s"] / yr),   # 112, 387 (first spacing)
-        "campaign_two_spacings_yr_own": (lo["campaign_s"] / yr, hi["campaign_s"] / yr),        # 271, 999
+        "campaign_two_spacings_yr_own": (lo["campaign_s"] / yr, hi["campaign_s"] / yr),        # 368, 1358
         "campaign_two_spacings_yr_own_baseline": (lo["campaign_s_baseline"] / yr, hi["campaign_s_baseline"] / yr),
-        "campaign_reduction_needed_own": (lo["campaign_s"] / hz, hi["campaign_s"] / hz),       # 51, 188
+        "campaign_reduction_needed_own": (lo["campaign_s"] / hz, hi["campaign_s"] / hz),       # 74, 272
         "grid_point_yr_own": (lo["pt_s"] / yr, hi["pt_s"] / yr),      # 7.0, 24.2 yr per 20% grid point
         "grid_points_in_horizon_own": (math.floor(hz / lo["pt_s"]), math.floor(hz / hi["pt_s"])),   # 0, 0
         "f_star_min_shot_hi": pair("f_star_min_shot_hi"),              # 34.7-35.0: no shot is charged its depth
@@ -1768,9 +1784,10 @@ def _model_2033(a: Assumptions) -> Result:
     notes = _NOTES_2033 + _NOTES_2033_R25 + (
         "breakdown = one shot at a_s = 0.2 fm at the deepest fit point of the slow corner (T = 225 MeV, tau = 1/(2 pi T), "
         "c = 2 pi): 572 quench steps + 32 fit steps of the same primitives. hard_ops = (deepest shot at (300 MeV, 1/k, "
-        "c = 2), deepest shot at (225 MeV, 1/(2 pi T), c = 2 pi)) at a_s = 0.2 fm = (6.667e9, 2.379e10), box "
-        "'6.7e9-2.4e10', 6.7-24x the 1e9 budget; the second spacing's late shot (755 + 48 steps) is 3.2e10 "
-        "(t_deepest_campaign). Was (1.051e10, 3.142e10) at T = 160 MeV, and (6.814e8, 3.006e9) with E-rho-OQ / 1e8 "
+        "c = 2), deepest shot at (225 MeV, 1/(2 pi T), c = 2 pi)) at a_s = 0.2 fm = (9.061e9, 3.235e10), box "
+        "'9.1e9-3.2e10', 9.1-32x the 1e9 budget; the second spacing's late shot (755 + 48 steps) is 4.3e10 "
+        "(t_deepest_campaign). Was (6.667e9, 2.379e10) and 3.2e10 with the Sigma(72x3) placeholder hop (before card "
+        "RF3-ch5-s216, 2026-11-12), (1.051e10, 3.142e10) at T = 160 MeV, and (6.814e8, 3.006e9) with E-rho-OQ / 1e8 "
         "Gibbs prep before the quench ruling (2026-10-05).",
     )
     shots = tuple(sorted(inter["shots_campaign"]))
@@ -1794,7 +1811,7 @@ def _model_codesign(a: Assumptions) -> Result:
     )
     inter = _intermediates_2033(a, c)
     inter.update({
-        "t_per_shot_codesign_be": c["t_be"],                                             # 1.541e9 (BE at its own R-TOL eps)
+        "t_per_shot_codesign_be": c["t_be"],                                             # 2.093e9 (BE at its own R-TOL eps)
         "eps_l_required_codesign": a.faults_per_shot.lo / c["t_be"],                     # 6.92e-11
     })
     notes = (
@@ -1824,17 +1841,20 @@ PUBLISHED = {
                           "per-shot T 'first result 9.5e4 (one step, inside 1e5); full benchmark 5.9e5 (six steps)', each "
                           "timeslice at its own depth (R4). Exact 9.473e4 / 5.939e5; tol 0.05 covers the rounding and 177-178.",
                       rel_tol=0.05),
-    "2033": Published(lq=(1234, 1334), hard_ops=(6.7e9, 2.4e10),
+    "2033": Published(lq=(1234, 1334), hard_ops=(9.1e9, 3.2e10),
                       src="app03:2033 box (temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route "
                           "2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule "
                           "2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: "
-                          "'6.7e9-2.4e10 (5.9e9-2.3e10 quench + 7.4e8-1.3e9 fit evolution)', one circuit per shot, corners "
-                          "(300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (6.667e9, 2.379e10). "
-                          "Was (1.051e10, 3.142e10) at T = 160 MeV. tol 0.05: two figures.",
+                          "'9.1e9-3.2e10' (8.1e9-3.1e10 quench + 1.0e9-1.7e9 fit evolution), one circuit per shot, corners "
+                          "(300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (9.061e9, 3.235e10); "
+                          "hop from the draft's Sigma(216x3) row (card RF3-ch5-s216, 2026-11-12; was (6.667e9, 2.379e10), "
+                          "'6.7e9-2.4e10', with the Sigma(72x3) placeholder). Was (1.051e10, 3.142e10) at T = 160 MeV. "
+                          "tol 0.05: two figures.",
                       rel_tol=0.05),
-    "codesign": Published(lq=(1234, 1334), hard_ops=(1.5e9, 1.5e9),
-                          src="NOT A BOX. app03 route (a) '~1.5e9 T/shot ... if it is 10x cheaper than Trotter' on the "
-                              "400-step reference shot (s648: Sigma(216x3) / H_I; was 5.0e8 with Sigma(72x3) / H_KS). "
+    "codesign": Published(lq=(1234, 1334), hard_ops=(2.1e9, 2.1e9),
+                          src="NOT A BOX. app03 route (a) '~2.1e9 T/shot ... if it is 10x cheaper than Trotter' on the "
+                              "400-step reference shot (s648: Sigma(216x3) / H_I; 1.5e9 with the Sigma(72x3) placeholder "
+                              "hop before 2026-11-12; was 5.0e8 with Sigma(72x3) / H_KS). "
                               "Same register as 2033.",
                           rel_tol=0.05),
 }
@@ -1856,14 +1876,14 @@ def INSTANCE_ROWS(a: Assumptions, era: str, r: Result):
     if era == "2033":
         return [
             ("Sigma(216x3)+3 stag, H_I, 3^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench "
-             "ramp + c/T thermalization + Trotter to its own fit time; primitives arxiv_2611_08161, hop a Sigma(72x3) "
-             "placeholder)",
+             "ramp + c/T thermalization + Trotter to its own fit time; primitives arxiv_2611_08161, hop from the "
+             "unpublished Fermion_Primitives draft's Sigma(216x3) row)",
              r.lq, i["t_deepest"],
              {"group": "S216x3", "hamiltonian": "I", "lattice": "3^3", "route": "quench (ETH)",
               "electric": "Sigma(216x3) FFT (arxiv_2611_08161)",
               "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = "
                       "0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) "
-                      "late shot is 3.2e10 (t_deepest_campaign)",
+                      "late shot is 4.3e10 (t_deepest_campaign)",
               "condition": "ETH with dynamical fermions at the chapter's couplings on 3^3 and the relaxation of the momentum "
                            "density within t_th assumed; T_c^lat measured in situ; shots at the thermal variance; "
                            "non-freezing H_I trajectory assumed",

@@ -21,6 +21,7 @@ from estimates.groups import (FERMION_DRAFT, fermion_hop_counts, fp_printed, fp_
                               wilson_mass_rotations)
 
 GROUPS4 = ("2T", "2O", "S36x3", "S72x3")
+GROUPS5 = GROUPS4 + ("S216x3",)               # card RF3-ch5-s216 (2026-11-12): the draft's Sigma(216x3) row
 EPS = 1e-4
 L = math.log2(1 / EPS)
 T_FULL = 1.15 * L + 9.2                       # 24.4809 T per rotation at 1e-4
@@ -30,7 +31,8 @@ T_FULL = 1.15 * L + 9.2                       # 24.4809 T per rotation at 1e-4
 # 1. The draft's printed numbers rebuilt from its gate tables (self-consistent ones)
 # --------------------------------------------------------------------------- #
 
-@pytest.mark.parametrize("group,printed", [("2T", 189), ("2O", 917), ("S36x3", 7854), ("S72x3", 12789)])
+@pytest.mark.parametrize("group,printed", [("2T", 189), ("2O", 917), ("S36x3", 7854), ("S72x3", 12789),
+                                           ("S216x3", 89194)])
 def test_colour_squish_printed_T_is_the_table_at_2n_minus_4(group, printed):
     """su2_diag.tex:207-211, su3_diag.tex:86-92 equal the C^nX tables at 2(n-2) Toffolis (1 per C^2X)."""
     assert fp_reconstruct(group, "col_squish_t") == (printed, 0.0)
@@ -59,10 +61,62 @@ def test_colour_frame_constants_rebuild():
     assert fp_reconstruct("S72x3", "C_rot") == pytest.approx((1692.8, 211.6), abs=1e-9)
 
 
-@pytest.mark.parametrize("group", GROUPS4)
+@pytest.mark.parametrize("group", GROUPS5)
 def test_text_hop_cost_rebuilds_as_two_squish_plus_diagonalizers(group):
     """hopping.tex:335-347 = 2 (squish + flags) + n_diag x C(T), C(T) = 38.8 + 4.45 L as printed."""
     assert fp_reconstruct(group, "C_hop_text") == pytest.approx(FERMION_DRAFT[group].printed["C_hop_text"], abs=1e-9)
+
+
+def test_s216x3_row_reproduces_the_draft_printed_constants():
+    """Card RF3-ch5-s216 (2026-11-12): the Sigma(216x3) row of FERMION_DRAFT, read from the 2026-10-01 export of
+    the draft, rebuilds the draft's printed constants in the draft's own conventions (2(n-2) Toffolis per C^nX,
+    7 T per Toffoli, 9.2 + 1.15 L per rotation, diagonalizer 38.8 + 4.45 L as printed). No report rule enters."""
+    f = FERMION_DRAFT["S216x3"]
+    assert (f.draft_name, f.n) == ("Sigma(216x3)", 3)
+    # su3_diag.tex:105 (CX..C^8X = 1060, 0, 0, 44, 196, 656, 613, 1) and :91 (89194 T)
+    assert f.col_squish_mcx == {1: 1060, 4: 44, 5: 196, 6: 656, 7: 613, 8: 1}
+    assert mcx_table_toffolis(f.col_squish_mcx, "draft-color") == 12742 and 7 * 12742 == 89194 == f.col_squish_t_printed
+    assert fp_reconstruct("S216x3", "col_squish_t") == (89194, 0.0)
+    # su3_diag.tex:198 (N_angles = 139), :126 (C_rot), :213 (1402 flag Toffolis), :134 (C^G)
+    assert 13 + 19 + 15 + 30 + 34 + 28 == 139 and f.col_rot == 2 * 139 == 278
+    assert 104 + 190 + 120 + 300 + 408 + 280 == 1402 == f.col_parity_toffoli and f.col_parity_t_each_printed == 7
+    assert fp_reconstruct("S216x3", "C_rot") == pytest.approx((2557.6, 319.7), abs=1e-9)
+    assert fp_reconstruct("S216x3", "C_G") == pytest.approx((101565.6, 319.7), abs=1e-9)
+    assert f.printed["C_G"] == (101565.6, 319.7) and f.printed["C_rot"] == (2557.6, 319.7)
+    assert 2557.6 + 89194 + 7 * 1402 == pytest.approx(101565.6, abs=1e-9)
+    # hopping.tex:264 (CX..C^7X = 132, 1, 2, 14, 63, 107, 65; 13615 T), :279 (220 flag Toffolis), :47-75 (22 classes)
+    assert f.hop_squish_mcx == {1: 132, 2: 1, 3: 2, 4: 14, 5: 63, 6: 107, 7: 65}
+    assert mcx_table_toffolis(f.hop_squish_mcx, "draft-color") == 1945 and 7 * 1945 == 13615 == f.hop_squish_t_printed
+    assert fp_reconstruct("S216x3", "hop_squish_t") == (13615, 0.0)       # unlike S36 / S72, the printed T is the table
+    assert (f.hop_flag_toffoli, f.n_classes, f.n_diag_text) == (220, 22, 132) and 132 == 2 * 22 * 3
+    assert 4 + 3 + 3 + 12 == 22
+    # hopping.tex:347: C_T(hop) = 35431.6 + 587.4 L = 2 (13615 + 7 x 220) + 132 x (38.8 + 4.45 L)
+    assert fp_reconstruct("S216x3", "C_hop_text") == pytest.approx((35431.6, 587.4), abs=1e-9)
+    assert f.printed["C_hop_text"] == (35431.6, 587.4)
+    assert fp_printed("S216x3", "C_hop_text", EPS) == pytest.approx(35431.6 + 587.4 * L)
+    # resources.tex:67: C^hop(tab) = 29790.8 + 293.7 L = 2 x 13615 + 66 x (38.8 + 4.45 L), exactly half the diagonalizers
+    assert f.printed["C_hop_tab"] == pytest.approx((2 * 13615 + 66 * 38.8, 66 * 4.45), abs=1e-9)
+    # resources.tex:41: C^S = 262912.8 + 1226.8 L. The slope is 2 C^G + 2 C^hop(tab) exactly; the printed constant is
+    # 200 above it (262712.8): a slip in the draft, pinned as found
+    a, b = f.printed["C_S"]
+    assert b == pytest.approx(2 * 319.7 + 2 * 293.7, abs=1e-9)
+    assert a - (2 * 101565.6 + 2 * 29790.8) == pytest.approx(200.0, abs=1e-6)
+
+
+def test_s216x3_row_under_the_report_rules():
+    """The same row under the conventions every other row uses (MBU n-1 per C^nX, flags as printed, 2 N_angles
+    rotations, 2 n_cls N diagonalizers, undo, share='link', HWP phasing)."""
+    f = FERMION_DRAFT["S216x3"]
+    assert mcx_table_toffolis(f.col_squish_mcx) == 7881 and mcx_table_toffolis(f.hop_squish_mcx) == 1224
+    items = {i["name"]: (i["toffoli"], i["t_direct"], i["n_rot"]) for i in fermion_hop_counts("S216x3", 3)["items"]}
+    assert items == {"colour_squish_and_parity": (2 * 7881 + 1402, 0, 0),      # once per link (share="link")
+                     "colour_rotations": (0, 0, 4 * 3 * 278),                # 4 frame applications x 3 fields
+                     "hop_squish_and_flags": (2 * (1224 + 220), 0, 0),
+                     "hop_diagonalizers": (0, 2 * 396, 4 * 396),             # 396 = 2 x 22 classes x N=3 x 3 fields
+                     "hop_phasing_hwp": (16, 0, 5)}                          # HWP(k=18)
+    h = hop_link_cost("S216x3", 3, eps=EPS, legacy=False)
+    assert h["t"] == pytest.approx(7 * 20068 + 792 + 4925 * T_FULL)
+    assert h["t"] / hop_link_cost("S72x3", 3, eps=EPS, legacy=False)["t"] == pytest.approx(2.675, abs=0.01)   # 2.57 at the Ch. 5 2033 tolerance
 
 
 def test_diagonalizer_reading():
@@ -78,6 +132,7 @@ def test_diagonalizer_reading():
 def test_staggered_CS_printed_is_two_CG_plus_two_table_Chop():
     """resources.tex:31-42 vs :60-67. Sigma groups: C^S = 2 C^G + 2 C^hop(tab), exactly. BT/BO constants
     match 4 C^G + 2 C^hop while their slopes match 2 + 2. The formula on :15 says 2 C^G + C^hop."""
+    assert FERMION_DRAFT["S216x3"].printed["C_S"][0] != pytest.approx(2 * 101565.6 + 2 * 29790.8)   # 200 high (S216 test)
     for g, cg in (("S36x3", (10918.8, 188.6)), ("S72x3", (20725.8, 211.6))):
         a, b = FERMION_DRAFT[g].printed["C_S"]
         ha, hb = FERMION_DRAFT[g].printed["C_hop_tab"]
@@ -134,7 +189,8 @@ def test_mcx_conventions():
         mcx_toffolis(3, "bogus")
 
 
-@pytest.mark.parametrize("group,col,hop", [("2T", 23, 8), ("2O", 105, 39), ("S36x3", 759, 46), ("S72x3", 1219, 63)])
+@pytest.mark.parametrize("group,col,hop", [("2T", 23, 8), ("2O", 105, 39), ("S36x3", 759, 46), ("S72x3", 1219, 63),
+                                           ("S216x3", 7881, 1224)])
 def test_squish_toffolis_under_mbu(group, col, hop):
     f = FERMION_DRAFT[group]
     assert mcx_table_toffolis(f.col_squish_mcx) == col
@@ -144,7 +200,8 @@ def test_squish_toffolis_under_mbu(group, col, hop):
 @pytest.mark.parametrize("group,n_stag,tof,tdir,rot", [
     ("2T", 1, 109, 40, 291), ("2O", 1, 347, 56, 355),
     ("S36x3", 1, 2592, 120, 899), ("S36x3", 3, 2604, 360, 2693),
-    ("S72x3", 1, 3660, 120, 979), ("S72x3", 3, 3672, 360, 2933)])
+    ("S72x3", 1, 3660, 120, 979), ("S72x3", 3, 3672, 360, 2933),
+    ("S216x3", 1, 20056, 264, 1643), ("S216x3", 3, 20068, 792, 4925)])
 def test_staggered_counts_per_link(group, n_stag, tof, tdir, rot):
     """Default since r19 (E21 (1)): share="link", undo=True."""
     h = fermion_hop_counts(group, n_stag)
@@ -156,7 +213,8 @@ def test_staggered_counts_per_link(group, n_stag, tof, tdir, rot):
 @pytest.mark.parametrize("group,n_stag,tof,tdir,rot", [
     ("2T", 1, 379, 40, 291), ("2O", 1, 1145, 56, 355),
     ("S36x3", 1, 9480, 120, 899), ("S36x3", 3, 10076, 360, 2693),
-    ("S72x3", 1, 13650, 120, 979), ("S72x3", 3, 14314, 360, 2933)])
+    ("S72x3", 1, 13650, 120, 979), ("S72x3", 3, 14314, 360, 2933),
+    ("S216x3", 1, 71548, 264, 1643), ("S216x3", 3, 77336, 792, 4925)])
 def test_staggered_counts_per_link_draft_sensitivity(group, n_stag, tof, tdir, rot):
     """The r17 headline, kept as the conservative sensitivity: share="draft" (squish + parity per frame
     application, hop squish + flags per field). Rotation counts equal the default's; only the Toffolis move."""
@@ -309,6 +367,6 @@ def test_judge_per_link_values(args, kw, link_true, link_false, draft_true, draf
 def test_su3_rotations_are_2_n_angles():
     """E21 (3): SU(3) color rotations per frame application = 2 N_angles (su3_diag.tex:194-198; the text's
     '6 N_angles' at :120 is a draft slip). Printed rotation log coefficient / 1.15 = the model's col_rot."""
-    for g, n_angles in (("S36x3", 82), ("S72x3", 92)):
+    for g, n_angles in (("S36x3", 82), ("S72x3", 92), ("S216x3", 139)):
         assert FERMION_DRAFT[g].col_rot == 2 * n_angles
         assert FERMION_DRAFT[g].printed["C_rot"][1] / 1.15 == pytest.approx(2 * n_angles)

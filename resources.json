@@ -332,23 +332,23 @@
   {
    "ch": 5,
    "era": "2033",
-   "label": "Sigma(216x3)+3 stag, H_I, 3^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench ramp + c/T thermalization + Trotter to its own fit time; primitives arxiv_2611_08161, hop a Sigma(72x3) placeholder)",
+   "label": "Sigma(216x3)+3 stag, H_I, 3^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench ramp + c/T thermalization + Trotter to its own fit time; primitives arxiv_2611_08161, hop from the unpublished Fermion_Primitives draft's Sigma(216x3) row)",
    "lq": [
     1234,
     1334
    ],
    "t": [
-    6666649182.468966,
-    23788575396.273254
+    9060558937.9613,
+    32346275923.471703
    ],
    "codesign": false,
-   "src": "app03:2033 box (temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route 2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule 2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: '6.7e9-2.4e10 (5.9e9-2.3e10 quench + 7.4e8-1.3e9 fit evolution)', one circuit per shot, corners (300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (6.667e9, 2.379e10). Was (1.051e10, 3.142e10) at T = 160 MeV. tol 0.05: two figures.",
+   "src": "app03:2033 box (temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route 2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule 2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: '9.1e9-3.2e10' (8.1e9-3.1e10 quench + 1.0e9-1.7e9 fit evolution), one circuit per shot, corners (300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (9.061e9, 3.235e10); hop from the draft's Sigma(216x3) row (card RF3-ch5-s216, 2026-11-12; was (6.667e9, 2.379e10), '6.7e9-2.4e10', with the Sigma(72x3) placeholder). Was (1.051e10, 3.142e10) at T = 160 MeV. tol 0.05: two figures.",
    "group": "S216x3",
    "hamiltonian": "I",
    "lattice": "3^3",
    "route": "quench (ETH)",
    "electric": "Sigma(216x3) FFT (arxiv_2611_08161)",
-   "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = 0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) late shot is 3.2e10 (t_deepest_campaign)",
+   "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = 0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) late shot is 4.3e10 (t_deepest_campaign)",
    "condition": "ETH with dynamical fermions at the chapter's couplings on 3^3 and the relaxation of the momentum density within t_th assumed; T_c^lat measured in situ; shots at the thermal variance; non-freezing H_I trajectory assumed",
    "exports_note": "R9 exports (t_per_shot, t_depth_per_shot, f_star, floor_wall_s, factories_for_1yr) are the campaign at the (300 MeV, tau = 1/k = 0.0955 fm/c, c = 2) corner only, over both spacings, not a band (floor is the high/low depth schedule); wall_first_result_s and wall_campaign_s are bands"
   },

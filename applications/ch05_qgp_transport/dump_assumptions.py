@@ -117,7 +117,8 @@ NOTE_OVERRIDES = {
 NOTE_EDITS = {
     "be_trim": [("Sigma(72x3) BE not yet synthesized", "Sigma(216x3) BE is not yet synthesized")],
     "shots_per_timeslice": [(" (NEEDS_AUTHOR)", "")],
-    "hop_group_2033": [("s648: ", ""), ("NEEDS_AUTHOR", "Open.")],
+    "hop_group_2033": [("card RF3-ch5-s216 (2026-11-12): ", ""),
+                       (" Was Assumed 'S72x3', the Sigma(72x3) counts as a placeholder (s648, 2026-10-05)", "")],
     "nonfreezing_HI_assumed": [("s648 ruling (2): ", ""), ("; author ruling 2026-10-05)", ")")],
     "hop_rule": [(" (r17 ruling (e), H. Lamm 2026-10-01)", ""), ("(E21 (1): ", "(")],
     "fermion_synthesis": [(" (r17)", "")],

@@ -20,8 +20,9 @@ per shot (2.3-6.7x the 1e9 limit), 72 / 203 -> 85 / 240 steps (state-dependent r
 dispersion, an assumption about H_I's free limit), eps_l 1.2e-10 -> 1.5e-11, 4.3 -> 34 d first result, 13 -> 102 d
 for three temperatures; naive E-rho-OQ 378 -> 455 (|G| = 648; the printed D4 range does not move). The species /
 fragmentation row and the 3+1D stretch stay Sigma(72x3) / H_KS: at 11 qubits/link the box is 1092 LQ > 1000 (would
-need the ~1.1k caveat), and a switch would reuse Ch. 5's Sigma(72x3) placeholder hop (hop_group_2033), 72% of the step,
-so most of the row's price would be a placeholder. The 2O light-like row does not move.
+need the ~1.1k caveat). [The second reason given then, that a switch would reuse Ch. 5's Sigma(72x3) placeholder hop, is
+retired: since card RF3-ch5-s216 (2026-11-12) groups.FERMION_DRAFT has the draft's Sigma(216x3) row and Ch. 5 uses it.
+This row stays Sigma(72x3) by design; no number here moves.] The 2O light-like row does not move.
 
 r27 additions (chapter-open pass 2026-10-05; no headline number moves, so STAGE stays r26 and resources.json does
 not change). Derived here, exported as intermediates: G8 the E-rho-OQ penalty on the dipole lattices
@@ -492,7 +493,8 @@ class Assumptions:
                                                          "medium here is at aT ~ 0.45, not Ch. 5's 160 MeV)")
     # s648 (author ruling 2026-10-05, (5)): the static dipole row follows Ch. 5's 2033 box to Sigma(216x3) with H_I
     # (995 LQ <= 1000). The species / fragmentation row stays Sigma(72x3) / H_KS: 1092 LQ > 1000 at 11 qubits/link
-    # (would need the ~1.1k caveat), and a switch would reuse Ch. 5's Sigma(72x3) placeholder hop, 72% of the step
+    # (would need the ~1.1k caveat). A Sigma(216x3) hop row exists in groups.FERMION_DRAFT since card RF3-ch5-s216
+    # (2026-11-12; the old 'placeholder hop' reason is retired); this row stays Sigma(72x3) by design
     # (NEEDS_AUTHOR 'Ch. 6 s648').
     group_dipole_static: Tagged = Cited("S216x3", "arxiv_2611_08161", "s648 ruling (5): 'pure-gauge "
                                         "Sigma(216x3) 3^3', qubit encoding, 11 qubits/link (groups.py)")
@@ -2110,8 +2112,8 @@ def _model_2033(a: Assumptions) -> Result:
         # R7 dipole rows (first results at 30%, one temperature; the 3-temperature scan beside)
         "dipole_static": dip_static,
         # s648 ruling (5): the static row on Sigma(216x3) / H_I; the species row kept on Sigma(72x3) / H_KS because at
-        # 11 qubits/link its register is 1092 LQ > 1000 (V = 32; ~1.1k caveat band), and a switch would reuse Ch. 5's
-        # Sigma(72x3) placeholder hop (hop_group_2033; FermionPrimitives_unpub stops at Sigma(72x3)), 72% of the step
+        # 11 qubits/link its register is 1092 LQ > 1000 (V = 32; ~1.1k caveat band). FermionPrimitives_unpub has a
+        # Sigma(216x3) row (groups.FERMION_DRAFT, card RF3-ch5-s216, 2026-11-12), so the hop is no longer a reason
         "dipole_static_group": (gk_dip, ham_dip),
         "s648_species_lq_if_switched": register(GROUPS["S216x3"].link_qubits, V, D, n_c, n_stag, n_anc)[3],   # 1092
         "s648_static_lq_if_kept_S72x3": GROUPS["S72x3"].link_qubits * links_static + int(a.dipole_n_anc.value)

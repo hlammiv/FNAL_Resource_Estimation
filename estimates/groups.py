@@ -571,8 +571,27 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
 # number unassigned). Every count and file:line below was read from the source exported 2026-10-01
 # (Fermion_Primitives.zip, sha256 f9c7a49f929bad1a...; newest figure in it dated 2026-04-03). An earlier export of
 # 2026-04-21 (sha256 87eed43f313eb516...) prints the same value for every count used here; its line numbers differ.
-# All counts for 2T, 2O, Sigma(36x3) and Sigma(72x3) match the draft. The draft also has a Sigma(216x3) row that
-# the models do not use yet (Ch. 5 2033 carries Sigma(72x3) as a placeholder).
+# All counts for 2T, 2O, Sigma(36x3) and Sigma(72x3) match the draft.
+# Sigma(216x3) row (card RF3-ch5-s216, added 2026-11-12, same export): the draft prints a complete Sigma(216x3)
+# entry in every table; it is the "S216x3" row of FERMION_DRAFT below and Ch. 5's 2033 hop uses it (the
+# Sigma(72x3) placeholder is retired). Read line by line on 2026-11-12 (publication_draft/section_*.tex):
+#   color squish C^nX table and ancilla  su3_diag.tex:105  (1060, 0, 0, 44, 196, 656, 613, 1; ancilla 29)
+#   color squish T                       su3_diag.tex:91   89194 = 7 x 12742 Toffolis = the table at 2(n-2)
+#   N_angles                             su3_diag.tex:198  139 (13 + 19 + 15 + 30 + 34 + 28) -> 278 rotations
+#   C_T(rot)                             su3_diag.tex:126  2557.6 + 319.7 L = 278 x (9.2 + 1.15 L)
+#   flag Toffolis                        su3_diag.tex:213  1402 (104 + 190 + 120 + 300 + 408 + 280)
+#   C^G                                  su3_diag.tex:134  101565.6 + 319.7 L = 2557.6 + 89194 + 1402 x 7
+#   eigen-classes                        hopping.tex:47-75 22 = Delta(27) 4 + Delta(54) 3 + Sigma(36x3) 3 +
+#                                                          Sigma(216x3) 12 (:63-75)
+#   hop squish C^nX table and T          hopping.tex:264   (132, 1, 2, 14, 63, 107, 65); 13615 = 7 x 1945 Toffolis
+#                                                          = the table at 2(n-2) (unlike the Sigma(36x3), Sigma(72x3)
+#                                                          rows, whose printed T match no convention)
+#   hop flag Toffolis                    hopping.tex:279   220 (1540 T)
+#   C_T(hop), text                       hopping.tex:347   35431.6 + 587.4 L = 2 (13615 + 1540) + 132 x (38.8 + 4.45 L),
+#                                                          132 = 2 x 22 x 3 (the line prints "log_1", a typo)
+#   C^hop, table                         resources.tex:67  29790.8 + 293.7 L = 2 x 13615 + 66 x 38.8, 66 x 4.45
+#   C^S                                  resources.tex:41  262912.8 + 1226.8 L; 2 C^G + 2 C^hop(tab) = 262712.8 +
+#                                                          1226.8 L, so the printed constant is 200 high (draft slip)
 #
 # STRUCTURE of one gauge-covariant hop on a link (FP section_hamiltonian.tex:42-62, mapping_circuits/
 # FinalDiagonalizations.tex, HoppingDiag.tex):
@@ -609,29 +628,32 @@ def rhop_link(group: str, n_stag: int, n_c: int, eps: float, *, k: int | None = 
 #   color squish   C^nX table (su2_diag.tex:186-191; su3_diag.tex:98-106). FP's printed T (917, 189, 7854, 12789,
 #                   su2_diag.tex:207-211, su3_diag.tex:86-92) equal the table at 2(n-2) Toffolis per C^nX (n>=3), 1 per
 #                   C^2X. Under the report's measurement-based uncompute (MBU) a C^nX costs n-1 Toffolis.
-#   color parity   SU(2): 44 (BT), 56 (BO) Toffolis (su2_diag.tex:225). SU(3): flag Toffolis 778 (S36), 892 (S72)
-#                   (su3_diag.tex:202-215); FP prices S36's at 2 T each in C^G = 10918.8 (su3_diag.tex:132), here 7.
+#   color parity   SU(2): 44 (BT), 56 (BO) Toffolis (su2_diag.tex:225). SU(3): flag Toffolis 778 (S36), 892 (S72),
+#                   1402 (S216) (su3_diag.tex:202-215); FP prices S36's at 2 T each in C^G = 10918.8 (su3_diag.tex:132), here 7.
 #                   Kept as printed (FP gives totals only, no C^nX split for MBU).
 #   color rotations per frame application per field: BT 52, BO 60 (su2_diag.tex:225-229, 4 R_Z per controlled
-#                   rotation); S36 164, S72 184 (su3_diag.tex:121-126, 194-198: 2 N_angles,
+#                   rotation); S36 164, S72 184, S216 278 (su3_diag.tex:121-126, 194-198: 2 N_angles,
 #                   author-confirmed E21 (3); the "6 N_angles" in the text at su3_diag.tex:120 is a draft slip).
 #   squish copies   SU(2) C_V counts compute + uncompute (su2_diag.tex:232-238); SU(3) C^G counts the squish once
 #                   (su3_diag.tex:128-134). ESTIMATED HERE: the SU(3) uncompute is a second squish, as in SU(2).
 #   hop squish      C^nX table (hopping.tex:202-213, 253-266). SU(2) printed T (84, 434) equal the table at 2n-3. SU(3)
 #                   printed T (136, 372) match no convention; the table at 2(n-2) gives 469 and 616, the values FP
 #                   comments out (hopping.tex:262-263). Here: the table under MBU (n-1).
-#   hop flags       SU(3) 100 Toffolis (hopping.tex:268-281); SU(2) none. Kept as printed.
+#   hop flags       SU(3) 100 Toffolis (S36, S72), 220 (S216) (hopping.tex:268-281); SU(2) none. Kept as printed.
 #   diagonalizer    C(T) = 38.8 + 4.45 log2(1/eps) (hopping.tex:309-311) = 2 T (controlled H) + 4 rotations at
 #                   9.2 + 1.15 L; the printed slope 4.45 is read as 4 x 1.15 = 4.6 (38.8 = 2 + 4 x 9.2 fixes the
 #                   count at 4). One T and one T^dag per (eigen-class, color) (FinalDiagonalizations.tex). FP's text
 #                   C_T(hop) (hopping.tex:335-347) reproduces exactly as 2 squish (+ 2 flags) + n_diag C(T), with
-#                   n_diag = 2 n_cls N for BO and the SU(3) groups (28; 60) but n_cls N for BT (10): BT counts T only.
+#                   n_diag = 2 n_cls N for BO and the SU(3) groups (28; 60; 132 for S216) but n_cls N for BT (10):
+#                   BT counts T only.
 #                   Here: 2 n_cls N for every group.
 #   phasing         Rz(-th) Rz(th) per (color[, spinor]) pair (FinalDiagonalizations.tex); not in any FP constant.
 #                   After the frames every pair carries the same |phi lambda| = 1 (staggered) or the same 1-r gamma^0
 #                   weight 2 (Wilson, r=1), so the 2 N n_spin n_stag rotations on one link are one equal-angle
 #                   Hamming-weight-phasing group (HWP; arxiv_1709_06648, arxiv_1902_10673). A block encoding drops them.
-#   spinor (Wilson) per color 280 floor((d-1)/2) + 16 T (resources.tex:60-67) = 4 W gates x (4 T + 10 Toffolis) at
+#   spinor (Wilson) per color 280 floor((d-1)/2) + 16 T (resources.tex:60-62, the SU(2) rows; the SU(3) rows :63-67
+#                   print 520 floor((d-1)/2) + 24, used by no model: card RF3-ch5-s216, 2026-11-12, comment only)
+#                   = 4 W gates x (4 T + 10 Toffolis) at
 #                   d=3,4 (spin_diag.tex:282-297); 16 T and no Toffoli at d=1,2. The 10 Toffolis per W are 5 triply-
 #                   controlled rotations at 2 compute + 2 uncompute (spin_diag.tex:280); MBU halves them to 5.
 #
@@ -756,7 +778,35 @@ FERMION_DRAFT: dict[str, FermionDraftGroup] = {
         note="FP lists no Sigma(72x3)-specific eigen-classes (hopping.tex:39-78 has none); its text C_T(hop) uses the "
              "Sigma(36x3) count, 30 = 10 x 3. Printed hop-squish T 372 is not integer Toffolis; FP comments out 616 "
              "(= the table at 2(n-2))."),
+    # Sigma(216x3): card RF3-ch5-s216, 2026-11-12. Every number read from the 2026-10-01 export of the draft
+    # (publication_draft/section_*.tex), file:line beside each.
+    "S216x3": FermionDraftGroup(
+        "S216x3", "Sigma(216x3)", 3,
+        # su3_diag.tex:105 (tab:su3squishcosts, CX..C^8X = 1060, 0, 0, 44, 196, 656, 613, 1; ancilla 29); T :91
+        col_squish_mcx={1: 1060, 4: 44, 5: 196, 6: 656, 7: 613, 8: 1}, col_squish_t_printed=89194,
+        # flags su3_diag.tex:213 (tab:su3flagcomp, 1402), at 7 T in C^G (:134); rotations 2 N_angles, N_angles = 139
+        # (su3_diag.tex:198, tab:su3gaugerots), slope 319.7 / 1.15 = 278 (:126)
+        col_parity_toffoli=1402, col_parity_t_each_printed=7, col_rot=278, col_squish_copies_printed=1,
+        # hopping.tex:264 (tab:su3hopsquishcosts, CX..C^7X = 132, 1, 2, 14, 63, 107, 65; T 13615); flags :279 (220)
+        hop_squish_mcx={1: 132, 2: 1, 3: 2, 4: 14, 5: 63, 6: 107, 7: 65}, hop_squish_t_printed=13615,
+        hop_flag_toffoli=220,
+        # hopping.tex:47-75 (tab:su3mapeigenvalues): 4 + 3 + 3 + 12 = 22; text C_T(hop) (:347) has 132 = 2 x 22 x 3
+        n_classes=22, n_diag_text=132,
+        # su3_diag.tex:126, :134; resources.tex:67 (tab:fermion_costs); hopping.tex:347; resources.tex:41
+        printed={"C_rot": (2557.6, 319.7), "C_G": (101565.6, 319.7), "C_hop_tab": (29790.8, 293.7),
+                 "C_hop_text": (35431.6, 587.4), "C_S": (262912.8, 1226.8)},
+        src={"col": "su3_diag.tex:91, :105, :126, :134, :198, :213", "hop": "hopping.tex:63-75, :264, :279, :347",
+             "tab": "resources.tex:67, :41"},
+        note="Added 2026-11-12 (card RF3-ch5-s216) from the 2026-10-01 export. Unlike S36 and S72 the printed "
+             "hop-squish T 13615 = 7 x 1945 Toffolis is the table at 2(n-2), and C^hop(tab) = 2 x 13615 + 66 x 38.8 "
+             "exactly. Printed C^S constant 262912.8 is 200 above 2 C^G + 2 C^hop(tab) = 262712.8 (draft slip; the "
+             "slope 1226.8 is exact). n_cls = 22 (the 10 of Sigma(36x3) + 12, hopping.tex:63-75). Squish ancilla 29 "
+             "(su3_diag.tex:105; 24 for S36 and S72)."),
 }
+
+# Squish scratch ("Ancilla" column of tab:su3squishcosts, su3_diag.tex:103-105; SU(2) rows su2_diag.tex:190-191).
+# The draft does not say what the column contains. Recorded for the chapters' workspace checks.
+FP_SQUISH_ANCILLA = {"2T": 6, "2O": 6, "S36x3": 24, "S72x3": 24, "S216x3": 29}
 
 
 def fp_printed(group: str, quantity: str, eps: float) -> float:
@@ -768,7 +818,7 @@ def fp_printed(group: str, quantity: str, eps: float) -> float:
 def fp_reconstruct(group: str, quantity: str) -> tuple[float, float]:
     """FP's printed constants rebuilt from its own component counts in its own conventions (no report rule):
     rotations at 9.2 + 1.15 L (the slope as FP prints it), color squish at 2(n-2), hop squish at 2n-3 (SU(2)) or
-    its printed T (SU(3)). Returns (a, b). Used by the tests to show which printed numbers are self-consistent."""
+    its printed T (SU(3); for Sigma(216x3) the printed T is the table at 2(n-2)). Returns (a, b). Used by the tests to show which printed numbers are self-consistent."""
     g = FERMION_DRAFT[group]
     if quantity == "col_squish_t":
         return 7.0 * mcx_table_toffolis(g.col_squish_mcx, "draft-color"), 0.0
@@ -790,8 +840,9 @@ def fp_reconstruct(group: str, quantity: str) -> tuple[float, float]:
 
 
 def spinor_counts(d: int, n: int, mcx: str = "mbu") -> dict:
-    """Wilson spinor diagonalization per link per field, all N colors: FP resources.tex:60-67
-    (280 floor((d-1)/2) + 16 T per color) split as spin_diag.tex:282-297. Under MBU the 10 Toffolis per W gate
+    """Wilson spinor diagonalization per link per field, all N colors: FP resources.tex:60-62, the SU(2) rows
+    (280 floor((d-1)/2) + 16 T per color; the SU(3) rows :63-67 print 520 floor((d-1)/2) + 24 and are not
+    implemented: no model calls the Wilson hop with an SU(3) group), split as spin_diag.tex:282-297. Under MBU the 10 Toffolis per W gate
     (5 triply-controlled rotations x 2 compute + 2 uncompute, spin_diag.tex:280) become 5."""
     if d <= 2:
         return {"toffoli": 0, "t_direct": 16 * n, "n_rot": 0}
@@ -811,7 +862,7 @@ def fermion_hop_counts(group: str, n_stag: int = 1, *, fermion: str = "staggered
     """Gate counts (eps-free) of one gauge-covariant hop on one link per Trotter step: Toffolis, direct T gates,
     synthesized rotations, with a breakdown. See the block comment above for every reading.
 
-    group     "2T", "2O", "S36x3", "S72x3" (FP counts) or "Z3" (R-HOP structure; n_c, k used there only).
+    group     "2T", "2O", "S36x3", "S72x3", "S216x3" (FP counts) or "Z3" (R-HOP structure; n_c, k used there only).
     fermion   "staggered" or "wilson" (needs d). n_spin: spinor components that hop after V_S; default 1
               (staggered) and n_D / 2 at r = 1 (Wilson, n_D = 2^{floor((d+1)/2)}: the projector 1 - gamma^0 keeps
               half; FP section_hamiltonian.tex:77-80). FP's W1 has no spinor multiplicity; n_spin = 2 at d = 3
@@ -911,7 +962,7 @@ def fermion_hop_counts(group: str, n_stag: int = 1, *, fermion: str = "staggered
         if fermion == "wilson":
             sp = spinor_counts(d, g.n, mcx)
             add("spinor_frame", toffoli=n_stag * sp["toffoli"], t_direct=n_stag * sp["t_direct"],
-                src=f"{src_fp} resources.tex:60-67; spin_diag.tex:280-297",
+                src=f"{src_fp} resources.tex:60-62; spin_diag.tex:280-297",
                 note=f"N C^spinor(d={d}) per field, as FP's W1 (resources.tex:15-16) counts it")
         out = {"group": group, "fermion": fermion, "n_stag": n_stag, "d": d, "n_spin": ns, "undo": undo,
                "share": share, "mcx": mcx, "phasing": phasing, "items": items}

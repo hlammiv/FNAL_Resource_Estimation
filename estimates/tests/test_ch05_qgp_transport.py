@@ -30,9 +30,11 @@ from estimates.groups import GROUPS, PRIMCOST, magnetic_per_link, electric_per_l
 TEX = Path(__file__).resolve().parents[3] / "applications" / "app03_qgp_transport.tex"
 NA = "NEEDS_AUTHOR.md"
 EPS_28 = math.sqrt(1e-2 / 17184)          # R-TOL: 2028 shot, 17,184 synthesized rotations -> 7.628e-4
-N_ROT_33 = 4702 * 81 * 400 + 4 * 27 * 400   # S648: (1769 H_I gauge + 2933 hop) x 81 x 400 + mass = 1.52388e8
-EPS_33 = math.sqrt(1e-2 / N_ROT_33)       # R-TOL: 2033 evolution -> 8.101e-6 (arxiv_2611_08161 costs)
-EPS_BE = math.sqrt(1e-2 / (N_ROT_33 / 10))   # R-TOL: conjectured BE, N_rot / 10 -> 2.562e-5
+# card RF3-ch5-s216 (2026-11-12): the hop is the draft's Sigma(216x3) row, 4925 rotations per link-step (was the
+# Sigma(72x3) placeholder's 2933: 4702 x 81 x 400 + mass = 1.52388e8, eps 8.101e-6, BE 2.562e-5)
+N_ROT_33 = 6694 * 81 * 400 + 4 * 27 * 400   # S648: (1769 H_I gauge + 4925 hop) x 81 x 400 + mass = 2.16929e8
+EPS_33 = math.sqrt(1e-2 / N_ROT_33)       # R-TOL: 2033 evolution -> 6.790e-6 (arxiv_2611_08161 costs)
+EPS_BE = math.sqrt(1e-2 / (N_ROT_33 / 10))   # R-TOL: conjectured BE, N_rot / 10 -> 2.147e-5
 
 
 @pytest.fixture(scope="module")
@@ -86,13 +88,13 @@ def test_papers_convention_and_report_fit_sentence(r28, r33):
     terms and 1.45-1.65x to the electric terms over it (model check only, no longer printed)."""
     i28, i33 = r28.intermediates, r33.intermediates
     near(i28["t_per_rotation_papers"], 11.91, 0.001)
-    near(i33["t_per_rotation_papers"], 19.45, 0.001)
-    near(i33["t_per_rotation_full_fit"], 28.65, 0.001)       # app03:75 "28.7 T" (s648)
+    near(i33["t_per_rotation_papers"], 19.74, 0.001)
+    near(i33["t_per_rotation_full_fit"], 28.94, 0.001)       # s648 + the Sigma(216x3) hop (28.65 with the placeholder)
     near(i28["t_per_rotation_report"], 21.11, 0.001)
     assert 1.0 < i28["magnetic_report_over_papers_2028"] < 1.10
     assert 1.0 < i33["magnetic_report_over_papers_2033"] < 1.10
     assert 1.45 < i28["electric_report_over_papers_2028"] < 1.65      # 1.646
-    assert 1.20 < i33["electric_report_over_papers_2033"] < 1.65      # 1.218 (S648: the larger non-rotation T in U_FFT)
+    assert 1.20 < i33["electric_report_over_papers_2033"] < 1.65      # 1.217 (S648: the larger non-rotation T in U_FFT)
 
 
 
@@ -100,18 +102,18 @@ def test_papers_convention_and_report_fit_sentence(r28, r33):
 
 def test_rtol_rotation_counts_and_tolerances(a, r28, r33, rcd):
     """eps_rot = sqrt(1e-2 / N_rot) with N_rot this circuit's synthesized rotations per shot:
-    2028 89.5/link-step (U_Tr 11/2 + 2 U_FFT x 42) x 32 x 6 = 17,184; 2033 (S648) 4703.33/link-step
-    (H_I: 3 U_Tr x 15 + 4 U_FFT x 426 + 2 U_Ph x 10 = 1769 gauge = 22.5 d + 1701.5, + 2933 hop + 4/3 mass)
-    x 81 x 400 = 1.52388e8; BE N/10."""
+    2028 89.5/link-step (U_Tr 11/2 + 2 U_FFT x 42) x 32 x 6 = 17,184; 2033 (S648) 6695.33/link-step
+    (H_I: 3 U_Tr x 15 + 4 U_FFT x 426 + 2 U_Ph x 10 = 1769 gauge = 22.5 d + 1701.5, + 4925 hop + 4/3 mass)
+    x 81 x 400 = 2.16929e8; BE N/10."""
     i28, i33 = r28.intermediates, r33.intermediates
     assert i28["n_rot_per_link_step_2028"] == 89.5 and i28["n_rot_per_shot_2028"] == 17184
-    near(i33["n_rot_per_link_step_2033"], 1769 + 2933 + 4 / 3, 1e-12)
+    near(i33["n_rot_per_link_step_2033"], 1769 + 4925 + 4 / 3, 1e-12)
     near(i33["n_rot_per_shot_2033"], N_ROT_33, 1e-12)
     near(i33["n_rot_per_shot_be"], N_ROT_33 / 10, 1e-12)
     near(i28["eps_rot_2028"], c.eps_rot_for(17184), 1e-15)
     near(i28["eps_rot_2028"], 7.628e-4, 1e-3)
-    near(i33["eps_rot_2033"], 8.101e-6, 1e-3)
-    near(i33["eps_rot_be"], 2.562e-5, 1e-3)
+    near(i33["eps_rot_2033"], 6.790e-6, 1e-3)
+    near(i33["eps_rot_be"], 2.147e-5, 1e-3)
     near(i28["synthesis_error_per_shot_2028"], 1e-2, 1e-12)
     near(i33["synthesis_error_per_shot_2033"], 1e-2, 1e-12)
     assert rcd.intermediates["eps_rot_be"] == i33["eps_rot_be"]
@@ -271,21 +273,23 @@ def test_2033_evolution_t_count(r33):
     assert i["dt_2033_fm"] == pytest.approx(0.01)   # Delta t = a_t/10
     assert i["trotter_steps_2033"] == pytest.approx(400)   # "4 x 10^2 2nd-order Trotter steps"
     near(i["magnetic_t_per_link_step_2033"], 2.8590e5, 0.001)   # "2.9e5": 56 U_mul + 24 U_inv + 3 U_Tr (H_I)
-    near(i["electric_t_per_link_step_2033_lower_bound"], 8.8582e4, 0.001)   # "8.9e4": 4 U_FFT + 2 U_Ph
-    near(i["gauge_t_per_link_step_2033"], 3.7448e5, 0.001)   # "3.7e5 T in all"
-    near(i["hop_t_per_link_step_2033"], 1.10095e5, 1e-4)     # Sigma(72x3) placeholder counts: "1.1e5 T"
-    near(i["mass_t_per_site_step_2033"], 163.60, 1e-4)       # one HWP(9) -> "160 T per site-step"
-    near(i["t_per_link_step_2033"], 4.8463e5, 0.001)         # "4.8e5 T in all"
-    near(i["t_per_step_2033"], 3.9255e7, 0.001)
-    near(i["hop_share_of_step_2033"], 0.2272, 0.002)          # "23% of it the hop"
+    near(i["electric_t_per_link_step_2033_lower_bound"], 8.9087e4, 0.001)   # "8.9e4": 4 U_FFT + 2 U_Ph
+    near(i["gauge_t_per_link_step_2033"], 3.7500e5, 0.001)   # "3.7e5 T in all"
+    # card RF3-ch5-s216 (2026-11-12): the draft's Sigma(216x3) hop row (was the Sigma(72x3) placeholder: hop 1.10095e5,
+    # link-step 4.8463e5, step 3.9255e7, hop 22.7%, reference shot 1.5702e10, share='draft' 1.8116e10, BE 1.5411e9)
+    near(i["hop_t_per_link_step_2033"], 2.83815e5, 1e-4)     # Sigma(216x3) draft counts: "2.8e5 T"
+    near(i["mass_t_per_site_step_2033"], 164.77, 1e-4)       # one HWP(9) -> "160 T per site-step"
+    near(i["t_per_link_step_2033"], 6.5886e5, 0.001)         # "6.6e5 per link-step"
+    near(i["t_per_step_2033"], 5.3368e7, 0.001)              # "5.3e7 T"
+    near(i["hop_share_of_step_2033"], 0.4308, 0.002)          # "43% of the step"
     assert i["mass_share_of_step_2033"] < 1e-3               # "under 0.1% of the step"
-    near(i["t_per_shot_2033_mu0_evolution"], 1.5702e10, 0.001)   # reference shot to 4 fm/c "1.6e10"
-    near(i["t_per_shot_2033_mu0_evolution_share_draft"], 1.8116e10, 0.001)   # gap bullet "1.8e10"
-    near(i["t_per_shot_2033_be"], 1.5411e9, 0.001)  # route (a) "~1.5e9 T/shot" with BE, at the BE's own eps
+    near(i["t_per_shot_2033_mu0_evolution"], 2.1347e10, 0.001)   # reference shot to 4 fm/c "2.1e10"
+    near(i["t_per_shot_2033_mu0_evolution_share_draft"], 3.4336e10, 0.001)   # gap bullet "3.4e10"
+    near(i["t_per_shot_2033_be"], 2.0933e9, 0.001)  # route (a) "~2.1e9 T/shot" with BE, at the BE's own eps
     # quench ruling (2026-10-05): the box prints the deepest shot at a_s = 0.2 fm, one circuit of quench prep + fit
     # evolution, at the corners (T = 300 MeV, 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi) (temperature ruling
     # 2026-10-05: T = 1.5 T_c^lat, T_c^lat = 150-200 MeV; was 1.05086e10, 3.14203e10 at T = 160 MeV)
-    assert r33.hard_ops == (pytest.approx(6.66665e9, rel=1e-3), pytest.approx(2.37886e10, rel=1e-3))
+    assert r33.hard_ops == (pytest.approx(9.06056e9, rel=1e-3), pytest.approx(3.23463e10, rel=1e-3))   # were 6.66665e9, 2.37886e10 (placeholder hop)
     # the retired working figure (5e3 T/plaquette) gave the old box's 1.62e8
     assert i["legacy_t_per_shot_2033_at_5e3_per_plaq"] == pytest.approx(1.62e8)
 
@@ -295,28 +299,34 @@ def test_2033_hop_is_the_fermion_primitives_draft(a, r33, r28):
     Fermion_Primitives gate counts with the estimated pieces (undo, SU(3) squish uncompute, MBU, HWP phasing),
     rotations at the full fit; the mass is one HWP(9) per site. 2028 is pure gauge and has neither.
     E21 (1) (2026-10-01, "make the switch"): squish + parity held once per link (share='link'), undo kept;
-    share='draft' is the conservative sensitivity. s648: Sigma(216x3) has no FP entry; the hop is the Sigma(72x3)
-    counts as a placeholder (hop_group_2033)."""
-    from estimates.groups import hop_link_cost, staggered_mass_site, rhop_link
-    assert a.hop_group_2033.value == "S72x3" and a.hop_group_2033.prov is c.Provenance.ASSUMED
-    assert m.hop_group(a, "S216x3") == "S72x3" and m.hop_group(a, "S36x3") == "S36x3"
+    share='draft' is the conservative sensitivity. Card RF3-ch5-s216 (2026-11-12): the hop is the draft's own
+    Sigma(216x3) row (groups.FERMION_DRAFT['S216x3']); the Sigma(72x3) placeholder (3672, 360, 2933) is retired."""
+    from estimates.groups import FERMION_DRAFT, FP_SQUISH_ANCILLA, hop_link_cost, staggered_mass_site, rhop_link
+    assert a.hop_group_2033.value == "S216x3" and a.hop_group_2033.prov is c.Provenance.CITED
+    assert a.hop_group_2033.src == "FermionPrimitives_unpub" and "RF3-ch5-s216" in a.hop_group_2033.note
+    assert m.hop_group(a, "S216x3") == "S216x3" and m.hop_group(a, "S36x3") == "S36x3" and m.hop_group(a, "S72x3") == "S72x3"
+    assert "S216x3" in FERMION_DRAFT and a.group_2033.value == "S216x3"   # the hop group IS the gauge group: no stand-in
     i = r33.intermediates
     near(i["eps_rot_2033"], EPS_33, 1e-12)
-    h = hop_link_cost("S72x3", 3, eps=EPS_33, synthesis="rus")
+    h = hop_link_cost("S216x3", 3, eps=EPS_33, synthesis="rus")
+    assert h["t"] > 2.5 * hop_link_cost("S72x3", 3, eps=EPS_33, synthesis="rus")["t"]   # 2.57x the retired placeholder
     assert a.fermion_synthesis.value == "rus"
     near(i["hop_t_per_link_step_2033"], h["t"], 1e-12)
     assert (i["hop_toffoli_per_link_step_2033"], i["hop_t_direct_per_link_step_2033"],
-            i["hop_n_rot_per_link_step_2033"]) == (3672, 360, 2933)           # app03:78 (E21 (1))
+            i["hop_n_rot_per_link_step_2033"]) == (20068, 792, 4925)          # 2 x 7881 + 1402 + 2 x (1224 + 220) + 16; 2 x 396; 12 x 278 + 4 x 396 + 5
     t_rot = 1.15 * math.log2(1 / EPS_33) + 9.2
-    near(i["hop_t_per_link_step_2033"], 7 * 3672 + 360 + 2933 * t_rot, 1e-12)
-    near(i["hop_undo_t_per_link_step_2033"], 1104 * t_rot, 1e-9)             # the undo is 1,104 rotations
-    near(i["hop_undo_t_per_link_step_2033"], 3.1630e4, 0.002)                 # "estimated undo is 3.2e4 T"
-    near(i["hop_t_per_link_step_2033_share_draft"], 7 * 14314 + 360 + 2933 * t_rot, 1e-12)   # r17 headline
-    near(i["hop_t_per_link_step_2033_share_draft"], 1.8459e5, 0.001)          # "would raise it to 1.8e5 T"
-    near(i["hop_t_per_link_step_2033_no_undo"], 7.847e4, 0.002)
-    assert hop_link_cost("S72x3", 3, eps=EPS_33, share="link")["t"] == h["t"]   # the default IS share='link'
-    near(i["hop_over_rhop_2033"], 15.79, 0.005)                               # model-only comparison (sentence dropped from the chapter, r17 fix)
-    near(i["rhop_t_per_link_step_2033_retired"], rhop_link("S72x3", 3, 3, EPS_33, synthesis="rus-slope")["t"], 1e-12)
+    near(i["hop_t_per_link_step_2033"], 7 * 20068 + 792 + 4925 * t_rot, 1e-12)
+    near(i["hop_undo_t_per_link_step_2033"], 1668 * t_rot, 1e-9)             # the undo is 2 x 3 x 278 = 1,668 rotations
+    near(i["hop_undo_t_per_link_step_2033"], 4.8278e4, 0.002)                 # "inverse color basis change (4.8e4 T per link-step)"
+    near(i["hop_t_per_link_step_2033_share_draft"], 7 * 77336 + 792 + 4925 * t_rot, 1e-12)   # r17 headline
+    near(i["hop_t_per_link_step_2033_share_draft"], 6.8469e5, 0.001)
+    near(i["hop_t_per_link_step_2033_no_undo"], 2.3554e5, 0.002)
+    assert hop_link_cost("S216x3", 3, eps=EPS_33, share="link")["t"] == h["t"]   # the default IS share='link'
+    near(i["hop_over_rhop_2033"], 18.26, 0.005)                               # model-only comparison (sentence dropped from the chapter, r17 fix)
+    near(i["rhop_t_per_link_step_2033_retired"], rhop_link("S216x3", 3, 3, EPS_33, synthesis="rus-slope")["t"], 1e-12)
+    # the draft's squish scratch (su3_diag.tex:105) is recorded and sits inside the box's ancilla allowance; LQ unchanged
+    assert i["hop_squish_ancilla_2033"] == FP_SQUISH_ANCILLA["S216x3"] == 29
+    assert 29 + c.hwp_ancilla(18) < a.anc_2033.lo and r33.lq == (1234, 1334)
     ms = staggered_mass_site(3, 3, eps=EPS_33)
     near(i["mass_t_per_site_step_2033"], ms["t"], 1e-12)
     near(i["mass_t_per_site_step_2033"], 4 * t_rot + 49, 1e-12)
@@ -331,8 +341,8 @@ def test_2033_hop_is_the_fermion_primitives_draft(a, r33, r28):
     assert all("unpublished gate counts" in p.note for p in r33.breakdown if p.name.startswith("hop_"))
     near(r33.breakdown_total(), r33.hard_ops[1], 1e-12)
     assert not any(p.name.startswith(("hop_", "mass_")) for p in r28.breakdown)
-    near(i["t_per_link_step_2033_at_papers_fiducial_eps"], 6.8392e5, 0.001)   # record (eps_T=1e-8 split over N_rot)
-    near(i["t_per_shot_2033_mu0_evolution_at_papers_fiducial_eps"], 2.2159e10, 0.001)
+    near(i["t_per_link_step_2033_at_papers_fiducial_eps"], 9.4452e5, 0.001)   # record (eps_T=1e-8 split over N_rot)
+    near(i["t_per_shot_2033_mu0_evolution_at_papers_fiducial_eps"], 3.0602e10, 0.001)
     with pytest.raises(ValueError):
         dataclasses.replace(a, fermion_synthesis=c.Cited("rus-slope", "x"))   # never slope-only for new prices
 
@@ -445,11 +455,11 @@ def test_2033_eps_l_requirement_r3(r33):
     reference shot (the r23 box), kept as model records; r25 numbers are in test_2033_own_depth_*. s648 values."""
     i = r33.intermediates
     assert i["ceiling_2033_t"] == 1e9
-    near(i["ratio_reference_to_ceiling"], 15.70, 0.001)
-    near(i["eps_l_required_reference"], 6.369e-12, 0.001)
+    near(i["ratio_reference_to_ceiling"], 21.35, 0.001)
+    near(i["eps_l_required_reference"], 4.684e-12, 0.001)
     # the reference-shot (4 fm/c) keys above are records; the box's eps_l are the deepest quench + fit shots
     assert r33.epsilon_l == (i["eps_l_deepest"][1], i["eps_l_deepest"][0])
-    near(0.1 / i["t_per_shot_2033_be"], 6.489e-11, 0.001)
+    near(0.1 / i["t_per_shot_2033_be"], 4.777e-11, 0.001)
 
 
 def test_2033_shots_campaign_and_wall_time_reference_records(r33):
@@ -493,10 +503,10 @@ def test_2033_own_depth_design_and_shots(a, r33):
     for q, (n1, n2), (e1, e2) in zip(i["quench_prep_steps"], i["fit_steps"], i["eps_rot_fit_points"]):
         near(e1, c.eps_rot_for(N_ROT_33 * (q + n1) / 400), 1e-12)
         near(e2, c.eps_rot_for(N_ROT_33 * (q + n2) / 400), 1e-12)
-    near(i["eps_rot_fit_points"][0][0], 1.293e-5, 0.01)                        # 152 + 5 steps
-    near(i["eps_rot_fit_points"][1][1], 6.59e-6, 0.01)                         # 572 + 32 steps
-    near(i["t_rot_fit_points"][0][0], 27.90, 0.002)                            # 27.9-29.0 T per rotation
-    near(i["t_rot_fit_points"][1][1], 29.02, 0.002)
+    near(i["eps_rot_fit_points"][0][0], 1.084e-5, 0.01)                        # 152 + 5 steps
+    near(i["eps_rot_fit_points"][1][1], 5.525e-6, 0.01)                        # 572 + 32 steps
+    near(i["t_rot_fit_points"][0][0], 28.17, 0.002)                            # 28.2-29.3 T per rotation
+    near(i["t_rot_fit_points"][1][1], 29.29, 0.002)
     o = m.own_depth_2033(m.Assumptions())
     p2 = o["second"]["r"][1]["pts"][-1]                                        # the second spacing's late shot
     assert p2["steps"] == 48 and p2["prep_steps"] == 755
@@ -516,39 +526,42 @@ def test_2033_own_depth_per_shot_and_eps_l(r33):
     assert i["quench_prep_steps"] == (152, 572)                    # box "152-572 steps"
     near(i["quench_t_th_fm"][0], 1.3155, 1e-3)
     near(i["quench_t_th_fm"][1], 5.5104, 1e-3)
-    near(i["quench_prep_t"][0], 5.9259e9, 1e-3)                    # box "5.9e9-2.3e10 quench"
-    near(i["quench_prep_t"][1], 2.2528e10, 1e-3)
-    near(i["t_fit_deepest"][0], 7.4074e8, 1e-3)                    # "7.4e8-1.3e9 fit evolution"
-    near(i["t_fit_deepest"][1], 1.2603e9, 1e-3)
-    near(i["t_deepest"][0], 6.66665e9, 1e-3)                       # box "6.7e9-2.4e10" at a_s = 0.2 fm
-    near(i["t_deepest"][1], 2.37886e10, 1e-3)
+    # card RF3-ch5-s216 (2026-11-12), Sigma(216x3) hop row; with the placeholder: 5.9259e9, 2.2528e10; 7.4074e8,
+    # 1.2603e9; 6.66665e9, 2.37886e10 ("6.7e9-2.4e10")
+    near(i["quench_prep_t"][0], 8.0538e9, 1e-3)                    # "8.1e9-3.1e10 quench"
+    near(i["quench_prep_t"][1], 3.0633e10, 1e-3)
+    near(i["t_fit_deepest"][0], 1.00673e9, 1e-3)                   # "1.0e9-1.7e9 fit evolution"
+    near(i["t_fit_deepest"][1], 1.71371e9, 1e-3)
+    near(i["t_deepest"][0], 9.06056e9, 1e-3)                       # box "9.1e9-3.2e10" at a_s = 0.2 fm
+    near(i["t_deepest"][1], 3.23463e10, 1e-3)
     for k in (0, 1):
         near(i["t_deepest"][k], i["quench_prep_t"][k] + i["t_fit_deepest"][k], 1e-12)
-    near(i["ratio_deepest_to_budget"][0], 6.667, 0.002)            # "7-24 times the 2033 target" (6.67 -> 7)
-    near(i["ratio_deepest_to_budget"][1], 23.79, 0.002)
+    near(i["ratio_deepest_to_budget"][0], 9.061, 0.002)            # "9-32 times the 2033 target"
+    near(i["ratio_deepest_to_budget"][1], 32.35, 0.002)
     near(i["quench_prep_over_fit"][0], 8.00, 0.002)                # "8-18 times the fit evolution"
     near(i["quench_prep_over_fit"][1], 17.88, 0.002)
     assert i["t_deepest"][0] > 1.5 * 1e9                           # both corners are past the 1.5x line: a co-design gap
-    near(i["eps_l_deepest"][1], 4.204e-12, 0.002)                  # box "<~ 4.2e-12"
-    near(i["eps_l_deepest"][0], 1.500e-11, 0.002)                  # "1.5e-11 at the fast corner"
-    near(i["shot_time_deepest_s"][1], 23789, 0.001)                # 2.4e4 s at a_s = 0.2 fm (requirements: ~3e4 s on the second spacing)
+    near(i["eps_l_deepest"][1], 3.0915e-12, 0.002)                 # box "<~ 3.1e-12" (was 4.204e-12)
+    near(i["eps_l_deepest"][0], 1.1037e-11, 0.002)                 # "1.1e-11 at the fast corner"
+    near(i["shot_time_deepest_s"][0] / 3600, 2.517, 0.001)         # box "shot 2.5-9.0 h" (was 1.9-6.6 h)
+    near(i["shot_time_deepest_s"][1], 32346, 0.001)                # 3.2e4 s = 8.99 h at a_s = 0.2 fm
     # T3: the second spacing's late shot (own step, dt = 0.0075 fm/c): 755 quench steps + 48 fit steps
     assert i["second_spacing_quench_prep_steps"] == (196, 755)
     assert i["quench_prep_steps_deepest_campaign"] == (196, 755)
-    near(i["t_deepest_campaign"][1], 3.1698e10, 1e-3)              # "3.2e10 on the second spacing's late shot"
-    near(i["eps_l_deepest_campaign"][1], 3.155e-12, 0.002)         # "3.2e-12 on the second spacing"
+    near(i["t_deepest_campaign"][1], 4.3106e10, 1e-3)              # "4.3e10 on the second spacing's late shot" (was 3.1698e10)
+    near(i["eps_l_deepest_campaign"][1], 2.3198e-12, 0.002)        # "2.3e-12 on the second spacing" (was 3.155e-12)
     assert i["deepest_shot_spacing_fm"] == (0.15, 0.15)
     near(i["second_spacing_own_step_t_deepest"][1], i["t_deepest_campaign"][1], 1e-12)
     # the eight corners of the (T, tau, c) band: the box quotes (300, 1/k, 2) and (225, 1/(2 pi T), 2 pi)
     tc = i["t_deepest_corners"]
     assert len(tc) == 8 and min(tc.values()) == i["t_deepest"][0] and max(tc.values()) == i["t_deepest"][1]
-    near(tc[(300.0, "2piT", round(2 * math.pi, 4))], 1.784e10, 0.002)   # the ruling's "~17x" is this corner (T hi only)
+    near(tc[(300.0, "2piT", round(2 * math.pi, 4))], 2.4255e10, 0.002)   # the ruling's "~17x" is this corner (T hi only)
     # in-situ T_c^lat diagnostic: 10 energies x 100 prep-only shots, ~6% of the first result's wall
     assert i["tc_diag_shots"] == 1000
-    near(i["tc_diag_t_per_shot"][0], 5.920e9, 0.002)                   # prep-only circuit at its own eps
-    near(i["tc_diag_t_per_shot"][1], 2.252e10, 0.002)
-    near(i["tc_diag_wall_yr"][0], 0.1876, 0.005)                        # "0.2-0.7 yr"
-    near(i["tc_diag_wall_yr"][1], 0.7136, 0.005)
+    near(i["tc_diag_t_per_shot"][0], 8.0458e9, 0.002)                  # prep-only circuit at its own eps
+    near(i["tc_diag_t_per_shot"][1], 3.0619e10, 0.002)
+    near(i["tc_diag_wall_yr"][0], 0.2550, 0.005)                        # 0.25-0.97 yr (model record)
+    near(i["tc_diag_wall_yr"][1], 0.9702, 0.005)
     assert 0.05 < min(i["tc_diag_over_first_result"]) and max(i["tc_diag_over_first_result"]) < 0.07
 
 
@@ -556,21 +569,22 @@ def test_2033_own_depth_walls(r33):
     """One machine, each shot max(N_T x 1 us, D_T x 10 us) + 0.1 ms at the high depth schedule; every shot feeds the
     factories (F* >= 14), so no shot is charged its depth. Quench ruling: the walls carry the preparation."""
     i = r33.intermediates
-    near(i["wall_first_result_yr"][0], 3.324, 0.002)              # "3.3-11 yr"
-    near(i["wall_first_result_yr"][1], 11.44, 0.002)
+    # card RF3-ch5-s216 (2026-11-12): were 3.324, 11.44 ("3.3-11 yr"); 270.9, 998.5; 54.18, 199.7; 7.478, 25.74; 0.6647
+    near(i["wall_first_result_yr"][0], 4.517, 0.002)              # "4.5-16 yr"
+    near(i["wall_first_result_yr"][1], 15.556, 0.002)
     assert i["wall_first_result_d"] == pytest.approx(i["wall_first_result_d_baseline"])
     fc = i["first_result_corners"]
-    assert len(fc) == 8 and 3.3 < min(fc.values()) < 3.4 and 11.7 < max(fc.values()) < 11.75   # (225, 1/k, 2 pi) 11.74 is not a box corner; the box quotes (225, 1/(2 pi T), 2 pi), 11.44
-    near(i["campaign_two_spacings_yr_own"][0], 270.9, 0.001)      # "270-1000 yr"
-    near(i["campaign_two_spacings_yr_own"][1], 998.5, 0.001)
+    assert len(fc) == 8 and 4.5 < min(fc.values()) < 4.55 and 15.95 < max(fc.values()) < 16.0   # (225, 1/k, 2 pi) 15.96 is not a box corner; the box quotes (225, 1/(2 pi T), 2 pi), 15.56
+    near(i["campaign_two_spacings_yr_own"][0], 368.2, 0.001)      # "370-1400 yr"
+    near(i["campaign_two_spacings_yr_own"][1], 1357.8, 0.001)
     assert i["campaign_two_spacings_yr_own"] == pytest.approx(i["campaign_two_spacings_yr_own_baseline"])
     assert min(i["f_star_min_shot_hi"]) > 10
-    near(i["campaign_reduction_needed_own"][0], 54.18, 0.002)     # "54-200x the five-year window"
-    near(i["campaign_reduction_needed_own"][1], 199.7, 0.002)
-    near(i["grid_point_yr_own"][0], 7.478, 0.002)                 # "one 20% grid point takes 7-26 yr"
-    near(i["grid_point_yr_own"][1], 25.74, 0.002)
+    near(i["campaign_reduction_needed_own"][0], 73.64, 0.002)     # "74-270x the five-year window"
+    near(i["campaign_reduction_needed_own"][1], 271.6, 0.002)
+    near(i["grid_point_yr_own"][0], 10.16, 0.002)                 # one 20% grid point takes 10-35 yr
+    near(i["grid_point_yr_own"][1], 35.00, 0.002)
     assert i["grid_points_in_horizon_own"] == (0, 0)             # "so 5 years cover none"
-    near(i["first_result_over_horizon"][0], 0.6647, 0.002)         # the cheap corner's first result fits the horizon
+    near(i["first_result_over_horizon"][0], 0.9034, 0.002)         # the fast corner's first result still fits the window (4.5 yr)
     assert i["first_result_over_horizon"][0] < 1 < i["first_result_over_horizon"][1]
     assert r33.wall_time_s == i["wall_campaign_s"]
     yr = m.SECONDS_PER_YEAR          # common.SECONDS_PER_YEAR since 2026-10-09 (was 3.156e7 here)
@@ -584,26 +598,27 @@ def test_2033_r9_exports(r33):
     e = c.depth_exports(i["t_per_shot"], i["t_depth_per_shot"], i["shots_campaign"][0], 1e-6, 1e-4)
     for k in c.DEPTH_EXPORTS[:5]:
         assert i[k] == e[k]
-    near(i["t_per_shot"][0], 7.422e9, 0.001)                 # over both spacings, quench prep included
-    near(i["f_star"][0], 37.26, 0.002)
-    near(i["f_star"][1], 548.5, 0.002)
+    near(i["t_per_shot"][0], 1.00876e10, 0.001)              # over both spacings, quench prep included (was 7.422e9)
+    near(i["f_star"][0], 32.07, 0.002)                       # were 37.26, 548.5
+    near(i["f_star"][1], 401.5, 0.002)
     near(i["wall_serial_s"][0], i["campaign_two_spacings_yr_own_baseline"][0] * m.SECONDS_PER_YEAR, 1e-9)
-    near(i["factories_for_1yr"][0], 2709, 0.002)
-    near(i["floor_wall_s"][1] / 3.156e7, 72.70, 0.002)
+    near(i["factories_for_1yr"][0], 3682, 0.002)             # was 2709
+    near(i["floor_wall_s"][1] / 3.156e7, 114.8, 0.002)       # was 72.70
     assert i["baseline_ok"] == (True, True)
     assert i["wall_first_result_s"][0] < i["wall_first_result_s"][1]
 
 
 def test_2033_depth_schedule_reproduces_factory_json(a):
     """step_depth_2033 at the Sigma(72x3) / H_KS reference t_rot (28.54) gives factory.json's 4.68e4 / 6.05e5 per step;
-    s648: at H_I the layers scale with the multiplicities (7.20e4 / 1.06e6 at 28.65)."""
+    s648: at H_I the layers scale with the multiplicities; with the Sigma(216x3) hop row (card RF3-ch5-s216) the
+    step is 1.334e5 / 1.672e6 at 28.94 (7.20e4 / 1.06e6 at 28.65 with the Sigma(72x3) placeholder hop)."""
     b = dataclasses.replace(a, group_2033=c.Stated("S72x3", "t"), hamiltonian_2033=c.Stated("KS", "t"))
     lo, hi = m.step_depth_2033(b, 1.15 * math.log2(1 / math.sqrt(1e-2 / 132624000)) + 9.2)
     near(lo, 4.68e4, 0.002)
     near(hi, 6.05e5, 0.002)
     lo, hi = m.step_depth_2033(a, 1.15 * math.log2(1 / EPS_33) + 9.2)
-    near(lo, 7.197e4, 0.002)
-    near(hi, 1.0588e6, 0.002)
+    near(lo, 1.3339e5, 0.002)
+    near(hi, 1.6722e6, 0.002)
 
 
 def test_2033_campaign_split_is_stated(a):
@@ -626,13 +641,13 @@ def test_2033_campaign_split_is_stated(a):
 def test_codesign_is_the_be_trim(rcd, r33):
     i = rcd.intermediates
     assert rcd.lq == r33.lq
-    near(rcd.hard_ops[0], 1.5411e9, 0.001)                   # R-TOL at the BE's own N_rot/10 (route (a) "~1.5e9")
+    near(rcd.hard_ops[0], 2.0933e9, 0.001)                   # R-TOL at the BE's own N_rot/10 (route (a) "~2.1e9"; 1.5411e9 with the placeholder hop)
     near(i["eps_rot_be"], EPS_BE, 1e-12)
-    near(i["t_per_rotation_papers_be"], 17.54, 0.001)
+    near(i["t_per_rotation_papers_be"], 17.83, 0.001)
     assert rcd.hard_ops[0] == rcd.hard_ops[1]
     near(rcd.breakdown_total(), rcd.hard_ops[0], 1e-9)        # the BE walk alone (no thermal preparation in route (a))
     assert {p.name for p in rcd.breakdown} == {"be_walk_S216x3"}
-    near(i["eps_l_required_codesign"], 6.489e-11, 0.01)
+    near(i["eps_l_required_codesign"], 4.777e-11, 0.01)
     assert rcd.epsilon_l == (i["eps_l_required_codesign"], i["eps_l_required_codesign"])
     assert any("No codesign box" in n for n in rcd.notes)
     assert "NOT A BOX" in m.PUBLISHED["codesign"].src
@@ -664,15 +679,18 @@ def test_r3_fault_budget_is_a_cited_input(a):
     assert a.ceiling_2033_t.lo == 1e9 and a.rfi_eps_l.lo == 1e-8
     b = dataclasses.replace(a, faults_per_shot=c.Cited(1.0, "test"))
     r = m.model(b, "2033")
-    near(r.epsilon_l[1], 1 / 6.66665e9, 0.001)
-    near(r.intermediates["eps_l_required_reference"], 6.369e-11, 0.01)
+    near(r.epsilon_l[1], 1 / 9.06056e9, 0.001)
+    near(r.intermediates["eps_l_required_reference"], 4.684e-11, 0.01)
 
 
 def test_s648_assumptions_are_noted(a, r33, rcd):
-    """s648: the group, Hamiltonian, hop placeholder and freezing assumption are named in the notes and Assumptions."""
+    """s648: the group, Hamiltonian, hop source and freezing assumption are named in the notes and Assumptions.
+    Card RF3-ch5-s216 (2026-11-12): the hop note names the draft's Sigma(216x3) row; no note calls the hop a
+    PLACEHOLDER any more (the retired Sigma(72x3) stand-in is mentioned as history only)."""
     for r in (r33, rcd):
         assert any("s648" in n and "Sigma(216x3)" in n for n in r.notes)
-    assert any("PLACEHOLDER" in n for n in r33.notes)
+    assert any("RF3-ch5-s216" in n and "FERMION_DRAFT['S216x3']" in n and "20,068 Toffoli" in n for n in r33.notes)
+    assert not any("PLACEHOLDER" in n for n in r33.notes + rcd.notes)
     assert a.nonfreezing_HI_assumed.prov is c.Provenance.ASSUMED and "arxiv_1906_11213" in a.nonfreezing_HI_assumed.src
     assert (a.beta_f_S72x3.lo, a.beta_f_S216x3.lo) == (3.18, 3.80)
     near(6 / a.beta_f_S72x3.lo, 1.89, 0.002)
@@ -725,17 +743,27 @@ def test_bad_inputs_rejected(a):
     r"Shots & first result $2\times 10^{3}$ ($8.5\times 10^{4}$ for $30\%$); full benchmark $7\times 10^{3}$ ($7$ measurement times) \\",   # re-pinned 2026-11-12 (batch 6): the 30% count added (shots_first_result_2028_at_30pct = 8.458e4);   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"first result $1.6$ min; full benchmark $34$ min per $k$ on one machine; longest shot $\sim 0.6$ s \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 2033 target \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
-    r"Per-shot T & $6.7\times 10^{9}$--$2.4\times 10^{10}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $3.2\times 10^{10}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"Per-shot T & $9.1\times 10^{9}$--$3.2\times 10^{10}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $4.3\times 10^{10}$ \\",   # re-pinned 2026-11-12 (card RF3-ch5-s216: Sigma(216x3) hop row; was 6.7e9-2.4e10, 3.2e10);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"The hydrodynamic $\tau$ has no basis at this $k$",   # re-pinned 2026-11-09 (referee cards, Q5-6): sentence became the measurement figure; the caption keeps the claim
     r"$4$ points at $N_B=0$ and $12$ at $N_B=1$--$3$, at two lattice spacings, each estimated at $T=1.5\,T_c^{\rm lat}$, with $3.4$--$3.6\times 10^{4}$ shots per point.",   # re-pinned 2026-11-09 (referee cards)
-    r"Required $\epsilon_l$ & $\lesssim 4.2\times 10^{-12}$ ($3.2\times 10^{-12}$ at the second spacing) \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"Required $\epsilon_l$ & $\lesssim 3.1\times 10^{-12}$ ($2.3\times 10^{-12}$ at the second spacing) \\",   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 4.2e-12, 3.2e-12);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
     r"the eventual first-principles (continuum, larger-volume) $\eta/s$ and $\zeta/s$ at $20\%$",
     r"so it adds up to $1\times$ the $\eta/s$ campaign's shots, and the subtraction for $\zeta$ is not counted.",
-    r"\textbf{Wall time} & shot $1.9$--$6.6$ h, first result $3.3$--$11$ yr on one machine;",   # re-pinned 2026-11-12 (batch 6): per-shot wall added to the row;   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"campaign $270$--$1000$ yr, $54$--$200\times$ the five-year window \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"\textbf{Wall time} & shot $2.5$--$9.0$ h, first result $4.5$--$16$ yr on one machine;",   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 1.9-6.6 h, 3.3-11 yr);   # re-pinned 2026-11-12 (batch 6): per-shot wall added to the row;   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"campaign $370$--$1400$ yr, $74$--$270\times$ the five-year window \\",   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 270-1000 yr, 54-200x);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # R-TOL (H. Lamm 2026-09-29): the rule and each circuit's tolerance and T per rotation
+    # card RF3-ch5-s216 (2026-11-12): the hop sentence, its share, the reference circuit, the BE line and the gap bullet
+    r"The $\Sigma(216\times 3)$ hopping term uses unpublished gate counts~\cite{FermionPrimitives_unpub}.",
+    r"At 2033 the hopping term is $43\%$ of the step.",
+    r"at $5.3\times 10^{7}$ T ($6.6\times 10^{5}$ per link-step), $2.1\times 10^{10}$ T.",
+    r"so the longest shot is $9$--$32$ times the 2033 target of $10^{9}$ T",
+    r"puts every 2033 shot $9$--$32$ times above the 2033 target.",
+    r"the campaign is $74$--$270$ times the five-year window",
+    r"the 4 fm/$c$ reference circuit would be $\sim 2.1\times 10^{9}$ T.",
+    r"The $\Sigma(216\times 3)$ hop is $43\%$ of the 2033 step.  Recomputing its register map at both color basis changes gives $3.4\times 10^{10}$ T at 4 fm/$c$.  The inverse color basis change ($4.8\times 10^{4}$ T per link-step) may be unnecessary.",
+    r"(the second spacing's late circuit) is $2.6\times 10^{10}$ T.",
     r"on $\Sigma(216\times 3)$ (11 qubits/link)",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
 
     # E27 (2026-10-02): one machine, serial; the excess over the horizon is an algorithmic reduction, never a machine count
@@ -855,6 +883,17 @@ def test_tex_still_states_the_inputs(phrase):
     r"($|G|=216$, 9 qubits/link)",
     r"$1072$--$1172$",
     r"we charge them their circuit depth",
+    # card RF3-ch5-s216 (2026-11-12): the Sigma(72x3) placeholder hop and its numbers are gone from the chapter
+    r"No hopping-term circuit exists",
+    r"placeholder",
+    r"likely low",
+    r"$23\%$",
+    r"$6.7\times 10^{9}$--$2.4\times 10^{10}$",
+    r"$3.3$--$11$ yr",
+    r"$270$--$1000$ yr",
+    r"$54$--$200",
+    r"$7$--$24$ times",
+    r"$4.8\times 10^{5}$ per link-step",
 ])
 def test_tex_no_longer_states_the_retired_inputs(phrase):
     assert phrase not in TEX.read_text(), f"chapter still says: {phrase}"
@@ -920,13 +959,13 @@ def test_referee_t1_t3_g8_numbers(r33):
 def test_referee_verifier_t3_g8_numbers(r33):
     """Verifier (2026-10-04): the second spacing is an Assumed example; priced at its own step (Delta t ||H|| held,
     step rule at that spacing) the slow late shot needs 48 fit steps at H_I after a 755-step quench (80 after 1054 at
-    the retired 160 MeV), and the campaign's slow end is ~1000 yr (820 yr with the second spacing at the first's
-    per-shot cost)."""
+    the retired 160 MeV), and the campaign's slow end is ~1400 yr (1120 yr with the second spacing at the first's
+    per-shot cost; ~1000 and 820 yr with the Sigma(72x3) placeholder hop, before card RF3-ch5-s216)."""
     a = m.Assumptions()
     assert a.second_spacing_a_s_fm.prov is c.Provenance.ASSUMED and a.second_spacing_a_s_fm.lo == 0.15
     i = r33.intermediates
     assert i["second_spacing_own_step_fit_steps"][1] == (10, 48)          # grid 35 = 4/3 x 26; the H_I rule needs 48
-    near(i["campaign_yr_second_spacing_own_step"][1], 998.5, 0.01)
+    near(i["campaign_yr_second_spacing_own_step"][1], 1357.8, 0.01)   # was 998.5 (placeholder hop)
     assert i["campaign_yr_second_spacing_own_step"][1] > i["campaign_per_spacing_yr_own"][1] * 2
 
 
@@ -1147,10 +1186,10 @@ def test_t3_second_spacing_at_its_own_step(a, r33):
         near(i["campaign_two_spacings_yr_own"][k],
              (o["r"][k]["per_spacing_s"] + o["second"]["r"][k]["per_spacing_s"]) / yr, 1e-12)
     assert i["second_spacing_own_step_fit_steps"] == ((5, 19), (10, 48))
-    near(i["campaign_yr_second_spacing_same_cost"][1], 823.7, 0.001)     # the pre-T3 convention (record)
+    near(i["campaign_yr_second_spacing_same_cost"][1], 1120.0, 0.001)    # the pre-T3 convention (record; was 823.7)
     b = dataclasses.replace(a, second_spacing_own_step=c.Assumed(False, "x"))
     rb = m.model(b, "2033")
-    near(rb.intermediates["campaign_two_spacings_yr_own"][1], 823.7, 0.001)
+    near(rb.intermediates["campaign_two_spacings_yr_own"][1], 1120.0, 0.001)
     assert rb.hard_ops == r33.hard_ops                                   # the box shot is the first spacing's either way
     near(rb.intermediates["t_deepest_campaign"][1], r33.hard_ops[1], 1e-12)
     assert i["deepest_shot_spacing_fm"] == (0.15, 0.15)
