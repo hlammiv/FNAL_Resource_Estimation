@@ -527,7 +527,8 @@ def test_2028_depth_and_factories():
     assert round(one[0]) == 17 and round(one[1]) == 31
     tex = (Path(__file__).resolve().parents[3] / "applications" / "app12_hybrid_lqcd.tex").read_text()
     # style pass 2026-10-08: the T-depth arithmetic and the box's 'single-config demo' wording went (prose anchors retired)
-    for s_ in ("$2.6$--$4.8$ factories",
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "A shot can thus feed at most $2.6$--$4.8$ factories"
+    for s_ in ("A shot thus cannot feed the ten factories behind the report's $1\\,\\mu$s per T gate",
                "$6.5$ h with three to five factories and $17$--$31$ h with one"):   # re-pinned 2026-11-12 (batch 6): sentence reworded, numbers unchanged
         assert s_ in tex, s_
 
@@ -679,7 +680,8 @@ def test_2033_p_readout_two_tiers():
     e = I33["retired_eps_over_mu"]
     assert round(e[0]) == 6 and round(e[1]) == 18
     for s in ("$P=2.7$--$8.0\\times 10^{-4}$", "$1.4$--$4.0\\times 10^{4}$ shots", "$310$--$910\\times$ more",
-              "$4.3\\times 10^{6}$--$3.7\\times 10^{7}$ shots",
+              # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "would need $4.3\\times 10^{6}$--$3.7\\times 10^{7}$ shots"
+              "A Hadamard test of the same trace would need $310$--$910\\times$ more shots for $30\\%$ on one configuration.",
               "$0.94$--$2.7\\times 10^{5}$ shots, $2.0$--$5.8\\times 10^{13}$ T gates",   # re-pinned 2026-11-12 (batch 6): 'T-gates' -> 'T gates' here and in the next two pins
               "$3.0$--$8.6\\times 10^{12}$ T gates", "$am\\!\\approx\\!0.04$"):
         assert s in TEX, s

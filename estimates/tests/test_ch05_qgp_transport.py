@@ -745,7 +745,8 @@ def test_bad_inputs_rejected(a):
     r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 2033 target \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Per-shot T & $9.1\times 10^{9}$--$3.2\times 10^{10}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $4.3\times 10^{10}$ \\",   # re-pinned 2026-11-12 (card RF3-ch5-s216: Sigma(216x3) hop row; was 6.7e9-2.4e10, 3.2e10);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"The hydrodynamic $\tau$ has no basis at this $k$",   # re-pinned 2026-11-09 (referee cards, Q5-6): sentence became the measurement figure; the caption keeps the claim
-    r"$4$ points at $N_B=0$ and $12$ at $N_B=1$--$3$, at two lattice spacings, each estimated at $T=1.5\,T_c^{\rm lat}$, with $3.4$--$3.6\times 10^{4}$ shots per point.",   # re-pinned 2026-11-09 (referee cards)
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "with $3.4$--$3.6\times 10^{4}$ shots per point"
+    r"$4$ points at $N_B=0$ and $12$ at $N_B=1$--$3$, at two spacings, each estimated at $T=1.5\,T_c^{\rm lat}$.",   # re-pinned 2026-11-09 (referee cards)
     r"Required $\epsilon_l$ & $\lesssim 3.1\times 10^{-12}$ ($2.3\times 10^{-12}$ at the second spacing) \\",   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 4.2e-12, 3.2e-12);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
@@ -1265,8 +1266,10 @@ def test_systematics_row_2026_10_12(a):
                  "quantified at $LT<1$",   # Q5-9: the percentages stay in Table 5.2
                  "$50$--$100\\%$ at $0.2$ fm, $35$--$70\\%$ at $0.15$ fm; $30$--$60\\%$ and $20$--$40\\%$ with an improved taste sector",
                  "not quantified",   # SR-ch5-3 (2026-11-10)
-                 "Neither spacing is in the $a^2$ scaling regime, since $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm.",
-                 "Its relation to the infinite-volume $\\eta/s$ is uncontrolled at order one, and we assign it no percentage",
+                 "Neither spacing is in the $a^2$ scaling regime, since $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm, so the two give neither an $a^2$ slope nor a continuum limit.",
+                 # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- ", and we assign it no percentage" (prose clause; the Table 5.2 cell stays)
+                 "whose relation to infinite-volume $\\eta/s$ is uncontrolled at order one.",
+                 "a few percent or less & no percentage \\\\",
                  "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648,arxiv_1906_11213}"):
         assert frag in tex, frag
 

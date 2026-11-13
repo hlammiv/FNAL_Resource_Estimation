@@ -884,9 +884,10 @@ def test_ruling_2026_10_11_text_hooks():
     assert r"$1.8\times 10^{4}$ at each of two times" in box28 and r"$\lesssim 4\times 10^{-7}$" in box28
     assert r"$\sim 2.1$ h per parameter point ($6.8$ h" in box28
     assert "the 2028 benchmark takes $20$ steps" in tex
-    assert r"$5.4\times 10^{4}$ over the $7$ bins" in tex and r"on a $10$-temperature scan; $\Delta n$ to $\pm 3\times 10^{-3}$ in $7$ bins at each" in tex
+    assert r"$5.4\times 10^{4}$ queries over the $N_{\rm bin}=7$ bins" in tex and r"on a $10$-temperature scan; $\Delta n$ to $\pm 3\times 10^{-3}$ in $7$ bins at each" in tex
     assert "$10$ temperatures, all at $\\Delta\\theta_C=0.1$" in tex and "100$-point" not in tex and "$(T,\\Delta\\theta_C)$ scan" not in tex   # card RF3-ch8-M3, 2026-11-12
-    assert r"$\sim 2.6$~yr campaign at $r=1$" in tex and "5.5$~yr" not in tex
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "to a $\sim 2.6$~yr campaign at $r=1$ ($m_{\max}=16$)"
+    assert r"$\Delta n$ wall times grow roughly as $(1+r)^2$" in tex and "5.5$~yr" not in tex
     assert r"nucleation scan and first result ${\gtrsim}\,0.33$ yr; campaign ${\gtrsim}\,0.85$ yr, all without Gibbs preparation" in tex and r"scan $7.8$--$50$ yr" in tex and "$78$--$500$" not in tex and "3.8$ yr" not in tex and "$70$ yr" not in tex and "$14$ times" not in tex
     assert r"$S_{\rm int}=1.6\times 10^{-2}$ on the 15-site axis at $t_{\max}$" in tex and r"$2.6\times 10^{3}$ queries" in tex
     assert r"\sigma\approx 1.3\,m_\phi^2" in tex and "stays finite at $T_c$" in tex

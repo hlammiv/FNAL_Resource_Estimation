@@ -420,7 +420,8 @@ def test_2028_oracle_load_is_printed_separately(r28, tex):
     assert "lower bound" not in tex.split("Concrete instantiations}")[1].split("The 2033 target (1000+")[0]   # restructure 2026-10-22
     assert "$61$ LQ" not in tex and "$65$ LQ" not in tex
     assert "$63$ LQ" not in tex and "QROM address" not in tex
-    assert "the register needs $55$ LQ during the insertion" in tex and "a peak of $116$" not in tex
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "the register needs $55$ LQ during the insertion"
+    assert "a peak of $116$" not in tex
     assert "2 QROM work" not in tex and "$2$ work at load" not in tex
     assert "$5.4$--$5.7" not in tex and "0.54" not in tex and "walk-PREPARE" not in tex
     # R13: 'query' and 'phase' defined; one query, no phases
@@ -432,7 +433,7 @@ def test_2028_oracle_load_is_printed_separately(r28, tex):
     # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
     assert "T_{\\rm shot}^{2028}\\sim T_{\\rm BE}" not in tex
     # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
-    assert "the insertion is $0.054\\times$ the 2028 target" in tex
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "the insertion is $0.054\\times$ the 2028 target"
     # E30 cap pass: the Gamma = 256/512/1600/3160 what-ifs and the d = 2-4 QSP counterfactual are no longer
     # printed; their values stay pinned on the model above (gamma_*_fraction, qsp_reading_*)
     assert "2000$--$3200" not in tex
@@ -441,9 +442,10 @@ def test_2028_oracle_load_is_printed_separately(r28, tex):
     # R15: the complete load prices the box; the lookup-only wording is gone
     # style pass 2026-10-08: wording follows rules 7/12 (oracle load -> state preparation, cap -> 2028 target)
     assert "state preparation $D\\lesssim 600$ configurations" in tex
-    assert "The executed shot is then $0.17\\times$ the 2028 target at $D=10^{2}$" in tex
-    assert ("and $1.005\\times$ at $D=600$, above it by less than the precision of the count, "
-            "and it fits up to $D=596$") in tex and "$D=603$" not in tex and "$D=604$" not in tex
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "The executed shot is then $0.17\\times$ the 2028 target at $D=10^{2}$"
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "and $1.005\\times$ at $D=600$, above it by less than the precision of the count"
+    assert ("We find that the executed shot then fits the 2028 target of $10^{5}$ T up to $D=596$."
+            ) in tex and "$D=603$" not in tex and "$D=604$" not in tex
     assert "lookup passes" not in tex and "lookup-only price" not in tex and "2--3" not in tex.split("insertion LCU $\\Gamma\\lesssim 128$")[1][:400]
     assert "4D-4" not in tex and "D\\sim 10^{4}" not in tex
     # R16 sweep: the Gamma = 512 / 1600 what-ifs and the 0.054x fraction live in the prose only (pinned above)
@@ -595,11 +597,15 @@ def test_dipole_factor_as_printed(tex):
     # E30 cap pass: the oscillator-length, c_0, closed-shell 1.75 / 4.5 / 20 and 0.44-variance steps of the
     # derivation are no longer printed; the model pins them (al27/he4 dipole tests above)
     # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
-    for frag in ("it is the identity plus $\\Gamma=24$ Pauli strings with $\\lambda=7.79$",
-                 "is $18$--$33$, and we count shots at $33$",
-                 "$3.3\\times 10^{3}$ shots per operator, or $2.0\\times 10^{4}$ over the six categories",
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "with $\\lambda=7.79$"
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "is $18$--$33$" (the low end of the factor; the $33$ stays pinned)
+    for frag in ("it is the identity plus $\\Gamma=24$ Pauli strings on the $0s$, $0p$, $1s0d$ space",
+                 "We count shots at the largest $(\\lambda/|\\langle\\hat{\\mathcal{O}}\\rangle|)^2$ of that range, $33$",
+                 # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "$3.3\\times 10^{3}$ shots per operator"
+                 "Shots & $2.0\\times 10^{4}$ Hadamard-test shots",   # the six-category total, now box only
                  "after subtracting its identity term, a known constant",   # re-pinned 2026-11-09 (referee cards)
-                 "the dipole's own $24$ strings cost $1.2\\times 10^{3}$ T"):
+                 # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "the dipole's own $24$ strings cost $1.2\\times 10^{3}$ T"
+                 ):
         assert frag in tex, frag
     assert "=77$" not in tex and "$70$--$130$" not in tex
 
@@ -670,9 +676,12 @@ def test_mlae_as_printed(tex):
         pytest.skip("chapter .tex not on disk")
     # E30 cap pass: the Grover-iterate and reflection-register itemization is condensed to its totals
     # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "$3$ above $D=128$"
     for frag in ("give $m_{\\max}=5$ at "
-                 "$D=10^{2}$ (longest circuit $8.7\\times 10^{4}$ T), $3$ above $D=128$, and the plain test above $D=221$",
-                 "keeps it there at $m_{\\max}=5$, $0.035$ rad from the edge",
+                 "$D=10^{2}$ and leave only the plain test above $D=221$",
+                 "MLAE circuits at $D=10^{2}$ ($m_{\\max}=5$, $8.7\\times 10^{4}$ T each)",   # longest circuit, now box only
+                 # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "$0.035$ rad from the edge"
+                 "as the bound on $\\langle\\hat{\\mathcal{O}}\\rangle$ does at $m_{\\max}=5$.",
                  "$(\\lambda/|\\langle\\hat{\\mathcal{O}}\\rangle|)^2(\\epsilon\\,m_{\\max})^{-2}$ circuits per operator",
                  "\\cite{arxiv_1904_10246,arxiv_2012_03348}"):
         assert frag in tex, frag
@@ -1015,9 +1024,9 @@ def test_simplified_0nubb_rows(a, r33, tex):
                  "$74$--$174$ LQ, $0.91$--$1.9\\times 10^{8}$ T, projection estimate: $120$--$240$ days",
                  "($\\times 0.74$--$1.5$ at the model $0^+$ gaps)",
                  "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$",
-                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$, and thus $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ shots, or $130$--$260$ years",
-                 "with per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
-                 "We take the daughter projection at the parent's cost. A daughter with a smaller gap raises it"):
+                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$ and thus $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ shots, or $130$--$260$ years",
+                 "With per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
+                 "We take the daughter projection at the parent's cost, which a smaller daughter gap raises in proportion to $1/\\Delta$"):
         assert frag in tex, frag
 
 
@@ -1250,6 +1259,10 @@ def test_printed_strings_are_in_the_tex(a, tex):
                "c_T_flagship:152", "insertion_share_near_miss:217", "insertion_jj44:143", "insertion_jj44_dense:143",
                # markup board 2026-11-06: C3-6 cuts the resonant-transition stage, SYN-2 moves the algebra to Ch. 1
                "c_T_coherent:90",
+               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "$1.5$--$6.2\\times 10^{10}$ T" at e_max = 3
+               "t_emax3:152",
+               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "we have $c_T=25.6$--$26.8$" for 27Al
+               "c_T_sd:90",
                "f7p3p1_t:157,box", "f7p3p1_wall:157,box", "pf_rabi_multiple:157,box", "pf_rabi_wall:157,box", "rabi_factories:163", "eps_l_first_light:254"}
     assert retired <= set(p), retired - set(p)
     if tex is not None:
@@ -1327,8 +1340,8 @@ def test_complete_load_counts(a, r28, tex):
     if tex is not None:
         # E30 cap pass: the per-term itemization of the load is condensed; 1.1e4 at D = 1e2 is in the box row
         # style pass 2026-10-08: the Toffoli formula is cut (rule 1); the counts stay pinned above
-        for frag in ("The state-preparation circuit is the leading Toffoli count of Ref.~\\cite{arxiv_2310_18410}, once per shot.",
-                     "needs about the low end of the range counted (box), so the count is conservative.",   # referee M3
+        for frag in ("For the state preparation we take the leading Toffoli count of Ref.~\\cite{arxiv_2310_18410} once per shot",
+                     "needs about the low end of the counted range of $D$, so the count is conservative.",   # referee M3
                      "\\cite{arxiv_2310_18410}"):
             assert frag in tex, frag
         assert "The box keeps the lookup-only price." not in tex
@@ -1340,11 +1353,13 @@ def test_insertion_share_and_moru_wording(a, tex):
     assert p["insertion_share_jj44:143"] == "0.04$--$0.2\\%"
     assert p["insertion_share_near_miss:217"] == "0.06$--$0.2\\%"                # R16: pf alone
     if tex is not None:
-        assert "$0.04$--$0.2\\%$ of the $jj44$ pair preparation" in tex
+        assert "The query is then $0.04$--$0.2\\%$ of the pair preparation" in tex
         # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
         assert "0.5$--$2\\%" not in tex
-        assert "$\\Gamma=40016$" in tex
-        assert "$12900$ (symmetry-restricted) to $49140$ (dense) Pauli strings besides the identity" in tex   # re-pinned 2026-11-09 (referee cards)
+        # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "$\\Gamma=40016$ Pauli strings (an upper bound)"
+        # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "to $49140$ (dense) Pauli strings besides the identity"
+        assert "we bound the Pauli strings of the scalar $0\\nu\\beta\\beta$ operator from above by its selection rules" in tex
+        assert "($12900$ Pauli strings in $sd$)" in tex and "from symmetry-restricted to dense Pauli strings" in tex
         assert "5.4$--$5.6" not in tex and "4.4$--$4.6" not in tex and "scaling by $N_{\\rm orb}^{4}$" not in tex
         assert "same factor of two in Eq." not in tex and "each register spans" not in tex
         assert "register asymmetry" not in tex
@@ -1416,7 +1431,8 @@ def test_r17_registers_printed_and_load_count(r33, tex):
     assert "Logical qubits & $74$--$174$ \\\\" in tex
     assert "$^{48}$Ca/Ti & $pf$ & 40 & 90--190" in tex and "$^{76}$Ge/Se & $jj44$ & 44 & 94--194" in tex   # moved to the survey table
     # referee M3 (2026-10-04): the angle rotations are now estimated in the text (load_angle_cost)
-    assert ("That source counts the amplitude-angle rotations as $(c-3)\\log D$ Toffolis at $c$ bits, and we count them as phase-gradient additions") in tex   # style pass: L dropped
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "That source counts the amplitude-angle rotations as $(c-3)\\log D$ Toffolis at $c$ bits"
+    assert "but we count its amplitude-angle rotations as phase-gradient additions" in tex
     assert "and we do not price them" not in tex
 
 
@@ -1451,7 +1467,7 @@ def test_referee_g2_m3_load_angle_rotations(a, r28, tex):
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
-    for frag in ("we count them as phase-gradient additions~\\cite{arxiv_1812_00954,arxiv_1709_06648}",
+    for frag in ("we count its amplitude-angle rotations as phase-gradient additions~\\cite{arxiv_1812_00954,arxiv_1709_06648}",
                  "(fits to $D=596$; schematic $^4$He needs $77$--$103$ at fidelity $0.999$)",
                  "$+$ $7.7\\times 10^{2}$--$1.0\\times 10^{3}$ (amplitude rotations)",
                  "dipole insertion by Hadamard test, $N_{\\rm orb}\\sim 10$]"):
@@ -1483,7 +1499,7 @@ def test_referee_text_corrections(a, tex):
     assert "enters separately, with its own coupling, NME and phase-space factor" in tex   # style pass: eta_X one use
     # M2: the priced 2033 readout is the bare SD element; one rate fixes one combination
     assert "for all six operator categories (dipole primary)" not in tex
-    assert "One conversion rate on one target fixes one combination of the coefficients." in tex
+    assert "Since one conversion rate on one target fixes one combination of the coefficients," in tex
     assert "spin-independent categories validated classically" in tex
     # G5: no 0nubb spread transferred to Mu2e; the 3^4 range is not a realized gain
     assert "degraded by a factor $2$--$3$ by NME uncertainty alone" not in tex
@@ -1534,7 +1550,7 @@ def test_referee_m3_al27_usdb_gap(a, r33, tex):
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     assert "in full $pf$ GXPF1A costs about $2\\%$ more" in tex
-    assert ("$2.33$ MeV above the ground state, the $7/2^+$, which would lower the preparation to "
+    assert ("the $7/2^+$, is $2.33$ MeV above the ground state. That gap would lower the preparation to "
             "$0.89$--$1.8\\times 10^{8}$ T") in tex and "\\cite{Brown_Richter_USDB_2006}" in tex
 
 

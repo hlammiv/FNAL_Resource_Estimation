@@ -1485,12 +1485,13 @@ PHRASES = [
     # r27 (2026-10-05): J1 V/PS and calibration, J2 box term, J3 N_h, G8 dipole penalty
     r"so nothing makes the box term cancel in the trend",
     r"and global analyses combine lattice constraints with collider data~\cite{Ji_LaMET,arxiv_1711_07916}",   # re-pinned 2026-11-09 (referee cards): 1908_10439 dropped from the LaMET sentences on purpose
-    r"the string wraps the axis $3.9$, $7.7$ and $11.6$ times",
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "the string wraps the axis $3.9$, $7.7$ and $11.6$ times"
+    r"the string wraps the axis several times and more often at higher momentum",
     r"${\gtrsim}\,4.7\times$ the shots if bin occupation equals signal share, ${\gtrsim}\,23\times$ at the variance bound",
     r"the pair meets again after $0.4$ fm/$c$, before the $0.7$--$1$ fm/$c$ formation time",
     r"\mathcal{N}_h(P_h)\,\bar\psi_q(0)\,W_0^\dagger",
-    r"LaMET-type matching~\cite{Ji_LaMET} has no established range of control for it",   # re-pinned 2026-11-09 (referee cards)
-    r"the logarithmic slope of $P_s$ is $0.96$ (SU(3)) and $0.69$ (SU(2)) of that of $|W|^2$",
+    r"matching in large-momentum effective theory (LaMET)~\cite{Ji_LaMET} has no established range of control for it",   # re-pinned 2026-11-09 (referee cards)
+    r"the logarithmic slope of $P_s$ is $0.96$ for SU(3) and $0.69$ for SU(2) of that of $|W|^2$",
     r"$\Gamma=2|\mathrm{Im}\,V|N_c^2/(N_c^2-1)$",
     # R1
     # R2, R5: the convention sentence and the floor sentence
@@ -1500,8 +1501,10 @@ PHRASES = [
     # round-D ruling 1; the ruling of 2026-10-01: 1 ramp + 2 evolution steps, the overshoot stated plainly
     # round-E ruling E4: combined runs and the step-size cross-check (restored r18)
     # Aug-29 framing rulings (CHANGE_MAP ruling 6), restored after the round-E length cuts
-    r"is measured first, in the opening shots of the 2033 fragmentation instance",
-    r"2\!\cdot\!16\!\cdot\!2+3\!\cdot\!3\!\cdot\!16+22=230",
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "This factor is measured first, in the opening shots of the 2033 fragmentation instance"
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "2\!\cdot\!16\!\cdot\!2+3\!\cdot\!3\!\cdot\!16+22=230" (the arithmetic; 230 and 22 stay pinned)
+    r"we find $230$ LQ from Eq.~\eqref{eq:Nq_collider}",
+    r"Its $22$ ancillas apply the hopping term on two links at once",
     # 2033
     r"The magnetic term is $9.4\times 10^{3}$ T per link per step~\cite{arxiv_2511_17437}",
     # r19 (E21 (1)): the color squish held per link; the undo drawn in the draft but not counted there
@@ -1968,7 +1971,10 @@ def test_g7_2033_step_numbers(r33):
     assert max(i["trotter_dipole_rule_sd_err"]) <= 0.1 and max(i["trotter_dipole_rule_free_err"]) < 0.012
     assert min(i["trotter_dipole_sd_err"]) > 0.1                          # the 0.01 fm/c grid fails the rule there
     tex = TEX.read_text()
-    assert "$6.3\\times 10^{2}$--$1.0\\times 10^{3}$" in tex and "the $4.65$ GeV point runs $575$ steps there" in tex
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "The worst-case bound at $g^2=1$, $6.3\\times 10^{2}$--$1.0\\times 10^{3}$"
+    # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "the $4.65$ GeV point runs $575$ steps there"
+    assert ("a gluon picks up a phase of $0.06$ at $3.1$ GeV and $0.13$ at $4.65$ GeV, while the worst-case bound "
+            "at $g^2=1$ is uninformative") in tex
     assert "an eigenstate whose error does not grow ($0.04$--$0.05$ for free fields)" in tex
 
 
@@ -2047,7 +2053,8 @@ def test_pair_convention_and_baseline_2026_10_12(a, r33):
         tex = TEX.read_text()
         for frag in ("after $\\big(2/\\bar n_s+1/\\bar n_M\\big)/\\delta_{\\rm rel}^2$ shots, where $\\bar n_s$ counts $B+\\bar B$",
                      "$1.1$--$1.5$ for $b/\\bar n_s=0.002$--$0.04$. This factor is not included below.",
-                     "($6.0$--$6.3\\times 10^{3}$ shots each)", "First result & $\\approx 240$ shots, $13$--$103$ d",
+                     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "($6.0$--$6.3\\times 10^{3}$ shots each)"
+                     "so an assumed $25\\%$ trend at $3\\sigma$ needs $5.9\\%$ points.", "First result & $\\approx 240$ shots, $13$--$103$ d",
                      "$2.4$--$2.5\\times 10^{4}$ shots, $3.3$--$26$ yr", "10 bins (about 3 resolvable at $L_\\parallel=8$)"):
             assert frag in tex, frag
 
