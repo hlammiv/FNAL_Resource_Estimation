@@ -1,0 +1,4 @@
+2T 2x2: D_fixed=331776, singlet=28576
+  eigh D=28576 2528.0s
+  ensemble vac: n=1 E=6.6667 T*=0.7433 (86.8s)
+  ensemble loopsF_T1.115: n=6 E=11.3167 T*=1.215 (339.6s)

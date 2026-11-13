@@ -1,0 +1,2 @@
+  typicality E(T) 99.8s
+  canonical T=1.188 1857.8s

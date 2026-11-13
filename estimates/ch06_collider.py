@@ -1990,21 +1990,21 @@ def _model_2033(a: Assumptions) -> Result:
         "synthesis_error_2033": synth_err,                                # (1e-2, 1e-2) = eps_syn (R-TOL)
         "synthesis_error_2033_round_e": (synthesis_error(a_round_e, n_rot_shot[0]),
                                          synthesis_error(a_round_e, n_rot_shot[1])),   # (82, 149) at 1e-3, record
-        "eps_rot_for_budget_2033": eps_budget,                            # (2.6e-5, 3.5e-5) record: the whole 0.1
+        "eps_rot_for_budget_2033": eps_budget,                            # (1.24e-5, 2.76e-5) record: the whole 0.1
         "n_trot_2033": n_evo_full,                                        # 1e3: the r23 t = 100 a window (record)
         "n_evo_2033": n_evo_end,                                          # (300, 500): R4, 30-50 a at 0.1 a
-        "n_steps_2033": n_steps,                                          # (400, 1500) with the 1e2-1e3 ramp
+        "n_steps_2033": n_steps,                                          # (500, 2500) with the 1e2-1e3 ramp and two ramps
         "n_steps_2033_r23": n_steps_full,                                 # (1100, 2000)
         "t_total_2033_r23": t_total_full,                                 # (1.097e10, 2.021e10): the r23 headline
         "window_over_a": (float(a.window_over_a.lo), float(a.window_over_a.hi)),   # (30, 50)
         "window_fm": window_fm,                                           # (3, 5) fm/c
         "window_over_L_par": crossings_window,                            # (3.75, 6.25) box lengths
-        "t_evolution_2033": t_evo_end,                                    # (2.926e9, 5.021e9) -> '2.9--5.0e9'
-        "t_evolution_2033_over_cap": t_evo / cap,                         # 2.93: the evolution alone is over the limit
+        "t_evolution_2033": t_evo_end,                                    # (2.941e9, 5.076e9)
+        "t_evolution_2033_over_cap": t_evo / cap,                         # 2.94: the evolution alone is over the limit
         "ramp_steps_2033": ramp,                                          # (1e2, 1e3)
-        "t_ramp_2033": t_ramp,                                            # (9.75e8, 1.004e10) -> '9.8e8--1.0e10'
-        "t_total_2033": t_total,                                          # (3.902e9, 1.506e10) -> '3.9e9--1.5e10'
-        "t_total_2033_over_cap": (t_total[0] / cap, t_total[1] / cap),    # (3.90, 15.1) -> '3.9--15x'
+        "t_ramp_2033": t_ramp,                                            # (9.80e8, 1.015e10) per ramp
+        "t_total_2033": t_total,                                          # (4.901e9, 2.538e10) -> '4.9e9--2.6e10'
+        "t_total_2033_over_cap": (t_total[0] / cap, t_total[1] / cap),    # (4.90, 25.4)
         # r26 referee fixes (J1 readout map, J2 source and volume)
         "n_ramps_2033": n_ramps,                                          # 2: prep + backward readout ramp (J1)
         "n_steps_2033_r25": n_steps_r25,                                  # (400, 1500), record
@@ -2038,27 +2038,27 @@ def _model_2033(a: Assumptions) -> Result:
         "ff_nh_shot_factor": ff_nh_factor,                                # (4.70, 23.1): lower bounds under each p_i reading
         "ff_nh_extra_t_per_shot": ff_nh_extra_t,                          # 0 for the projector; momentum transform unpriced
         "t_total_2033_round_e": t_total_round_e,                          # (2.154e9, 3.917e9) at 1e-3, record
-        "steps_in_cap_2033": steps_in_cap,                                # 100 steps (low end's eps; not printed)
+        "steps_in_cap_2033": steps_in_cap,                                # 102 steps (low end's eps; not printed)
         "t_per_step_2033_at_V_hi": t_step_hi,                             # at V = 40, low ramp end (not in the chapter)
         "t_total_2033_at_V_hi": t_total_hi,                               # each end at its own R-TOL eps
-        "t_total_2033_qubitized": (t_total[0] / float(a.qubitized_trim), t_total[1] / float(a.qubitized_trim)),   # (3.90e8, 1.51e9)
-        "gap_cut_factor_2033": t_step / float(a.t_step_gap_target),       # 1.0e4
+        "t_total_2033_qubitized": (t_total[0] / float(a.qubitized_trim), t_total[1] / float(a.qubitized_trim)),   # (4.90e8, 2.54e9)
+        "gap_cut_factor_2033": t_step / float(a.t_step_gap_target),       # 9.8e3
         "report_convention_t_gauge_per_step_2033": n_links * gs["per_link_report"],
         "magnetic_report_over_papers_2033": gs["magnetic_report"] / gs["magnetic"],     # 1.0
-        "electric_report_over_papers_2033": gs["electric_report"] / gs["electric"],     # 1.4-1.6
+        "electric_report_over_papers_2033": gs["electric_report"] / gs["electric"],     # 1.0
         # the pre-ruling text, for the record
         "legacy_t_per_plaquette_S72x3": t_plaq_legacy,                    # 5e3
         "legacy_t_per_step_2033": legacy_step,                            # 5e5
         "legacy_t_total_2033": legacy_total,                              # (5.5e8, 1e9)
-        "gauge_step_over_legacy_plaquette_step": t_gauge_step / (n_plaq * t_plaq_legacy),   # 11.2
+        "gauge_step_over_legacy_plaquette_step": t_gauge_step / (n_plaq * t_plaq_legacy),   # 17.3
         # the unpublished draft's hopping, NOT the headline
-        "draft_hop_t_per_link_S72x3": draft_hop_link,                     # 5.54e4
-        "draft_hop_t_per_step_2033": draft_hop_step,                      # 3.55e6 (one field)
-        "draft_hop_t_per_step_2033_3fields": draft_hop_step_3fields,      # 1.06e7
+        "draft_hop_t_per_link_S72x3": draft_hop_link,                     # 5.78e4
+        "draft_hop_t_per_step_2033": draft_hop_step,                      # 3.70e6 (one field)
+        "draft_hop_t_per_step_2033_3fields": draft_hop_step_3fields,      # 1.11e7
         "draft_hop_per_field_over_rule": draft_hop_link / (hl["rhop"]["t"] / n_stag),   # printed C^S / R-HOP per field
-        "draft_printed_3fields_over_model_2033": draft_hop_step_3fields / t_hop_step,   # 1.56: 3 x printed C^S vs the model
-        "draft_t_per_step_2033": draft_step,                              # 5.34e6
-        "draft_t_total_2033": draft_total,                                # (5.9e9, 1.07e10)
+        "draft_printed_3fields_over_model_2033": draft_hop_step_3fields / t_hop_step,   # 1.58: 3 x printed C^S vs the model
+        "draft_t_per_step_2033": draft_step,                              # 6.48e6
+        "draft_t_total_2033": draft_total,                                # (7.1e9, 1.30e10)
         # kinematics
         "dt_over_a_2033": dt_over_a,                                      # 0.1 = t_had / N_Trot (derived, not printed)
         "t_had_fm": t_had_fm,                                             # 10
@@ -2073,7 +2073,7 @@ def _model_2033(a: Assumptions) -> Result:
         "t_had_over_inverse_lambda_qcd": (t_had_fm / inv_lambda_fm[1], t_had_fm / inv_lambda_fm[0]),   # (10, 15)
         # logical faults
         "faults_per_shot_2033_at_rfi_eps_l": faults_rfi,                  # (49.0, 261.6) -> '49--260' (step rule; r26 250)
-        "faults_per_shot_2033_at_1e-9": (t_total[0] * 1e-9, t_total[1] * 1e-9),   # (3.90, 15.1)
+        "faults_per_shot_2033_at_1e-9": (t_total[0] * 1e-9, t_total[1] * 1e-9),   # (4.90, 25.4)
         "eps_l_required_2033": eps_l_req,                                 # (3.82e-12, 2.04e-11) -> '3.8e-12--2.0e-11' (step rule)
         # R9/R10 depth (factory.json schedule P) and the corrected per-shot time
         "t_depth_per_step_2033": {f"{('lo', 'hi')[e]}_circuit_{('lo', 'hi')[k]}_est": v for (e, k), v in d_step.items()},
@@ -2084,11 +2084,11 @@ def _model_2033(a: Assumptions) -> Result:
         "shot_overhead_s": t0,                                            # 1e-4
         # R1 first result: one configuration at 30%
         "delta_first_2033": delta_first,                                  # 0.30
-        "shots_first_2033": shots_first,                                  # (122, 244)
+        "shots_first_2033": shots_first,                                  # (233, 244) -> '~240'
         "wall_first_2033_s": wall_first,
         "wall_first_2033_days": (wall_first[0] / day, wall_first[1] / day),
         # R2 campaign: the 3-momentum trend at 3 sigma, one spacing
-        "ratio_shots_at_10pct": ratio_10,                                 # (1.1e3, 2.2e3), pair clustering (R2)
+        "ratio_shots_at_10pct": ratio_10,                                 # (2.1e3, 2.2e3), pair clustering (R2)
         # 2026-10-12: vacuum-baseline subtraction (not in any printed shot count): x(sqrt(1 + r) + sqrt(r))^2 at
         # r = b / n_s = 0.002-0.04 -> 1.09-1.49 ("+9-50%"); the FCC-era row's resolvable z-bins at L_par = 8: the
         # hadron momentum quantum is 1.55 GeV and the source carries at most three box modes, so about 3 bins
@@ -2097,15 +2097,15 @@ def _model_2033(a: Assumptions) -> Result:
         "z_bins_resolvable_Lpar8": n_mom,                                 # 3 (box modes 1.55, 3.10, 4.65 GeV)
         "trend_delta_per_point": delta_tr,                                # 0.0589
         "trend_sigma_at_delta": sigma_at,                                 # {0.05: 3.5, 0.10: 1.8, 0.30: 0.59}
-        "shots_per_configuration_campaign": shots_pt,                     # (3.17e3, 6.34e3)
-        "shots_trend_2033": shots_trend,                                  # (9.5e3, 1.9e4)
+        "shots_per_configuration_campaign": shots_pt,                     # (6.05e3, 6.34e3)
+        "shots_trend_2033": shots_trend,                                  # (1.81e4, 1.90e4)
         "wall_trend_2033_s": wall_trend,
-        "wall_trend_2033_yr": (wall_trend[0] / yr, wall_trend[1] / yr),    # (1.48, 22.1), the r26/r27 campaign
-        "trend_over_horizon": trend_over_horizon,                         # (0.30, 4.4)
-        "shots_campaign_2033": shots_camp,                                # (1.27e4, 2.53e4): trend + L_par = 4 check
+        "wall_trend_2033_yr": (wall_trend[0] / yr, wall_trend[1] / yr),    # (2.82, 22.1)
+        "trend_over_horizon": trend_over_horizon,                         # (0.56, 4.4)
+        "shots_campaign_2033": shots_camp,                                # (2.42e4, 2.53e4): trend + L_par = 4 check
         "wall_campaign_2033_s": wall_camp,
         "wall_campaign_2033_yr": (wall_camp[0] / yr, wall_camp[1] / yr),  # (3.28, 25.8) -> '3.3--26 yr'
-        "campaign_over_horizon": camp_over_horizon,                       # (0.34, 5.16) -> '5.2x'
+        "campaign_over_horizon": camp_over_horizon,                       # (0.66, 5.16) -> '5.2x'
         "configurations_in_horizon": configs_in_horizon,
         "wall_campaign_two_spacings_yr": (wall_camp_2sp[0] / yr, wall_camp_2sp[1] / yr),
         "lq_second_spacing_fixed_volume": lq_fixed_volume_2sp,           # 3556

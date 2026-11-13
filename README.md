@@ -22,7 +22,7 @@ Every model input is a `Tagged` value (`estimates/common.py`) with one of these 
 - **Assumed**: a working assumption the chapter declares, with a note on why.
 - **Stated** (printed as `stated-not-derived`): a value the chapter uses without deriving it, recorded with the chapter line where it appears.
 
-A fourth tag, **Uncited**, exists for a value with no source at all. Separately, each primitive in a T-count carries a circuit status (compiled, scaling argument, conjecture, unsourced), and `docs/CIRCUIT_STATUS.md` is generated from those statuses. `python -m estimates --inputs` prints every input with its tag and source.
+A fourth tag, **Uncited**, exists for a value with no source at all. Separately, each primitive in a T-count carries a circuit status (compiled, scaling argument, conjecture, unsourced), and `docs/CIRCUIT_STATUS.md` is generated from those statuses. `python -m estimates --inputs` prints every input with its tag and source. Sources that name `factory.json` (the T-depth audit and its `factories/*_depth_v2.py` scripts) or `shot_audit.json` refer to internal audit files that are not in this repository; the T-depths and shot designs taken from them are tagged inputs and are not rerun here.
 
 ## Layout
 
@@ -38,18 +38,22 @@ estimates/              the package
   __main__.py           command-line entry point
 applications/chNN_*/    one README per chapter (what is estimated, every assumption with its
                         provenance, how the numbers are built, open items) and the
-                        dump_assumptions.py script that prints its assumptions table
+                        dump_assumptions.py script that prints its assumptions table; study
+                        scripts with their outputs where a chapter has them (ch03 kb3g/, ch05
+                        eth_quench/, ch07 calibration_20261004/, ch08 sint/, ...)
 docs/                   CONTRACT.md (what every chapter model must expose), CIRCUIT_STATUS.md
                         (generated), PAPER_COSTS.md, OPEN_ITEMS.md (what the models cannot decide)
 resources.json          the generated numbers, in the form the paper's figures and table read
 paper_tools/            figure scripts and table checks for the paper (fig_*.py, verify_table.py,
-                        test_table.py for the chapter table, test_results_table.py for the results table)
+                        test_table.py for the chapter table, test_results_table.py for the results table),
+                        and ch11_loss_gauss.py (the Ch. 11 photon-loss / Gauss's-law calculation)
 sync_paper.sh           checks a checkout of the paper against the models (suite and table check)
+RELEASE.md              the paper/models commit pairs that sync_paper.sh certified
 ```
 
 ## Running
 
-Python 3.11 (the version CI tests) with `numpy`, `scipy` and `sympy` (`pip install -r requirements.txt`).
+Python 3.11 (the version CI tests) with `numpy`, `scipy` and `sympy`, plus `matplotlib` for the figure scripts in `paper_tools/` (`pip install -r requirements.txt`).
 
 ```
 python -m pytest estimates/tests -q        # the full suite
@@ -77,7 +81,7 @@ Some tests check that a chapter's text quotes the model's numbers. They need the
 | 9 | [Chiral lattice fermions](applications/ch09_chiral_gauge/README.md) | Domain-wall and overlap fermions coupled to gauge fields for real-time chiral gauge dynamics |
 | 10 | [QCD at finite baryon density](applications/ch10_finite_density/README.md) | The equation of state and baryon-number susceptibilities at nonzero chemical potential |
 
-Chapters 11 (qudit platforms) and 12 (dark-matter sensing) of the paper are parametric models stated in the paper itself and are not part of this repository.
+Chapter 11 (qudit platforms) has no resource model; its photon-loss versus Gauss's-law calculation is `paper_tools/ch11_loss_gauss.py`, which reproduces the numbers of the chapter's first section. Chapter 12 (dark-matter sensing) is a parametric model stated in the paper and is not part of this repository.
 
 ## How to cite
 

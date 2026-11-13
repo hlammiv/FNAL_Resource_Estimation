@@ -1,0 +1,6 @@
+2T 2x1: D_fixed=576, singlet=76
+  eigh D=76 0.0s
+  T=0.749: E(T)=3.068 below vacuum-state energy 3.333: unreachable by E-basis states
+  ensemble vac: n=1 E=3.3333 T*=0.8619 (0.4s)
+  ensemble loopsF_T1.293: n=4 E=4.6567 T*=1.293 (0.5s)
+  ensemble loopsF_T2.155: n=4 E=6.6957 T*=2.155 (0.4s)

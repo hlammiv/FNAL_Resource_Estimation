@@ -1,0 +1,6 @@
+2T 2x2: D_fixed=331776, singlet=28576
+T* (sudden) = 0.7427403727660828
+tau=0.0: E=6.6667 T_eff=0.7427 plaq(0)=0.0000 plaq late=0.4116 canon=0.4096163470084501
+tau=0.5: E=6.3525 T_eff=0.7023 plaq(0)=0.0978 plaq late=0.4156 canon=0.4126701029519235
+tau=1.0: E=5.8378 T_eff=0.6151 plaq(0)=0.2441 plaq late=0.4171 canon=0.4165214642959751
+tau=2.0: E=5.4702 T_eff=0.5103 plaq(0)=0.3527 plaq late=0.4156 canon=0.4175027960499118

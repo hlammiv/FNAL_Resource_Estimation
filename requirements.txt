@@ -7,5 +7,7 @@
 numpy
 scipy
 sympy
+# Figure scripts in paper_tools/ (fig_*.py, cover_*.py, cartoon.py, fnalfig.py); not needed by the models or tests.
+matplotlib
 # Test runner.
 pytest

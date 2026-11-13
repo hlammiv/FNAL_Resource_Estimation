@@ -1,0 +1,6 @@
+  eigh D=256 0.0s
+  ensemble vac: n=1 E=-9.0000 T*=1.33 (0.9s)
+  ensemble gibbsE_1.5Tstar: n=24 E=-6.5000 T*=2.027 (6.3s)
+  ensemble microE_1.5Tstar: n=24 E=-5.0000 T*=2.698 (4.9s)
+  ensemble gibbsE_2.5Tstar: n=24 E=-4.5000 T*=3.013 (8.2s)
+  ensemble microE_2.5Tstar: n=24 E=-5.0000 T*=2.698 (5.9s)

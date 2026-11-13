@@ -21,7 +21,7 @@ OMP_NUM_THREADS=2 python -m pytest estimates/tests/test_ch04_hybrid_lqcd.py -q
 python applications/ch04_hybrid_lqcd/dump_assumptions.py   # the table of Section 3
 ```
 
-`--chapter ch04` recomputes the model and writes nothing. It prints the 95 assumptions with their provenance, then the four rows this chapter contributes to `resources.json`. For each era it prints the headline LQ and T beside the values the paper prints (with an `ok` flag at the 2% tolerance), followed by shots, wall time, the required $\epsilon_l$, the T-depth and factory exports, the primitive breakdown and the model's notes. The intermediates (121, 96 and 77 further keys for 2028, 2033 and the co-design row) appear with `--intermediates`.
+`--chapter ch04` recomputes the model and writes nothing. It prints the 97 assumptions with their provenance, then the four rows this chapter contributes to `resources.json`. For each era it prints the headline LQ and T beside the values the paper prints (with an `ok` flag at the 2% tolerance), followed by shots, wall time, the required $\epsilon_l$, the T-depth and factory exports, the primitive breakdown and the model's notes. The intermediates (121, 96 and 77 further keys for 2028, 2033 and the co-design row) appear with `--intermediates`.
 
 The tests need `numpy` and `scipy` for the dense cross-check of the spectrum and for the two linear programs that reproduce $d = 84$ and the $d_\mathrm{inv}$ law (the two LP scripts in `estimates/apply_log/`). In this repository the run gives 29 passed and 19 skipped. The skipped tests first check the model's numbers and then check that the chapter prints them. Here the model checks run and pass, and the test is reported as skipped when it reaches the first chapter-text check. Section 5 says which numbers are pinned in each layout.
 
@@ -96,7 +96,7 @@ Output of `python applications/ch04_hybrid_lqcd/dump_assumptions.py`:
 | field | value | provenance | used by | source | note |
 |---|---|---|---|---|---|
 | `V_2033` | 8192 | stated-not-derived | 2033 | app12:144 | V=8^3x16 |
-| `VF_box_2033` | 25000.0 | stated-not-derived | 2033 | app12:144 | 'V_F ~= 2.5e4 per flavor' as printed (was 1.6e5; ch04-VF-8x8x8x16) |
+| `VF_box_2033` | 25000.0 | stated-not-derived | 2033 | app12:144 | 'V_F = N_c V ~= 2.5e4 per flavor' as printed (was 1.6e5; ch04-VF-8x8x8x16) |
 | `Nc_2033` | 3 | stated-not-derived | 2033, codesign | app12:145 | SU(3) staggered |
 | `Nf_2033` | 3 | stated-not-derived | 2033 | app12:145 | N_f=2+1 |
 | `kappa_2033` | 100.0 | stated-not-derived | 2033, codesign | app12:146 | kappa ~ 1e2 (am ~ 0.04, m_pi ~ 600 MeV, near the strange mass; was m_pi ~ 300-400 MeV) |
@@ -141,7 +141,7 @@ Output of `python applications/ch04_hybrid_lqcd/dump_assumptions.py`:
 | `p_f` | 0.1 | stated-not-derived | 2028, 2033, codesign | app12:180 | <=0.1 expected fault per shot (app12:94: p_f/eps_l); report-wide convention by ruling R3 (2026-09-28) |
 | `eps_l_codesign` | 1e-12 | stated-not-derived | codesign | app12:180 | eps_l ~ 1e-12 |
 | `V_codesign` | 663552 | stated-not-derived | codesign | app12:180 | V ~ 24^3x48 |
-| `kappa_codesign` | 1000.0 | stated-not-derived | codesign | app12:180 | kappa ~ 1e3 at physical mass |
+| `kappa_codesign` | 1000.0 | stated-not-derived | codesign | app12:180 | kappa ~ 1e3 (am = 0.004, heavier than physical light quarks) |
 | `d_inv_codesign` | 5000.0 | assumed | codesign | - | kappa ln(1/eps_rel) = 1e3 x 5 at the 2033 tolerance: the LP law, extrapolated (the LP runs out of memory near d ~ 5e3); app12:33,182 'd_inv ~= 5e3' (R11; was 1e4) |
 | `per_shot_reduction` | 2.6 | stated-not-derived | codesign | app12 1e4-LQ paragraph | 'cut the per-shot T by at least 2.6x' (R3 reprice at D V log2 V, 2026-10-02: 2.567e11 / 1e11; was 10.3x at D^2 V log2 V, E19 P1) |
 | `parallelism_codesign` | (1, 4) | cited | codesign | factory.json (T-depth audit, 2026-10-02) ch04 1e4-LQ run | F* = 1-4 on the 92-LQ register; LCU keeps the PREP+SELECT unary-iteration form, so F* does not change |
@@ -164,7 +164,7 @@ Output of `python applications/ch04_hybrid_lqcd/dump_assumptions.py`:
 
 All line numbers refer to `estimates/ch04_hybrid_lqcd.py`. Values below are the model's own outputs (`python -m estimates --chapter ch04 --intermediates`), shown to four figures.
 
-### 4.1 2028: $\log\det W$, free staggered, $V = 4^4$ (`_model_2028`, lines 671-935)
+### 4.1 2028: $\log\det W$, free staggered, $V = 4^4$ (`_model_2028`, lines 673-937)
 
 **The matrix (lines 680-690).** `free_W_spectrum` (605-614) diagonalizes Eq. 24 of arXiv:2407.13080 by plane waves, $\lambda = m_0^2 + K^2\sum_\mu \sin^2(2\pi n_\mu/L)$. It gives $\lambda_\mathrm{min} = 0.16$, $\lambda_\mathrm{max} = 4.16$, $\kappa = 26$ and $\log\det W = \sum \log\lambda = 150.5528$. The tests rebuild $M$ and $W$ from plain lists, independently of the model, and check the sparsity, the spectrum and this value (with a dense numpy cross-check). The circuit block-encodes $W/s$, and `be_subnormalization` (617-623) takes the smallest $s$ for which the $O_A$ angles of Eqs. 25-26 exist, $s = \max(2(m_0^2 + DK^2/2),\ 2^c K^2/4) = 4.32$. The QET therefore sees $\lambda_\mathrm{min}/s = 0.0370$. Two terms are restored classically: $V\log s = 374.59$ is added back, and the shift term $V\log(s/\lambda_\mathrm{min})\times\tfrac12 = 421.87$ is subtracted.
 
@@ -209,7 +209,7 @@ where 3 is the depth of the AND tree. $F^* = N_T/D_T = 2.56$-$4.78 < 10$, so the
 
 **The gauged $V = 4^4$ comparison (780-788).** This is a different circuit. Loading links costs $D^2V\log_2V = 32768$ units per query at one T per unit (`scaling_prefactor`, uncited), so the shot is $84\times 32768 = 2.753\times10^6$ T, 27.5x the cap. The two levers are LCU compression (3-10x) and block-encoding one sublattice (2x), together 6-20x. At the top of that range the shot is still $1.376\times10^5$ T, 1.38x the cap.
 
-### 4.2 2033: $\mathrm{Tr}\,M^{-1}$ on $8^3\times16$, and the Banks-Casher row (`_model_2033`, lines 938-1123)
+### 4.2 2033: $\mathrm{Tr}\,M^{-1}$ on $8^3\times16$, and the Banks-Casher row (`_model_2033`, lines 940-1125)
 
 **Register (950-959).** `register_M` (510-512): $\lceil\log_2 V\rceil$ site + $\lceil\log_2(2D+1)\rceil$ column + $\lceil\log_2 N_c^2\rceil$ color + 12 QPE + 50 ancilla = 13 + 4 + 4 + 12 + 50 = **83 LQ**. Without the QPE register the count is 71. Because the register grows as $\log_2 V$, the same formula gives 86 at $16^4$ and 98 at $128^4$.
 
@@ -228,13 +228,13 @@ A Hadamard test of the same trace has mean $am\,c/2$ and would need $4.340\times
 
 **Banks-Casher row (1006-1022).** With $a^{-1} = 0.1973/0.15 = 1.315$ GeV, $\Sigma^{1/3} = 270$ MeV and 4 tastes, $P = 2\Lambda\,(4\,a^3\Sigma)/(\pi N_c)$. The modes per configuration are $\nu = P\cdot V_F = 27.1$ ($\Lambda = 0.15$) and 18.0 ($\Lambda = 0.10$), with $V_F = 24576$ per flavor. The shots are $(1-P)/\big(P\,(0.3^2 - 1/(5\nu))\big)$ over 5 configurations: $1.098\times10^4$-$1.725\times10^4$. The T per shot is the filter degree times one query: $430\times4.26\times10^5 = 1.832\times10^8$ to $640\times4.26\times10^5 = 2.726\times10^8$. The wall time is 58.2 d to 1.490 yr, and the required $\epsilon_l$ is $3.668\times10^{-10}$.
 
-### 4.3 Co-design row: $24^3\times48$, $\kappa \approx 10^3$ (`_model_codesign`, lines 1126-1295)
+### 4.3 Co-design row: $24^3\times48$, $\kappa \approx 10^3$ (`_model_codesign`, lines 1128-1297)
 
 The same formulas give 20 + 4 + 4 + 12 + 50 = **90 LQ** and $N_T = 5000\times 4\times663552\times\log_2 663552 = 5000\times5.133\times10^7 = 2.567\times10^{11}$ T. At $\epsilon_l = 10^{-12}$ the per-shot budget is $p_f/\epsilon_l = 10^{11}$, so the row is 2.57x over it. A 2.6x reduction (`per_shot_reduction`) leaves $9.872\times10^{10}$. LCU alone (3x) closes the gap and the even-odd split alone (2x) does not. The production lattice $48^3\times96$ needs 94 LQ and $4.956\times10^{12}$ T, 49.6x the budget, beyond the 20x the levers reach. The campaign figures are intermediates only; the row exports no shots or wall time. $10^4$ shots per configuration ($\mathrm{Var}/\varepsilon^2$ at $\varepsilon = 10^{-2}$) on $10^3$ configurations make $10^7$ shots. At 2.86-11.4 days per shot that is $7.820\times10^4$-$3.128\times10^5$ yr, and five years hold 160-640 shots. Lines 1153-1179 cost the disconnected HVP itself. Noise-matching the current loops needs $4.967\times10^{11}$ shots per configuration per flavor and current direction at $24^3\times48$ ($1.490\times10^{12}$ for the three spatial currents), and $7.947\times10^{12}$ per direction at $48^3\times96$ ($2.384\times10^{13}$ for the three currents), at order-one site variance.
 
 ## 5. What the paper prints
 
-`resources.json` holds four rows for this chapter (written by `INSTANCE_ROWS`, lines 1332-1352). The paper's `scripts/resources.py` reads them.
+`resources.json` holds four rows for this chapter (written by `INSTANCE_ROWS`, lines 1334-1354). `paper_tools/resources.py` reads them for the paper's figures and table.
 
 | era | label | LQ | T per shot | other keys |
 |---|---|---|---|---|
@@ -243,7 +243,7 @@ The same formulas give 20 + 4 + 4 + 12 + 50 = **90 LQ** and $N_T = 5000\times 4\
 | 2033 | Banks-Casher mode number, V=8^3x16, a=0.15 fm (demonstration) | 83 | 183173120-272629760 | eps_l 3.668e-10, shots 10979.8-17247.1 |
 | codesign | Tr M^-1, V=24^3x48, kappa~1e3, d_inv~5e3 (before reduction) | 90 | 256659922982.3 | eps_l 1e-12, codesign true |
 
-Table 1.1 of the paper (the chapter list in the overview) prints "18 LQ, 1.9-3.5e4 T" for 2028 and "83 LQ, 2.1e8 T" for 2033. `PUBLISHED` (lines 1309-1329) holds the box values the model is checked against at a 2% tolerance: (18, 1.9e4-3.5e4), (83, 2.1e8) and (90, 2.6e11).
+Table 1.1 of the paper (the chapter list in the overview) prints "18 LQ, 1.9-3.5e4 T" for 2028 and "83 LQ, 2.1e8 T" for 2033. `PUBLISHED` (lines 1311-1331) holds the box values the model is checked against at a 2% tolerance: (18, 1.9e4-3.5e4), (83, 2.1e8) and (90, 2.6e11).
 
 Two sets of tests pin these numbers. The first runs in every layout:
 

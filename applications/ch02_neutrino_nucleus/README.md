@@ -71,7 +71,7 @@ Two things to know before reading it:
 | name | value | provenance | source | note |
 |---|---|---|---|---|
 | `eps_syn` | `0.01` | Assumed | TRACKED_CHANGES.md R-TOL (H. Lamm, 2026-09-29) | ruling R-TOL: total synthesis error per shot 1e-2, report-wide; eps_rot = sqrt(eps_syn/N_rot) per circuit (randomized synthesis) |
-| `t_gate_s` | `1e-06` | Assumed | app01:2028,2033 boxes | 1 us per T-gate (hard operation), the report-wide wall-time convention of ruling R8 (H. Lamm, 2026-09-29; convention in Ch. 1); was 10e-6. R9 (2026-10-02) renamed it from logical_cycle_s. app01 2028 box '~0.10 s'; 2033 box '11-16 min' |
+| `t_gate_s` | `1e-06` | Assumed | app01:2028,2033 boxes | 1 us per T-gate (hard operation), the report-wide wall-time convention of ruling R8 (H. Lamm, 2026-09-29; convention in Ch. 1); was 10e-6. R9 (2026-10-02) renamed it from logical_cycle_s. app01 2028 box campaign '~1.8 h'; 2033 box '~3.4 min per shot' |
 | `shot_overhead_s` | `0.0001` | Assumed | E27; ch08_baryogenesis.py | per-shot overhead t0 ~ 0.1 ms (register initialization, final readout, decode), the report rule stated in Ch. 1; as Ch. 8 shot_overhead_s. 0.1% of the 2028 shot, < 2e-7 of a 2033 shot: no printed number moves (E27) |
 | `fault_budget` | `0.1` | Stated-not-derived | app01:100,137 | 'expected number of logical faults per circuit to <~ 0.1'; '<= 0.1-expected-fault budget per shot' |
 | `coherent_synthesis_allowance` | `0.005` | Assumed | app01:eq:nu_synthesis (pre-2026-10-12) | The chapter authors' study convention (sensitivity only since the 2026-10-12 ruling): coherent leading Ross-Selinger synthesis, delta_syn = 0.005 shared among N_R rotations; reproduces the study files' T_RS_leading_estimate / leading_T |

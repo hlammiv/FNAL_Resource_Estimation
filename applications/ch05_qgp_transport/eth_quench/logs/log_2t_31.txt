@@ -1,0 +1,6 @@
+2T 3x1: D_fixed=13824, singlet=1312
+  eigh D=1312 2.5s
+  T=0.749: E(T)=4.728 below vacuum-state energy 5.000: unreachable by E-basis states
+  T=2.027: loop ensemble cannot reach E(T)=10.640 (max 9.950)
+  ensemble vac: n=1 E=5.0000 T*=0.8108 (13.7s)
+  ensemble loopsF_T1.216: n=8 E=7.4281 T*=1.216 (37.8s)

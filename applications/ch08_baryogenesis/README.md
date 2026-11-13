@@ -24,17 +24,17 @@ python -m pytest estimates/tests/test_ch08_baryogenesis.py -q
 python applications/ch08_baryogenesis/dump_assumptions.py   # the table in section 3
 ```
 
-`--chapter ch08` prints four things. First, the 83 assumptions with their provenance. Second, the five rows this chapter writes to `resources.json`. Third, for each era: the headline against the printed box (`[ok]` when it falls within the box's 5% tolerance), shots, wall time, ε_l, the T-depth and factory keys, and the primitive-by-primitive T breakdown, whose sum equals the headline. Fourth, the model's notes, which spell out the arithmetic.
+`--chapter ch08` prints four things. First, the 94 assumptions with their provenance. Second, the four rows this chapter writes to `resources.json`. Third, for each era: the headline against the printed box (`[ok]` when it falls within the box's 5% tolerance), shots, wall time, ε_l, the T-depth and factory keys, and the primitive-by-primitive T breakdown, whose sum equals the headline. Fourth, the model's notes, which spell out the arithmetic.
 
 `flag_contrast` diagonalizes 480×480 one-body Hamiltonians with numpy, so numpy is required. The whole chapter runs in under a second.
 
-Test status in this repository: 48 passed, 4 skipped. The four skipped tests also read the chapter `.tex`, and they skip when the paper source is absent: `test_no_machine_count_anywhere`, `test_utility_box_has_no_unsourced_dollar_figure`, `test_g4_fault_bias_model` and `test_referee_text_hooks`. In `test_no_machine_count_anywhere` and `test_g4_fault_bias_model` the numeric assertions run before the file is read, so a wrong number still fails. Only the text check ends in a skip.
+Test status in this repository: 51 passed, 5 skipped. The five skipped tests also read the chapter `.tex`, and they skip when the paper source is absent: `test_no_machine_count_anywhere`, `test_utility_box_has_no_unsourced_dollar_figure`, `test_g4_fault_bias_model`, `test_referee_text_hooks` and `test_ruling_2026_10_11_text_hooks`. In `test_no_machine_count_anywhere` and `test_g4_fault_bias_model` the numeric assertions run before the file is read, so a wrong number still fails. Only the text check ends in a skip.
 
 ## 3. Assumptions
 
-Output of `dump_assumptions.py`, generated from the live `Assumptions` dataclass (lines 243-460). The model has a single dataclass. The rows are grouped by its section comments, and each row states which instance it serves. The provenance tags are the code's own. **Cited** means a published source or report-wide ruling gives the value. **Assumed** means a working assumption the model declares. **Stated-not-derived** means a chapter value taken without a derivation; many of these are printed values the tests compare against the model. Source tags of the form `app05:NN` name the chapter; their line numbers do not match the current file, so find the passage by the quoted phrase. Some quoted phrases (for example in `c_t_2028_quoted`, `eps_l_2033_base_quoted`, `lq_two_register_quoted`, `shots_2028`, `t_gate_s`) are not in the current chapter text; those values are model inputs the chapter uses without printing them.
+Output of `dump_assumptions.py`, generated from the live `Assumptions` dataclass (lines 250-504). The model has a single dataclass. The rows are grouped by its section comments, and each row states which instance it serves. The provenance tags are the code's own. **Cited** means a published source or report-wide ruling gives the value. **Assumed** means a working assumption the model declares. **Stated-not-derived** means a chapter value taken without a derivation; many of these are printed values the tests compare against the model. Source tags of the form `app05:NN` name the chapter; their line numbers do not match the current file, so find the passage by the quoted phrase. Some quoted phrases (for example in `c_t_2028_quoted`, `eps_l_2033_base_quoted`, `lq_two_register_quoted`, `shots_2028`, `t_gate_s`) are not in the current chapter text; those values are model inputs the chapter uses without printing them.
 
-92 fields: Cited 9, Assumed 27, Stated-not-derived 56
+94 fields: Cited 9, Assumed 29, Stated-not-derived 56
 
 **Lattice and registers**
 
@@ -71,7 +71,7 @@ Output of `dump_assumptions.py`, generated from the live `Assumptions` dataclass
 | `toffoli_convention` | textbook | Cited | main-overview:47 (report-wide) | 7 T per Toffoli everywhere |
 | `c_t_2028_quoted` | 1260 | Stated-not-derived | r12 record | c_T 1263.1 T/site/step at 20 steps (the rotations of a longer shot are synthesized tighter; 1239.8 at 12 steps); derived here, no longer printed since the Oct 6 cut |
 | `c_t_2033_quoted` | 2500 | Stated-not-derived | app05:91,165 | 'c_T ~ 2.5e3 (1.6e3 scalar, 8.9e2 fermion)' at the deepest circuit's budget |
-| `c_t_range_quoted` | (250, 2500) | Stated-not-derived | app05:85 | 'c_T runs from 2.5e2 to 2.5e3 across the instances below' |
+| `c_t_range_quoted` | (1300, 2500) | Stated-not-derived | app05:82 | 'c_T is 1.3e3 (2028, unreduced) and 2.5e3 (2033)'; the unprinted 8^2 N_phi=4 family row has 2.5e2 (family_8x8_nphi4_c_t) |
 | `ct_reduction` | (3, 4) | Assumed | - | model-internal sanity span for the banked ~3.3x (not printed in the chapter); assumed development target, not derived or cited |
 | `ct_reduction_banked` | 3.3 | Assumed | app05:91,126,162,163,179 | assumed development target, not derived or cited: 'divided by an assumed ~3.3x reduction that is a development target, not derived or cited'; carried exactly, printed results rounded once |
 | `t_2028_box` | 280000 | Stated-not-derived | app05:94 | '2.8e5 (9.1e5 before the assumed 3.3x step reduction)': 9.095e5/3.3 = 2.756e5 at 20 steps (ruling 2026-10-11; was 1.6e5 at 12 steps) |
@@ -99,10 +99,10 @@ Output of `dump_assumptions.py`, generated from the live `Assumptions` dataclass
 | `n_rare_range` | (1000, 10000) | Stated-not-derived | app05:83 | N_rare ~ 1e3-1e4 in Eq. Nshot_baryo |
 | `shots_nucleation_2033` | 10000 | Stated-not-derived | app05:169 | nucleation arm '1e4 shots' per grid point |
 | `eps_c` | 0.003 | Stated-not-derived | app05:63,115 | target precision on the per-bin asymmetry: a tenth of the comparator's typical bin (\|A_R\| 0.03-0.05; author decision 2026-10-12, option 2; was 1e-3, the size the asymmetry itself was then estimated at) |
-| `n_bin` | 8 | Stated-not-derived | app05:63,115 | 'the 8 bins the 15-site axis resolves': floor(15/2) + 1 distinct \|k_z\| (ruling 2026-10-11, batch 4 item 3b; was 'N_bin ~ 1e2', which the lattice cannot resolve) |
+| `n_bin` | 7 | Stated-not-derived | app05:63,115 | 'the 7 bins the 15-site axis resolves': floor(15/2) incident \|k_z\| > 0, k_z = 2 pi n/15, n = 1..7, the bins sint/scatter.py samples (referee SR-ch8-1, 2026-11-09; was 8 = floor(15/2) + 1, which counted k_z = 0, a mode with v_g = 0 that is not an incident packet; ruling 2026-10-11, batch 4 item 3b, set 8; was 'N_bin ~ 1e2', which the lattice cannot resolve) |
 | `mlae_queries_per_bin_quoted` | 7800 | Stated-not-derived | app05:63 | '~8e3 queries per momentum bin' at eps_c = 3e-3 (C_est = 1, x 1/p0^2 flag contrast; 2026-10-12, was '~7.0e4' at 1e-3) |
 | `c_est` | 1 | Stated-not-derived | app05:63 | author-adopted branch prior \|p0 A_R\| < sin(pi/66) = 0.048: every circuit at m_max, Cramer-Rao constant one (Suzuki Fisher_final) |
-| `dn_branch_prior` | 0.048 | Stated-not-derived | app05:63 | 'which we adopt as a prior rather than derive': \|p0 A_R\| < sin(pi/66) (author choice); the comparator's largest bin gives p0 A_R = 0.033 (2026-10-12) |
+| `dn_branch_prior` | 0.048 | Stated-not-derived | app05:63 | 'which we adopt as a prior rather than derive': \|p0 A_R\| < sin(pi/66) (author choice); the comparator's largest bin gives p0 A_R = 0.037 (2026-10-12) |
 | `mlae_schedule` | single | Cited | arxiv_1904_10246 Manuscript_v2.tex:238 | all circuits at m_max; LIS m = 1, 3, ..., m_max (:268, :271) kept as sensitivity |
 | `dn_estimate` | 0.056 | Assumed | sint/sint_results.json | COMPUTED (2026-10-12, sint/scatter.py, after the Bloch-sign fix of the verification pass): the largest per-bin \|A_R\| of the chapter's free-fermion comparator (two Wilson flavours, a m_f = 0.5, static tanh wall \|y\| phi = 0.5 of width 1/m_phi, Delta theta_C = 0.1) over the 8 x 8 incident (k_z, k_y) bins (0.059 at width 1 a); it changes sign across the axis. The 1+1D estimate of arxiv_2412_10365 gave ~1e-3 |
 | `dn_estimate_1p1d_record` | 0.001 | Stated-not-derived | app05:61 | '~1e-3 at Delta theta_C = 0.1' (arxiv_2412_10365), the printed estimate until 2026-10-12 (record) |
@@ -135,8 +135,10 @@ Output of `dump_assumptions.py`, generated from the live `Assumptions` dataclass
 | `slope_early_fraction_2033` | 0.3333333333 | Assumed | shot_audit.json ch8 lever (5) | 2033 early time t/3: 33 of 100 steps; a long lever arm is ~5x cheaper than t/1.5 |
 | `detection_sigma` | 3 | Assumed | H. Lamm 2026-10-02 | the 2033 first result is a 3-sigma detection of Delta n |
 | `n_points_first` | 2 | Stated-not-derived | app05:143 | first result at T = T_c and 0.9 T_c (the box's two temperatures) |
-| `s_int` | 0.0214 | Assumed | sint/sint_results.json | COMPUTED (2026-10-12, sint/scatter.py, after the Bloch-sign fix of the verification pass; 1.33e-2 before it): f_eq-weighted (Fermi-Dirac at a T = 0.5) mean of A_R over the incident bins for the comparator at \|y\| phi = 0.5, width 2a, Delta theta_C = 0.1; 2.4e-2 at 0.9 T_c; 1.9-2.7e-2 over wall amplitudes 0.3-1.0 and widths 1-2 a at both temperatures; linear in Delta theta_C, zero at 0; the C' relation R(hole_L) = R(p_R) holds to 1e-4. Converged in chain length and packet width. The first-result Delta-n wall scales as S_int^-2 |
-| `s_int_band` | (0.019, 0.027) | Assumed | sint/sint_results.json | COMPUTED record: S_int over the comparator's wall amplitudes 0.3-1.0 and widths 1-2 a at T_c (1.9-2.4e-2) and 0.9 T_c (2.1-2.7e-2) |
+| `s_int` | 0.016 | Assumed | sint/sint15_results.json | COMPUTED on the chapter's 15-site axis (2026-11-09, sint/scatter15.py; referee SR-ch8-1): f_eq-weighted (Fermi-Dirac at a T = 0.5) mean of A_R over the 7 x 8 incident (k_z, k_y) bins for the comparator at \|y\| phi = 0.5, width 2a, Delta theta_C = 0.1, wall at z = 7 of 15, packet sigma_z = 1.5 sites at z = 2.5, read at t_max = 10/m_phi = 20 a, the end of the priced evolution: 1.57e-2 (1.59e-2 at sigma_z = 2.0); 1.7e-2 at 0.9 T_c; 1.5e-2 at width 1 a, 0.8e-2 and 1.9e-2 at \|y\| phi = 0.3 and 1.0; zero at Delta theta_C = 0. S_int(t) rises from 0.6e-2 at t = 10 a to 1.4e-2 at 16 a (s_int_readout_band); by t_max the transmitted part of the fast bins has returned from the open end, as in the priced circuit; on an axis padded so nothing returns the same readout gives 1.556e-2, so the returns are 0.8% of it (sint/window_study.py, referee follow-up F2, 2026-11-11). The 800-site chain of sint/scatter.py gives 2.14e-2 (s_int_long_chain), never reached on this axis. The first-result Delta-n wall scales as S_int^-2 |
+| `s_int_readout_band` | (0.006, 0.016) | Assumed | sint/sint15_results.json | COMPUTED record (sint/scatter15.py): S_int on the 15-site axis over readout times t = 10-20 a (5-10/m_phi), both packet widths; the per-bin readout windows are in sint/README.md |
+| `s_int_long_chain` | 0.0214 | Assumed | sint/sint_results.json | COMPUTED record (2026-10-12, sint/scatter.py, after the Bloch-sign fix of the verification pass; 1.33e-2 before it): the same comparator on an 800-site chain, sigma = 25 sites, each bin read at 2 (z_wall - z_pk)/v_g; 2.4e-2 at 0.9 T_c; converged in chain length and packet width; the C' relation R(hole_L) = R(p_R) holds to 1e-4. Printed by the chapter until 2026-11-09; Fig. ch08_asymmetry shows this run |
+| `s_int_band` | (0.019, 0.027) | Assumed | sint/sint_results.json | COMPUTED record (800-site chain, sint/scatter.py): S_int over the comparator's wall amplitudes 0.3-1.0 and widths 1-2 a at T_c (1.9-2.4e-2) and 0.9 T_c (2.1-2.7e-2); the grey band of Fig. ch08_asymmetry(c) |
 | `label_register_first` | 7 | Assumed | shot_audit.json ch8 lever (1) | packet-label register of the f_eq-weighted packet superposition, taken from the 10-qubit workspace |
 | `t_depth_2028` | (5400, 7000) | Assumed | factory.json ch08 run 1 | T-depth per 12-step shot, banked: ceil(1980/29) x 21.38 + ... per step (A = 29-30 RUS ancillas) to the serial structural schedule, x 12 / 3.3; the model scales it by n_trot_2028 / t_depth_2028_ref_steps |
 | `t_depth_2028_ref_steps` | 12 | Assumed | factory.json ch08 run 1 | step count of the factory.json run behind t_depth_2028; depth is proportional to the step count |
@@ -194,15 +196,15 @@ At N_φ = 16 the fermion arm on 6² needs 288 system qubits. A 4-component spino
 
 Every count is for one site and one Trotter step. Each term is either a synthesized rotation or exact T.
 
-**Scalar**, `scalar_counts` (lines 491-500). n_q = log₂N_φ qubits, with φ linear in Z on the centered grid.
+**Scalar**, `scalar_counts` (lines 535-544). n_q = log₂N_φ qubits, with φ linear in Z on the centered grid.
 
 - On-site polynomial (mass, φ⁴, bias, and the gradient's φ² share): one R_Z per Z-string of weight 1 to min(4, n_q), so Σ_{w≤4} C(n_q, w). That is 15 at n_q = 4 and 3 at n_q = 2 (arXiv:2407.13819 Eq. rzTrotter; arXiv:2210.07985 Eqs. trdispl to trphi4).
 - Gradient φ_iφ_j: n_q² ZZ rotations per link, with 2 links per site. That is 32 at n_q = 4.
 - Kinetic π²: conjugating by the centered QFT turns it into C(n_q, 2) ZZ rotations, so 6 at n_q = 4 (arXiv:2210.07985 Eqs. fftqft, trpi2). The diagonal phase matrices around the QFT commute through or merge into the weight-1 on-site rotations, so they add nothing.
-- Two exact QFTs per site per step, from `qft_cost` (lines 472-488), counted by controlled phase π/2^k at distance k. A k = 1 phase is a controlled-S at 3 T. A k = 2 phase is a Toffoli into an ancilla plus one T, 8 T. Each k ≥ 3 phase is a Toffoli plus one synthesized rotation. At n_q = 4 one QFT is 3×3 + 2×8 + 1×7 = 32 T plus 1 rotation. The AQFT formula of arXiv:2407.13819 would give more than 500 T per 4-qubit QFT and is not used (`test_scalar_counts_are_the_papers_term_counts`).
+- Two exact QFTs per site per step, from `qft_cost` (lines 516-532), counted by controlled phase π/2^k at distance k. A k = 1 phase is a controlled-S at 3 T. A k = 2 phase is a Toffoli into an ancilla plus one T, 8 T. Each k ≥ 3 phase is a Toffoli plus one synthesized rotation. At n_q = 4 one QFT is 3×3 + 2×8 + 1×7 = 32 T plus 1 rotation. The AQFT formula of arXiv:2407.13819 would give more than 500 T per 4-qubit QFT and is not used (`test_scalar_counts_are_the_papers_term_counts`).
 - Scalar total at N_φ = 16: **55 rotations + 64 exact T**. At N_φ = 4: 12 rotations + 6 T.
 
-**Fermions**, `fermion_counts` (lines 503-516). Two Wilson flavors at r = 1 under Jordan-Wigner. The JW strings are parity ladders and cost CNOTs only.
+**Fermions**, `fermion_counts` (lines 547-560). Two Wilson flavors at r = 1 under Jordan-Wigner. The JW strings are parity ladders and cost CNOTs only.
 
 - Hopping: at r = 1 the hopping matrix (σ₃ − iσ_j)/2 has rank one. A π/4 Givens basis change per site per direction (2 T, in and out) leaves one c†c + h.c. per link per flavor, which is 2 R_Z. Per site this is 8 rotations, plus 16 exact T for the basis change.
 - Mass plus Wilson term: 2 R_Z per flavor, so 4. This equals the Fermion-Primitives count 2N at d = 2 (`test_wilson_mass_matches_fermion_primitives`).
@@ -211,7 +213,7 @@ Every count is for one site and one Trotter step. Each term is either a synthesi
 
 ### 4.3 From counts to c_T and T per circuit
 
-`price_instance` (lines 519-572) multiplies the per-site-step counts by V × N_Trot. It then applies the report's synthesis rule from `estimates/common.py`. The per-rotation tolerance is ε_rot = √(ε_syn / N_rot), with ε_syn = 10⁻² per circuit (`eps_rot_for`, line 172). The cost per rotation is t_rot = 1.15 log₂(1/ε_rot) + 9.2 T (`t_per_rotation`, line 125), and a Toffoli is 7 T (`toffoli_t`, line 201). Then
+`price_instance` (lines 563-616) multiplies the per-site-step counts by V × N_Trot. It then applies the report's synthesis rule from `estimates/common.py`. The per-rotation tolerance is ε_rot = √(ε_syn / N_rot), with ε_syn = 10⁻² per circuit (`eps_rot_for`, line 172). The cost per rotation is t_rot = 1.15 log₂(1/ε_rot) + 9.2 T (`t_per_rotation`, line 125), and a Toffoli is 7 T (`toffoli_t`, line 201). Then
 
   c_T = n_rot × t_rot + n_T,  T_circuit = c_T × V × N_Trot.
 
@@ -230,7 +232,7 @@ N_rot counts the synthesized rotations in the whole circuit, so c_T varies betwe
 
 All values are from the `--intermediates` output. They are pinned by `test_ct_is_priced_by_rtol_per_instance` (c_T 1263.1 at 20 steps, 1239.82 at 12, and 2466.43; N_rot budget 33 × (1,044,000 + 1800 + 14400 + 472)), by `test_ct_range_is_the_instances` (the printed span 2.5e2 to 2.5e3), and by the family, interim and fermion-arm tests.
 
-### 4.4 The 2028 box (`_model_2028`, lines 645-822)
+### 4.4 The 2028 box (`_model_2028`, lines 689-866)
 
 - **Per-shot T.** The raw count is c_T × 720 = 9.095e5 (20 steps; ruling 2026-10-11, was 5.356e5 at 12). The box divides it by an assumed 3.3× c_T reduction (`ct_reduction_banked`). That factor is a development target, neither derived nor cited, and it is carried exactly: 9.095e5 / 3.3 = **2.756e5** (`resources.json`: 275591.4), printed 2.8e5. In the breakdown, every primitive's T-per-unit is divided by the same 3.3 (rotations 21.802/3.3 = 6.607 T; QFT exact T 64/3.3 = 19.39 per site-step):
 
@@ -245,15 +247,15 @@ All values are from the `--intermediates` output. They are pinned by `test_ct_is
   | basin_projector_and_readout | 1 | 0 | 0 (UNSOURCED) |
 
   The sum is 2.756e5 (`test_2028_breakdown_is_primitive_level_and_compiled`).
-- **ε_l.** `eps_l_required` (lines 632-634) gives ε_l = 0.1 / T = **3.63e-7**, printed ≲ 4e-7.
+- **ε_l.** `eps_l_required` (lines 676-678) gives ε_l = 0.1 / T = **3.63e-7**, printed ≲ 4e-7.
 - **Shots.** The slope of ln P_FV comes from two times, t/2 (10 steps, 1.343e5 T after the 3.3) and t (20 steps), both inside the chapter's 1-2/m_φ exponential window. The shots follow from the lever arm, `slope_shots`: N = (1 + r)/(ε² δ₂ (1 − r)²) at each time, with r = t₁/t₂ and δ₂ the decrement at the late time (binomial statistics, decrement growing linearly with t). The r23 single-time count 5e3 at 20% fixed δ(1.2/m_φ) = 5e-3 (`shots_2028`, `decrement_ref_time_2028`), so δ(2.0/m_φ) = 8.33e-3 and r = 1/2 gives 6 × the single-time count: **1.8e4 shots at each time**, `Result.shots` = 3.6e4 (`slope_shot_factor` 6; the r25 schedule's factor 3 is the r = 1/3 case of the same formula).
 - **Wall time.** 1.8e4 × [(2.756e5 + 1.343e5) × 1 µs + 2 × 0.1 ms] = 7382 s = **2.05 h** per parameter point, printed ~2.1 h. At the unreduced c_T it is 6.8 h. One shot takes 0.276 s (`shot_s`).
 - **Depth.** The T-depth band 5.4e3 to 7.0e3 is an Assumed input from the factory analysis at 12 steps (`t_depth_2028_ref_steps`); the model scales it by 20/12 to 9.0e3 to 1.17e4 (`t_depth_scaled`). `depth_exports` (common.py line 316) turns it into F* = N_T/D_T = 23.6 to 30.6, printed 24-31. Since F* ≥ 10, the ten-factory baseline (section 8) behind 1 µs per T is fed. The depth floor is 2.4e3 to 3.1e3 s.
 - **Record.** The decrement 8.33e-3 at 2.0/m_φ on 6² (area 9/m_φ²) corresponds to a vacuum bounce action of about 8.0 (`bounce_action_implied_2028`, `bounce_action_implied`), the 2028 counterpart of the 2033 saddle below.
 
-### 4.5 The 2033 target (`_model_2033`, lines 1134-1530)
+### 4.5 The 2033 target (`_model_2033`, lines 1178-1580)
 
-**One application of A.** Per site-step the circuit has 87 rotations and 80 exact T, over 120 × 100 = 12,000 site-steps. The evolution is therefore c_T × 12,000 = 2.960e7 T, or 2.96e5 T per step. On top of that, `free_prep` (lines 930-940) prices the free part of the preparation for every application:
+**One application of A.** Per site-step the circuit has 87 rotations and 80 exact T, over 120 × 100 = 12,000 site-steps. The evolution is therefore c_T × 12,000 = 2.960e7 T, or 2.96e5 T per step. On top of that, `free_prep` (lines 974-984) prices the free part of the preparation for every application:
 
 - scalar product state: N_φ − 1 = 15 rotations per site, 1800 rotations, 4.937e4 T (`scalar_product_rotations`);
 - free-fermion vacuum of the wall background: the transverse axis is periodic, so the problem is block-diagonal in k_y. That gives 8 sectors of N = 60 modes at half filling, each needing (N − η)η = 900 Givens rotations (arXiv:1711.05395), at 2 rotations each: 14,400 rotations, 3.95e5 T (`slater_rotations_ky`);
@@ -262,9 +264,9 @@ All values are from the `--intermediates` output. They are pinned by `test_ct_is
 
 The free preparation totals 4.592e5 T, or 1.55% of the evolution (`r_free`). One application then costs t_A = **3.006e7** T, printed "Base circuit 3.0e7".
 
-**Reflections.** `mlae_reflection_t` (lines 871-877) prices each Grover iterate. S_χ counts ≤ 480 fermion occupations into a 9-bit register using ≤ 10 Toffolis per increment, computed and uncomputed. S₀ is a controlled phase on the 1000-qubit input, at LQ − 2 Toffolis. Together that is (2 × 480 × 10 + 998) × 7 = **74,186 T** per iterate, 0.25% of the evolution (`test_b2_construction_priced`).
+**Reflections.** `mlae_reflection_t` (lines 915-921) prices each Grover iterate. S_χ counts ≤ 480 fermion occupations into a 9-bit register using ≤ 10 Toffolis per increment, computed and uncomputed. S₀ is a controlled phase on the 1000-qubit input, at LQ − 2 Toffolis. Together that is (2 × 480 × 10 + 998) × 7 = **74,186 T** per iterate, 0.25% of the evolution (`test_b2_construction_priced`).
 
-**Depth cap and the headline.** `dn_schedule` (lines 943-983) finds the deepest circuit that fits in 10⁹ T. The cost of a depth-m circuit is m t_A(m) + (m − 1)/2 × refl, where t_A(m) is priced with every rotation synthesized to that circuit's own budget. Because t_A rises with m, the depths that fit form an interval. The scan starts at m₀ = ⌊(10⁹ + refl/2)/(t_A(1) + refl/2)⌋ = 37 and steps down: 37, 36, 35 and 34 exceed 10⁹ (1.1171e9, 1.0861e9, 1.0550e9, 1.0240e9), and 33 fits at 9.9305e8. The headline, `Result.hard_ops`, is the deepest executed circuit:
+**Depth cap and the headline.** `dn_schedule` (lines 987-1027) finds the deepest circuit that fits in 10⁹ T. The cost of a depth-m circuit is m t_A(m) + (m − 1)/2 × refl, where t_A(m) is priced with every rotation synthesized to that circuit's own budget. Because t_A rises with m, the depths that fit form an interval. The scan starts at m₀ = ⌊(10⁹ + refl/2)/(t_A(1) + refl/2)⌋ = 37 and steps down: 37, 36, 35 and 34 exceed 10⁹ (1.1171e9, 1.0861e9, 1.0550e9, 1.0240e9), and 33 fits at 9.9305e8. The headline, `Result.hard_ops`, is the deepest executed circuit:
 
   33 × 3.0056e7 + 16 × 74,186 = **9.930e8 T** (`resources.json`: 993049073.3), printed ≳ 9.9e8.
 
@@ -272,9 +274,9 @@ It is a lower bound because the interacting dressing ramp is not priced (section
 
 **ε_l.** At 0.1 expected faults, ε_l = 0.1/9.93e8 = **1.01e-10** for the deepest circuit and 0.1/2.96e7 = 3.38e-9 for one evolution (`test_epsilon_l_follows_r3`).
 
-**Δn queries.** The flag fires on a threshold of the incident-side charge. The vacuum has no sharp value of that charge, so the good-outcome amplitude is a = ½ + ½ p₀ A_R. `flag_contrast` (lines 1025-1055) computes p₀ = P(q = 0) from the full counting statistics of the free vacuum restricted to the incident half, sector by sector in k_y. At a m_f = 0.5 it gives **p₀ = 0.6584**, which multiplies the query count by 1/p₀² = 2.31.
+**Δn queries.** The flag fires on a threshold of the incident-side charge. The vacuum has no sharp value of that charge, so the good-outcome amplitude is a = ½ + ½ p₀ A_R. `flag_contrast` (lines 1069-1099) computes p₀ = P(q = 0) from the full counting statistics of the free vacuum restricted to the incident half, sector by sector in k_y. At a m_f = 0.5 it gives **p₀ = 0.6584**, which multiplies the query count by 1/p₀² = 2.31.
 
-A second check covers the background. `c_prime_residual` (lines 1093-1102) confirms that charge conjugation combined with the flavor and spinor swap commutes with H on a C-violating wall; the residual is exactly 0. The vacuum background δ therefore vanishes, the flavor-summed Δn is zero, and the readout uses flavor-L packets.
+A second check covers the background. `c_prime_residual` (lines 1137-1146) confirms that charge conjugation combined with the flavor and spinor swap commutes with H on a C-violating wall; the residual is exactly 0. The vacuum background δ therefore vanishes, the flavor-summed Δn is zero, and the readout uses flavor-L packets.
 
 With every circuit at depth 33 the estimator constant is 1. Writing a = (1 + Δ)/2 with Δ = p₀A_R, this is the Cramér-Rao bound from Suzuki's Fisher information m²/(1 − Δ²) per circuit, and it requires |Δ| < sin(π/66) = 0.0476 (`balanced_branch_bound`, line 836; intermediate `mlae_branch_bound_needed`). The authors adopt |A_R| < 0.048, which implies it, as a prior; the ~10⁻³ estimate sits 47.6 times inside it (`dn_estimate_headroom`). The model checks that no derived bound supplies it (`mlae_derived_bound_ok = False`, `mlae_author_prior_ok = True`; `test_branch_condition_and_author_prior`). Then:
 
@@ -282,7 +284,7 @@ With every circuit at depth 33 the estimator constant is 1. Writing a = (1 + Δ)
 - 7 bins (`n_bin`, the incident |k_z| > 0 on the 15-site axis, floor(15/2) = 7, checked in `__post_init__`; SR-ch8-1 2026-11-09, was 8 counting k_z = 0; ruling 2026-10-11, batch 4 item 3b, was 100) give 5.44e4 queries in **1.65e3 circuits** of depth 33 (`Result.shots`);
 - this is 23.3 times the Heisenberg count ε_C⁻¹ N_bin = 2.33e3 (`test_2033_mlae_schedule`).
 
-**Walls.** All walls are serial on one machine. Each circuit costs T × 1 µs + 0.1 ms; `circuit_s` is at lines 986-988.
+**Walls.** All walls are serial on one machine. Each circuit costs T × 1 µs + 0.1 ms; `circuit_s` is at lines 1030-1032.
 
 - One depth-33 circuit takes 993 s (~17 min; `deepest_circuit_s`; with the 2028 `shot_s` pinned by `test_maximum_circuit_time`), and one application of A takes 30.06 s (`base_circuit_s`).
 - One campaign Δn point is 1.88e3 × 993 s = **0.059 yr** (`dn_arm_yr`; `Result.wall_time_s` = 1.87e6 s).
@@ -299,25 +301,24 @@ The first-result label leaves A = 3 of the workspace. Rescaled by rotation layer
 
 - **Suzuki's linearly incremental schedule** (LIS, m = 1, 3, …, 33) instead of the single depth: query constant 33 × 289/6545 = 1.457. That gives 1.019e5 per bin, 0.78 yr per Δn point and 11.0 yr for the campaign (9.70 and 100.3 at 100 bins) (`lis_query_constant`, `test_lis_constant_is_suzukis_fisher_ratio`).
 - **Bath mixing band** (`bath_mixing_sweeps` 3-20, `bath_mixing_sweeps_central` 8, `bath_mixing_sensitivity`; ruling 2026-10-11, words only). A dynamic-exponent heuristic (relaxation time τ = ξ^z = 4-4.5 sweeps at ξ = 1/m_φ = 2a and z = 2-2.17; warm start from a mean-field thermal state 2-3 τ = 3-14 sweeps, cold start to 1% local accuracy 7-21) puts the mixing time at 3-20 sweeps of the filtered dissipator. Every shot ends in a projective measurement, so every nucleation shot would pay the preparation: at 3 / 8 / 20 sweeps a nucleation shot is 4.2e8 / 1.1e9 / 2.7e9 T (the central value no longer fits 10⁹), a nucleation point 290 d / 2.0 yr / 5.1 yr, the 10-temperature scan 7.8 / 20 / 50 yr and the first result 3.7 / 7.4 / 16 yr. The chapter prints the band and the low-to-high consequence in words; the nucleation walls stay unpriced lower bounds (`bath_prep_dominates_nucleation_shot`, `test_bath_mixing_band_is_words_only`).
-- **Dressing ramp** costing r × the evolution (`prep_sensitivity`, lines 1115-1128). At r = 0.2 the depth drops to 27 and a Δn point takes 0.78 yr. At r = 1 the depth is 15 and a point takes 2.32 yr (9.74 and 29.0 yr at 100 bins). Depth 33 leaves 0.71 Trotter steps of headroom per application, so any r > 0.007 lowers the depth (`test_b3_preparation_sensitivity`, `test_dn_schedule_depth_never_rises_with_r`).
+- **Dressing ramp** costing r × the evolution (`prep_sensitivity`, lines 1159-1172). At r = 0.2 the depth drops to 27 and a Δn point takes 0.78 yr. At r = 1 the depth is 15 and a point takes 2.32 yr (9.74 and 29.0 yr at 100 bins). Depth 33 leaves 0.71 Trotter steps of headroom per application, so any r > 0.007 lowers the depth (`test_b3_preparation_sensitivity`, `test_dn_schedule_depth_never_rises_with_r`).
 - **Flag contrast in the wall background:** p₀ = 0.654, 0.646 and 0.603 at |y|φ_wall = 0.3, 0.5 and 1.0. The free p₀⁻² = 2.31 is therefore a lower bound on the query factor, which can reach 2.75.
 - **c_T reduction applied to 2033:** banking the 3.3× would give 8.97e6 T per evolution. It is recorded but not banked.
 
 ## 5. What the paper prints
 
-The chapter's numbers come from `PUBLISHED` (lines 1545-1555), the box values the model is checked against within a 5% tolerance, and from `INSTANCE_ROWS` (lines 1558-1582), which writes `resources.json`. The tests check the model against `PUBLISHED`; the model never reads it (`test_model_does_not_read_published`).
+The chapter's numbers come from `PUBLISHED` (lines 1595-1605), the box values the model is checked against within a 5% tolerance, and from `INSTANCE_ROWS` (lines 1608-1630), which writes `resources.json`. The tests check the model against `PUBLISHED`; the model never reads it (`test_model_does_not_read_published`).
 
 **`resources.json` rows for chapter 8** (current values):
 
 | era | label | LQ | T | conditional | reconciled |
 |---|---|---|---|---|---|
-| 2028 | scalar bubble 6² | 174 | 162303.809916798 | false | true |
+| 2028 | scalar bubble 6² | 174 | 275591.41246107686 | false | true |
 | 2028 | family 8², N_φ=4 | 158 | 58906.78463287797 | false | false |
 | 2028 | family 8², N_φ=16 | 286 | 294649.4585081366 | false | false |
-| 2028 | interim scalar+Wilson 4² | 113 | 144912.76692923915 (raw, no reduction) | true | false |
 | 2033 | wall scattering 15×8 | 1000 | 993049073.279399 | true | true |
 
-Table 1.1 of the paper prints the two headline rows as "Scalar bubble, 6²; 174 LQ, ≳1.6×10⁵ T (conditional)" and "Scalar+Wilson+Lindblad, 15×8; 1000 LQ, ≳9.9×10⁸ T". The check of Table 1.1 against `resources.json` (`scripts/estimates/tests/test_table.py` in the paper tree) lives with the paper source, not in this repository. It checks the ≳ relation and the value for (8, "2028"); it does not check the conditional mark.
+Table 1.1 of the paper prints the two headline rows as "174 LQ, ≳3×10⁵ T" (2028) and "1000 LQ, ≳10⁹ T" (2033). The check of Table 1.1 against `resources.json` is `paper_tools/test_table.py`; it needs the paper source and runs through `sync_paper.sh`. It checks the ≳ relation and the value for (8, "2028"); it does not check the conditional mark.
 
 **Box values and the tests that pin them**
 

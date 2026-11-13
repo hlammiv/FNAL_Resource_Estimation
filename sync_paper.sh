@@ -9,11 +9,15 @@
 # the copy's Figures/, not the paper's. The two commit hashes checked are printed first; a dirty
 # working tree is reported so the pair in RELEASE.md can be trusted.
 #
-# Usage: sync_paper.sh [path-to-paper-checkout]
+# Usage: sync_paper.sh <path-to-paper-checkout>
 set -euo pipefail
 
+usage() { echo "usage: $(basename "$0") <path-to-paper-checkout>" >&2; exit 2; }
+[ "$#" -eq 1 ] || usage
+[ -f "$1/main.tex" ] || { echo "error: $1 is not a paper checkout (no main.tex)" >&2; usage; }
+
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PAPER="$(cd "${1:-/home/hlamm/Desktop/fnalqc/FNAL_2026_QC_WP}" && pwd)"
+PAPER="$(cd "$1" && pwd)"
 
 TREE="$(mktemp -d)"
 trap 'rm -rf "$TREE"' EXIT

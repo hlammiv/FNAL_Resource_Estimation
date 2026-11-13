@@ -27,7 +27,7 @@ python applications/ch10_finite_density/dump_assumptions.py   # the table of sec
 
 ## 3. Assumptions
 
-Every input of the model is a field of the `Assumptions` dataclass (lines 215-508) and carries a provenance tag:
+Every input of the model is a field of the `Assumptions` dataclass (lines 217-515) and carries a provenance tag:
 
 - **Cited**: a published source gives the value; the source column holds its bibliography key.
 - **Assumed**: a working assumption of this package or of the chapter, with its reasoning in the note.
@@ -35,7 +35,7 @@ Every input of the model is a field of the `Assumptions` dataclass (lines 215-50
 
 The table below is the output of `dump_assumptions.py`, which reads the live dataclass; only the grouping is added by the script. Values, sources and notes are the code's own strings, printed unedited; some sources point to internal change-log files and some notes carry internal labels, which are not needed to follow the numbers. The last group holds inputs of comparison routes that the model computes and reports but that do not enter the headline numbers (section 4.9).
 
-74 fields: Assumed 33, Cited 6, Stated-not-derived 35
+80 fields: Assumed 39, Cited 6, Stated-not-derived 35
 
 #### Shared: lattice theory and encoding
 
@@ -90,9 +90,9 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `d_2033` | 3 | Stated-not-derived | app07:158,162 | 3D SU(3) |
 | `L_2033` | 2 | Stated-not-derived | app07:162 | V=2^3 |
 | `n_stag_2033` | 3 | Stated-not-derived | app07:163 | 3 staggered fields (N_f=4+2 tastes) |
-| `n_anc_2033` | (250, 750) | Stated-not-derived | app07:93,168 | 250-750 for the 2033 route: BE workspace and the parity ancilla of parallel hops (was the Gibbs route's BE/bath register; relabelled 2026-10-05) |
+| `n_anc_2033` | (250, 750) | Stated-not-derived | app07:97,179 | 250-750 for the 2033 route: BE workspace and the parity ancilla of parallel hops (was the Gibbs route's BE/bath register; relabelled 2026-10-05) |
 | `t_ref_2033` | 1000000000.0 | Cited | DOE_RFI_2026 | 2033 per-shot hard-op reference; app07:105,158,169 |
-| `beta_h_2033` | 100.0 | Stated-not-derived | app07:105 | beta\|\|H\|\| ~ 1e2 for the KMS Gibbs preparation |
+| `beta_h_2033` | 100.0 | Stated-not-derived | app07:87 | beta\|\|H\|\| = 1e2: an assumption carried over from the KMS Gibbs route, never derived. The coupling-independent mass term alone spans V N_c N_stag a m_q = 72 x 0.317 = 22.8/a, so beta\|\|H\|\| >= 225 at T = 100 MeV (beta = 9.87 a; hop, electric and magnetic terms add more, but g^2 is not fixed): d_beta >= 46 and the shot >= 4.3e9 T (referee ch9-ch10-01, 2026-11-09). The chapter now calls it assumed and the shot a lower bound |
 | `c_mix` | 20 | Stated-not-derived | app07:105 | t_mix = c beta\|\|H\|\| with c ~ 20; 'least controlled constant in the 2033 costing'. Referee F2 (2026-10-04): read as c sweeps of the jump set (t_mix ~ c at per-jump rate 1) |
 | `t_depth_2033` | (98454105.32846098, 315713175.1043646) | Assumed | factory.json Ch. 10 run 2 (scratchpad factories/ch10_depth_v2.py), r25 | T-depth of the 2e3-step Gibbs shot: low = T-par color frame, 12 link rounds (its ~170 parity ancilla per hop fit the 750 band only at ~3 concurrent hops; 6 rounds, 5.23e7, needs ~880); high = as compiled, 12 link rounds (250-ancilla end). Fully serial 3.89e9 (F* 1.4) is the pessimistic bound, not priced |
 
@@ -116,7 +116,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `n_mu` | 5 | Stated-not-derived | app07:56,165 | 5 chemical potentials, mu_B in [0,600] MeV |
 | `eps_stat` | 0.1 | Assumed | app07:Nshot_fd | absolute target \|delta(chi4/chi2)\| <= 0.1 per grid point, 10% at the hadron-gas value 1 and well defined near zeros of chi4 (referee F1) |
 | `eps_chi4_chi2_target` | 0.1 | Stated-not-derived | app07:167 | '10% on chi4/chi2' |
-| `eps_pressure_target` | 0.05 | Stated-not-derived | app07:56,167,224 | '5% on p', not separately costed: chi4 at eps=0.1 sets the shots, p inherited (ruling ch10-pressure-5pct a) |
+| `eps_pressure_target` | 0.05 | Stated-not-derived | app07 (RECORD; the '5% on p' print retired 2026-11-09, SR-ch10-2) | RECORD: never separately costed (ruling ch10-pressure-5pct a); chi4 at eps=0.1 sets the shots and the chapter now prints 'precision not estimated' for p. A 400-replica MBAR Monte Carlo of the campaign rows (verifier 2026-11-09) gave Delta p 5-9% at mu_B = 150 MeV for T <= 175 MeV and 1-4.5% at mu_B >= 300 MeV |
 | `eps_first_result` | 0.3 | Assumed | ruling R1, H. Lamm 2026-10-02 | R1: the minimal first result at 30% statistical error |
 | `nb_toy_k2_priced` | 0.01 | Assumed | referee F1; scratchpad referee/ch10_f1.py | kappa_2(N_B) at mu_B = 0 of the priced toy: Skellam in baryons, the same at every T (the true kappa_2 at V = 2^3 is open) |
 | `nb_toy_k2_band` | (0.01, 0.1) | Assumed | referee F1 | baryon-Skellam kappa_2(0) band carried beside the priced value |
@@ -166,7 +166,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 
 The chain is register, then rotation tolerance, then the cost of one Trotter step, then the cost of one shot, then shots, then wall time. Every number quoted here is a key of `model(a, era).intermediates` (shown in backticks) or a line of the primitive breakdown, and, where a test pins it, the test is named.
 
-### 4.1 Logical qubits (`_geometry`, lines 515-528)
+### 4.1 Logical qubits (`_geometry`, lines 522-535)
 
 N_q = d L^d q_G + N_stag N_c L^d + N_anc: links times qubits per link, plus one qubit per color per field per site, plus an ancilla budget.
 
@@ -178,7 +178,7 @@ N_q = d L^d q_G + N_stag N_c L^d + N_anc: links times qubits per link, plus one 
 
 The 2028 budget of 100 ancillas is itemized (lines 1069-1083; `ancilla_workspace`): U_FFT 8, U_Tr 7, U_inv 4, U_mul 2, the hop's Hamming-weight-phasing group HWP(6) 4, its C^7X ladder 5, the 24-qubit color-squish scratch of the hop, the mass HWP(3) 1 and the repeat-until-success synthesis ancilla 1 (itemized 2026-10-09, as in Chs. 6 and 9). With serial reuse the workspace is 29 (the squish scratch is held through the hop, so it sits beside the ladder); without reuse it is 56. With one Hadamard-test qubit the algorithmic register is 106-133 of the 176 (`algorithmic_register`; `test_2028_ancilla_budget_accounting`); the rest is margin. The 2033 band of 250-750 (block-encoding workspace and the parity ancillas of hops run in parallel) is Stated and not itemized.
 
-### 4.2 Rotation tolerance (`_rot_per_step`, lines 570-586; `_eps`, lines 714-716)
+### 4.2 Rotation tolerance (`_rot_per_step`, lines 577-593; `_eps`, lines 721-723)
 
 Synthesized rotations are counted from the gate tables, independent of the tolerance. Each circuit then sets its own tolerance eps_rot = sqrt(0.01 / N_rot) (`common.eps_rot_for`), so the total synthesis error per shot is 0.01, and every rotation costs 1.15 log2(1/eps_rot) + 9.2 T (`common.t_per_rotation`). No iteration is needed because N_rot does not depend on eps.
 
@@ -193,9 +193,9 @@ Rotations per Trotter step (`n_rot_per_step`): 10,908 at 2028 (3,708 gauge + 7,1
 
 `test_rtol_rotation_count_matches_the_breakdown` checks that no synthesized rotation is missed: the change of the T-count between two tolerances equals 1.15 N_rot log2(eps_1/eps_2) to 1e-9.
 
-### 4.3 One Trotter step: c_step = gauge + hop + mass (`_t_per_step`, lines 564-567)
+### 4.3 One Trotter step: c_step = gauge + hop + mass (`_t_per_step`, lines 571-574)
 
-**Gauge terms** (`_per_link`, lines 531-540; `groups.magnetic_per_link` and `groups.electric_per_link`, `groups.py` lines 431-452). Per link per step the Kogut-Susskind multiplicities of arXiv:2405.05973 (tab:primcost; `groups.PRIMCOST`, `groups.py` lines 132-135) are U_inv 3(d-1), U_mul 6(d-1), U_Tr (d-1)/2 for the plaquette, and two Fourier transforms (the FFT of arXiv:2408.00075) plus one diagonal phase U_phi for the electric term. Each primitive costs t_const + n_rot (1.15 log2(1/eps) + 9.2) (`groups.PrimitiveCost.t`), with the papers' Sigma(36x3) values U_inv 119 + 0, U_mul 308 + 0, U_Tr 378 + 7, U_FFT 532 + 102, U_phi 0 + 256 (Toffolis at 7 T in t_const; n_rot read as the papers' log coefficient over 1.15).
+**Gauge terms** (`_per_link`, lines 538-547; `groups.magnetic_per_link` and `groups.electric_per_link`, `groups.py` lines 431-452). Per link per step the Kogut-Susskind multiplicities of arXiv:2405.05973 (tab:primcost; `groups.PRIMCOST`, `groups.py` lines 132-135) are U_inv 3(d-1), U_mul 6(d-1), U_Tr (d-1)/2 for the plaquette, and two Fourier transforms (the FFT of arXiv:2408.00075) plus one diagonal phase U_phi for the electric term. Each primitive costs t_const + n_rot (1.15 log2(1/eps) + 9.2) (`groups.PrimitiveCost.t`), with the papers' Sigma(36x3) values U_inv 119 + 0, U_mul 308 + 0, U_Tr 378 + 7, U_FFT 532 + 102, U_phi 0 + 256 (Toffolis at 7 T in t_const; n_rot read as the papers' log coefficient over 1.15).
 
 | | magnetic T/link | electric T/link | gauge T/step | test |
 |---|---|---|---|---|
@@ -204,7 +204,7 @@ Rotations per Trotter step (`n_rot_per_step`): 10,908 at 2028 (3,708 gauge + 7,1
 
 The electric term is 81% of the 2028 gauge cost (`electric_share`). Without the FFT it would be 633 (2028) to 651 (2033) times larger (`naive_over_fft`).
 
-**Staggered hop** (`_hop_link`, lines 548-555; `groups.fermion_hop_counts` and `groups.hop_link_cost`, `groups.py` lines 811-1073). The gate counts come from an unpublished draft on gauge-covariant fermion primitives (bibliography key `FermionPrimitives_unpub`). A hop on a link applies a color frame V on both sites, a diagonal hop, and V^dag on both sites. Per link per step, at the chapter's readings (`hop_undo` True, `hop_share` "link", `hop_mcx` "mbu", `hop_phasing` "hwp"):
+**Staggered hop** (`_hop_link`, lines 555-562; `groups.fermion_hop_counts` and `groups.hop_link_cost`, `groups.py` lines 811-1073). The gate counts come from an unpublished draft on gauge-covariant fermion primitives (bibliography key `FermionPrimitives_unpub`). A hop on a link applies a color frame V on both sites, a diagonal hop, and V^dag on both sites. Per link per step, at the chapter's readings (`hop_undo` True, `hop_share` "link", `hop_mcx` "mbu", `hop_phasing` "hwp"):
 
 | piece | 2028 (N_stag = 1) | 2033 (N_stag = 3) | how it is counted |
 |---|---|---|---|
@@ -218,11 +218,11 @@ The electric term is 81% of the 2028 gauge cost (`electric_share`). Without the 
 
 The color frame (first two rows) is 80% of the 2028 hop and 76% of the 2033 hop (`hop_colour_frame_share`). The model also carries the alternative readings at the same tolerance: recomputing the squish at every frame application (`hop_t_per_link_share_draft`, 85,118.7 and 148,038.4 T/link), dropping the frame undo (`hop_t_per_link_no_undo`, 30,102.4 at 2028), and the draft's own printed formula (`hop_t_per_link_fp_printed`, 32,297.9 at 2028). These are pinned in `test_2028_per_step_cost_derived_from_the_papers`, `test_2033_c_be_consistent_with_compiled_floor` and `test_r19_hop_reading_is_e21`.
 
-**Staggered mass** (`_mass_site`, lines 558-561; `groups.staggered_mass_site`, `groups.py` lines 1076-1090). One Rz per color and field on each site, the N_c N_stag equal angles grouped as one HWP group. Because N_B commutes with H, the mu_B N_B term adds the same angle to every copy on a site and folds in at no cost. HWP(3) is 2 rotations + 1 Toffoli = 48.47 T per site (x 4 sites = 193.9 T); HWP(9) is 4 rotations + 7 Toffolis = 163.6 T per site (x 8 = 1,308.7 T).
+**Staggered mass** (`_mass_site`, lines 565-568; `groups.staggered_mass_site`, `groups.py` lines 1076-1090). One Rz per color and field on each site, the N_c N_stag equal angles grouped as one HWP group. Because N_B commutes with H, the mu_B N_B term adds the same angle to every copy on a site and folds in at no cost. HWP(3) is 2 rotations + 1 Toffoli = 48.47 T per site (x 4 sites = 193.9 T); HWP(9) is 4 rotations + 7 Toffolis = 163.6 T per site (x 8 = 1,308.7 T).
 
 **The step** (`c_be_t_per_step`): at 2028, 104,541.0 + 295,221.9 + 193.9 = **399,956.8 T**, 4.0 times the 1e5 cap, so no step fits (`steps_under_cap` = 0). At 2033 and the tolerance of 2e3 plain steps, 461,523.9 + 2,297,626.8 + 1,308.7 = 2,760,459.4 T, of which the hop is 83% (`hop_share_of_c_be`). Inside the QSVT shot the same step is re-priced at that circuit's tolerance: 2,718,083 T at the low end and 2,761,708 T at the high end (`qsvt_c_step`).
 
-### 4.4 2028 per-shot T and breakdown (`_model_2028`, lines 1017-1188)
+### 4.4 2028 per-shot T and breakdown (`_model_2028`, lines 1024-1196)
 
 The per-shot count is the one priced step, 399,956.8 T (`hard_ops`; `test_2028_hard_ops_band_and_breakdown`). Breakdown as printed by `--chapter ch10`:
 
@@ -243,7 +243,7 @@ mass_hwp_toffolis                4 x        7 =         28  COMPILED
 
 The executed circuit is the whole ramp plus the energy readout. A ten-step ramp priced as its own circuit (N_rot 109,080, eps_rot 3.03e-4) is 4.21e6 T (`ramp_original_t`; `test_2028_per_step_cost_derived_from_the_papers`). The ramp length, the preparation error and the grouped readout of H are not priced.
 
-### 4.5 2033 per-shot T: the QSVT thermal filter (`qsvt_thermal`, lines 652-696; `qsvt_band`, lines 699-704)
+### 4.5 2033 per-shot T: the QSVT thermal filter (`qsvt_thermal`, lines 659-703; `qsvt_band`, lines 706-711)
 
 - Degree: d_beta = round(sqrt(beta||H|| ln(1/delta_beta))) = round(sqrt(100 ln 1e4)) = round(30.35) = 30 (`d_beta`). The polynomial is in e^{-beta H/2} alone: N_B commutes with H, so the e^{beta mu_B N_B/2} weight rides on the reference's sector weights and the degree does not depend on mu_B.
 - Amplification: amplitude a = sqrt(0.01) = 0.1, k = ceil(pi / (4 arcsin a)) = 8 iterations, 2k + 1 = 17 filter calls (`qsvt_filter_calls`), 17 x 30 = 510 block-encoding queries (`qsvt_queries`).
@@ -280,7 +280,7 @@ qsvt_reflection_toffolis          8112 x        7 =  5.678e+04  SCALING
 
 **2028.** 2e3 shots per sector are Stated. With H normalized by the total norm lambda of its measured terms and a per-shot variance sigma^2 <= 1 (Assumed), that is sqrt(1/2000) = 2.24% of lambda per sector and sqrt(2) x 2.24% = 3.16% of lambda on mu_c (`eps_per_sector`, `eps_mu_c_over_lambda`; the per-sector value is pinned by `test_r25_2028_exports_and_sectors`).
 
-**2033 campaign** (`ratio_variance_per_sample`, lines 841-981; `grid_shots_direct`, lines 988-996). The estimator of chi_4/chi_2 is the ratio of k-statistics r = k_4/k_2 of the N_B samples. Each shot is an independent preparation, so the variance is V_1/N with V_1 the delta-method (influence-function) variance per sample; shots per grid point are V_1/delta^2 at delta = 0.1 absolute. Since 2026-10-10 (author ruling, option (a)) N_B comes from the Hamiltonian strong-coupling site model (`nb_sc_logpmf`): a site holds colour-singlet clusters of 0, 3, 6 or 9 quarks (degeneracies 1, 10, 10, 1 for three staggered fields, `sc_site_degeneracy`), n_B = 0..3 on an even site and 0..-3 on an odd site relative to the staggered vacuum, at energy m_B |n_B| with m_B = 3 m_q, and the box is the convolution of its 8 sites. m_q = 313 MeV (`m_q_mev`), the constituent value, so m_B = 940 MeV (a m_q = 0.32 at a = 0.2 fm); kappa_2(mu_B = 0) runs from 6.7e-3 at T = 100 MeV to 0.64 at 200 MeV, 1.6 at (200, 600) MeV (`kappa2_mu0_by_T`, `kappa2_by_point`). The bracket that forced the change: at the a m_q = 0.1 of the phase check both the free end (1.6-2.0; on the periodic 2^3 lattice the two links joining each site pair carry equal staggered phases and the hop cancels) and the strong-coupling end (2.2-3.4) give kappa_2 ~ 2, two hundred times the Skellam toy's 0.01 (scratchpad ch10_kappa2/bracket.py). The delta method presumes non-zero N_B samples, so every point also takes at least 30 events, N >= 30 / P(N_B != 0) (`sc_min_events`; Monte Carlo reproduces the formula at 36 events and fails without events; the floor binds at (100, 0) MeV). The campaign samples two ensembles per T row, at mu_B = 25-50 and 600 MeV, and reweights them to the other points with exact positive weights (`grid_rw_pairs_sc_mev`), 61% fewer shots than sampling every point (`reweighting_saving_sc`). The Skellam toys (`nb_toy_logpmf`, kappa_2(0) = 0.01 at every T) are records.
+**2033 campaign** (`ratio_variance_per_sample`, lines 841-981; `grid_shots_direct`, lines 995-1003). The estimator of chi_4/chi_2 is the ratio of k-statistics r = k_4/k_2 of the N_B samples. Each shot is an independent preparation, so the variance is V_1/N with V_1 the delta-method (influence-function) variance per sample; shots per grid point are V_1/delta^2 at delta = 0.1 absolute. Since 2026-10-10 (author ruling, option (a)) N_B comes from the Hamiltonian strong-coupling site model (`nb_sc_logpmf`): a site holds colour-singlet clusters of 0, 3, 6 or 9 quarks (degeneracies 1, 10, 10, 1 for three staggered fields, `sc_site_degeneracy`), n_B = 0..3 on an even site and 0..-3 on an odd site relative to the staggered vacuum, at energy m_B |n_B| with m_B = 3 m_q, and the box is the convolution of its 8 sites. m_q = 313 MeV (`m_q_mev`), the constituent value, so m_B = 940 MeV (a m_q = 0.32 at a = 0.2 fm); kappa_2(mu_B = 0) runs from 6.7e-3 at T = 100 MeV to 0.64 at 200 MeV, 1.6 at (200, 600) MeV (`kappa2_mu0_by_T`, `kappa2_by_point`). The bracket that forced the change: at the a m_q = 0.1 of the phase check both the free end (1.6-2.0; on the periodic 2^3 lattice the two links joining each site pair carry equal staggered phases and the hop cancels) and the strong-coupling end (2.2-3.4) give kappa_2 ~ 2, two hundred times the Skellam toy's 0.01 (scratchpad ch10_kappa2/bracket.py). The delta method presumes non-zero N_B samples, so every point also takes at least 30 events, N >= 30 / P(N_B != 0) (`sc_min_events`; Monte Carlo reproduces the formula at 36 events and fails without events; the floor binds at (100, 0) MeV). The campaign samples two ensembles per T row, at mu_B = 25-50 and 600 MeV, and reweights them to the other points with exact positive weights (`grid_rw_pairs_sc_mev`), 61% fewer shots than sampling every point (`reweighting_saving_sc`). The Skellam toys (`nb_toy_logpmf`, kappa_2(0) = 0.01 at every T) are records.
 
 | quantity | value | key | test |
 |---|---|---|---|
@@ -295,7 +295,7 @@ qsvt_reflection_toffolis          8112 x        7 =  5.678e+04  SCALING
 
 **2033 first result** (`row_samples_sc`). The T = 150 MeV row: n_B to 30% relative for mu_B >= 150 MeV and chi_4/chi_2 to +-0.3 absolute at all five mu_B (`fr_chi_target_abs`; the strong-coupling ratio crosses zero along the row, so a relative target is undefined there), with the event floor on the sampled ensembles. The model takes the smaller of direct sampling (2,526, `fr_sc_direct`) and reweighting from the best pair of ensembles on the 25-MeV grid ((50, 600) MeV, 1,006, `fr_sc_reweighted`): 1,007 samples (`fr_samples`; `test_r25_2033_first_result`). Delta p is taken from the same samples. The Skellam-toy range 2,926 - 15,861 is a record (`fr_samples_skellam_record`).
 
-### 4.7 Wall time, depth and factories (`_wall_shot_at_baseline`, lines 707-711; `common.depth_exports`)
+### 4.7 Wall time, depth and factories (`_wall_shot_at_baseline`, lines 714-718; `common.depth_exports`)
 
 One machine, serial: wall per shot = max(N_T x 1 us, D_T x 10 us) + 0.1 ms, where D_T is the T-depth and 10 us the reaction time per sequential non-Clifford layer. The first term wins whenever F* = N_T / D_T >= 10, the number of factories behind the 1 us per T convention.
 
@@ -323,7 +323,7 @@ These are reported in the chapter text but are not the headline.
 
 - **The same filter at V = 2^2** (beta||H|| = 100, Assumed): 4.72e8 - 9.57e8 T, 4.7e3 - 9.6e3 times the 2028 cap (`qsvt_2x2_t`). This is why the 2028 benchmark is a ground-state ramp and not a thermal state.
 - **V = 3^3 at 2033 parameters**: beta||H|| scaled with the volume to 337.5, d_beta = 56, a 9.56e6-T step, 1.82e10 - 3.70e10 T per shot on 1,141 - 1,641 LQ (`v3cubed_*`; `test_2033_v3cubed_promotion`).
-- **A Lindbladian Gibbs sampler** (Chen-Kastoryano-Gilyen, arXiv:2311.09207; `gibbs_sample`, lines 600-643) on the same Trotter step: 288 local jumps, 20 sweeps, 8.39e13 T per sample at the central structure and 4.42e14 with the x K segment factor of Thm. I.2 (`gibbs_t_per_shot_range`, which the chapter prints as ~8e13-4e14), 1.5e4 - 1.6e5 times the QSVT shot (`gibbs_over_qsvt`; `test_f2_sampler_step_derivation`). Over the sweep band of 10-40 the central structure spans 7.6e12 - 9.5e14 (`gibbs_t_sample_band`). The same sampler at V = 2^2 is 1.3e12 T (`gibbs_2x2_t_sample`; `test_f2_2028_gibbs_sample_priced`).
+- **A Lindbladian Gibbs sampler** (Chen-Kastoryano-Gilyen, arXiv:2311.09207; `gibbs_sample`, lines 607-650) on the same Trotter step: 288 local jumps, 20 sweeps, 8.39e13 T per sample at the central structure and 4.42e14 with the x K segment factor of Thm. I.2 (`gibbs_t_per_shot_range`, which the chapter prints as ~8e13-4e14), 1.5e4 - 1.6e5 times the QSVT shot (`gibbs_over_qsvt`; `test_f2_sampler_step_derivation`). Over the sweep band of 10-40 the central structure spans 7.6e12 - 9.5e14 (`gibbs_t_sample_band`). The same sampler at V = 2^2 is 1.3e12 T (`gibbs_2x2_t_sample`; `test_f2_2028_gibbs_sample_priced`).
 - **2e3 plain Trotter steps** (c_mix x beta||H|| = 20 x 100) at 2.76e6 T each: 5.52e9 T (`t_hsim_lower_bound`). This circuit also sets the reference for the 2033 depth scaling.
 
 ## 5. What the paper prints
@@ -336,7 +336,7 @@ The rows below are what the chapter writes to `resources.json`, which feeds the 
 | 2033 | 3D SU(3) Sigma(36x3) 2^3, QSVT/TPQ | [514, 1014] | [2772642998.6754518, 5634084702.228161] | `conditional: true` |
 | codesign | post-2033 Sigma(72x3) 4^3 | [2554, 3054] | [0.0, 0.0] | `lq_only: true`, `codesign: true` |
 
-The `PUBLISHED` table (lines 1537-1553) holds what the boxes print: ~180 LQ and >~4.0e5 T (2028), ~500-1000 LQ and 2.8-5.6e9 T (2033), 2554-3054 LQ (stretch). `test_common.py::test_model_reproduces_published` requires the model to land within 10% of each, and `test_published_matches_the_boxes_as_printed` pins the printed values themselves. The other rows of the boxes, and where they come from:
+The `PUBLISHED` table (lines 1548-1564) holds what the boxes print: ~180 LQ and >~4.0e5 T (2028), ~500-1000 LQ and 2.8-5.6e9 T (2033), 2554-3054 LQ (stretch). `test_common.py::test_model_reproduces_published` requires the model to land within 10% of each, and `test_published_matches_the_boxes_as_printed` pins the printed values themselves. The other rows of the boxes, and where they come from:
 
 | box row | 2028 | 2033 | tests |
 |---|---|---|---|

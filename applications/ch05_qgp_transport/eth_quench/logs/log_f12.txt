@@ -1,0 +1,4 @@
+  eigh D=924 0.5s
+  ensemble vac: n=1 E=-3.0000 T*=1.438 (4.3s)
+  ensemble fockE_1.5Tstar: n=24 E=-0.1667 T*=2.219 (37.0s)
+  ensemble fockE_2.5Tstar: n=24 E=1.9167 T*=3.449 (41.7s)
