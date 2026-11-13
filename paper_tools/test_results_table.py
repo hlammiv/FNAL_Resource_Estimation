@@ -193,7 +193,7 @@ def test_registers_bullet():
     assert f"reach ${min(large):.0f}$--${max(large):.0f}$ LQ in Chs." in top_line()
 
 
-@pytest.mark.parametrize("era,target,lo_end", [("2028", r"$10^{5}$", 1), ("2033", r"$10^{9}$", 0)])
+@pytest.mark.parametrize("era,target,lo_end", [("2028", r"$10^{5}$", 1), ("2033", r"$10^{9}$", 1)])   # PR-cross-1 2026-11-13: the bullet compares upper ends (5.6 to 41)
 def test_hard_operations_bullet(era, target, lo_end):
     above = [ch for ch in DIGITAL if float(f"{over(ch, era):.2g}") > 1.0]
     assert len(above) == 5

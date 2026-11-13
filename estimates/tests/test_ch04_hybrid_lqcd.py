@@ -1026,7 +1026,7 @@ def test_referee_h2_svt_readout_identity_and_hvp_estimate():
     assert np.allclose(svt, p0 * am * Minv)
     P = np.mean(np.sum(np.abs(svt) ** 2, axis=0))
     assert near(P, p0 ** 2 * am * c, 1e-10)
-    assert "normality alone is not enough" in TEX and "nothing is postselected" in TEX
+    assert "Normality alone is not enough" in TEX and "nothing is postselected" in TEX
     # HVP: noise-matched loops need V_F var / (p0 am)^2 per configuration, ~8e12 at 48^3x96, kappa = 1e3
     assert near(ICD["am_production"], 4 / 999, 1e-12) and ICD["v_f_production"] == 3 * 48 ** 3 * 96
     assert near(ICD["hvp_noise_matched_shots_per_cfg"], 7.95e12, 0.001)
