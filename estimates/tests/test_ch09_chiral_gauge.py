@@ -88,6 +88,13 @@ def r33(a):
 
 
 @pytest.fixture(scope="module")
+def r33_c375(a):
+    """RN-P3-02 2026-11-14: the default chain at the pre-ruling casimir_max_2O = 3.75 (j = 3/2), which every
+    worst-case-bound and second-quantized record print was made at."""
+    return m.model(dataclasses.replace(a, casimir_max_2O=c.Assumed(3.75, "RN-P3-02 record: j <= 3/2")), "2033")
+
+
+@pytest.fixture(scope="module")
 def a24(a):
     """The r24 chain: Yukawa outside sgn, the 2033 register as itemized (1010 LQ). Reproduces every r24 print."""
     return dataclasses.replace(a, yukawa_placement=c.Stated("outside", "r24 record"),
@@ -118,10 +125,10 @@ N28, N28C = 290 * 21, 336 * 21                        # 6090 unchunked, 7056 chu
 EPS28, EPS28C = math.sqrt(1e-2 / N28), math.sqrt(1e-2 / N28C)
 T_RUS, T_RUS_C = fit(N28), fit(N28C)                  # 20.249, 20.371
 # 2033, r22: the single-particle architecture at the state-dependent step count
-E_HALF, B_NORM = 0.5 * 0.5 * 3.75, 4 + 4 * 4.0        # g^2 = 1: e = 15/16, b = hop 4 + 4 plaquettes x 4
-LAMBDA = 81 * (E_HALF ** 2 * B_NORM / 3 + E_HALF * B_NORM ** 2 / 6)     # 5537.1 a^-3 (the worst-case bound)
-N_BOUND = math.ceil(math.sqrt(LAMBDA * 50 ** 3 / 0.1))  # 83,195 at t = 50a (r21-r23; the records keep it)
-N_BOUND_10 = math.ceil(math.sqrt(LAMBDA * 10 ** 3 / 0.1))   # 7442 at t = 10a (r24)
+E_HALF, B_NORM = 0.5 * 0.5 * 12.0, 4 + 4 * 4.0        # g^2 = 1: e = 3, b = hop 4 + 4 plaquettes x 4 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was e = 15/16)
+LAMBDA = 81 * (E_HALF ** 2 * B_NORM / 3 + E_HALF * B_NORM ** 2 / 6)     # 21,060 a^-3 (the worst-case bound; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 5537.1)
+N_BOUND = math.ceil(math.sqrt(LAMBDA * 50 ** 3 / 0.1))  # 162,250 at t = 50a (r21-r23; the records keep it; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 83,195)
+N_BOUND_10 = math.ceil(math.sqrt(LAMBDA * 10 ** 3 / 0.1))   # 14,513 at t = 10a (r24; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 7442)
 # r24 (H. Lamm 2026-10-02, 'ok to run for a shorter amount of time, and lower kappa is ok'): kappa = 30, t = 2 fm = 10a
 D_SGN = math.ceil(30 * math.log(1e3))                 # 208
 YUK = 1.5                                             # 2026-10-10: Yukawa weight in the normalization, (2 + y rho_max)/2 at y rho_max = 1
@@ -174,21 +181,21 @@ def shot(n_dov, d=D_SGN, n_trot=N_TROT, n_sgn=2):
 T_DOV = NQD * C_SP + C_LIFT + C_OUTER + C_HIGGS       # 1,847,747.1 (r24 937,592.7; r22 3,058,805.3)
 T_DOV_24 = price_sp(NDOV, n_sgn=1, record=True)["t_dov"]   # about 937,592.7 (r24, Q = 216)
 # RECORD: the retired second-quantized construction at the worst-case step (the r21 box)
-NDOV_SQ = 5 * N_BOUND + TPQ_R25                           # 416,215
-NQ_SQ = NDOV_SQ * 691                                 # 287,604,565 BE queries
+NDOV_SQ = 5 * N_BOUND + TPQ_R25                           # 811,490 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 416,215)
+NQ_SQ = NDOV_SQ * 691                                 # 560,739,590 BE queries (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 287,604,565)
 LCU_SITE = 3 * 2 * 2 * 2 + 4 * 2 + (4 * 2) * (4 + 1)  # 24 hop + 8 on-site + 40 Higgs = 72
 C_TOFF = 7 * 27 * LCU_SITE                            # 13,608
 LINK_MUX = 7 * (4 * 3 + 40) + (4 * 18 + 32)           # 4 multiplexers (3 Tof + 18 T) + spinor frame = 468
 N33_SQ = 25 * NQ_SQ                                   # 25 rotations per query
-T33_SQ = fit(N33_SQ)                                  # 31.848
-C_BE33 = C_TOFF + 81 * LINK_MUX + 27 * 392 + 25 * T33_SQ  # 62,896.2
+T33_SQ = fit(N33_SQ)                                  # 32.402 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 31.848)
+C_BE33 = C_TOFF + 81 * LINK_MUX + 27 * 392 + 25 * T33_SQ  # 62,910.0 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 62,896.2)
 # the draft's diagonalizing frame at the same query count
 LINK_CT, LINK_ROT = 7 * 384 + 144, 704                # 2O Wilson d=3 hop per link per query (r19: squish per link)
 LINK_CT_DRAFT = 7 * 1182 + 144                        # r17 per-application squish (share="draft"), 8418
 NROTQ = 25 + 81 * LINK_ROT                            # 57,049
-T33D = fit(NROTQ * NQ_SQ)                             # 38.262
+T33D = fit(NROTQ * NQ_SQ)                             # 38.816 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 38.262)
 EPS33D = math.sqrt(1e-2 / (NROTQ * NQ_SQ))
-C_BE33D = C_TOFF + 81 * (LINK_CT + LINK_ROT * T33D) + 27 * 392 + 25 * T33D    # 2,436,414.9
+C_BE33D = C_TOFF + 81 * (LINK_CT + LINK_ROT * T33D) + 27 * 392 + 25 * T33D    # 2,468,012.4 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 2,436,414.9)
 # records: the pre-r21 query count (30 x 5 + 240 = 390 D_ov) and the 1.7e3-term LCU line
 NQ_PRE = 390 * 691                                    # 269,490
 T_PRE = fit(NROTQ * NQ_PRE)                           # 32.478
@@ -761,37 +768,37 @@ def test_2033_trotter_steps_state_dependent(a, r33):
     assert [f(3, 3, 10, 0.1, t)["n_central"] for t in (0.15, 0.25, 1.0)] == [448, 448, 478]
 
 
-def test_2033_trotter_worst_case_commutator_bound(a, r33):
+def test_2033_trotter_worst_case_commutator_bound(a, r33, r33_c375):
     # r21 (3b), derived here, quoted since r22 as the worst case: N = sqrt(Lambda t^3 / eps), Lambda from operator norms
     i = r33.intermediates
     tb = i["trotter_bound"]
     assert i["t_over_a_2033"] == 10 and i["eps_trotter"] == 0.1 and i["g2_bare"] == 1.0
-    assert math.isclose(tb["e_half_range"], E_HALF) and E_HALF == 15 / 16       # (g^2/2) x (15/4) / 2
+    assert math.isclose(tb["e_half_range"], E_HALF) and E_HALF == 3.0       # (g^2/2) x 12 / 2 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 15/16 = (g^2/2) x (15/4) / 2)
     assert math.isclose(tb["b_norm"], B_NORM) and B_NORM == 20                   # hop 4 + 4 plaquettes x 4/g^2
-    assert math.isclose(tb["lambda_link"], E_HALF ** 2 * 20 / 3 + E_HALF * 400 / 6)        # 5.86 + 62.5 = 68.36
-    assert math.isclose(tb["lambda"], LAMBDA) and round(LAMBDA, 1) == 5537.1
-    assert rel(i["trotter_lambda"], i["trotter_lambda_stated"]) <= 0.01          # '5.5e3 a^-3'
-    assert tb["n_steps"] == N_BOUND_10 == 7442 == i["n_trotter_bound"]
-    assert rel(i["n_trotter_bound"], i["n_trotter_bound_stated"]) <= 0.01        # '7.4e3 steps'
+    assert math.isclose(tb["lambda_link"], E_HALF ** 2 * 20 / 3 + E_HALF * 400 / 6)        # 60 + 200 = 260 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 5.86 + 62.5 = 68.36)
+    assert math.isclose(tb["lambda"], LAMBDA) and round(LAMBDA, 1) == 21060.0   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 5537.1
+    assert rel(r33_c375.intermediates["trotter_lambda"], i["trotter_lambda_stated"]) <= 0.01          # '5.5e3 a^-3' (record at 3.75; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was checked at the default)
+    assert tb["n_steps"] == N_BOUND_10 == 14513 == i["n_trotter_bound"]   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 7442
+    assert rel(r33_c375.intermediates["n_trotter_bound"], i["n_trotter_bound_stated"]) <= 0.01        # '7.4e3 steps' (record at 3.75; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was checked at the default)
     assert math.isclose(N_BOUND_10 ** 2 * 0.1 / 10 ** 3, LAMBDA, rel_tol=1e-3)   # the bound is saturated at eps
-    assert rel(i["trotter_dt_lattice_bound"], 1.34e-3) <= 0.01
-    assert i["r22_bound"]["n_trot"] == N_BOUND == 83195                         # the r21-r23 count at 50a (record)
+    assert rel(i["trotter_dt_lattice_bound"], 6.89e-4) <= 0.01   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 1.34e-3
+    assert i["r22_bound"]["n_trot"] == N_BOUND == 162250                         # the r21-r23 count at 50a (record; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 83,195)
     # the order with the group-diagonal terms outside is the better one
     assert tb["lambda_link"] < tb["lambda_link_other_order"]
     # the direct function, and its scalings: N ~ t^{3/2}, eps^{-1/2}, sqrt(n_links)
     f = m.trotter_bound_steps
-    assert f(81, 50, 0.1, 1.0, 3.75, 4.0, 4)["n_steps"] == N_BOUND and f(81, 10, 0.1, 1.0, 3.75, 4.0, 4) == tb
-    assert math.isclose(f(81, 40, 0.1, 1.0, 3.75, 4.0, 4)["n_exact"], 8 * tb["n_exact"])
-    assert math.isclose(f(81, 10, 0.4, 1.0, 3.75, 4.0, 4)["n_exact"], tb["n_exact"] / 2)
-    assert math.isclose(f(324, 10, 0.1, 1.0, 3.75, 4.0, 4)["n_exact"], 2 * tb["n_exact"])
-    # no bare coupling gives fewer than ~6.9e3 steps at t = 10a
-    assert 1.5 < i["trotter_g2_at_min"] < 2.2 and rel(i["trotter_lambda_min"], 4.77e3) <= 0.01
-    assert 6.9e3 < i["n_trotter_at_lambda_min"] < 6.95e3 <= N_BOUND_10
+    assert f(81, 50, 0.1, 1.0, 12.0, 4.0, 4)["n_steps"] == N_BOUND and f(81, 10, 0.1, 1.0, 12.0, 4.0, 4) == tb   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was casimir argument 3.75
+    assert math.isclose(f(81, 40, 0.1, 1.0, 12.0, 4.0, 4)["n_exact"], 8 * tb["n_exact"])
+    assert math.isclose(f(81, 10, 0.4, 1.0, 12.0, 4.0, 4)["n_exact"], tb["n_exact"] / 2)
+    assert math.isclose(f(324, 10, 0.1, 1.0, 12.0, 4.0, 4)["n_exact"], 2 * tb["n_exact"])
+    # no bare coupling gives fewer than ~1.44e4 steps at t = 10a (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was ~6.9e3)
+    assert 1.1 < i["trotter_g2_at_min"] < 1.4 and rel(i["trotter_lambda_min"], 2.066e4) <= 0.01   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 1.5-2.2, 4.77e3
+    assert 1.435e4 < i["n_trotter_at_lambda_min"] < 1.44e4 <= N_BOUND_10   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 6.9e3-6.95e3
     for g2 in (0.3, 0.42, 1.0, 2.0, 4.0, 6.0):
-        assert f(81, 10, 0.1, g2, 3.75, 4.0, 4)["n_steps"] >= i["n_trotter_at_lambda_min"]
-    # the worst case is 16.5x the state-dependent count: 9 from the linear volume sum (81 against sqrt(81)), the rest
+        assert f(81, 10, 0.1, g2, 12.0, 4.0, 4)["n_steps"] >= i["n_trotter_at_lambda_min"]
+    # the worst case is 32.3x the state-dependent count (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 16.5x): 9 from the linear volume sum (81 against sqrt(81)), the rest
     # from the per-link size (the ratio does not depend on t)
-    assert 16 < N_BOUND_10 / N_TROT < 17 and 16 < N_BOUND / N_TROT_R22 < 17 and 270 < LAMBDA / i["trotter_lambda_sd"] < 276
+    assert 32 < N_BOUND_10 / N_TROT < 33 and 32 < N_BOUND / N_TROT_R22 < 33 and 1037 < LAMBDA / i["trotter_lambda_sd"] < 1043   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 16-17, 16-17, 270-276
     # the pre-r21 '~30 steps' would need Lambda = 7.2e-4 a^-3
     assert i["n_trotter_pre_r21"] == 30 and rel(i["lambda_needed_for_pre_r21_steps"], 7.2e-4) <= 0.01
 
@@ -800,8 +807,8 @@ def test_2033_trotter_rule_switch_and_records(a, r33):
     # the rule switch: the headline, the worst-case bound, the fixed step of Ch. 5 (2 fm / 0.01 fm = 200), the old ~30
     i = r33.intermediates
     assert i["n_trotter_by_rule"] == {"state": N_TROT, "bound": N_BOUND_10, "step": 200, "stated": 30}
-    assert i["n_dov_per_step_by_rule"] == {"state": 43, "bound": 9, "step": 82, "stated": 459}      # at lambda = 1296 (648: 25, 6, 46, 237) (2Q: 19, 6, 33, 163)
-    assert i["n_dov_by_rule"] == {"state": 21985, "bound": 69613, "step": 19035, "stated": 16405}   # (lambda = 648: 13103, 46505, 11053, 8963) (2Q: 10063, 46165, 8113, 6403)
+    assert i["n_dov_per_step_by_rule"] == {"state": 43, "bound": 7, "step": 82, "stated": 459}      # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was bound 9; at lambda = 1296 (648: 25, 6, 46, 237) (2Q: 19, 6, 33, 163)
+    assert i["n_dov_by_rule"] == {"state": 21985, "bound": 104226, "step": 19035, "stated": 16405}   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was bound 69613; (lambda = 648: 13103, 46505, 11053, 8963) (2Q: 10063, 46165, 8113, 6403)
     assert i["n_dov_per_step_worst_stated"] == 9                                                  # '9 applications each'
     by = i["t_per_shot_by_trotter_rule"]
     for rule, n_dov in i["n_dov_by_rule"].items():
@@ -811,13 +818,13 @@ def test_2033_trotter_rule_switch_and_records(a, r33):
         # the gauge terms of a step are counted at the chain's own tolerance, so the switched chain differs below 1e-3
         assert rb.intermediates["n_dov_total"] == n_dov and rel(rb.hard_ops[0], by[rule]) <= 1e-3
         assert math.isclose(rb.breakdown_total(), rb.hard_ops[0])
-    assert rel(by["bound"], 1.356718e11) <= 1e-5 and rel(by["step"], 3.57680e10) <= 1e-5        # r26-yukawa (Q = 216: 9.12553e10, 2.05674e10); 2026-10-10 (2Q 9.06136e10, 1.51281e10; C1 8.40e10, 1.35e10; r25 8.31e10, 1.26e10)
+    assert rel(by["bound"], 2.055675e11) <= 1e-5 and rel(by["step"], 3.57680e10) <= 1e-5        # r26-yukawa (Q = 216: 9.12553e10, 2.05674e10); 2026-10-10 (2Q 9.06136e10, 1.51281e10; C1 8.40e10, 1.35e10; r25 8.31e10, 1.26e10)
     assert rel(by["stated"], 3.07218e10) <= 1e-5                                                  # (Q = 216: 1.65828e10) (2Q 1.18479e10)
-    assert rel(i["t_per_shot_bound"], i["t_per_shot_bound_stated"]) <= 0.04                       # '1.4e11 T'
+    assert rel(i["t_per_shot_bound"], i["t_per_shot_bound_stated"]) <= 0.04                       # '2.1e11 T' (RN-P3-02b 2026-11-14: casimir_max_2O 3.75 -> 12; was 1.356718e11, '1.4e11 T')
     assert rel(i["t_per_shot_empirical_step"], i["t_per_shot_empirical_step_stated"]) <= 0.04     # '1.4e10 T' (1.3508e10)
     assert i["t_per_shot_at_pre_r21_steps"] == by["stated"]
-    # r22-r23 records at 50a and kappa 1e2: the worst case 1.276e12 and the headline 2.008e11
-    assert rel(i["r22_bound"]["t_per_shot"], 1.275773e12) <= 1e-5 and i["r22_bound"]["per_step"] == 5
+    # r22-r23 records at 50a and kappa 1e2: the worst case 1.991e12 (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 1.276e12) and the headline 2.008e11
+    assert rel(i["r22_bound"]["t_per_shot"], 1.991032e12) <= 1e-5 and i["r22_bound"]["per_step"] == 4   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 1.275773e12 and 5
     # the range of the step count: 54 and 11 applications per step
     assert i["n_dov_per_step_range"] == (141, 21) and i["n_dov_range"] == (17722, 29389)       # 2026-10-10 (2Q: 54, 11; 7291, 15527)
     lo, hi = i["t_per_shot_range"]
@@ -1360,26 +1367,26 @@ def test_r23_no_machine_count(r33):
 
 # --- RECORD: the retired second-quantized construction (r17-r21) -----------------------------
 
-def test_2033_second_quantized_construction_is_a_record(a, r33):
+def test_2033_second_quantized_construction_is_a_record(a, r33, r33_c375):
     # the r21 box: QSVT of sgn on a Jordan-Wigner block encoding of H_W, at the worst-case step with 5 D_ov per step
     i = r33.intermediates
     rec = i["second_quantized_record"]
     assert rec["valid"] is False and rec["per_step"] == 5
-    assert rec["n_dov"] == NDOV_SQ == 416215 and rec["n_queries"] == NQ_SQ == i["sq_n_queries"]
-    assert i["sq_n_rot_shot"] == N33_SQ and math.isclose(i["sq_t_per_rot"], T33_SQ) and round(T33_SQ, 3) == 31.848
-    assert math.isclose(rec["c_be"], C_BE33) and round(rec["c_be"], 1) == 62896.2
+    assert rec["n_dov"] == NDOV_SQ == 811490 and rec["n_queries"] == NQ_SQ == i["sq_n_queries"]
+    assert i["sq_n_rot_shot"] == N33_SQ and math.isclose(i["sq_t_per_rot"], T33_SQ) and round(T33_SQ, 3) == 32.402   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 416,215 and 31.848
+    assert math.isclose(rec["c_be"], C_BE33) and round(rec["c_be"], 1) == 62910.0   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 62,896.2
     assert rel(i["sq_c_be"], i["sq_c_be_stated"]) <= 0.01                       # r21 'c_be ~ 6.3e4'
     assert math.isclose(rec["t_per_dov"], 691 * C_BE33) and rel(rec["t_per_dov"], i["sq_t_per_dov_stated"]) <= 0.02
-    assert math.isclose(rec["t_per_shot"], NQ_SQ * C_BE33) and rel(rec["t_per_shot"], 1.8089e13) <= 1e-4
-    assert rel(rec["t_per_shot"], i["sq_t_per_shot_stated"]) <= 0.01            # r21 box '~1.8e13'
+    assert math.isclose(rec["t_per_shot"], NQ_SQ * C_BE33) and rel(rec["t_per_shot"], 3.5276e13) <= 1e-4   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 1.8089e13
+    assert rel(r33_c375.intermediates["second_quantized_record"]["t_per_shot"], i["sq_t_per_shot_stated"]) <= 0.01            # r21 box '~1.8e13' (record at 3.75; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was checked at the default)
     assert (rec["lq_ancilla"], rec["lq_total"]) == (33, 1005)
     by = rec["t_per_shot_by_trotter_rule"]
     assert math.isclose(by["bound"], rec["t_per_shot"])
     assert rel(by["step"], 2.274e11) <= 1e-3 and rel(by["stated"], 1.691e10) <= 1e-3      # the r21 comparison prints
     # at equal step count the valid construction is 14.2x cheaper per application and per shot
     assert rel(rec["over_single_particle_per_application"], 14.18) <= 1e-3
-    assert math.isclose(rec["over_single_particle_per_application"], 691 * C_BE33 / price_sp(416215, 691, n_sgn=1, record=True)["t_dov"])
-    assert math.isclose(rec["over_single_particle_per_shot"], rec["over_single_particle_per_application"])
+    assert math.isclose(rec["over_single_particle_per_application"], 691 * C_BE33 / price_sp(4 * N_BOUND + TPQ_R25, 691, n_sgn=1, record=True)["t_dov"])   # 649,240: the r22 bound at its own 4 per step (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 416215 at 5 per step)
+    assert math.isclose(rec["over_single_particle_per_shot"], rec["over_single_particle_per_application"] * NDOV_SQ / (4 * N_BOUND + TPQ_R25))   # 17.7: 5 against 4 applications per step (RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was equal to per application, 5 per step each)
     # sgn of the many-body operator is not the bilinear with kernel sgn(h): they agree on the one-particle sector only,
     # and the many-body operator has an exact zero mode (the empty state), so its condition number is undefined
     import functools
@@ -1448,7 +1455,7 @@ def test_2033_record_link_term_multiplexer(a, r33):
         dataclasses.replace(a, link_frame=c.Cited("zero", "test"))
 
 
-def test_2033_record_draft_frame(a, r33):
+def test_2033_record_draft_frame(a, r33, r33_c375):
     # r17 (e) + r19 (E21): one 2O Wilson d=3 link per BE query of the second-quantized construction, frame applied and
     # undone, squish and parity held per link (share="link"), n_spin = 2, MBU, no phasing. A record since r22.
     i = r33.intermediates
@@ -1465,7 +1472,7 @@ def test_2033_record_draft_frame(a, r33):
     assert items["hop_diagonalizers"] == (0, 2 * 56, 4 * 56)                                  # 2 x 7 x 2 x 2 = 56
     assert items["spinor_frame"] == (2 * 4 * 5, 2 * 16, 0)                                    # N x 4 W x (5 Tof, 4 T)
     assert i["hop_clifford_t_per_link"] == LINK_CT == 2832 and i["hop_n_rot_per_link"] == LINK_ROT
-    assert math.isclose(i["hop_t_per_link"], LINK_CT + LINK_ROT * T33D) and round(i["hop_t_per_link"], 1) == 29768.7
+    assert math.isclose(i["hop_t_per_link"], LINK_CT + LINK_ROT * T33D) and round(i["hop_t_per_link"], 1) == 30158.6   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 29768.7
     assert i["hop_undo"] is True and i["hop_n_spin"] == 2 and i["hop_mcx"] == "mbu" and i["hop_share"] == "link"
     assert a.hop_frame_undo.prov is c.Provenance.CITED and "E21 (1)" in a.hop_frame_undo.src
     assert "OUR ESTIMATE" in a.hop_frame_undo.note and "does not count it" in a.hop_frame_undo.note
@@ -1476,10 +1483,10 @@ def test_2033_record_draft_frame(a, r33):
     assert math.isclose(i["draft_over_mux_per_link"], i["hop_t_per_link"] / 468)
     assert rel(i["draft_over_mux_per_link"], i["draft_over_mux_per_link_stated"]) <= 0.01
     assert i["sq_draft_frame_n_rot_shot"] == NROTQ * NQ_SQ and math.isclose(i["sq_draft_frame_t_per_rot"], T33D)
-    assert math.isclose(i["sq_c_be_draft_frame"], C_BE33D) and round(C_BE33D, 1) == 2436414.9
-    assert rel(i["sq_c_be_draft_frame"], i["sq_c_be_draft_frame_stated"]) <= 0.02             # r21 '2.4e6'
+    assert math.isclose(i["sq_c_be_draft_frame"], C_BE33D) and round(C_BE33D, 1) == 2468012.4   # RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was 2436414.9
+    assert rel(r33_c375.intermediates["sq_c_be_draft_frame"], i["sq_c_be_draft_frame_stated"]) <= 0.02             # r21 '2.4e6' (record at 3.75; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was checked at the default)
     assert math.isclose(i["sq_t_per_shot_draft_frame"], NQ_SQ * C_BE33D)
-    assert rel(i["sq_t_per_shot_draft_frame"], i["sq_t_per_shot_draft_frame_stated"]) <= 0.01  # r21 '7.0e14'
+    assert rel(r33_c375.intermediates["sq_t_per_shot_draft_frame"], i["sq_t_per_shot_draft_frame_stated"]) <= 0.01  # r21 '7.0e14' (record at 3.75; RN-P3-02 2026-11-14: casimir_max_2O 3.75 -> 12; was checked at the default)
     assert rel(i["draft_over_mux_shot"], i["draft_over_mux_shot_stated"]) <= 0.01             # 38.7 -> '39 times'
     # the frame switch moves the record only
     b = dataclasses.replace(a, link_frame=c.Cited("draft", "test"))

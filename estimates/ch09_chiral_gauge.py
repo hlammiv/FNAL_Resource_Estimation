@@ -1229,8 +1229,10 @@ class Assumptions:
                                          "says T ~ T_c only; 0.15-1 moves the central count over 5008-5342")
     g2_bare: Tagged = Assumed(1.0, "r21 (3b): bare gauge coupling for the WORST-CASE bound. The chapter states none; an "
                                    "order-one coupling. The state-dependent estimate does not depend on it at leading order")
-    casimir_max_2O: Tagged = Assumed(3.75, "r21 (3b): largest SU(2) Casimir j(j+1) kept by the 2O electric term, j = 3/2; "
-                                           "enters the worst-case bound only")
+    casimir_max_2O: Tagged = Assumed(12.0, "RN-P3-02 2026-11-14: largest Casimir of the 2O electric term; the four irreps "
+                                           "outside j <= 3/2 take the Casimir of the lowest SU(2) spin containing them "
+                                           "(j = 2, 5/2, 3), so the maximum is j = 3; was 3.75 (j = 3/2). Enters the "
+                                           "worst-case bound only")
     n_trotter_2033_pre_r21: Tagged = Stated(30, "app06 (pre-r21)", "RECORD: 'N_Trotter ~ 30 steps', dt = 1.7 a. With a valid "
                                                                    "block encoding it would need 752 applications per step")
     n_trotter_2033_stated: Tagged = Stated(450, "app06 2033 derivation and box", "'N_Trotter ~ 450 steps of dt ~ 0.022 a' "
@@ -1266,7 +1268,7 @@ class Assumptions:
     t_shot_range_stated: Tagged = Stated((3.3e10, 5.6e10), "app06 2033 derivation", "r26-yukawa 2026-11-06: was 1.9-3.7e10. batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is "
                                                                                    "1.1-2.6e10 T' (17 filter calls: 1.3469e10, 2.8708e10; C1 1.2-2.7e10; r25: 1.1115e10, 2.6352e10; "
                                                                                    "r24 5.6e9-1.3e10)")
-    t_shot_bound_stated: Tagged = Stated(1.4e11, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 9.1e10. batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' "
+    t_shot_bound_stated: Tagged = Stated(2.1e11, "Fig. ch09_t_per_shot (RN-P3-02b 2026-11-14)", "RN-P3-02b: was 1.4e11 at casimir_max_2O = 3.75. r26-yukawa 2026-11-06: was 9.1e10. batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' "
                                                                           "(17 filter calls: 8.546e10; C1 8.4e10; r25: 8.310e10; r24 4.2e10; r22 1.276e12)")
     beta_H: Tagged = Assumed(1e2, "RECORD (r25 and earlier): app06 'beta||H|| ~ 1e2'. Referee C1 (2026-10-04): inconsistent "
                                   "with the chapter's own block encoding, whose normalization is 2Q = 432 at beta = 2a")

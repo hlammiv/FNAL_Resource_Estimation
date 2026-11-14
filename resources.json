@@ -678,8 +678,8 @@
     55923018954.140915
    ],
    "t_alternative_fixed_step": 35767997376.72157,
-   "t_alternative_worst_case_bound": 135671842325.05415,
-   "t_record_second_quantized": 18089231750752.113,
+   "t_alternative_worst_case_bound": 205567468670.43567,
+   "t_record_second_quantized": 35276148902959.37,
    "t_short_time": 21502860909.954803,
    "wall_first_result_s": [
     164282480.3118518,
