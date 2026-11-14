@@ -78,7 +78,9 @@ def campaign_over_window(ch, end=1):
 # bound when its 2033 shot is. PR-q-09 (2026-11-13, replaces referee follow-up F6): a lower bound below 1x its target
 # is open; at or above 1x it is near or a miss by the point-value thresholds. The bound applies to the hard operations
 # only; the register is a point value.
-LOWER_BOUND = {(8, "2028"), (10, "2028"), (6, "2033"), (8, "2033"), (10, "2033")}
+# rn_est v2 (2026-11-14): Ch. 9's 2033 cell prints ${\gtrsim}$ (the chapter's counts and wall times are lower bounds),
+# so its campaign below the window is open, not a fit: it fits only under the free-lattice readout.
+LOWER_BOUND = {(8, "2028"), (10, "2028"), (6, "2033"), (8, "2033"), (9, "2033"), (10, "2033")}
 
 
 ORDER = (r"\fitsyes", r"\fitsopen", r"\fitsnear", r"\fitsno")
@@ -222,14 +224,15 @@ def test_co_design_band_in_bullet():
 
 def test_machine_time_bullet():
     within = [ch for ch in DIGITAL if campaign_over_window(ch) <= 1 and (ch, "2033") not in LOWER_BOUND]
-    assert within == [2, 3, 7]          # r26-yukawa: Ch. 9 left (5.8-6.5 yr); F6 2026-11-11: Ch. 8 is a lower bound
-    assert [ch for ch in DIGITAL if campaign_status(ch) == r"\fitsopen"] == [8]     # PR-q-09: Ch. 10 (1.7x) is near
+    assert within == [2, 3, 7]          # rn_est v2 2026-11-14: Ch. 9 (2.1-2.8 yr) is a lower bound below the window; F6: Ch. 8 is one
+    assert [ch for ch in DIGITAL if campaign_status(ch) == r"\fitsopen"] == [8, 9]  # PR-q-09: Ch. 10 (1.7x) is near; rn_est v2: Ch. 9 open
     misses = [ch for ch in DIGITAL if campaign_status(ch) in (r"\fitsnear", r"\fitsno")]
-    assert misses == [4, 5, 6, 9, 10]
+    assert misses == [4, 5, 6, 10]
     text = top_line()
-    assert ("Three of the nine campaigns fit the five-year window on one machine and Ch.~\\ref{ch:baryogenesis}'s "
-            "gives a lower bound") in text                         # re-pinned PR-q-09 2026-11-13 (was 'two give lower bounds')
-    assert "The other five miss at their upper ends" in text
+    assert ("Three of the nine campaigns fit the five-year window on one machine, and Chs.~\\ref{ch:baryogenesis} and~"
+            "\\ref{ch:chiral} give lower bounds below it") in text   # re-pinned rn_est v2 2026-11-14 (PR-q-09: 'Ch. 8's gives a lower bound')
+    assert "Ch.~\\ref{ch:chiral}'s only under the free-lattice readout" in text
+    assert "The other four miss at their upper ends" in text
     # 'every range but Ch. 10's': the depth floor at the upper end exceeds the window for every miss except Ch. 10
     assert [ch for ch in misses if x(ch, "2033", "floor_wall_s") <= WINDOW_S] == [10]
     assert "at the upper end of every range but Ch.~\\ref{ch:finite_density}'s the depth bound alone" in text   # re-pinned 2026-11-12 (batch 6): the sentence now continues with Ch. 8's scan

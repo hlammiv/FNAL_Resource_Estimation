@@ -60,8 +60,12 @@ INPUTS AND SOURCES
                                    not a total derivative in the free theory and grows as t^2. Free-field background of
                                    the link-averaged clover estimator 9.58e-4 at 10a (ncs_lattice_background), sigma^2 =
                                    1.06e14; forward link 2.56e-3 (1.5e13); helicity-A.B ideal 8.93e-3 (1.2e12,
-                                   ncs_free_field_background, a record). sigma2_ncs = 1e2 stays as the Stated
-                                   ideal-readout target the shot counts use
+                                   ncs_free_field_background, a record). sigma2_ncs = 1e2 is a record since
+                                   rn_est 2026-11-14: the shots use the counting-field readout (ncs_counting_lnG,
+                                   ncs_counting_design), sigma^2 = 45 at 10a and 104 at 5a on the free lattice at 0.1
+                                   faults per shot (rn_est v2: chi = 0, 32, 56, 80, >= 20% of shots each; the first
+                                   three-setting fit gave 34, 79); its gauge-invariant counting term (NCS_COUNTING_LINK,
+                                   5% of the 10a shot) is counted in every evolution shot (count_ncs_counting_term)
   units (C3)                       Cited Moore_Rummukainen_2000 (a = 1/(2 g^2 T) volume table) and
                                    DOnofrio_Rummukainen_Tranberg_2014 (T_c = 159 GeV); beta_L = 8, L g^2 T = 1.5 DERIVED HERE
   delta_beta = 1e-4                Assumed app06; sqrt(864 ln 1e4) = 89.2 -> 89 (r25: sqrt(1e2 ln 1e4) = 30.35 -> 30)
@@ -328,6 +332,7 @@ from __future__ import annotations
 
 import itertools
 import math
+from functools import lru_cache as _lru_cache
 from dataclasses import dataclass, fields, replace
 
 from estimates.common import (RFI_SRC, RFI_LQ_2028, RFI_T_2028, RFI_LQ_2033, RFI_T_2033, RFI_EPS_L,
@@ -834,6 +839,178 @@ def ncs_hadamard_rel_var(lam: float, t_lat: float, signal: float) -> float:
 
 
 # --------------------------------------------------------------------------- #
+# Counting-field readout of <(Delta N_CS)^2> (rn_est 2026-11-14, DERIVED HERE; revised after the referee report,
+# rn_est v2). One ancilla couples as H_pm = H +- (chi/2) Z_anc Qdot during the evolution; an X measurement of the
+# ancilla has mean Re G(chi), G(chi) = <U_-^dag U_+>. G is the closed-time-path (Keldysh) quasi-characteristic
+# generating function of Delta N (Nazarov_Kindermann_2003): Qdot does not commute with itself at different times,
+# so G need not be the characteristic function of a probability distribution, and its higher quasi-cumulants can be
+# negative (Hofer and Clerk, arXiv:1510.02416). Its chi^2 term is the symmetrized Kubo form of ncs_lattice_background,
+# ln G = -chi^2 <(Delta N)^2>_sym/2 + chi^4 k4/24 + ... (at chi = 1, 10a: -4.7879e-4 against -S/2 = -4.7878e-4).
+# We adapt the spin counter of full counting statistics (Levitov_Lee_Lesovik_1996, Nazarov_Kindermann_2003) and the
+# work-statistics interferometry of arxiv_1301_7021, arxiv_1301_7030; the method is not new. The phase chi Delta N is
+# O(1) by choice of chi, so the noise is that of Delta N itself and not of a block-encoding normalization.
+# Limits (referee, rn_est v2): (1) at chi >> 1 the fit is blind to integer jumps of N_CS: a Poisson process of unit
+# jumps gives ln G_top = Gamma V t (cos chi - 1), which the fit maps to S_top x r.(cos chi - 1) = 3e-4 S_top at
+# chi = 0, 32, 56, 80, so the readout tests the evolution and the readout, not Gamma_sph. Resolving unit jumps needs
+# chi <~ 1, where sigma^2 is ~1e7 on the free lattice (ncs_counting_unit_sigma2: 6.9e6 at chi <= 2, 1.1e8 at chi <= 1,
+# 10a). (2) chi kappa <~ 1 (H_pm bounded below) reaches the chi^2 S ~ 1 range only if S >~ kappa^2 = 1.6e-4; true on the
+# free lattice (9.6e-4, 4.3e-4), not known for the interacting 2O theory. (3) The fit does not remove the UV lattice
+# background of E.B; it measures the full symmetrized <(Delta N)^2>, background included. The coupling is one more
+# Trotter term per step; the step count was not redone with it (only the free-lattice readout check, trot.py).
+# --------------------------------------------------------------------------- #
+
+def _ncs_free_modes(L: int, pairing: str = "avg"):
+    """Normal modes of one color of the free abelian lattice gauge field on L^3 and the symmetric matrix W of
+    Qdot / kappa = z^T W z in z = (q, p), as in ncs_lattice_background."""
+    import numpy as np
+    sites = list(itertools.product(range(L), repeat=3))
+    idx = {s: k for k, s in enumerate(sites)}
+    nl = 3 * len(sites)
+
+    def sh(x, i, dd=1):
+        return tuple((x[k] + (dd if k == i else 0)) % L for k in range(3))
+
+    def plaq(x, i, j):
+        r = np.zeros(nl)
+        r[3 * idx[x] + i] += 1
+        r[3 * idx[sh(x, i)] + j] += 1
+        r[3 * idx[sh(x, j)] + i] -= 1
+        r[3 * idx[x] + j] -= 1
+        return r
+    K = np.zeros((nl, nl))
+    for x in sites:
+        for i, j in ((0, 1), (1, 2), (2, 0)):
+            r = plaq(x, i, j)
+            K += np.outer(r, r)
+    M = np.zeros((nl, nl))
+    for x in sites:
+        for k in range(3):
+            i, j = (k + 1) % 3, (k + 2) % 3
+            B = (plaq(x, i, j) + plaq(sh(x, i, -1), i, j) + plaq(sh(x, j, -1), i, j)
+                 + plaq(sh(sh(x, i, -1), j, -1), i, j)) / 4.0
+            if pairing == "fwd":
+                M[3 * idx[x] + k] += B
+            else:
+                M[3 * idx[x] + k] += B / 2.0
+                M[3 * idx[sh(x, k, -1)] + k] += B / 2.0
+    w2, Vm = np.linalg.eigh(K)
+    ph = w2 > 1e-9
+    Vp, w = Vm[:, ph], np.sqrt(w2[ph])
+    N = len(w)
+    W = np.zeros((2 * N, 2 * N))
+    W[N:, :N] = Vp.T @ M @ Vp
+    W = (W + W.T) / 2.0
+    K0 = np.diag(np.concatenate([w ** 2, np.ones(N)]))
+    J = np.block([[np.zeros((N, N)), np.eye(N)], [-np.eye(N), np.zeros((N, N))]])
+    return w, K0, W, J
+
+
+@_lru_cache(maxsize=None)
+def ncs_counting_lnG(L: int, n_adj: int, temp_lat: float, g2: float, t_lat: float, chi: float,
+                     n_trotter: int = 0) -> float:
+    """ln Re G(chi) of the counting-field readout in the free lattice theory, quantum thermal state (DERIVED HERE).
+    Quadratic Hamiltonians: e^{-iHt} acts on z by S = e^{JKt}, and Tr[rho M(S)] = det(1 - S_rho)^{1/2} /
+    det(1 - S_rho S)^{1/2} with S_rho = e^{-i beta J K0}, so G = [det(1 - S_rho) / det(1 - S_rho S_-^{-1} S_+)]^{1/2}
+    per color, K_pm = K0 +- chi kappa W. n_trotter > 0: the second-order step e^{-iD dt/2} e^{-iC dt/2} e^{-iE dt}
+    e^{-iC dt/2} e^{-iD dt/2} with C the coupling. G is real and positive here (Im G = 0 to 1e-14, Re G >= 0.07 at
+    chi <= 80); the small-chi limit reproduces ncs_lattice_background to 1e-5. Scratch rn_est/scratch/fcs.py, trot.py."""
+    import numpy as np
+    from scipy.linalg import expm
+    w, K0, W, J = _ncs_free_modes(L)
+    n2 = len(K0)
+    kap = g2 / (8.0 * math.pi ** 2)
+    s_rho = expm(-1j / temp_lat * J @ K0)
+    if n_trotter:
+        dt = t_lat / n_trotter
+        N = n2 // 2
+        KD, KE = np.zeros_like(K0), np.zeros_like(K0)
+        KD[:N, :N] = K0[:N, :N]
+        KE[N:, N:] = K0[N:, N:]
+
+        def evo(c):
+            d_, c_, e_ = expm(J @ KD * dt / 2), expm(J @ (c * kap * W) * dt / 2), expm(J @ KE * dt)
+            return np.linalg.matrix_power(d_ @ c_ @ e_ @ c_ @ d_, n_trotter)
+    else:
+        def evo(c):
+            return expm(J @ (K0 + c * kap * W) * t_lat)
+    s_tot = s_rho @ np.linalg.solve(evo(-chi), evo(chi))
+    _, ld0 = np.linalg.slogdet(np.eye(n2) - s_rho)
+    _, ld = np.linalg.slogdet(np.eye(n2) - s_tot)
+    return float(n_adj * 0.5 * (ld0 - ld).real)
+
+
+def ncs_counting_design(lnG: dict, signal: float, p_fault: float, floor: float = 0.0, n_par: int = 3,
+                        iters: int = 400) -> dict:
+    """Shots of the counting-field readout (DERIVED HERE; rn_est v2: any number of settings, weighted least squares,
+    a floor on the shot split). Settings chi = 0 and the keys of lnG fit ln m = c - chi^2 S/2 + chi^4 k4/24
+    (n_par = 3; 2 drops k4, 4 adds -chi^6 k6/720) to the measured means m = (1 - p_fault) Re G. c absorbs a fault
+    that randomizes the ancilla; that each fault does so is ASSUMED (a fault that does not gives a chi-dependent bias,
+    ERROR_LEDGER_2033['readout_faults']). Per shot Var(ln m) = (1 - m^2)/m^2 = v_i. With n_i the shot fractions and
+    r the S row of the weighted fit, Var(S) per shot = sum r_i^2 v_i / n_i; the split is n_i ~ |r_i| sqrt(v_i), held
+    at >= floor (so a fourth setting keeps a residual), iterated to its fixed point. sigma^2 = Var(S) / S^2.
+    'bias' is the fit's S against the exact signal from the higher cumulants (the fit-form systematic); 'residual'
+    the fit's residuals on the exact ln G; 'alias' = r.(cos chi - 1), the fraction of a unit-jump (topological)
+    <(Delta N)^2> that the fit returns."""
+    import numpy as np
+    chis = sorted(lnG)
+    pts = np.array([0.0] + [float(c) for c in chis])
+    y = np.array([0.0] + [lnG[c] for c in chis])
+    A = np.array([[1.0, -c * c / 2.0, c ** 4 / 24.0, -c ** 6 / 720.0][:n_par] for c in pts])
+    m = (1.0 - p_fault) * np.exp(y)
+    v = np.maximum((1.0 - m * m) / (m * m), 1e-300)
+    n = np.full(len(pts), 1.0 / len(pts))
+
+    def _row(n_):
+        W = np.diag(n_ / v)
+        return np.linalg.solve(A.T @ W @ A, A.T @ W)
+
+    for _ in range(iters):
+        w = np.abs(_row(n)[1]) * np.sqrt(v)
+        nn = w / w.sum()
+        if floor:
+            for _k in range(len(pts)):
+                low = nn <= floor
+                if not low.any():
+                    break
+                nn = np.where(low, floor, nn * (1.0 - floor * low.sum()) / nn[~low].sum())
+        n = 0.5 * n + 0.5 * nn
+    R = _row(n)
+    r = R[1]
+    var = float(np.sum(r * r * v / n))
+    return {"chis": tuple(chis), "re_G": {c: math.exp(lnG[c]) for c in chis}, "sigma2": var / signal ** 2,
+            "shot_split": tuple(float(x) for x in n), "bias": float(r @ y) / signal - 1.0,
+            "residual": tuple(float(x) for x in y - A @ (R @ y)), "alias": float(r @ (np.cos(pts) - 1.0))}
+
+
+# The counting term e^{-i dt (chi/2) Z_anc Qdot_l} per link l = (x,i), DERIVED HERE (rn_est v2, gauge invariant per the
+# referee): Qdot = kappa sum_l [E_L^a(l) B^a(x) + E_R^a(l) B^a(x+i)]/2, with E_L (E_R) the left (right) generator of
+# the link, which rotates with the gauge transformation at x (x+i), and B(y) the clover of the 4 plaquettes at y in
+# the plane normal to i, each holonomy based at y. In the abelian (free-lattice) limit this is the link-averaged
+# ncs_lattice_background. Per link:
+#   holonomies: the 8 clover plaquettes held in place on their outer links (no plaquette contains l): 8 x (3 U_mul +
+#     2 U_inv), computed and uncomputed.
+#   per color a (the three do not commute and run in sequence): B^a(x), B^a(x+i) held EXACTLY in Z[sqrt2]: the 2O
+#     plaquette components give -i Tr(sigma^a U_p) = 2 u_a in {0, +-1, +-2, +-sqrt2}, so 4 B = n1 + sqrt2 n2 with
+#     n1 in [-8, 8] (5 bits) and n2 in [-4, 4] (4 bits); no quantization error (the 5-bit fixed-point accumulator of
+#     the first proposal rounds sqrt2 to 1.5, +6% on the 90-degree plaquettes that dominate at weak coupling). Each
+#     plaquette: a 48-entry lookup (47 Toffolis, 5-bit output) and the 9-bit add, computed and uncomputed. Then the
+#     frame: for a = 1, 2 conjugation by a constant 2O element (a 90-degree rotation maps J^3 to J^1, J^2), left and
+#     right constant multiplications, priced at U_mul, computed and uncomputed (4 per a); the group FFT pair
+#     (arxiv_2408_00075); one lookup of (rho, m, m') -> (2m, 2m'), two signed 3-bit values (47 Toffolis, computed and
+#     uncomputed). The phase Z_anc [(2m) (n1 + sqrt2 n2)(x) + (2m')(n1 + sqrt2 n2)(x+i)] as commuting Pauli rotations on
+#     the ancilla, the sign, the two magnitude bits and the 9 accumulator bits: 1 + 2 + 9 + 18 = 30 per site, 60 per a.
+#   totals: 56 U_mul, 32 U_inv, 6 U_FFT, 2970 Toffolis, 180 rotations.
+# Workspace (NCS_COUNTING_WORKSPACE) peaks at 29 qubits: 18 accumulator + 6 (2m, 2m') + 5 lookup AND lines. The
+# counting ancilla is the readout ancilla of anc_stack. The term runs between overlap applications, when the 42
+# application-held ancillas (15 application + 5 term register + 17 link read + 5 fan-out) are clean, so the register
+# does not grow (checked in the model: ncs_counting_workspace_fits).
+NCS_COUNTING_LINK = {"U_mul": 8 * 3 * 2 + 2 * 2 * 2, "U_inv": 8 * 2 * 2, "U_FFT": 3 * 2,
+                     "toffoli": 3 * (2 * 8 * (47 + 5 + 4) + 2 * 47), "rotations": 3 * 2 * (1 + 2 + 9 + 18)}
+NCS_COUNTING_WORKSPACE = {"accumulators": 2 * (5 + 4), "m_values": 2 * 3, "lookup_and_lines": 5}
+
+
+
+# --------------------------------------------------------------------------- #
 # r25 (ruling R9/R10, H. Lamm 2026-10-02): T-depth of one shot (factory analysis, apply_log/r25_ch09.md)
 # --------------------------------------------------------------------------- #
 # Reaction-limited depth: a Toffoli or AND is one reaction layer; a repeat-until-success rotation is a sequential
@@ -1249,7 +1426,7 @@ class Assumptions:
                                                                         "(5537 at g^2 = 1)")
     dt_empirical_fm: Tagged = Cited(0.01, "app03 2033 box ('2nd-order Trotter at Delta t = a_t/10', a_t = 0.1 fm/c)",
                                     "the fixed step of Ch. 5's 3^3 evolution, the printed comparison")
-    t_shot_empirical_step_stated: Tagged = Stated(3.6e10, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 2.1e10. '200 steps ... the shot would be "
+    t_shot_empirical_step_stated: Tagged = Stated(3.7e10, "app06 2033 derivation", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was 3.6e10. r26-yukawa 2026-11-06: was 2.1e10. '200 steps ... the shot would be "
                                                                                     "1.4e10 T' at the fixed step of Ch. 5 "
                                                                                     "(17 filter calls: 1.4989e10; C1: 1.3508e10; r25: 1.2635e10; r24 6.4e9; 33 per step)")
     n_dov_per_step_stated: Tagged = Stated(43, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 25. '19 applications per step': the Jacobi-Anger order "
@@ -1265,10 +1442,10 @@ class Assumptions:
     n_dov_floor_stated: Tagged = Stated(1.3e4, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 6.5e3. 'no step size takes the evolution below 2Qt = 4320 "
                                                                         "applications, 4.1e9 T' (r24; r22 21,600)")
     t_evolution_stated: Tagged = Stated(3.6e10, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 2.1e10. 'or 1.6e10 T-gates' (r25: 1.5798e10; r24 8.0e9)")
-    t_shot_range_stated: Tagged = Stated((3.3e10, 5.6e10), "app06 2033 derivation", "r26-yukawa 2026-11-06: was 1.9-3.7e10. batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is "
+    t_shot_range_stated: Tagged = Stated((3.4e10, 6.2e10), "app06 2033 derivation", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was (3.3e10, 5.6e10). r26-yukawa 2026-11-06: was 1.9-3.7e10. batch 5 item 12 (2026-10-09): gauge steps and reflections counted, 1.354e10-2.959e10 (was 1.3-2.9e10); 'Over the range above it is "
                                                                                    "1.1-2.6e10 T' (17 filter calls: 1.3469e10, 2.8708e10; C1 1.2-2.7e10; r25: 1.1115e10, 2.6352e10; "
                                                                                    "r24 5.6e9-1.3e10)")
-    t_shot_bound_stated: Tagged = Stated(2.1e11, "Fig. ch09_t_per_shot (RN-P3-02b 2026-11-14)", "RN-P3-02b: was 1.4e11 at casimir_max_2O = 3.75. r26-yukawa 2026-11-06: was 9.1e10. batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' "
+    t_shot_bound_stated: Tagged = Stated(2.8e11, "Fig. ch09_t_per_shot (RN-P3-02b 2026-11-14)", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was 2.1e11. RN-P3-02b: was 1.4e11 at casimir_max_2O = 3.75. r26-yukawa 2026-11-06: was 9.1e10. batch 5 item 12 (2026-10-09): 9.061e10 with the gauge steps (was 8.5e10); 'at the worst-case step ... 8.3e10 T' "
                                                                           "(17 filter calls: 8.546e10; C1 8.4e10; r25: 8.310e10; r24 4.2e10; r22 1.276e12)")
     beta_H: Tagged = Assumed(1e2, "RECORD (r25 and earlier): app06 'beta||H|| ~ 1e2'. Referee C1 (2026-10-04): inconsistent "
                                   "with the chapter's own block encoding, whose normalization is 2Q = 432 at beta = 2a")
@@ -1287,10 +1464,10 @@ class Assumptions:
     n_dov_tpq_stated: Tagged = Stated(2.6e3, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 1.9e3. '1.5e3 applications' (89 x 17 = 1513: 2k + 1 filter calls in k = 8 rounds, verifier 2026-10-04; first referee pass 712 = 89 x 8; r25 240)")
     t_tpq_stated: Tagged = Stated(4.9e9, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 3.4e9. '2.8e9 T' inside the sphaleron shot "
                                                                          "(2.796e9 at 17 calls; first referee pass 1.3e9; r25: 4.4346e8; r24 2.3e8; r22 7.3e8)")
-    t_per_shot_2033_stated: Tagged = Stated(4.1e10, "app06 2033 derivation and box", "r26-yukawa 2026-11-06: was 2.5e10. 'per-shot total over the N_Dov = 8.8e3 "
+    t_per_shot_2033_stated: Tagged = Stated(4.4e10, "app06 2033 derivation and box", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was 4.1e10. r26-yukawa 2026-11-06: was 2.5e10. 'per-shot total over the N_Dov = 8.8e3 "
                                                                                     "applications is 1.6e10 T-gates' (17 filter calls: 1.8597e10; C1 1.7115e10; r25: "
                                                                                     "1.6242e10; r24 8.2e9; r22 2.008e11)")
-    ratio_representative_stated: Tagged = Stated(41, "app06 2033 derivation", "r26-yukawa 2026-11-06: was 25. 'a factor 19 above the budget' (17 filter calls: 18.60; C1 2026-10-04: 17.11; r25: 16.24; r24 8.2; r22 2.0e2)")
+    ratio_representative_stated: Tagged = Stated(44, "app06 2033 derivation", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was 41. r26-yukawa 2026-11-06: was 25. 'a factor 19 above the budget' (17 filter calls: 18.60; C1 2026-10-04: 17.11; r25: 16.24; r24 8.2; r22 2.0e2)")
     gibbs_T_stated: Tagged = Stated((1.5e13, 4.6e14), "app06 route (iv)", "r26-yukawa 2026-11-06: was 7.2e12-2.3e14. 'The range is 5.5e11-1.7e13' (r25, re-priced at the "
                                                                           "Yukawa-inside application; r24 2.8e11-8.9e12; "
                                                                           "r22 9.2e11-2.9e13)")
@@ -1300,7 +1477,7 @@ class Assumptions:
     kappa_physical: Tagged = Stated((1e3, 1e4), "app06 2033 derivation", "'kappa ~ 1e3-1e4 ... near-physical-mass'")
     t_physical_stated: Tagged = Stated((1.3e12, 1.3e13), "app06 2033 derivation", "r26-yukawa 2026-11-06: was 8.0e11-8.0e12. '6.1e11-6.1e12 T' (17 filter calls: 6.107e11, 6.120e12; C1: 5.620e11, 5.632e12; r25: 5.333e11, 5.345e12; "
                                                                                   "r24 2.7e11-2.7e12; r22 2.0e12-2.0e13)")
-    eps_l_2033_stated: Tagged = Stated(2.4e-12, "app06 2033 derivation and box", "r26-yukawa 2026-11-06: was 4.1e-12. 'eps_l <~ 5.3e-12' (batch 5 item 12, 2026-10-09: 5.289e-12; 17 filter calls alone: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot "
+    eps_l_2033_stated: Tagged = Stated(2.3e-12, "app06 2033 derivation and box", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was 2.4e-12. r26-yukawa 2026-11-06: was 4.1e-12. 'eps_l <~ 5.3e-12' (batch 5 item 12, 2026-10-09: 5.289e-12; 17 filter calls alone: 5.377e-12; C1: 5.843e-12; r25 '6.2e-12') at 0.1 faults per shot "
                                                                                  "for the 10a sphaleron shot (R3; r25 6.157e-12; "
                                                                                  "r24 1.2e-11; r22 5.0e-13)")
     # thermal-state route alternatives (app06 route (iv)), emitted so the prose numbers are checkable
@@ -1328,7 +1505,22 @@ class Assumptions:
     sigma2_ncs: Tagged = Stated(1e2, "app06 shot-count paragraph", "'sigma^2_NCS ~ 1e2 at the longest t'. Chapter-open "
                                 "pass (referee C3, 2026-10-05): an IDEAL-readout assumption; the Hadamard-test readout of "
                                 "the Kubo form gives ncs_hadamard_rel_var (1.06e14 at 10a on the link-averaged free-field "
-                                "background; >= 1.2e12 for any pairing)")
+                                "background; >= 1.2e12 for any pairing). RECORD since rn_est 2026-11-14: the shots use "
+                                "the counting-field readout (ncs_counting_design), 45 at 10a and 104 at 5a (rn_est v2; "
+                                "34 and 79 with the first three-setting fit)")
+    ncs_counting_chis: Tagged = Assumed((32.0, 56.0, 80.0), "rn_est v2 (referee item 2): the three nonzero counting "
+                                        "fields of the readout at 10a and 5a, with chi = 0: four settings for three fit "
+                                        "parameters, so the fit has a residual. chi kappa <= 1.01 keeps H_pm bounded below "
+                                        "(needs < 2). Was (32, 80) at 10a and (36, 80) at 5a, the best pairs on a grid of "
+                                        "4-80 (sigma^2 34, 79)")
+    ncs_counting_floor: Tagged = Assumed(0.2, "rn_est v2: least shot fraction per setting, so every setting enters the "
+                                              "residual; +31% (10a) and +33% (5a) on sigma^2 over the optimal split")
+    ncs_counting_unit_chi_max: Tagged = Assumed((1.0, 2.0), "rn_est v2 (referee item 1): the largest setting of a "
+                                                            "readout that resolves unit Delta N_CS (chi <~ 1), with "
+                                                            "chi = 0 and chi_max/2 (ncs_counting_unit_sigma2)")
+    count_ncs_counting_term: Tagged = Assumed(True, "rn_est v2 (referee item 8): the counting term is the measurement, so "
+                                             "it is counted in every evolution shot (NCS_COUNTING_LINK on each of the 81 "
+                                             "links). Was False in the first proposal (3.7% left out with the Higgs terms)")
     # chapter-open pass (referee C1 / C3, 2026-10-05)
     ncs_e_max: Tagged = Assumed(1.5, "C3: ||E^a|| = j_max on the 2O irreps restricting SU(2) j <= 3/2 (the chapter's "
                                      "'Casimir cut at j = 3/2'); E^a = 0 on the other four irreps")
@@ -1342,7 +1534,7 @@ class Assumptions:
                                      "(suppression 431-2400, quoted ~1e3)")
     eps_obs: Tagged = Assumed(0.1, "app06 'at eps=0.1'; box: '10% statistical'")
     shots_2033: Tagged = Stated(1e4, "app06 2033 box", "'1e4 (psi-bar psi: 1e3/coupling; Gamma_sph: 1e4/coupling)'")
-    wall_per_shot_2033_stated: Tagged = Stated(4.1e4, "app06 requirements and wall-time paragraph", "r26-yukawa 2026-11-06: was 2.5e4. '1.9e4 s' per 10a shot (18,597; C1 17,115) "
+    wall_per_shot_2033_stated: Tagged = Stated(4.4e4, "app06 requirements and wall-time paragraph", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was 4.1e4. r26-yukawa 2026-11-06: was 2.5e4. '1.9e4 s' per 10a shot (18,597; C1 17,115) "
                                                                                                     "(r25: 16,241.7; r24 8.2e3; r22 2.008e5)")
     # r23 (H. Lamm 2026-10-02, apply_log/r23_ch09.md): the report assumes one machine. The Stated n_machines = 6.4e2
     # ("inside the 5-year horizon only on ~6.4e2 machines") is retired with n_machines_needed, wall_yr_parallel and
@@ -1424,21 +1616,22 @@ class Assumptions:
                                     "the two-time linearity check at one of them, 10a only at the rest")
     t_shot_short_stated: Tagged = Stated(2.2e10, "app06 wall-time paragraph and box", "r26-yukawa 2026-11-06: was 1.3e10. batch 5 item 12 (2026-10-09): 9.7007e9 with the gauge steps and reflections (was 9.6e9); '160 steps of 23 applications ... "
                                                                                        "9.6e9 T' at 5a (17 filter calls: 9.5897e9; C1 8.109e9; r25: 7.2366e9)")
-    eps_l_short_stated: Tagged = Stated(4.7e-12, "app06 2033 box", "r26-yukawa 2026-11-06: was 7.7e-12. '1.0e-11 at 5a' (17 filter calls: 1.043e-11; C1: 1.233e-11; r25: 1.382e-11)")
+    eps_l_short_stated: Tagged = Stated(4.5e-12, "app06 2033 box", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was 4.7e-12. r26-yukawa 2026-11-06: was 7.7e-12. '1.0e-11 at 5a' (17 filter calls: 1.043e-11; C1: 1.233e-11; r25: 1.382e-11)")
     wall_s_short_stated: Tagged = Stated(2.2e4, "app06 wall-time paragraph", "r26-yukawa 2026-11-06: was 1.3e4. '9.7e3 s' per 5a shot (batch 5 item 12, 2026-10-09: 9700.7; before 9589.7; C1 8109; r25 7236.6)")
     wall_s_condensate_stated: Tagged = Stated(4.9e3, "app06 wall-time paragraph", "r26-yukawa 2026-11-06: was 3.4e3. '2.8e3 s' per condensate shot (17 filter calls: 2790.1; C1: 1311.9; r25 441.7)")
     f_star_register_stated: Tagged = Stated((5.6, 6.3), "app06 wall-time paragraph", "'only 5.6-6.3 T gates per reaction "
                                                                                   "layer' as itemized (10a shot: 5.59-6.32)")
     slowdown_register_stated: Tagged = Stated((1.6, 1.8), "app06 wall-time paragraph", "'1.6-1.8 times slower' (10 / F*)")
     f_star_2033_stated: Tagged = Stated(12, "app06 wall-time paragraph", "'raises this to 12' (12.17-12.54 over the runs)")
-    shots_first_stated: Tagged = Stated((1.1e3, 5.5e3), "app06 box and wall-time paragraph", "'1.1e3 shots at 10a and 5.5e3 "
+    shots_first_stated: Tagged = Stated((5.0e2, 1.2e3), "app06 box", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was (3.8e2, 8.7e2). rn_est 2026-11-14: '3.8e2 at 10a + 8.7e2 at 5a' (377, 873), "
+                                       "counting-field readout; was '1.1e3 shots at 10a and 5.5e3 "
                                                                                            "at 5a' (1111, 5497; r25 4444 under linear growth)")
-    wall_yr_first_stated: Tagged = Stated(5.2, "app06 box and wall-time paragraph", "r26-yukawa 2026-11-06: was 3.1. first result (method test) '2.4 yr' (batch 5 item 12, 2026-10-09: 2.355; before 2.325; "
+    wall_yr_first_stated: Tagged = Stated(1.5, "app06 box and wall-time paragraph", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was 1.1. rn_est 2026-11-14: 1.090 with the counting-field shots, was 5.2. r26-yukawa 2026-11-06: was 3.1. first result (method test) '2.4 yr' (batch 5 item 12, 2026-10-09: 2.355; before 2.325; "
                                           "before the 2026-10-05 ruling 2.005 with the 5a ratio 4; C1 1.744; r25 1.591)")
-    wall_yr_campaign_stated: Tagged = Stated((5.8, 6.5), "app06 box and wall-time paragraph", "r26-yukawa 2026-11-06: was 3.6-4.0. campaign '2.7-3.1 yr' (batch 5 item 12, 2026-10-09: 2.709-3.063; before 2.7-3.0; method "
+    wall_yr_campaign_stated: Tagged = Stated((2.1, 2.8), "app06 box and wall-time paragraph", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was (1.7, 2.3). rn_est 2026-11-14: 1.714-2.337, was 5.8-6.5. r26-yukawa 2026-11-06: was 3.6-4.0. campaign '2.7-3.1 yr' (batch 5 item 12, 2026-10-09: 2.709-3.063; before 2.7-3.0; method "
                                              "test + condensate at 4-8 temperatures: 2.679-3.032; the rate campaign before "
                                              "the 2026-10-05 ruling 36.08-60.00, record wall_yr_campaign_r25_stated)")
-    campaign_over_horizon_stated: Tagged = Stated((1.2, 1.3), "app06 box and wall-time paragraph", "r26-yukawa 2026-11-06: was 0.71-0.80. 'inside the 5-year "
+    campaign_over_horizon_stated: Tagged = Stated((0.43, 0.55), "app06 box", "rn_est v2 2026-11-14 (counting term counted, four-setting fit): was (0.34, 0.47). rn_est 2026-11-14: '0.34-0.47 of the five-year window', was 1.2-1.3. r26-yukawa 2026-11-06: was 0.71-0.80. 'inside the 5-year "
                                                   "horizon' (0.536-0.606; rate campaign before 2026-10-05: 7-12x)")
     wall_yr_campaign_r25_stated: Tagged = Stated((80, 133), "RECORD (app06 before the 2026-10-05 method-test ruling)",
                                                  "'36-60 yr for 4-8 temperatures, 7-12x the 5-year horizon' (rate campaign; "
@@ -2300,15 +2493,26 @@ def _model_2033(a: Assumptions) -> Result:
     n_reflect_controls = lq_f + lq_g + lq_h           # 1188 (972 before r26-yukawa)
     n_reflections = 2 * int(a.aa_rounds.value)        # 16
     t_fpaa_reflections = n_reflections * toffoli_t(2 * n_reflect_controls, tc)       # 2.2e5 T per shot
+    # rn_est 2026-11-14 (DERIVED HERE; v2 gauge invariant, rotations at the headline tolerance like the gauge terms):
+    # the counting term of the N_CS readout, per link and per step (NCS_COUNTING_LINK)
+    t_ncs_link = (NCS_COUNTING_LINK["U_mul"] * g.primitives["U_mul"].t(eps_rot)
+                  + NCS_COUNTING_LINK["U_inv"] * g.primitives["U_inv"].t(eps_rot)
+                  + NCS_COUNTING_LINK["U_FFT"] * g.primitives["U_FFT"].t(eps_rot)
+                  + toffoli_t(NCS_COUNTING_LINK["toffoli"], tc)
+                  + NCS_COUNTING_LINK["rotations"] * t_rot)                        # 6.0e4 T (v1 4.2e4)
+    t_ncs_step = n_links * t_ncs_link                                                # 4.8e6 T (v1 3.4e6)
 
     def _count(P_):
         """Batch 5 item 12 (H. Lamm 2026-10-09): add the gauge terms of every evolution step and, where the shot
-        prepares the thermal state by amplification, its 16 reflections. The r22-r25 records above keep their totals."""
+        prepares the thermal state by amplification, its 16 reflections. The r22-r25 records above keep their totals.
+        rn_est 2026-11-14: and the counting term of every evolution step (the N_CS readout)."""
         if not a.count_gauge_steps_and_reflections.value:
-            return dict(P_, t_shot_core=P_["t_shot"], t_gauge_steps=0.0, t_reflections=0.0)
+            return dict(P_, t_shot_core=P_["t_shot"], t_gauge_steps=0.0, t_reflections=0.0, t_counting=0.0)
         t_g = P_["n_trot"] * t_gauge_step
+        t_c = P_["n_trot"] * t_ncs_step if a.count_ncs_counting_term.value else 0.0
         t_r = t_fpaa_reflections if P_["n_dov"] > P_["n_dov_evol"] else 0.0
-        return dict(P_, t_shot_core=P_["t_shot"], t_gauge_steps=t_g, t_reflections=t_r, t_shot=P_["t_shot"] + t_g + t_r)
+        return dict(P_, t_shot_core=P_["t_shot"], t_gauge_steps=t_g, t_reflections=t_r, t_counting=t_c,
+                    t_shot=P_["t_shot"] + t_g + t_r + t_c)
 
     P = _count(P)
     by_rule = {k: _count(v) for k, v in by_rule.items()}
@@ -2401,6 +2605,10 @@ def _model_2033(a: Assumptions) -> Result:
     depth_variant = a.depth_variant_2033.value
     anc_fanout = int(a.anc_fanout_2033.value) if depth_variant == "fanout" else 0     # 5
     lq_anc = lq_anc_itemized + anc_fanout             # 47 (r25 43, r22-r24 38)
+    # the workspace runs between overlap applications on the application-held ancillas, clean there
+    ncs_idle_ancilla = sum(anc_app.values()) + sum(anc_query.values()) + sum(anc_select.values()) + anc_fanout   # 42
+    ncs_workspace = sum(NCS_COUNTING_WORKSPACE.values())                                                       # 29
+    assert ncs_workspace <= ncs_idle_ancilla          # rn_est v2: the counting term adds no LQ
     lq_anc_asserted = int(a.ancilla_2033_asserted.value)                         # 110 (record)
     lq = lq_f + lq_g + lq_h + lq_anc                  # 1235 (r25 1015, r22-r24 1010, r21 1005, r20 1015, r19 1082)
     lq_dwf_backup = tuple(lq_f * L5 + lq_g + lq_h + lq_anc for L5 in (int(a.L5_backup.lo), int(a.L5_backup.hi)))
@@ -2612,8 +2820,27 @@ def _model_2033(a: Assumptions) -> Result:
     eps_first = float(a.eps_first.value)
     var_ratio5_r25 = float(a.ncs_var_ratio_short.value)                                          # 4 (record)
     var_ratio5 = (ncs_bg[10.0] / ncs_bg[5.0]) ** 2                                               # 4.948
-    s2 = float(a.sigma2_ncs.value)
-    first_shots = {"sph10": s2 / eps_first ** 2, "sph5": var_ratio5 * s2 / eps_first ** 2}       # 1111, 5498
+    s2 = float(a.sigma2_ncs.value)                                                               # 1e2: record
+    first_shots_r26 = {"sph10": s2 / eps_first ** 2, "sph5": var_ratio5 * s2 / eps_first ** 2}   # 1111, 5498 (record)
+    # rn_est 2026-11-14 (DERIVED HERE; v2: four settings, >= 20% of shots each): the counting-field readout on the
+    # free lattice, 0.1 faults per shot
+    p_fault = 1.0 - math.exp(-faults)
+    chis_c = tuple(float(c) for c in a.ncs_counting_chis.value)
+    floor_c = float(a.ncs_counting_floor.value)
+    ncs_counting = {}
+    for tt in (10.0, 5.0):
+        lg = {c: ncs_counting_lnG(L, n_adj, temp, g2_ncs, tt, c) for c in chis_c}
+        ncs_counting[tt] = dict(ncs_counting_design(lg, ncs_bg[tt], p_fault, floor_c),
+                                fault_free=ncs_counting_design(lg, ncs_bg[tt], 0.0, floor_c),
+                                optimal_split=ncs_counting_design(lg, ncs_bg[tt], p_fault),
+                                four_parameter=ncs_counting_design(lg, ncs_bg[tt], p_fault, floor_c, n_par=4))
+    s2_count = {"sph10": ncs_counting[10.0]["sigma2"], "sph5": ncs_counting[5.0]["sigma2"]}      # 45, 104 (v1 34, 79)
+    # referee item 1: a readout that resolves unit Delta N_CS needs chi <~ 1 (10a, same fit form, optimal split)
+    ncs_unit_s2 = {cx: ncs_counting_design({c: ncs_counting_lnG(L, n_adj, temp, g2_ncs, 10.0, c) for c in (cx / 2, cx)},
+                                           ncs_bg[10.0], p_fault)["sigma2"]
+                   for cx in (float(a.ncs_counting_unit_chi_max.lo), float(a.ncs_counting_unit_chi_max.hi))}  # 1.1e8, 6.9e6
+    kappa_ncs = g2_ncs / (8.0 * math.pi ** 2)
+    first_shots = {k: v / eps_first ** 2 for k, v in s2_count.items()}                         # 377, 872
     shots_first_hadamard = {tt: ncs_relvar[tt] / eps_first ** 2 for tt in ncs_relvar}            # 3.7e14, 1.2e15
     n_temp = (int(a.n_temperatures.lo), int(a.n_temperatures.hi))
     camp_shots = tuple(dict(first_shots, cond=nt * float(a.sigma2_condensate.value) / eps ** 2) for nt in n_temp)
@@ -2688,7 +2915,13 @@ def _model_2033(a: Assumptions) -> Result:
                   "arxiv_2407_17966", f"{n_reflections} reflections about the reference state per shot (2 per amplification "
                                       f"round), each an {n_reflect_controls}-controlled NOT at 2n Toffolis on two clean "
                                       f"ancilla; counted since 2026-10-09 (batch 5 item 12)"),
-    ))
+    ) + (() if not a.count_ncs_counting_term.value else (
+        Primitive("ncs_counting_term", n_trot * n_links, t_ncs_link, CircuitStatus.SCALING,
+                  "Levitov_Lee_Lesovik_1996, Nazarov_Kindermann_2003 (counting field); DERIVED HERE (NCS_COUNTING_LINK)",
+                  f"the gauge-invariant counting term E_L.B(x) + E_R.B(x+i) of the N_CS readout per link, "
+                  f"{t_ncs_link:.0f} T, x {n_links} links x {n_trot} steps; counted since rn_est v2 (2026-11-14); the "
+                  f"Trotter step count was not redone with it"),
+    )))
 
     inter = {
         "sgn_architecture": arch,
@@ -2872,6 +3105,14 @@ def _model_2033(a: Assumptions) -> Result:
         "typical_ref_ln_norm_offset": typ["ln_norm_offset"], "typical_ref_n_frozen": typ["n_frozen"],
         "heralded_accept_min": 1.0 / n_filter_calls,
         "ncs_free_background": ncs_bg, "ncs_lambda": ncs_lam, "ncs_hadamard_rel_var": ncs_relvar,
+        "ncs_counting": ncs_counting, "ncs_counting_sigma2": s2_count, "shots_first_r26": first_shots_r26,
+        "ncs_counting_unit_sigma2": ncs_unit_s2, "ncs_counting_chi_kappa_max": max(chis_c) * kappa_ncs,
+        "ncs_counting_S_over_kappa2": {tt: ncs_bg[tt] / kappa_ncs ** 2 for tt in ncs_bg},
+        "ncs_counting_workspace": ncs_workspace, "ncs_counting_idle_ancilla": ncs_idle_ancilla,
+        "ncs_counting_workspace_fits": ncs_workspace <= ncs_idle_ancilla,
+        "ncs_counting_T_per_link": t_ncs_link, "ncs_counting_T_per_step": t_ncs_step,
+        "ncs_counting_T_per_shot": {k: v["n_trot"] * t_ncs_step for k, v in runs.items()},
+        "ncs_counting_share_10a": P["n_trot"] * t_ncs_step / P["t_shot"],
         "ncs_free_background_helicity": ncs_bg_helicity, "ncs_hadamard_rel_var_helicity": ncs_relvar_helicity,
         "ncs_free_background_fwd": ncs_bg_fwd, "ncs_hadamard_rel_var_fwd10": ncs_relvar_fwd10,
         "mr_small_box_suppression_range": mr_suppression_range,
@@ -3103,8 +3344,18 @@ ERROR_LEDGER_2033: dict[str, tuple] = {
     "thermal_filter":     ("1e-4 polynomial error", "delta_beta", "d_beta = 155 at beta lambda = 2592"),
     "thermal_systematic": ("not bounded", "aa_rounds, 17 filter calls", "placeholder reference; Table 9.1 routes"),
     "digitization":       ("open", "gauge_group_2033 = 2O, N_rho = 16", "O(a^2) 20-30% and radial truncation ~5% are estimates"),
-    "readout":            ("open", "sigma2_ncs = 1e2 assumed", "Hadamard test needs 1.2e15 shots; no estimator with the "
-                                                            "variance of Delta N_CS itself is known"),
+    "readout":            ("free lattice", "ncs_counting_design (sigma^2 45 at 10a, 104 at 5a)", "counting-field fit "
+                                                            "at chi = 0, 32, 56, 80 with one residual degree of freedom; "
+                                                            "fit-form systematic (k6 and up) 3.8% at 10a, 0.4% at 5a; tests the "
+                                                            "evolution and readout, not Gamma_sph (unit jumps alias to 3e-4); "
+                                                            "cumulants of the interacting theory not known (the Hadamard test "
+                                                            "needs 1.2e15 shots)"),
+    "readout_faults":     ("not bounded", "faults_per_shot = 0.1; ASSUMED: each fault randomizes the ancilla",
+                           "chi-dependent fault bias, not absorbed by the chi = 0 constant: an ancilla X error swaps the "
+                           "two branches (U_+ <-> U_-) for the rest of the evolution, so the shot measures a partial "
+                           "counting field; a system fault acts as a local quench whose energy changes <(Delta N)^2> "
+                           "differently at each chi; a coherent rotation error that rescales chi -> chi (1 + d) is "
+                           "quadratic in chi like the signal and biases S by 2d without a residual"),
 }
 
 PUBLISHED = {
@@ -3115,8 +3366,8 @@ PUBLISHED = {
                           "fits the 32 ancilla. r22 (E26): 31 phasing ancilla + 1 RUS (was 37 + 2 = 39, 247 LQ); the T "
                           "count does not move",
                       rel_tol=0.10),
-    "2033": Published(lq=(1235, 1235), hard_ops=(4.1e10, 4.1e10),
-                      src="app06 2033 box (r26-yukawa 2026-11-06: '1235 = 432 + 486 + 270 + 47', 21,985 x 1,872,027 + gauge steps + reflections = 4.147e10; before the ruling '1015 = 216 + 486 + 270 + 43', sphaleron shot at 10a '1.9e10'; verifier 2026-10-04: "
+    "2033": Published(lq=(1235, 1235), hard_ops=(4.4e10, 4.4e10),
+                      src="app06 2033 box (rn_est v2 2026-11-14: 4.364e10 with the counting term, was 4.1e10; r26-yukawa 2026-11-06: '1235 = 432 + 486 + 270 + 47', 21,985 x 1,872,027 + gauge steps + reflections = 4.147e10; before the ruling '1015 = 216 + 486 + 270 + 43', sphaleron shot at 10a '1.9e10'; verifier 2026-10-04: "
                           "17 filter calls in 8 rounds (2k + 1), 1513 applications, 10,063 x t_dov = 1.8597e10; referee C1 "
                           "(2026-10-04): the thermal filter at beta||H|| = 2Q / (T a) = 864, d_beta 89, 712 applications, "
                           "9262 x 1,847,860 = 1.7115e10 '1.7e10'; r25 '1.6e10': Yukawa "
@@ -3144,7 +3395,7 @@ def INSTANCE_ROWS(a: Assumptions, era: str, r: Result):
         i = r.intermediates
         return [("3D 3^3 SU(2)/2O overlap + Higgs, TPQ (Chern-Simons growth, method test)", r.lq, r.hard_ops,
                  {"group": "2O", "shots": r.shots[0], "route": "overlap+QSP", "conditional": True,
-                  "note": "SR-ch9-1 (2026-11-09): the 2033 count is conditional on the 17-call thermal filter (placeholder; a typical reference succeeds with ln p = -276) and on a Delta N_CS estimator of variance ~1e2 (none known; the Hadamard test needs 1.2e15 shots). Drawn as a dashed box in the landscape figure, as Chs. 5, 8 and 10.",
+                  "note": "SR-ch9-1 (2026-11-09): the 2033 count is conditional on the 17-call thermal filter (placeholder; a typical reference succeeds with ln p = -276) and on the counting-field Delta N_CS readout (rn_est v2 2026-11-14: sigma^2 45 at 10a and 104 at 5a on the free lattice, four settings; the Hadamard test needs 1.2e15 shots). Drawn as a dashed box in the landscape figure, as Chs. 5, 8 and 10.",
                   "sgn_architecture": i["sgn_architecture"], "trotter_rule": i["trotter_rule"],
                   "t_representative": i["t_per_shot"],
                   "t_condensate_arm": i["t_per_shot_condensate"],
