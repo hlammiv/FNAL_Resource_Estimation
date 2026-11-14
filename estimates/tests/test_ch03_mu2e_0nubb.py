@@ -446,8 +446,8 @@ def test_2028_oracle_load_is_printed_separately(r28, tex):
     assert "state preparation $D\\lesssim 600$ configurations" in tex
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "The executed shot is then $0.17\\times$ the 2028 target at $D=10^{2}$"
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "and $1.005\\times$ at $D=600$, above it by less than the precision of the count"
-    assert ("We find that the executed shot then fits the 2028 target of $10^{5}$ T up to $D=596$."
-            ) in tex and "$D=603$" not in tex and "$D=604$" not in tex
+    # retired 2026-11-14 (RN-P1-01 / 7Li): the prose fit sentence is cut; the box keeps "fits to $D=596$"
+    assert "(fits to $D=596$;" in tex and "$D=603$" not in tex and "$D=604$" not in tex
     assert "lookup passes" not in tex and "lookup-only price" not in tex and "2--3" not in tex.split("insertion LCU $\\Gamma\\lesssim 128$")[1][:400]
     assert "4D-4" not in tex and "D\\sim 10^{4}" not in tex
     # R16 sweep: the Gamma = 512 / 1600 what-ifs and the 0.054x fraction live in the prose only (pinned above)
@@ -1367,7 +1367,7 @@ def test_complete_load_counts(a, r28, tex):
         # E30 cap pass: the per-term itemization of the load is condensed; 1.1e4 at D = 1e2 is in the box row
         # style pass 2026-10-08: the Toffoli formula is cut (rule 1); the counts stay pinned above
         for frag in ("For the state preparation we take the leading Toffoli count of Ref.~\\cite{arxiv_2310_18410} once per shot",
-                     "needs about the low end of the counted range of $D$, so the count is conservative.",   # referee M3
+                     "needs $D$ near the low end of the counted range",   # referee M3; re-pinned 2026-11-14 (7Li)
                      "\\cite{arxiv_2310_18410}"):
             assert frag in tex, frag
         assert "The box keeps the lookup-only price." not in tex
@@ -1544,8 +1544,11 @@ def test_referee_text_corrections(a, tex):
     # style pass 2026-10-08 (rules 9, 10): box rows carry no scope disclaimers or "not derived" tags; the
     # five-category assumption is stated once in the 2028 prose
     assert "Target observable & spin-dependent proxy $\\sum_p o(q)\\,\\sigma_z$ to $5\\%$ (statistical)" in tex   # re-pinned 2026-11-12 (batch 6): 'element' -> 'proxy sum_p o(q) sigma_z', '(statistical)' added
-    assert "all six categories (other five at the dipole's shot factor and $\\Gamma\\le 128$)" in tex
-    assert "whose string counts are not derived here" in tex
+    # re-pinned 2026-11-14 (RN-P1-01 / 7Li): the five non-dipole responses are null tests on 4He and are
+    # measured on 7Li; their string counts are derived (li7_2028, gamma_max 52)
+    assert "on $^4$He (dipole) at $\\epsilon\\sim 0.1$--$0.3$ and on $^7$Li (all six) at $\\epsilon=0.3$" in tex
+    assert "whose string counts are not derived here" not in tex
+    assert "which need at most $52$ strings" in tex
     assert "An expression of interest for the upgrade was submitted in 2018~\\cite{Mu2e_II}" in tex
     assert "nEXO was not selected" not in tex and "We do not date them here." not in tex
     assert "pre-loaded" not in tex and "---" not in tex
@@ -1566,7 +1569,7 @@ def test_referee_m3_he4_data_size(a, r28, tex):
     # style pass 2026-10-08: the 0.99 / D = 15-17 and 1% steps are cut (rule 2); 77-103 is in the box
     for frag in ("the Minnesota potential~\\cite{Minnesota_NN_1977} with a Lawson term",
                  "schematic $^4$He needs $77$--$103$ at fidelity $0.999$",
-                 "A chiral ground state may need a larger $D$ and is not checked here."):
+                 "and a chiral one may need more."):   # re-pinned 2026-11-14 (7Li)
         assert frag in tex, frag
     assert "plausibly needs" not in tex and "$D$ for $^4$He not computed" not in tex
 
@@ -1631,3 +1634,45 @@ def test_hamiltonian_strings_per_step():
     nt = ch3.n_trotter(ch3.Assumptions(), (1.0, 2.0))
     for k, cell in s.items():
         _is(cell["n_rot"][0], cell["n_proj"] * nt[0] * ch3.hamiltonian_strings(cell["space"]))
+
+
+def test_rn_p1_01_li7_second_instance(a, r28, tex):
+    """RN-P1-01 follow-up (2026-11-14): in the 0+ 4He state the five non-dipole responses vanish (four by
+    selection rules, the spin-orbit one for the central stand-in); 7Li (3/2-) in the same 40-mode register and
+    the same stand-in has L = 1, S = 1/2, and all six proton proxies are nonzero. Exact Lanczos:
+    applications/ch03_mu2e_0nubb/light/light_nuclei.py."""
+    import json, pathlib
+    li = r28.intermediates["li7"]
+    assert li["d"] == (248, 359) and li["d_fid999"] == (1978, 2801) and li["fits"] and not li["fid999_fits"]
+    assert li["gamma_max"] == 52 and li["gamma_covered"]
+    assert all(v > 0 for v in li["shot_factor"].values()) and len(li["shot_factor"]) == a.n_op_mu2e.value
+    assert max(li["shot_factor"], key=li["shot_factor"].get) == "Phi''_0"
+    assert ch3.round_sig(li["largest_factor"]) == 1.7e4
+    assert tuple(ch3.round_sig(x) for x in li["t_shot"]) == (3.6e4, 5.6e4)
+    assert ch3.round_sig(li["shots"][0]) == 3.1e5 and ch3.round_sig(li["shots"][1]) == 2.8e6
+    h = tuple(w / 3600 for w in li["wall_s"][0])                                       # eps = 0.3, D = 248 .. 359
+    assert 3 <= h[0] < 3.5 and 4.5 <= h[1] <= 5
+    assert max(li["d_bias"]) < 0.0135
+    # the stored proxies match the driver output
+    root = pathlib.Path(ch3.__file__).resolve().parents[1] / "applications" / "ch03_mu2e_0nubb" / "light"
+    for beta, k in (("10.0", 0), ("2.0", 1)):
+        f = root / f"light_7Li_b{beta}_n99.json"
+        if not f.exists():
+            pytest.skip("light-nucleus outputs not on disk")
+        r = json.load(open(f))
+        assert (r["D_infid_0.01"], r["D_infid_0.001"]) == (li["d"][k], li["d_fid999"][k])
+        for name, (lam, g, ex) in ch3.LI7_PROXIES.items():
+            assert math.isclose(r["ops"][name + "_p"]["lam"], lam) and r["ops"][name + "_p"]["gamma"] == g
+            assert math.isclose(r["ops"][name + "_p"]["exp"], ex[k])
+        he = json.load(open(root / f"light_4He_b{beta}_n99.json"))
+        assert all(v["shot_factor"] is None for n, v in he["ops"].items() if not n.startswith("M0"))
+    if tex is None:
+        pytest.skip("chapter .tex not on disk")
+    for frag in ("On $^4$He the other five responses are null tests, four by $0^+$ selection rules",
+                 "The same register holds a $^7$Li ground state ($3/2^-$)",
+                 "$(\\lambda/|\\langle\\hat{\\mathcal{O}}\\rangle|)^2=1.7\\times 10^{4}$",
+                 "Fidelity $0.99$ needs $D=248$--$359$, which holds the six proxies to $1.3\\%$",
+                 "$0.999$ needs $2.0$--$2.8\\times 10^{3}$, above the 2028 target",
+                 "six insertions at $\\epsilon=0.1$; $3.1\\times 10^{5}$ on $^7$Li",
+                 "on one machine; $3$--$5$ h on $^7$Li"):
+        assert frag in tex, frag

@@ -27,6 +27,14 @@ python -m pytest estimates/tests/test_ch03_mu2e_0nubb.py -q
 python applications/ch03_mu2e_0nubb/dump_assumptions.py   # the table in section 3 (--raw: notes verbatim)
 ```
 
+The second 2028 instance, ⁷Li (3/2⁻, card RN-P1-01), and the light-nucleus survey behind it (²H, ³H, ³He, ⁴He, ⁶Li, ⁷Li, ⁹Be) come from `light/light_nuclei.py`, on the same 40-mode register and Minnesota + Lawson Hamiltonian as `gaps/he4D.py`. Each run writes `light/light_<nucleus>_b<beta>_n<nmax>.json`, which the model's `LI7_PROXIES` and `li7_2028()` reproduce:
+
+```
+python applications/ch03_mu2e_0nubb/light/light_nuclei.py 7Li 3 4 1 1 10    # Z N L 2S beta; ~2e5-dim Lanczos, a few minutes
+python applications/ch03_mu2e_0nubb/light/light_nuclei.py 7Li 3 4 1 1 2
+python applications/ch03_mu2e_0nubb/light/light_nuclei.py 4He 2 2 0 0 10    # reproduces the 4He D and dipole; non-dipole proxies vanish
+```
+
 The model needs numpy and scipy (oscillator integrals in `he4_dipole` and `al27_dipole_sd`) and sympy (Clebsch-Gordan coefficients in `_cg`, used by the 2033 operator string counts). The `--chapter ch03` report has three blocks. ASSUMPTIONS lists the 101 inputs with value, provenance and source. INSTANCES lists the seven rows the chapter writes to `resources.json`. EXPORTS gives, per era, the headline LQ and T against the published box (`[ok]` when inside its tolerance), shots, wall time, ε_l, T-depth, F* (= N_T/D_T, the number of factories the circuit can keep busy), the factory-limited floor (EXPORTS' `f_star` pairs the low-T end with the high-depth end and vice versa, so it is a wider band than the per-end F* quoted below, which the model keeps as `f_star_per_end`: 7.1-14.3 in 2028, 11.8 in 2033), and the primitive breakdown with its T sum. The run takes a few seconds.
 
 The test file runs 57 tests and skips 15 in this repository. The skips are the parts of tests that compare against the chapter's `.tex`, which is not shipped here; numeric assertions placed before the skip still run. Next to the paper source all 72 pass.

@@ -371,6 +371,18 @@ class Assumptions:
     he4_d_dipole_1pct: Tagged = Assumed(1, "COMPUTED: the single largest configuration already gives the dipole "
                                            "<O> within 1% (0.1% needs D = 11), both beta",
                                         "applications/ch03_mu2e_0nubb/gaps/he4D_u1.0_s1.0_b{2.0,10.0}.json")
+    # RN-P1-01 follow-up (2026-11-14): a 7Li (3/2-) ground state in the same 40 modes and the same stand-in
+    # (Minnesota u = 1, no Coulomb, Lawson beta = 10 and 2, the 4He b kept), exact Lanczos in the stretched sector
+    # M_L = 1, M_S = 1/2 (dim 218824; the central force conserves L and S, and the M_L = 0, 2 and M_S = 3/2 sectors
+    # confirm L = 1, S = 1/2, so the lowest stretched state is J = 3/2, M_J = 3/2). E0 = -30.8 / -31.4 MeV.
+    # Driver and outputs: applications/ch03_mu2e_0nubb/light/light_nuclei.py, light_7Li_b{10.0,2.0}_n99.json.
+    li7_d_fid99: Tagged = Assumed((248, 359), "COMPUTED: 7Li D for fidelity 0.99 (beta = 10, 2)",
+                                  "applications/ch03_mu2e_0nubb/light/light_7Li_b{10.0,2.0}_n99.json")
+    li7_d_fid999: Tagged = Assumed((1978, 2801), "COMPUTED: 7Li D for fidelity 0.999 (beta = 10, 2)",
+                                   "applications/ch03_mu2e_0nubb/light/light_7Li_b{10.0,2.0}_n99.json")
+    li7_d_bias_fid99: Tagged = Assumed((0.0114, 0.0131), "COMPUTED: largest relative error of the six proton "
+                                       "insertions on the truncated state at D_fid99 (Delta_1 at both beta)",
+                                       "applications/ch03_mu2e_0nubb/light/light_7Li_b{10.0,2.0}_n99.json")
     qrom_passes: Tagged = Assumed((2, 3), "R11-R14 lookup-only accounting (load, uncompute, optional "
                                           "verification pass), kept as the record of the retired print; R15 "
                                           "prices one complete load per shot (loads_per_shot)",
@@ -936,6 +948,64 @@ def he4_dipole(a: Assumptions) -> dict:
                 radial_me=radial, trace_o=float(np.trace(o)),
                 lam_identity_subtracted=lam_sub, exp_identity_subtracted=exp_sub,
                 shot_factor_over_shifted_mean=(lam_sub / abs(exp_sub)) ** 2)
+
+
+# --------------------------------------------------------------------------- #
+# RN-P1-01 follow-up (2026-11-14): 7Li as a second 2028 instance in the same register
+# --------------------------------------------------------------------------- #
+
+# COMPUTED by applications/ch03_mu2e_0nubb/light/light_nuclei.py (exact Lanczos, 7Li 3/2-, Minnesota + Lawson,
+# beta = 10 and 2). One-body proton proxies of the six responses of Haxton et al. (2208.07945) at q = m_mu:
+# JW one-norm lambda' (identity subtracted; Gamma strings) and <O> in |J = 3/2, M_J = 3/2>, per beta.
+# M0 = j0(qr) (the 4He dipole operator); S1L0 = j0 sigma_z and S1L2 = j2 [Y2 x sigma]^1_0 (the L = 0 and L = 2
+# parts of Sigma'_1, Sigma''_1); D1 = j0 l_z (Delta_1); P0 = j0 l.s (Phi''_0); P2 = j0 [l x s]^2_0 (Phi~'_2).
+# The velocity-dependent three are long-wavelength proxies. In 4He all but M0 vanish (same driver).
+LI7_PROXIES = {   # name: (lambda', Gamma, (<O> beta 10, <O> beta 2))
+    "M0": (7.7909836338882625, 24, (2.5375458618065774, 2.5310808021034834)),
+    "S1L0": (7.7909836338882625, 24, (0.7692201210033144, 0.7698233518826118)),
+    "S1L2": (0.27190342664184347, 44, (0.0031078720421372544, 0.0031416772190390285)),
+    "D1": (5.922638483503645, 12, (0.1366995705532291, 0.1436691005020017)),
+    "P0": (4.213826045825506, 24, (-0.032272636631064, -0.03364080421874037)),
+    "P2": (4.188578489706638, 24, (0.04564040041718944, 0.047575281575280653)),
+}
+# Sigma'_1 = sqrt(2/3) A0 + sqrt(1/3) A2, Sigma''_1 = -sqrt(1/3) A0 + sqrt(2/3) A2 (A0 = S1L0/sqrt(4 pi), A2 =
+# S1L2; the relative sign is convention-dependent, so <O> takes the smaller magnitude). Their JW one-norms
+# (light_nuclei.py operators, same for either sign):
+LI7_SIGMA_LAMBDA = {"Sigma'": (1.9092855637270945, 52), "Sigma''": (1.4312394807619044, 52)}
+
+
+def li7_2028(a: Assumptions) -> dict:
+    """The six Mu2e insertions on the 7Li ground state in the 4He register: shot factors (lambda'/|<O>|)^2
+    (upper end over beta), Hadamard-test shots at eps = 0.3 and 0.1, T per shot at D_fid99, the wall on one
+    machine. Same insertion (Gamma <= 128 bound), load and register as the 4He benchmark."""
+    s4 = math.sqrt(4 * PI)
+    exp = {k: v[2] for k, v in LI7_PROXIES.items()}
+    ins = {"M_0": (LI7_PROXIES["M0"][0], LI7_PROXIES["M0"][1], exp["M0"]),
+           "Delta_1": (LI7_PROXIES["D1"][0], LI7_PROXIES["D1"][1], exp["D1"]),
+           "Phi''_0": (LI7_PROXIES["P0"][0], LI7_PROXIES["P0"][1], exp["P0"]),
+           "Phi~'_2": (LI7_PROXIES["P2"][0], LI7_PROXIES["P2"][1], exp["P2"])}
+    for name, c0, c2 in (("Sigma'", math.sqrt(2 / 3), math.sqrt(1 / 3)), ("Sigma''", -math.sqrt(1 / 3), math.sqrt(2 / 3))):
+        e = tuple(abs(c0 * x0 / s4) - abs(c2 * x2) for x0, x2 in zip(exp["S1L0"], exp["S1L2"]))
+        ins[name] = (LI7_SIGMA_LAMBDA[name][0], LI7_SIGMA_LAMBDA[name][1], e)
+    factor = {k: max((lam / abs(e)) ** 2 for e in ex) for k, (lam, g, ex) in ins.items()}
+    gamma_max = max(g for (_, g, _) in ins.values())
+    eps = (a.eps_2028.hi, a.eps_2028.lo)                                                      # 0.3, 0.1
+    shots = tuple(sum(factor.values()) / e ** 2 for e in eps)                                 # 3.1e5, 2.8e6
+    g = a.gamma_trunc.value
+    one = insertion_cost(a, g, a.be_queries_2028.value)
+    d = a.li7_d_fid99.value
+    t_shot = tuple(one["t"] + a.loads_per_shot.value * a.insertion_t_per_toffoli.value * sos_load_toffoli(x)
+                   + load_angle_cost(a, x, one["n_rot"])["t"] for x in d)                     # 3.6e4, 5.2e4
+    depth = tuple(depth_2028_hadamard(a, g, x, True)["compiled"] for x in d)
+    wall = tuple(wall_one_machine(a, (n, n), t_shot, depth) for n in shots)                   # per eps, per D
+    d_break = max(x for x in range(2, 5000)
+                  if one["t"] + a.insertion_t_per_toffoli.value * sos_load_toffoli(x)
+                  + load_angle_cost(a, x, one["n_rot"])["t"] <= a.rfi_t_2028.value)           # 596
+    return dict(insertions=ins, shot_factor=factor, gamma_max=gamma_max, gamma_covered=gamma_max <= g,
+                shots=shots, eps=eps, d=d, d_fid999=a.li7_d_fid999.value, d_bias=a.li7_d_bias_fid99.value,
+                t_shot=t_shot, depth=depth, wall_s=wall, fits=d[1] <= d_break and max(t_shot) <= a.rfi_t_2028.value,
+                fid999_fits=a.li7_d_fid999.lo <= d_break, smallest_response="Phi''_0",
+                largest_factor=max(factor.values()))
 
 
 # --------------------------------------------------------------------------- #
@@ -1899,6 +1969,7 @@ def _model_2028(a: Assumptions) -> Result:
             wall_time_serial_supply_s=wall, wall_time_corrected_s=wall_corr,
             wall_time_ladder_erasure_s=wall_ladder, wall_time_serial_compile_s=wall_serial_compile,
             mlae_depth=dm, mlae_f_star=ae_f_star, mlae_wall_time_corrected_s=ae_wall_corr,
+            li7=li7_2028(a),
         ),
         shots=(shots, shots), wall_time_s=wall_corr, epsilon_l=eps_l(a, t_run),
         notes=("Referee G2/M3 (2026-10-04, author ruling 'do 3'): hard_ops is the executed Hadamard-test shot, the "
