@@ -884,7 +884,7 @@ def test_ruling_2026_10_11_text_hooks():
     assert r"$1.8\times 10^{4}$ at each of two times" in box28 and r"$\lesssim 4\times 10^{-7}$" in box28
     assert r"$\sim 2.1$ h per parameter point ($6.8$ h" in box28
     assert "the 2028 benchmark takes $20$ steps" in tex
-    assert r"$5.4\times 10^{4}$ queries over the $N_{\rm bin}=7$ bins" in tex and r"on a $10$-temperature scan; $\Delta n$ to $\pm 3\times 10^{-3}$ in $7$ bins at each" in tex
+    assert r"$5.4\times 10^{4}$ queries over the $N_{\rm bin}=7$ bins" in tex and r"on a $10$-temperature scan; $\Delta n$ to $\pm 3\times 10^{-3}$ in $7$ $k_z$ bins ($k_y{=}0$) at each" in tex   # RN-P2-05 2026-11-14: bins labelled k_z at k_y=0
     assert "$10$ temperatures, all at $\\Delta\\theta_C=0.1$" in tex and "100$-point" not in tex and "$(T,\\Delta\\theta_C)$ scan" not in tex   # card RF3-ch8-M3, 2026-11-12
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "to a $\sim 2.6$~yr campaign at $r=1$ ($m_{\max}=16$)"
     assert r"$\Delta n$ wall times grow roughly as $(1+r)^2$" in tex and "5.5$~yr" not in tex

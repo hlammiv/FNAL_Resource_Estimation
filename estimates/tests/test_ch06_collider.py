@@ -1554,7 +1554,7 @@ PHRASES = [
     r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps",
     r"Per-shot T & $4.9\times 10^{9}$--$2.5\times 10^{10}$ (window $+$ two ramps",   # t2e
     # r25 (R1, R2, R4, R7, R10)
-    r"since baryon number and strangeness are conserved, baryons and kaons come in pairs",
+    r"baryon-number conservation pairs baryons, while a strange baryon can balance a kaon's strangeness",   # RN-P2-07 2026-11-14
     # q1 (2026-10-05, rulings A/B): quench-prepared media, E-rho-OQ dropped
     r"$\Sigma(72\!\times\!3)$ for $2{+}1$D SU(3), $\Sigma(216\!\times\!3)$ for the static dipole and $2O$~\cite{arxiv_2312_10285} for SU(2) dipoles",   # re-pinned 2026-11-09 (referee cards): the 5% truncation-accuracy claim was dropped
     r"subgroup difference $5\%$ assumed at $\Sigma(72{\times}3)$",   # re-pinned 2026-11-09 (referee cards): the 5% now sits in the Systematics box row as an assumption
