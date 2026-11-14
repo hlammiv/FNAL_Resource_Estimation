@@ -1,6 +1,13 @@
 """Ch. 6 (QCD for colliders), the 2026-08-28/29 rewrite: every named number the chapter
 states, pinned against applications/app10_collider_physics.tex as it reads today.
 
+t2e (author ruling 2026-11-13, two trend energies): the 2033 campaign is B/M at the two distinct staggered pair energies
+of the 0.8 fm box, pa = pi/4 and pi/2 (1.40, 1.97 GeV); pa = 3pi/4 repeats 1.40 GeV. n_source_momenta 3 -> 2, the
+assumed 25% change and 5.9% points kept. The 4.65 GeV point and its 575-step shot leave the campaign: per-shot T
+2.6e10 -> 2.54e10 ('2.5e10'), eps_l 3.8e-12 -> 3.9e-12, faults 260 -> 250, wall per shot 3.7e4 -> 3.6e4 s; campaign
+2.4-2.5e4 -> 1.8-1.9e4 shots, 3.3-26 -> 2.3-18 yr, 5.2x -> 3.7x the window; ~130 calls (128). Pins re-pinned below,
+each marked 't2e'.
+
 q1 (author rulings A and B, 2026-10-05): E-rho-OQ dropped from the chapter and the model (G8 penalty exports retired);
 the dipole media are quench-prepared (20-step coupling ramp + c/T, c = 2-2 pi, before the sources enter; ETH / typicality
 assumed). Static Im V 2.3/6.7e9 -> 5.4e9-1.5e10 T per shot (5.4-15x the limit), 57-98 d; light-like 2.0-5.5e8 (fits),
@@ -819,7 +826,7 @@ def test_2033_hop_from_the_draft(a, r33):
     assert (cs.count, cs.t_each) == (3330 * 64 * 300, 7)    # R4: 300 evolution steps at the low end
     # the switch is a single input: share='draft' gives back the r18 shot
     rd = m.model(dataclasses.replace(a, hop_share=c.Stated("draft", "app10:95", "test")), "2033")
-    near(rd.hard_ops[0], 7.285238e9, 1e-5); near(rd.hard_ops[1], 3.8435519e10, 1e-5)   # top point at 575 steps (step rule; was 3.73e10)
+    near(rd.hard_ops[0], 7.285238e9, 1e-5); near(rd.hard_ops[1], 3.729999e10, 1e-5)   # t2e: top point pa = pi/2 at 500 steps (4.65 GeV at 575: 3.8435519e10)
     assert rd.intermediates["eps_rot"] == i["eps_rot"]       # same rotation count, same R-TOL eps
     assert rows["hop_hop_diagonalizers_S72x3_evolution_rotations"].status is c.CircuitStatus.COMPILED
 
@@ -869,12 +876,13 @@ def test_2033_t_count_chain(r33):
     near(i["t_total_2033"][1], 2500 * i["t_per_step_2033"][1], 1e-12)
     near(i["t_total_2033"][0], 4.9014296e9, 1e-5)           # '4.9e9'
     near(i["t_total_2033"][1], 2.5380950e10, 1e-5)          # the 500-step shot (1.55 and 3.1 GeV points)
-    # step rule (2026-10-04): the 4.65 GeV point at 50 a runs 575 steps; hard_ops = (low end, that shot)
-    assert i["step_rule_top_mode"]["n"] == 575 and i["step_rule_top_mode"]["phase"] <= 0.1
-    near(i["t_shot_top_mode_2033"], 2.6158908e10, 1e-5)     # '2.6e10'
+    # step rule (2026-10-04) at the top trend point; t2e (2026-11-13): pa = pi/2 meets it at 500 steps (phase 0.059), so
+    # hard_ops = (low end, the 500-step shot); the 4.65 GeV point ran 575 steps, 2.6158908e10, until t2e
+    assert i["step_rule_top_mode"]["n"] == 500 and i["step_rule_top_mode"]["phase"] <= 0.1
+    near(i["t_shot_top_mode_2033"], 2.5380950e10, 1e-5)     # '2.5e10' (t2e; was 2.6e10)
     assert r33.hard_ops == (i["t_total_2033"][0], i["t_shot_top_mode_2033"])
-    near(i["t_total_2033_over_cap"][0], 4.901, 0.001)       # '4.9--26x'
-    near(r33.hard_ops[1] / 1e9, 26.16, 0.001)
+    near(i["t_total_2033_over_cap"][0], 4.901, 0.001)       # '4.9--25x' (t2e; was 26x)
+    near(r33.hard_ops[1] / 1e9, 25.38, 0.001)
     near(i["t_total_2033_r25"][0], 3.9017597e9, 1e-5)       # the r25 headline, a record
     near(i["t_total_2033_r25"][1], 1.5062166e10, 1e-5)
     near(i["t_total_2033_r23"][0], 1.0971497e10, 1e-5)      # the r23 headline, a record (no longer printed)
@@ -885,7 +893,7 @@ def test_2033_t_count_chain(r33):
     near(i["t_total_2033_round_e"][1], 3.91704e9, 1e-5)
     near(i["applied_stage_t_per_step_2033"], 3.1152e6, 0.001)   # the pre-round-D hop figure on this gauge step
     near(i["t_total_2033_qubitized"][0], 4.9014e8, 0.001)
-    assert c.tex_hard_ops(*r33.hard_ops) == r"$4.9{\times}10^{9}$--$2.6{\times}10^{10}$"   # Table 1.1 spelling
+    assert c.tex_hard_ops(*r33.hard_ops) == r"$4.9{\times}10^{9}$--$2.5{\times}10^{10}$"   # Table 1.1 spelling (t2e; was 2.6)
     # the same rules at V = 40 (L_par = 10, 1180 LQ), its own N_rot and eps: a sensitivity, not printed since r26
     near(i["t_total_2033_at_V_hi"][0], 6.15707e9, 1e-4)
     near(i["t_total_2033_at_V_hi"][1], 3.18776e10, 1e-4)
@@ -982,7 +990,7 @@ def test_2033_kinematics(a, r33):
     near(i["momentum_unit_GeV_at_Lpar_8_10_16"][1], 1.24, 0.002)
     near(i["source_momentum_in_units_Lpar_8"], 1.29, 0.002)
     near(i["source_momentum_times_a"], 1.01, 0.005)
-    # J2 v2: box modes 1.55, 3.1, 4.65 GeV; the top one at pa ~ 2.4
+    # J2 v2: box modes 1.55, 3.1, 4.65 GeV; the top one at pa ~ 2.4 (record; t2e uses the first two)
     bm = i["source_momenta_box_modes_GeV"]
     near(bm[0], 1.55, 0.002); near(bm[1], 3.10, 0.002); near(bm[2], 4.65, 0.002)
     near(i["top_box_mode_times_a"], 2.36, 0.002)
@@ -1002,8 +1010,8 @@ def test_2033_logical_faults(r33):
     faults per shot needs eps_l <~ 3.9e-12--2.0e-11' (r26: with the readout ramp; r25 39--150, 6.6e-12--2.6e-11)."""
     i = r33.intermediates
     near(i["faults_per_shot_2033_at_rfi_eps_l"][0], 49.014, 0.001)   # '49' (r26)
-    near(i["faults_per_shot_2033_at_rfi_eps_l"][1], 261.59, 0.001)   # '260' (step rule; r26 250)
-    near(i["eps_l_required_2033"][0], 3.8228e-12, 0.001)    # '3.8e-12' (step rule; r26 3.9e-12)
+    near(i["faults_per_shot_2033_at_rfi_eps_l"][1], 253.81, 0.001)   # '250' (t2e; 261.59 '260' at the 4.65 GeV point)
+    near(i["eps_l_required_2033"][0], 3.9400e-12, 0.001)    # '3.9e-12' (t2e; 3.8e-12 at the 4.65 GeV point)
     near(i["eps_l_required_2033"][1], 2.0402e-11, 0.001)    # '2.0e-11' (r26)
     assert r33.epsilon_l == i["eps_l_required_2033"]
 
@@ -1018,7 +1026,7 @@ def test_2033_sampling_shots_and_wall_time(a, r33):
     assert i["delta_first_2033"] == 0.30
     near(i["wall_per_shot_serial_2033_s"][0], r33.hard_ops[0] * 1e-6 + 1e-4, 1e-12)
     near(i["wall_per_shot_serial_2033_s"][1], i["t_total_2033"][1] * 1e-6 + 1e-4, 1e-12)
-    near(i["wall_shot_top_mode_2033_s"], 37480.6, 1e-5)    # '3.7e4' (the 575-step top point, step rule)
+    near(i["wall_shot_top_mode_2033_s"], 36364.2, 1e-5)    # '3.6e4' (t2e: the top point is the 500-step circuit; 37480.6 at 575)
     near(i["wall_per_shot_2033_s"][0], 4901.43, 1e-5)       # '4.9e3' (F* >= 10 at the low end: the serial time)
     near(i["wall_per_shot_2033_s"][1], 36364.2, 1e-5)      # '3.6e4' (D_T x 10 us + 0.1 ms)
     near(i["wall_per_shot_2033_s"][1], 36364.2, 1e-5)      # the 500-step circuit, depth-bound
@@ -1048,28 +1056,34 @@ def test_2033_sampling_campaign_on_one_machine(a, r33):
     near(i["trend_sigma_at_delta"][0.10], 1.768, 1e-3)      # '1.8 sigma'
     near(i["trend_sigma_at_delta"][0.05], 3.536, 1e-3)
     near(i["shots_per_configuration_campaign"][0], 6048, 1e-9); near(i["shots_per_configuration_campaign"][1], 6336, 1e-9)   # 6.0--6.3e3
-    near(i["shots_trend_2033"][0], 18144, 1e-9); near(i["shots_trend_2033"][1], 19008, 1e-9)   # the trend: 1.8--1.9e4
-    assert i["n_sampling_configurations"] == 3 and i["campaign_horizon_yr"] == 5
+    near(i["shots_trend_2033"][0], 12096, 1e-9); near(i["shots_trend_2033"][1], 12672, 1e-9)   # t2e: two points, 1.2--1.3e4 (three: 1.8--1.9e4)
+    assert i["n_sampling_configurations"] == 2 and i["campaign_horizon_yr"] == 5   # t2e (was 3)
+    near(i["trend_pair_energies_GeV"][0], 1.40, 0.005); near(i["trend_pair_energies_GeV"][1], 1.97, 0.005)   # t2e
+    near(i["trend_pa"][0], math.pi / 4, 1e-12); near(i["trend_pa"][1], math.pi / 2, 1e-12)
     near(i["wall_trend_2033_s"][0], i["shots_trend_2033"][0] * i["wall_per_shot_2033_s"][0], 1e-12)
-    # step rule: one of the three momenta (4.65 GeV) runs its 575-step shot at the high end
-    near(i["wall_trend_2033_s"][1], i["shots_trend_2033"][1] * (2 * i["wall_per_shot_2033_s"][1]
-                                                                  + i["wall_shot_top_mode_2033_s"]) / 3, 1e-12)
-    near(i["wall_trend_2033_yr"][0], 2.818, 1e-4)          # the trend alone, 2.8--22 yr (c = 2 since 2026-10-12; was 1.5)
-    near(i["wall_trend_2033_yr"][1], 22.126, 1e-4)
-    near(i["trend_over_horizon"][1], 4.425, 1e-3)
+    # step rule: the top trend point (pa = pi/2) runs the 500-step circuit, so the high end is the plain shot (t2e)
+    near(i["wall_trend_2033_s"][1], i["shots_trend_2033"][1] * (i["wall_per_shot_2033_s"][1]
+                                                                  + i["wall_shot_top_mode_2033_s"]) / 2, 1e-12)
+    near(i["wall_trend_2033_yr"][0], 1.8787, 1e-4)          # t2e: the trend alone, 1.9--15 yr (three points: 2.818--22.126)
+    near(i["wall_trend_2033_yr"][1], 14.602, 1e-4)
+    near(i["trend_over_horizon"][1], 2.920, 1e-3)           # t2e (was 4.425)
+    # t2e record: 25% scaled by ln E from the nominal 1.55-4.65 GeV span (not applied): 7.9% change, 1.9% points, ~10x shots
+    lg = i["trend_log_scaled_record"]
+    near(lg["trend"], 0.0789, 2e-3); near(lg["delta_per_point"], 0.0186, 2e-3)
+    near(lg["shots_per_configuration"][1] / i["shots_per_configuration_campaign"][1], 10.05, 2e-3)
     # smaller ruling (a), 2026-10-05: campaign = trend + one configuration at L_par = 4 at the trend precision
     assert i["box_check_in_campaign"] is True
     for k in (0, 1):
         near(i["shots_campaign_2033"][k], i["shots_trend_2033"][k] + i["shots_per_configuration_campaign"][k], 1e-12)
         near(i["wall_campaign_2033_s"][k], i["wall_trend_2033_s"][k] + i["wall_box_check_one_mode_s"][k], 1e-12)
-    near(i["shots_campaign_2033"][0], 24192, 1e-9); near(i["shots_campaign_2033"][1], 25344, 1e-9)   # '2.4e4--2.5e4'
-    assert (round(i["shots_campaign_2033"][0] / 1e4, 1), round(i["shots_campaign_2033"][1] / 1e4, 1)) == (2.4, 2.5)   # was (1.3, 2.5) at c = 1
-    near(i["wall_campaign_2033_yr"][0], 3.2805, 1e-3)       # '3.3' (was 1.7)
-    near(i["wall_campaign_2033_yr"][1], 25.817, 1e-3)       # '26'
-    assert (round(i["wall_campaign_2033_yr"][0], 1), round(i["wall_campaign_2033_yr"][1])) == (3.3, 26)
-    near(i["campaign_over_horizon"][1], 5.163, 1e-3)        # '5.2x cut'
-    assert round(i["campaign_over_horizon"][1], 1) == 5.2
-    near(i["configurations_in_horizon"][0], 0.6779, 1e-3)    # "0.68 of the three" trend configurations
+    near(i["shots_campaign_2033"][0], 18144, 1e-9); near(i["shots_campaign_2033"][1], 19008, 1e-9)   # '1.8e4--1.9e4' (t2e; was 2.4--2.5e4)
+    assert (round(i["shots_campaign_2033"][0] / 1e4, 1), round(i["shots_campaign_2033"][1] / 1e4, 1)) == (1.8, 1.9)   # t2e
+    near(i["wall_campaign_2033_yr"][0], 2.3412, 1e-3)       # '2.3' (t2e; was 3.3)
+    near(i["wall_campaign_2033_yr"][1], 18.294, 1e-3)       # '18' (t2e; was 26)
+    assert (round(i["wall_campaign_2033_yr"][0], 1), round(i["wall_campaign_2033_yr"][1])) == (2.3, 18)
+    near(i["campaign_over_horizon"][1], 3.659, 1e-3)        # '3.7x' (t2e; was 5.2x)
+    assert round(i["campaign_over_horizon"][1], 1) == 3.7
+    near(i["configurations_in_horizon"][0], 0.6848, 1e-3)    # "0.68 of one of its two" configurations (t2e; 0.6779 of three)
     near(i["wall_campaign_two_spacings_yr"][0], 3 * i["wall_trend_2033_yr"][0], 1e-12)   # 'triples the trend'
     assert i["lq_second_spacing_fixed_volume"] == 3556      # '3.6e3 LQ'
     assert r33.shots == i["shots_campaign_2033"] and r33.wall_time_s == i["wall_campaign_2033_s"]
@@ -1089,15 +1103,15 @@ def test_2033_depth_exports(a, r33):
     near(i["f_star_per_circuit_2033"][0][0], 6.9989, 1e-4); near(i["f_star_per_circuit_2033"][0][1], 18.493, 1e-4)
     near(i["f_star_per_circuit_2033"][1][0], 6.9797, 1e-4)
     near(i["t_depth_per_shot"][0], 500 * d["lo_circuit_lo_est"], 1e-12)
-    near(i["t_depth_per_shot"][1], i["d_campaign_mean_2033"][1], 1e-12)   # step rule: campaign mean (one 575-step point)
-    assert i["t_depth_per_shot"][1] > 2500 * d["hi_circuit_hi_est"]
+    near(i["t_depth_per_shot"][1], i["d_campaign_mean_2033"][1], 1e-12)   # step rule: campaign mean (t2e: every point 500 steps)
+    near(i["t_depth_per_shot"][1], 2500 * d["hi_circuit_hi_est"], 1e-12)   # t2e (was > with one 575-step point)
     dx = c.depth_exports(i["t_campaign_mean_2033"], i["d_campaign_mean_2033"], i["shots_trend_2033"], a.t_gate_s,
-                         a.shot_overhead_s)   # step rule: campaign shot-averages at the high end (one 575-step point)
+                         a.shot_overhead_s)   # step rule: campaign shot-averages at the high end
     for k in ("t_per_shot", "t_depth_per_shot", "f_star", "floor_wall_s", "factories_for_1yr"):
         assert i[k] == dx[k], k
     assert i["baseline_ok"] == (False, True)
-    near(i["factories_for_1yr"][0], 28.181, 1e-4); near(i["factories_for_1yr"][1], 154.44, 1e-4)   # step rule; low end 14.76 at c = 1
-    near(i["floor_wall_s"][1] + 19008 * 1e-4, i["wall_trend_2033_s"][1], 1e-9)   # the trend's high end at the depth floor
+    near(i["factories_for_1yr"][0], 18.787, 1e-4); near(i["factories_for_1yr"][1], 101.92, 1e-4)   # t2e: two trend points (three: 28.181, 154.44)
+    near(i["floor_wall_s"][1] + 12672 * 1e-4, i["wall_trend_2033_s"][1], 1e-9)   # the trend's high end at the depth floor (t2e: 12672 shots)
     near(i["wall_trend_2033_s"][0], i["wall_serial_s"][0], 1e-12)                 # the low end at the T-count
 
 
@@ -1221,14 +1235,14 @@ def test_no_machine_count_anywhere(a, r28, r33, r3d):
 def test_requirements_table(r28, r33):
     """app10:165-176."""
     i = r33.intermediates
-    assert i["n_sampling_configurations"] == 3              # '3 sampling configurations (3 source momenta, one spacing)'
+    assert i["n_sampling_configurations"] == 2              # '2 sampling configurations (2 pair energies, one spacing)' (t2e)
     assert i["n_ff_calls"] == 120
-    assert i["n_subroutine_calls"] == 129 == 3 + 120 + 2 * 3   # '~130'
-    near(i["n_subroutine_calls"], 130, 0.01)
+    assert i["n_subroutine_calls"] == 128 == 2 + 120 + 2 * 3   # '~130' (t2e; was 129)
+    near(i["n_subroutine_calls"], 130, 0.02)                # t2e: 128 -> '~130' (tolerance 0.01 -> 0.02)
     assert round(r28.intermediates["wall_per_shot_2028_s"], 2) == 0.13   # '~0.13 s (2028)'
     near(r28.hard_ops[0], 1.3e5, 0.02)                      # '1.3e5 T (2028)'
-    near(r33.hard_ops[0], 4.9e9, 0.01); near(r33.hard_ops[1], 2.6e10, 0.02)   # '4.9e9--2.6e10 T (2033)' (step rule)
-    assert round(i["wall_per_shot_2033_s"][0], -2) == 4900 and round(i["wall_shot_top_mode_2033_s"], -3) == 37000
+    near(r33.hard_ops[0], 4.9e9, 0.01); near(r33.hard_ops[1], 2.5e10, 0.02)   # '4.9e9--2.5e10 T (2033)' (t2e; was 2.6e10)
+    assert round(i["wall_per_shot_2033_s"][0], -2) == 4900 and round(i["wall_shot_top_mode_2033_s"], -3) == 36000   # t2e (was 37000)
     assert r33.lq == (964, 964) and r28.lq == (230, 230)    # 'Size 230 LQ (2028) / 964 LQ (2033; dipoles 833--912)'
 
 
@@ -1368,7 +1382,7 @@ def test_published_is_the_boxes_as_printed():
     p = m.PUBLISHED
     assert set(p) == {"2028", "2033", "codesign"}
     assert (p["2028"].lq, p["2028"].hard_ops) == ((230, 230), (1.3e5, 1.3e5))
-    assert (p["2033"].lq, p["2033"].hard_ops) == ((964, 964), (4.9e9, 2.6e10))   # step rule (r26 J1 readout ramp: 2.5e10)
+    assert (p["2033"].lq, p["2033"].hard_ops) == ((964, 964), (4.9e9, 2.5e10))   # t2e (2.6e10 while the 4.65 GeV point ran 575 steps)
     assert (p["codesign"].lq, p["codesign"].hard_ops) == ((2400, 2400), (3.2e10, 3.2e10))
     assert "NOT A BOX" in p["codesign"].src
     assert all(x.rel_tol <= 0.035 for x in p.values())
@@ -1392,11 +1406,11 @@ def test_instance_rows_describe_the_rewrite(a):
     assert "R-HOP" not in json.dumps(rows) and "working figure" not in json.dumps(rows)
     assert "unpublished" in l33[3]["note"] and "unpublished" in l3d[3]["note"]
     assert r"\Sigma(72{\times}3)" in l33[0] and l33[1] == (964, 964)
-    near(l33[2][0], 4.9014e9, 0.001); near(l33[2][1], 2.6159e10, 0.001)   # step rule (was 2.5381e10)
+    near(l33[2][0], 4.9014e9, 0.001); near(l33[2][1], 2.5381e10, 0.001)   # t2e (2.6159e10 with the 575-step point)
     assert "readout map" in l33[3]["note"] and "quench-prepared" in rows["2033"][1][3]["note"]
     assert "once per link (E21)" in l33[3]["note"] and "1.1e5 T per link, 72% of the step" in l33[3]["note"]
     r33 = m.model(a, "2033")
-    assert l33[3]["shots_campaign"] == [24192, 25344] == [round(x) for x in r33.shots]   # trend + L_par = 4 check
+    assert l33[3]["shots_campaign"] == [18144, 19008] == [round(x) for x in r33.shots]   # trend + L_par = 4 check (t2e; was 24192, 25344)
     assert l33[3]["shots_first_result"] == [233, 244]
     assert l33[3]["shots_fragmentation"] == [7.5e4, 1.2e6]
     assert l33[3]["wall_time_s_campaign"] == [round(x) for x in r33.wall_time_s]
@@ -1415,7 +1429,7 @@ def test_resources_rows_build_in_memory():
     assert [(r["era"], r["lq"]) for r in inst] == [("2028", [230, 230]), ("2033", [964, 964]), ("2033", [995, 995]),
                                                    ("2033", [912, 912]), ("codesign", [2404, 2404])]
     near(inst[0]["t"][0], 132174.88, 1e-6)
-    near(inst[1]["t"][1], 2.6159e10, 0.001)                 # step rule (was 2.5381e10)
+    near(inst[1]["t"][1], 2.5381e10, 0.001)                 # t2e (2.6159e10 with the 575-step point)
     near(inst[4]["t"][0], 3.2384e10, 0.001)
 
 
@@ -1483,7 +1497,7 @@ PHRASES = [
     # J4 floor-curve shots and the q-hat convention; G8 preparation mismatch
     r"D^h_q(z,\mu^2) = \frac{z^{d-3}}{2N_c}\int",
     # r27 (2026-10-05): J1 V/PS and calibration, J2 box term, J3 N_h, G8 dipole penalty
-    r"so nothing makes the box term cancel in the trend",
+    r"so nothing makes the box term cancel between the two",   # t2e (2026-11-13): was "in the trend"
     r"and global analyses combine lattice constraints with collider data~\cite{Ji_LaMET,arxiv_1711_07916}",   # re-pinned 2026-11-09 (referee cards): 1908_10439 dropped from the LaMET sentences on purpose
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "the string wraps the axis $3.9$, $7.7$ and $11.6$ times"
     r"the string wraps the axis several times and more often at higher momentum",
@@ -1510,7 +1524,7 @@ PHRASES = [
     # r19 (E21 (1)): the color squish held per link; the undo drawn in the draft but not counted there
     # R3
     r"Required $\epsilon_l$ & $\lesssim 8\times 10^{-7}$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"Required $\epsilon_l$ & $\lesssim 3.8\times 10^{-12}$--$2.0\times 10^{-11}$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Required $\epsilon_l$ & $\lesssim 3.9\times 10^{-12}$--$2.0\times 10^{-11}$ \\",   # t2e (2026-11-13): 3.8 -> 3.9e-12
     # R4
     r"$\mathcal{A}\sim 0.05$--$0.2$",
     r"systematics not quantified, against Lund-string tunes",   # referee SR-ch6-2 (2026-11-09): the 32--36% / 38--42% quadrature bands are retired
@@ -1525,20 +1539,20 @@ PHRASES = [
     r"quench-injected source; one adiabatic ramp step, two evolution steps",
     r"Setup & 2+1D SU(3) via $\Sigma(72{\times}3)$ ($q_G{=}9$~\cite{arxiv_2511_17437}), $4{\times}8$, $a{\approx}0.1$ fm",
     r"Logical qubits & $964$ \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Per-shot T & $4.9\times 10^{9}$--$2.5\times 10^{10}$ (window $+$ two ramps) \\",   # t2e (2026-11-13): 2.6 -> 2.5e10
     # R16 sweep: the 2033 step breakdown moved from the box to the plug-in prose
     # E27 (2026-10-02): one machine, shots in series; the horizon gap is a cost reduction, not a machine count
     r"First result & $\approx 240$ shots, $13$--$103$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"Campaign & trend $+\,L_\parallel{=}4$ check: $2.4$--$2.5\times 10^{4}$ shots, $3.3$--$26$ yr (on one machine at $1\,\mu$s per T gate, Ch.~\ref{ch:overview}; high end $5.2\times$ the five-year window) \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Campaign & trend $+\,L_\parallel{=}4$ check: $1.8$--$1.9\times 10^{4}$ shots, $2.3$--$18$ yr (on one machine at $1\,\mu$s per T gate, Ch.~\ref{ch:overview}; high end $3.7\times$ the five-year window) \\",   # t2e (2026-11-13): two trend energies
     # cut pass 2026-10-06: the gap paragraph's one-machine sentence restated the campaign box row (pinned above) and is cut
     # requirements
     r"Subroutine calls & $\sim 130$",
-    r"\textbf{Wall time} & $4.9\times 10^{3}$--$3.7\times 10^{4}$ s per shot",
+    r"\textbf{Wall time} & $4.9\times 10^{3}$--$3.6\times 10^{4}$ s per shot",   # t2e: 3.7 -> 3.6e4 (no 575-step point)
     # cut pass 2026-10-06: the Hard-op row restated the box Per-shot T and is cut; the Size row is back (template rows kept for cross-chapter consistency)
     r"$3^3$: $995$ LQ, $5.9\times 10^{9}$--$1.6\times 10^{10}$ T, $653$ shots",
     r"$3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots",
     r"Per-shot T & $1.3\times 10^{5}$ (1 ramp $+$ 2 evolution steps",
-    r"Per-shot T & $4.9\times 10^{9}$--$2.6\times 10^{10}$ (window $+$ two ramps",
+    r"Per-shot T & $4.9\times 10^{9}$--$2.5\times 10^{10}$ (window $+$ two ramps",   # t2e
     # r25 (R1, R2, R4, R7, R10)
     r"since baryon number and strangeness are conserved, baryons and kaons come in pairs",
     # q1 (2026-10-05, rulings A/B): quench-prepared media, E-rho-OQ dropped
@@ -1547,7 +1561,7 @@ PHRASES = [
     r"First: $\mathrm{Im}\,V$, one temperature & static dipole, $\Sigma(216{\times}3)$ $H_I$ $3^3$: $995$ LQ, $5.9\times 10^{9}$--$1.6\times 10^{10}$ T, $653$ shots, $62$--$106$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"First: $\hat q$, one temperature & light-like, $2O$ $3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots, $1.2$--$2.3$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"$7.5\times 10^{4}$--$1.2\times 10^{6}$ shots, ${\geq}\,12$--$1400$ yr \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"$\sim 130$: $3$ sampling configurations ($3$ source momenta, one spacing); $120$ fragmentation ($10{\cdot}4{\cdot}3$); $2$ dipole rows $\times$ $3$ temperatures \\",
+    r"$\sim 130$: $2$ sampling configurations ($2$ pair energies, one spacing); $120$ fragmentation ($10{\cdot}4{\cdot}3$); $2$ dipole rows $\times$ $3$ temperatures \\",
 ]
 
 RETIRED = [
@@ -1574,6 +1588,13 @@ RETIRED = [
     r"exponential in the number of links and not yet estimated",
     r"($\mathcal{N}_h$ unpriced)",
     r"whether box effects cancel in the trend is not established",
+    # t2e (2026-11-13): the three-momentum trend and its 4.65 GeV point
+    r"trend over 3 momenta",
+    r"$1.55$--$4.65$ GeV box modes",
+    r"$575$ for the $4.65$ GeV point",
+    r"so these are not three pair energies",
+    r"first mechanism-sensitive test",
+    r"$3.3$--$26$ yr",
     # r26 (referee J1-J4, G7, G8): the r25 prints superseded by the readout ramp and the dipole conditionality
     r"$3.9\times 10^{9}$--$1.5\times 10^{10}$",
     r"$5.5$--$61$ d",
@@ -1931,8 +1952,8 @@ def _staggered_step(dims, m_lat, dt):
 def test_g7_2033_step_numbers(r33):
     """Step rule (2026-10-04, Claude's decision on G7). app10:73: the window evolves the ramp-prepared vacuum, an eigenstate
     whose error does not grow (free field 0.04-0.05 with the fermions), so the state-dependent estimate applies to the
-    injected pair: a gluon phase of 0.06 (0.13) at 3.1 (4.65) GeV by 50 a; the 4.65 GeV point runs 575 steps there
-    (0.0997). The literal connected-variance estimate on the vacuum (4.5-7.5, 2.0-4.3e3 steps) is a record: it counts the
+    injected pair: a gluon phase of 0.06 at 3.1 GeV by 50 a, the top trend point since t2e (2026-11-13), so the rule
+    keeps 500 steps (until t2e the 4.65 GeV point, 0.13, ran 575 steps there, 0.0997). The literal connected-variance estimate on the vacuum (4.5-7.5, 2.0-4.3e3 steps) is a record: it counts the
     vacuum's zero-point fluctuation of the error operator as if it accumulated. Worst case 6.3e2-1.0e3 at g^2 = 1.
     The injected particles are a q-qbar pair; the 0.06 quark bound below is the lattice-corner mode, not a box momentum."""
     np = pytest.importorskip("numpy")
@@ -1964,17 +1985,17 @@ def test_g7_2033_step_numbers(r33):
     assert max(i["trotter_dipole_free_err"]) < 0.035                      # dipole rows at 0.05 a, a T = 0.45 (s648: static
     #                                                                       on the H_I dispersion, 0.029 / 0.034; was < 0.025)
     # the rule at the top box mode and in the thermal dipole rows
-    assert i["trotter_rule"] == "state" and i["trotter_top_mode_steps_50a"] == 575
-    assert round(i["trotter_top_mode_phase_50a"], 3) == 0.100 and i["trotter_top_mode_phase_50a"] <= 0.1
-    assert i["trotter_free_err_top_50a"] < 0.03                           # free-field check at the 575-step shot
+    assert i["trotter_rule"] == "state" and i["trotter_top_mode_steps_50a"] == 500   # t2e (was 575 at 4.65 GeV)
+    assert round(i["trotter_top_mode_phase_50a"], 3) == 0.059 and i["trotter_top_mode_phase_50a"] <= 0.1   # t2e (was 0.100)
+    assert i["trotter_free_err_top_50a"] < 0.04                           # free-field check at the 500-step shot (t2e; 0.028 at 575)
     assert i["trotter_dipole_rule_steps"] == (85, 240, 64, 181)            # s648: static on H_I (was 72, 203)
     assert max(i["trotter_dipole_rule_sd_err"]) <= 0.1 and max(i["trotter_dipole_rule_free_err"]) < 0.012
     assert min(i["trotter_dipole_sd_err"]) > 0.1                          # the 0.01 fm/c grid fails the rule there
     tex = TEX.read_text()
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "The worst-case bound at $g^2=1$, $6.3\\times 10^{2}$--$1.0\\times 10^{3}$"
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "the $4.65$ GeV point runs $575$ steps there"
-    assert ("a gluon picks up a phase of $0.06$ at $3.1$ GeV and $0.13$ at $4.65$ GeV, while the worst-case bound "
-            "at $g^2=1$ is uninformative") in tex
+    assert ("By $50\\,a$ a gluon at $3.1$ GeV picks up a phase of $0.06$, while the worst-case bound "
+            "at $g^2=1$ is uninformative") in tex                        # t2e (2026-11-13): the 4.65 GeV clause cut
     assert "an eigenstate whose error does not grow ($0.04$--$0.05$ for free fields)" in tex
 
 
@@ -1985,15 +2006,18 @@ def test_g7_2033_step_numbers(r33):
 def test_r27_j2_box_term_and_check(r33):
     i = r33.intermediates
     near(i["source_box_modes_GeV"][0], 1.5498, 1e-4)
-    near(i["yoyo_full_extension_fm"][2], 4.6494, 1e-4)
-    assert [round(w, 1) for w in i["yoyo_windings_at_full_extension"]] == [3.9, 7.7, 11.6]   # printed, rounded once
+    near(i["yoyo_full_extension_fm"][1], 3.0996, 1e-4)                  # t2e: two trend points (was [2] = 4.6494)
+    assert [round(w, 1) for w in i["yoyo_windings_at_full_extension"]] == [3.9, 7.7]   # t2e (was 3.9, 7.7, 11.6)
+    assert i["L_par_three_energies_with_2033_points"] == 16                 # t2e: 'a three-energy trend starts at L_par = 16'
+    e16 = i["pair_energies_GeV_by_L_par"]
+    assert len(e16[8]) == 2 and len(e16[16]) == 4 and len(e16[10]) == 2 and len(e16[4]) == 1
     assert i["box_check_L_par_all_modes"] == 16 and i["lq_box_check_all_modes"] == 1828
     assert i["box_check_L_par_one_mode"] == 4 and i["box_check_shared_modes_one"] == (2,) and i["lq_box_check_one_mode"] == 532
     near(i["t_total_box_check_one_mode"][0], 2.413e9, 1e-3); near(i["t_total_box_check_one_mode"][1], 1.250e10, 1e-3)
     near(i["wall_box_check_one_mode_yr"][0], 0.4625, 1e-2); near(i["wall_box_check_one_mode_yr"][1], 3.69, 1e-2)
-    assert 0.16 < i["box_check_over_campaign"][0] < 0.17 and 0.16 < i["box_check_over_campaign"][1] < 0.17
-    near(i["wall_trend_2033_yr"][1], 22.13, 1e-3)                       # the trend alone
-    near(i["wall_campaign_2033_yr"][1], 22.13 + 3.69, 2e-3)             # the campaign includes the check (ruling 2026-10-05)
+    assert 0.24 < i["box_check_over_campaign"][0] < 0.26 and 0.24 < i["box_check_over_campaign"][1] < 0.26   # t2e (was 0.16-0.17)
+    near(i["wall_trend_2033_yr"][1], 14.60, 1e-3)                       # the trend alone (t2e; was 22.13)
+    near(i["wall_campaign_2033_yr"][1], 14.60 + 3.69, 2e-3)             # the campaign includes the check (ruling 2026-10-05)
 
 
 def test_r27_j3_nh_insertion_sum_rule(r33):
@@ -2048,13 +2072,13 @@ def test_pair_convention_and_baseline_2026_10_12(a, r33):
     i = r33.intermediates
     near(i["baseline_subtraction_factor"][0], 1.0935, 1e-3); near(i["baseline_subtraction_factor"][1], 1.4879, 1e-3)
     assert i["z_bins_resolvable_Lpar8"] == 3
-    near(i["shots_campaign_2033"][0], 24192, 1e-9); near(i["shots_campaign_2033"][1], 25344, 1e-9)   # '2.4--2.5e4'
+    near(i["shots_campaign_2033"][0], 18144, 1e-9); near(i["shots_campaign_2033"][1], 19008, 1e-9)   # '1.8--1.9e4' (t2e)
     if TEX.exists():
         tex = TEX.read_text()
         for frag in ("after $\\big(2/\\bar n_s+1/\\bar n_M\\big)/\\delta_{\\rm rel}^2$ shots, where $\\bar n_s$ counts $B+\\bar B$",
                      "$1.1$--$1.5$ for $b/\\bar n_s=0.002$--$0.04$. This factor is not included below.",
                      # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "($6.0$--$6.3\\times 10^{3}$ shots each)"
-                     "so an assumed $25\\%$ trend at $3\\sigma$ needs $5.9\\%$ points.", "First result & $\\approx 240$ shots, $13$--$103$ d",
-                     "$2.4$--$2.5\\times 10^{4}$ shots, $3.3$--$26$ yr", "10 bins (about 3 resolvable at $L_\\parallel=8$)"):
+                     "so an assumed $25\\%$ change at $3\\sigma$ needs $5.9\\%$ points.", "First result & $\\approx 240$ shots, $13$--$103$ d",
+                     "$1.8$--$1.9\\times 10^{4}$ shots, $2.3$--$18$ yr", "10 bins (about 3 resolvable at $L_\\parallel=8$)"):
             assert frag in tex, frag
 

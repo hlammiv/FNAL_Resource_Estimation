@@ -41,14 +41,16 @@ def main():
     hyd_lo, hyd_hi = sorted(i["tau_decay_at_eta_s_assumed_fm"])
 
     # the values the chapter prints
-    assert round(tau_fast, 1) == 0.1 and round(tau_fast, 2) == 0.10 and round(tau_slow, 2) == 0.14
+    # staggered ruling 2026-11-13 (2^3, k_min a_s = pi): tau_fast 0.064 (was 0.0955 on 3^3), grid (4, 12) (was (5, 18)),
+    # late-time error 0.33 at the fast end (was 0.36), free-streaming 1/e at 0.19 fm/c (was 0.28), hydro record 0.03-0.04
+    assert round(tau_fast, 2) == 0.06 and round(tau_slow, 2) == 0.14
     assert (a.fit_x.lo, a.fit_x.hi) == (0.5, 1.8) and frac_early == 0.2
-    assert steps_fast == (5, 18) and steps_slow == (7, 26) and abs(dt - 0.01) < 1e-12
-    assert all(abs(x - xp) < 0.1 for xs in (x_fast, x_slow) for x, xp in zip(xs, (0.5, 1.8)))
-    assert round(err_fast[0], 2) == 0.19 and round(err_fast[1], 2) == 0.36
+    assert steps_fast == (4, 12) and steps_slow == (7, 26) and abs(dt - 0.01) < 1e-12
+    assert all(abs(x - xp) < 0.15 for xs in (x_fast, x_slow) for x, xp in zip(xs, (0.5, 1.8)))   # 2^3: fast grid lands at 0.63, 1.88
+    assert round(err_fast[0], 2) == 0.19 and round(err_fast[1], 2) == 0.33
     assert round(err_slow[0], 2) == 0.19 and round(err_slow[1], 2) == 0.36
-    assert round(fs_kt, 1) == 2.9 and round(fs_fm, 2) == 0.28
-    assert round(hyd_lo, 2) == 0.07 and round(hyd_hi, 2) == 0.09
+    assert round(fs_kt, 1) == 2.9 and round(fs_fm, 2) == 0.19
+    assert round(hyd_lo, 2) == 0.03 and round(hyd_hi, 2) == 0.04
     assert round(i["design_A_over_B"], 2) == 0.37 and round(i["design_C_over_B"], 1) == 2.7
 
     t = np.linspace(0, 0.32, 400)
@@ -67,10 +69,9 @@ def main():
     ax.fill_between(t, c_fast, c_slow, color=ff.BLUE, alpha=0.15, lw=0)
     ax.plot(t, c_fast, color=ff.BLUE, lw=0.9)
     ax.plot(t, c_slow, color=ff.BLUE, lw=0.9, ls=(0, (4, 2)))
-    ax.text(0.208, 0.25, "$\\tau=1/(2\\pi T)$, $T=225$ MeV", color=ff.BLUE, fontsize=6.5, ha="left", va="bottom",
-            rotation=-19)
-    ax.text(0.19, 0.108, "$\\tau=1/k$, $T=300$ MeV", color=ff.BLUE, fontsize=6.5, ha="left", va="top",
+    ax.text(0.232, 0.205, "$\\tau=1/(2\\pi T)$, $T=225$ MeV", color=ff.BLUE, fontsize=6.5, ha="left", va="bottom",
             rotation=-17)
+    ax.text(0.085, 0.03, "$\\tau=1/k$, $T=300$ MeV", color=ff.BLUE, fontsize=6.5, ha="left", va="bottom")
     ax.text(0.135, 0.60, "planning band $e^{-t/\\tau}$", color=ff.BLUE, fontsize=6.5, ha="center", va="center")
 
     # free streaming, 1/e only at kt = 2.9
@@ -79,17 +80,17 @@ def main():
     ax.text(0.168, 0.86, "free streaming\n$3(\\sin kt-kt\\cos kt)/(kt)^3$", color=ff.ORANGE, fontsize=6.5,
             ha="left", va="bottom", linespacing=1.1)
     ax.plot([fs_fm], [e_inv], "o", color=ff.ORANGE, ms=3.5)
-    ax.annotate(f"$kt={fs_kt:.1f}$\n(${fs_fm:.2f}$ fm/$c$)", xy=(fs_fm, e_inv), xytext=(3, -5),
-                textcoords="offset points", fontsize=6.5, color=ff.ORANGE, ha="left", va="top", linespacing=1.1)
+    ax.annotate(f"$kt={fs_kt:.1f}$\n(${fs_fm:.2f}$ fm/$c$)", xy=(fs_fm, e_inv), xytext=(4, 3),
+                textcoords="offset points", fontsize=6.5, color=ff.ORANGE, ha="left", va="bottom", linespacing=1.1)
 
     # the 1/e line, with the hydrodynamic tau that has no basis at this k
     ax.axhline(e_inv, color=ff.GREY, lw=0.6, ls=":")
     ax.text(0.318, e_inv + 0.012, "$1/e$", color=ff.GREY, fontsize=6.5, ha="right", va="bottom")
     ax.plot([hyd_lo, hyd_hi], [e_inv, e_inv], color=ff.DARKGREY, lw=2.2, solid_capstyle="butt", zorder=4)
-    ax.text(0.065, e_inv - 0.045,
-            f"$\\tau_{{\\rm hydro}}=T/((\\eta/s)k^2)$\nat $\\eta/s={a.eta_s_assumed.lo}$: "
+    ax.text(0.002, 0.315,
+            f"$\\tau_{{\\rm hydro}}=T/((\\eta/s)k^2)$\n$\\eta/s={a.eta_s_assumed.lo}$: "
             f"${hyd_lo:.2f}$--${hyd_hi:.2f}$ fm/$c$\n(no basis at this $k$)",
-            fontsize=6.5, color=ff.DARKGREY, ha="center", va="top", linespacing=1.1)
+            fontsize=6.0, color=ff.DARKGREY, ha="left", va="top", linespacing=1.1)
 
     # the two fit points on each edge, rounded up onto the 0.01 fm/c grid, with the first result's errors
     for steps, xs, errs, tau, filled in ((steps_fast, x_fast, err_fast, tau_fast, True),
@@ -104,8 +105,8 @@ def main():
                 ha="left", va="center", linespacing=1.1,
                 arrowprops=dict(arrowstyle="-", color=ff.GREY, lw=0.5, shrinkA=0, shrinkB=3))
     ax.annotate(f"$\\Gamma t=1.8$\n({int(round(100 * (1 - frac_early)))}%)",
-                xy=(steps_slow[1] * dt, np.exp(-x_slow[1])), xytext=(7, -2), textcoords="offset points",
-                fontsize=6.5, color=ff.INK, ha="left", va="top", linespacing=1.1)
+                xy=(steps_slow[1] * dt, np.exp(-x_slow[1])), xytext=(-6, -3), textcoords="offset points",
+                fontsize=6.5, color=ff.INK, ha="right", va="top", linespacing=1.1)
 
     ax.set_xlim(0, 0.32)
     ax.set_ylim(0, 1.04)

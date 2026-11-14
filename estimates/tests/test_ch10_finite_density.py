@@ -620,18 +620,20 @@ def test_qsvt_rounds_follow_the_success_probability():
     assert 159 / 17 * 2.7726e9 < r.hard_ops[0] < 1.1 * 159 / 17 * 2.7726e9
 
 
-def test_2033_v3cubed_promotion(r33):
-    # open questions: "At V=3^3 the same filter (d_beta = 56, a 9.6e6-T step) is 1.8--3.7e10 T ... on 1141--1641 LQ"
+def test_2033_v4cubed_volume_row(r33):
+    # tab:ch10_volumes "4^3, 3 fields": d_beta 86, c_step 2.3e7, 6.8e10--1.4e11 T, 68--138x, 2362--2862 LQ.
+    # Staggered ruling 2026-11-13 replaced the odd periodic V=3^3 row; old pins in comments:
+    # v3cubed_lq (1141, 1641), beta_h 337.5, d_beta 56, c_step 9.6e6, T (1.8e10, 3.7e10), steps 675, jumps 972, Gibbs 3e14
     i = r33.intermediates
-    assert i["v3cubed_lq"] == (1141, 1641)
-    assert i["v3cubed_beta_h"] == 337.5 and i["v3cubed_d_beta"] == 56
-    assert round(i["v3cubed_c_step"], -5) == 9.6e6
-    lo, hi = i["v3cubed_t_per_shot"]
-    assert (round(lo, -9), round(hi, -9)) == (1.8e10, 3.7e10)
+    assert i["v4cubed_lq"] == (2362, 2862)
+    assert i["v4cubed_beta_h"] == 800.0 and i["v4cubed_d_beta"] == 86
+    assert round(i["v4cubed_c_step"], -6) == 2.3e7
+    lo, hi = i["v4cubed_t_per_shot"]
+    assert (round(lo, -9), round(hi, -10)) == (6.8e10, 1.4e11)
     # records
-    assert i["v3cubed_steps"] == 675 and i["v3cubed_n_jumps"] == 972
-    assert i["v3cubed_eps_rot"] == c.eps_rot_for(i["v3cubed_n_rot_per_shot"])
-    assert round(i["v3cubed_gibbs_t_with_10x_cut"], -14) == 3e14
+    assert i["v4cubed_steps"] == 1600 and i["v4cubed_n_jumps"] == 2304
+    assert i["v4cubed_eps_rot"] == c.eps_rot_for(i["v4cubed_n_rot_per_shot"])
+    assert round(i["v4cubed_gibbs_t_with_10x_cut"], -14) == 4.5e15
 
 
 # --- post-2033 stretch (app07:196) ------------------------------------------
@@ -802,7 +804,7 @@ def test_r25_tex_prints_the_new_numbers():
               r"first result: $\gtrsim 32$--$66$~d", r"campaign: $\gtrsim 4.1$--$8.3$~yr", r"$0.42$--$0.85$~yr", r"$0.73$--$4.7$~yr", r"reduced by $1.7\times$",
               r"$17$--$56$", r"$46$--$94$~min", r"\lesssim 1.8\times 10^{-11}$",
               r"$3.6\times 10^{-11}$", r"$280$--$560", r"$28$--$56$ faults",
-              r"$1.8$--$3.7\times 10^{10}$",
+              r"$6.8\times 10^{10}$--$1.4\times 10^{11}$", r"2362--2862",   # V=4^3 row (staggered ruling 2026-11-13; was the V=3^3 '1.8--3.7e10')
               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "costs $\sim 8\times 10^{13}$--$4\times 10^{14}$ T per shot" (Gibbs sampler; "four to five orders of magnitude" stays)
               r"At $20$ assumed sweeps it costs four to five orders of magnitude more T per shot here",
               r"\cite{arxiv_2311_09207,arxiv_2405_20322}", r"lattice cutoff"):

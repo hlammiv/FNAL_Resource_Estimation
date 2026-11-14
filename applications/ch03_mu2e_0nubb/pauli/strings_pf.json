@@ -1,0 +1,11 @@
+{
+ "gamma": 82940,
+ "modes": 40,
+ "supports4": 9892,
+ "hops_bare": 40,
+ "hops_dressed": 1452,
+ "zz": 780,
+ "z": 40,
+ "space": "pf",
+ "seconds": 0.1
+}

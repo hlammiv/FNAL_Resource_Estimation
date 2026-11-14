@@ -3,7 +3,8 @@ hard-op numbers of applications/app11_mu2e_0nubb.tex.
 
 The chapter's cost model (app11:78-83) is
     N_q     = 4 N_orb + N_anc                                        (eq:Nq11, JW, one register; R14)
-    N_gate  = N_proj (c_proj tau_gs / dt) N_orb^4 c_T,  tau_gs = 1/Delta  (eq:Ngate11)
+    N_gate  = N_proj (c_proj tau_gs / dt) N_str c_T,  tau_gs = 1/Delta  (eq:Ngate11; N_str = Hamiltonian
+              Pauli strings per Trotter step, one rotation each: ruling 2026-11-13, was N_orb^4)
     c_T     = 1.15 log2(1/eps_rot) + 9.2,  eps_rot = sqrt(eps_syn / N_rot)   (R-TOL)
     N_shot  = (lambda/|<O>|)^2 (eps m)^-2 N_op N_iso                 (eq:Nshot11; R14: m = 1 Hadamard
                                                                       test, m = m_max depth-capped MLAE)
@@ -26,7 +27,7 @@ INPUTS AND SOURCES
   c_proj in [pi, 2pi]                 Assumed app11:87 (Heisenberg-limited vs textbook projection)
   c_T per circuit (R-TOL, H. Lamm 2026-09-29): the full RUS fit 1.15 log2(1/eps_rot) + 9.2
                                       (Cited BRS 2015 + Campbell 2017, randomized) at
-                                      eps_rot = common.eps_rot_for(N_rot), N_rot = N_proj N_Trotter N_orb^4
+                                      eps_rot = common.eps_rot_for(N_rot), N_rot = N_proj N_Trotter N_str
                                       rotations in ONE shot of that circuit; every band end, gap
                                       variant and lever variant is its own circuit with its own eps.
                                       Replaces the fixed c_T = 27 (was Cited, app11:90).
@@ -167,7 +168,7 @@ WHAT IS NOT DERIVED HERE
     "about 1% of the jj44 pair", the synthesis budget 1e-2.
 R-TOL (H. Lamm, 2026-09-29; log apply_log/rtol_ch03.md)
   The fixed c_T = 27 is gone. Every circuit (each band end of each cell, each gap variant, the
-  x10 lever variant) carries its own eps_rot = sqrt(1e-2 / N_rot), N_rot = N_proj N_Trotter N_orb^4,
+  x10 lever variant) carries its own eps_rot = sqrt(1e-2 / N_rot), N_rot = N_proj N_Trotter N_str,
   and c_T = RUS fit at that eps: sd 25.65-26.80, pf 27.92-29.07, jj44 28.23-29.38, jj55
   29.48-30.63, Mo/Ru 31.21-32.36, flagship 36.64 (e_max=8 lo)-39.62 (e_max=10 hi). The 2028 entry
   had no rotation breakdown then (it has one since R12, priced by R-TOL) and the stated sd
@@ -212,6 +213,15 @@ WALL TIME AND FACTORIES (r25: rulings R1, R7, R9, R10, H. Lamm 2026-10-02; log a
     All classically tractable validations. 76Ge stays past 2033 (no simplification that keeps its physics fits).
   The 2033 27Al per-shot T keeps the BE insertion (~1% of N_T), which the direct readout does not use:
     conservative, left in.
+PAULI-STRING TROTTER STEP (author ruling 2026-11-13, "go with the Pauli-string based"; reviewer: the chapter set
+  each step at N_orb^4 = 1296 rotations in sd while quoting 12900 Pauli strings)
+  Each Trotter step is one synthesized rotation per JW Pauli string of the two-body Hamiltonian (string-by-string
+  Trotterization; the CNOT ladder and basis changes are Clifford). N_str (hamiltonian_strings, the structured count
+  checked against explicit JW algebra) per step: sd 12900 (was 1296), f7p3 9620, f7p3p1 18230, pf 82940, jj44 53854,
+  Mo/Ru 114909, jj55 216072, e_max = 3 767264, 4 6183358; e_max = 8, 10 stored from pauli/strings_emax*.json. Every
+  2033 T band, c_T, eps_rot, eps_l, wall and multiple in this file moves with it; the comments above that quote
+  numbers predate this ruling (the tests and printed() carry the current values).
+  Mo/Ru at the measured 0+ gaps (ENSDF 0.695 / 1.130 MeV, each projection at its own gap): multiple_mo_ru_measured_gaps.
 """
 
 from __future__ import annotations
@@ -494,6 +504,11 @@ class Assumptions:
     gap_0plus_ensdf_ca48_mev: Tagged = Cited(4.283, "ENSDF", "48Ca first excited 0+ (4283 keV); record (was priced "
                                                              "until referee M3)")
     gap_0plus_ensdf_ti48_mev: Tagged = Cited(2.997, "ENSDF", "48Ti first excited 0+ (2997 keV); record")
+    # Ch. 3 item (2) of 2026-11-13: the measured 0+ gaps of the 100Mo/100Ru pair, printed beside the generic band
+    gap_0plus_ensdf_mo100_mev: Tagged = Cited(0.695, "ENSDF", "100Mo first excited 0+ (695 keV), shape-coexisting "
+                                                              "prolate band (app11:41)")
+    gap_0plus_ensdf_ru100_mev: Tagged = Cited(1.130, "ENSDF", "100Ru first excited 0+ (1130 keV), the 2nubb "
+                                                              "excited-state final level (app11:41)")
     eps_simplified: Tagged = Assumed(0.3, "R1: 30% statistical error on |M| for the 0nubb first light",
                                      f"{TEX}:161")
     # Ruling 2026-10-12 (Ch. 3 item 1, option 1): lambda/|M| and p_ref are computed with KB3G (the interaction that
@@ -561,6 +576,7 @@ class Assumptions:
                       "first_result_scans", "eps_first_generic", "gap_0plus_f7p3_ca48_mev", "gap_0plus_f7p3_ti48_mev",
                       "gap_0plus_f7p3p1_ca48_mev", "gap_0plus_f7p3p1_ti48_mev", "gap_0plus_pf_ca48_mev",
                       "gap_0plus_pf_ti48_mev", "gap_0plus_ensdf_ca48_mev", "gap_0plus_ensdf_ti48_mev",
+                      "gap_0plus_ensdf_mo100_mev", "gap_0plus_ensdf_ru100_mev",
                       "gap_al27_usdb_mev", "gap_al27_usdb_same_j_mev",
                       "eps_simplified", "lam_over_m_f7p3", "p_ref_f7p3", "lam_over_m_f7p3p1", "qdrift_eps",
                       "load_angle_error")
@@ -609,30 +625,41 @@ def c_T(a: Assumptions, n_rot: float) -> float:
     return t_per_rotation(eps_rot_for(n_rot, a.eps_synth_total.value))
 
 
-def prep_rotations(a: Assumptions, n_proj: int, n_orb: int, gap: tuple[float, float],
+def prep_rotations(a: Assumptions, n_proj: int, n_str: int, gap: tuple[float, float],
                    lever: float = 1.0) -> tuple[float, float]:
-    """N_rot per shot at each band end: N_proj N_Trotter N_orb^4 (dense Pauli strings), N_Trotter / lever."""
+    """N_rot per shot at each band end: N_proj N_Trotter n_str, with n_str the Hamiltonian's Pauli strings
+    (one synthesized rotation per string per Trotter step; author ruling 2026-11-13, was N_orb^4), N_Trotter / lever."""
     lo, hi = n_trotter(a, gap)
-    return (n_proj * lo / lever * n_orb ** 4, n_proj * hi / lever * n_orb ** 4)
+    return (n_proj * lo / lever * n_str, n_proj * hi / lever * n_str)
 
 
-def prep_c_T(a: Assumptions, n_proj: int, n_orb: int, gap: tuple[float, float],
+def prep_c_T(a: Assumptions, n_proj: int, n_str: int, gap: tuple[float, float],
              lever: float = 1.0) -> tuple[float, float]:
     """c_T at each band end, each end its own circuit (R-TOL)."""
-    return tuple(c_T(a, n) for n in prep_rotations(a, n_proj, n_orb, gap, lever))
+    return tuple(c_T(a, n) for n in prep_rotations(a, n_proj, n_str, gap, lever))
 
 
-def prep_eps_rot(a: Assumptions, n_proj: int, n_orb: int, gap: tuple[float, float]) -> tuple[float, float]:
+def prep_eps_rot(a: Assumptions, n_proj: int, n_str: int, gap: tuple[float, float]) -> tuple[float, float]:
     """eps_rot at each band end (R-TOL); the low-T end has the looser tolerance."""
-    return tuple(eps_rot_for(n, a.eps_synth_total.value) for n in prep_rotations(a, n_proj, n_orb, gap))
+    return tuple(eps_rot_for(n, a.eps_synth_total.value) for n in prep_rotations(a, n_proj, n_str, gap))
 
 
-def prep_t(a: Assumptions, n_proj: int, n_orb: int, gap: tuple[float, float],
+def prep_t(a: Assumptions, n_proj: int, n_str: int, gap: tuple[float, float],
            lever: float = 1.0) -> tuple[float, float]:
-    """eq:Ngate11: N_reg (c_proj tau_gs/dt / lever) N_orb^4 c_T(N_rot), for the coherent state prep alone.
+    """eq:Ngate11: N_reg (c_proj tau_gs/dt / lever) n_str c_T(N_rot), for the coherent state prep alone.
     `lever` divides the projection depth (app11:163); the shorter circuit gets its own eps_rot."""
-    n = prep_rotations(a, n_proj, n_orb, gap, lever)
+    n = prep_rotations(a, n_proj, n_str, gap, lever)
     return (n[0] * c_T(a, n[0]), n[1] * c_T(a, n[1]))
+
+
+def prep_t_two_gaps(a: Assumptions, n_str: int, gaps: tuple[float, float]) -> tuple[float, float]:
+    """A 0nubb pair's state prep with the parent and daughter projections each at its own gap (c_proj/Delta_i,
+    summed), prep only; band ends c_proj = pi and 2 pi. Used for the measured 100Mo/100Ru 0+ gaps."""
+    out = []
+    for cp in (a.c_proj.lo, a.c_proj.hi):
+        n = sum(cp * tau_gs(g) / a.dt_gev_inv.value for g in gaps) * n_str
+        out.append(n * c_T(a, n))
+    return tuple(out)
 
 
 def register(a: Assumptions, n_reg: int, n_orb: float) -> int:
@@ -703,9 +730,9 @@ def synthesis_check(a: Assumptions) -> dict:
     The survey ends are 27Al sd low (fewest rotations) and jj55 high (most; Mo/Ru before R15)."""
     gap = _band(a.gap_mev)
     nt = n_trotter(a, gap)
-    n_rot_min = 1 * nt[0] * a.n_orb_sd.value ** 4                                  # 27Al sd, lo
-    # R15: the largest survey cell is jj55 (N_orb 16), not Mo/Ru (13.5 since ruling 3; was 27)
-    n_rot_max = 2 * nt[1] * max(a.n_orb_pf.value, a.n_orb_jj44.value, a.n_orb_jj55.value, n_orb_mo_ru(a)) ** 4
+    n_rot_min = 1 * nt[0] * hamiltonian_strings("sd")                             # 27Al sd, lo
+    # the largest survey cell is jj55 (most strings per step)
+    n_rot_max = 2 * nt[1] * max(hamiltonian_strings(k) for k in ("pf", "jj44", "jj55", "mo_ru"))
     et = a.eps_synth_total.value
     inc = tuple(t_per_rotation(eps_per_rotation(et, n, "incoherent")) for n in (n_rot_min, n_rot_max))
     coh = tuple(t_per_rotation(eps_per_rotation(et, n, "coherent")) for n in (n_rot_min, n_rot_max))
@@ -1224,6 +1251,146 @@ def gamma_mu2e_two_body(shell: str, selection: bool = True, seed: int = 1) -> di
     return dict(n_terms=n_terms, gamma=len(nz - {(0, 0)}), identity=(0, 0) in nz, modes=len(S))
 
 
+# --------------------------------------------------------------------------- #
+# Trotter step = one synthesized rotation per Hamiltonian Pauli string (author ruling 2026-11-13)
+# --------------------------------------------------------------------------- #
+# The shell-model / chiral two-body Hamiltonian is a Hermitian, real (time-reversal), charge-conserving, rank-0
+# one- plus two-body operator: exactly the operator class gamma_mu2e_two_body counts. A Trotter step applies
+# one rotation exp(-i theta P) per JW Pauli string P (string-by-string Trotterization); the CNOT ladder and
+# single-qubit basis changes around each rotation are Clifford. The strings fall into four families, which the
+# structured count below enumerates without JW algebra (so it reaches the e_max = 8-10 oscillator spaces):
+#   - 4-mode supports {w, x, y, z}: every allowed pairing a^dag a^dag a a + h.c. gives the 8 even-Y X/Y patterns
+#     on its support, so a support with at least one allowed pairing carries 8 strings;
+#   - hops p <-> s (same charge, 2m, parity): (XX + YY) on {p, s}, bare and dressed by one Z_q per spectator q
+#     with pair(p, q) and pair(s, q) sharing a J (from a^dag_p a^dag_q a_q a_s), 2 strings each; the bare hop
+#     also comes from a one-body scalar term (same l, j, m: different n in an oscillator space);
+#   - Z_p Z_q for every pair with an allowed J (n_p n_q), and Z_p for every mode (n_p).
+# A selection rule here is exact (2M, parity, charge content, a common pair J); generic coefficients are
+# assumed, so the count is an upper bound on the strings of any specific interaction.
+
+def ho_orbits(emax: int) -> tuple:
+    """(n, l, 2j) orbits of a harmonic-oscillator space with 2n + l <= e_max, one species."""
+    return tuple((n, l, 2 * l + s) for N in range(emax + 1) for l in range(N % 2, N + 1, 2)
+                 for n in ((N - l) // 2,) for s in (1, -1) if 2 * l + s > 0)
+
+
+# Trotter-step spaces: (proton orbits, neutron orbits). Mo/Ru puts protons in jj44 and neutrons in jj55 (R15).
+STEP_SPACES = {k: (v, v) for k, v in SHELLS.items()}
+STEP_SPACES["mo_ru"] = (SHELLS["jj44"], SHELLS["jj55"])
+
+
+def step_space(key: str) -> tuple:
+    """Orbits of a Trotter-step space key: a SHELLS key, 'mo_ru', or 'emax<e>' (oscillator, no core)."""
+    if key.startswith("emax"):
+        o = ho_orbits(int(key[4:]))
+        return (o, o)
+    return STEP_SPACES[key]
+
+
+@_lru_cache(maxsize=None)
+def _cg_nonzero(j1, m1, j2, m2, J) -> bool:
+    """<j1 m1 j2 m2|J m1+m2> != 0, all arguments doubled; the Racah sum evaluated exactly in rationals."""
+    from fractions import Fraction
+    M = m1 + m2
+    if abs(M) > J or J < abs(j1 - j2) or J > j1 + j2 or (j1 + j2 + J) % 2:
+        return False
+    a_, b_, c_ = (j1 + j2 - J) // 2, (j1 - m1) // 2, (j2 + m2) // 2
+    d_, e_ = (J - j2 + m1) // 2, (J - j1 - m2) // 2
+    f = math.factorial
+    s = Fraction(0)
+    for k in range(max(0, -d_, -e_), min(a_, b_, c_) + 1):
+        s += Fraction((-1) ** k, f(k) * f(a_ - k) * f(b_ - k) * f(c_ - k) * f(d_ + k) * f(e_ + k))
+    return s != 0
+
+
+def hamiltonian_strings_count(orb_p: tuple, orb_n: tuple) -> dict:
+    """Pauli strings of a generic rank-0 one- plus two-body nuclear Hamiltonian, protons in `orb_p`, neutrons in
+    `orb_n` (orbits (n, l, 2j)), by the structured count in the comment above. Identity excluded. Reproduces
+    gamma_mu2e_two_body (explicit JW algebra) where both apply (tests)."""
+    import numpy as np
+    st = []                                   # (charge, global orbit id, n, l, 2j, 2m)
+    for ch, orbs in ((0, orb_p), (1, orb_n)):
+        for o, (n, l, tj) in enumerate(orbs):
+            for m2 in range(-tj, tj + 1, 2):
+                st.append((ch, ch * 10000 + o, n, l, tj, m2))
+    nm = len(st)
+    S = np.array(st, dtype=np.int64)
+    chg, gid, l_, tj_, m_ = S[:, 0], S[:, 1], S[:, 3], S[:, 4], S[:, 5]
+    # pair tables (symmetric): key = (charge content, 2M, parity), J mask
+    key = np.full((nm, nm), -1, dtype=np.int64)
+    jm = np.zeros((nm, nm), dtype=np.int64)
+    for u in range(nm):
+        for v in range(u + 1, nm):
+            j1, j2, m1, m2 = int(tj_[u]), int(tj_[v]), int(m_[u]), int(m_[v])
+            same = gid[u] == gid[v]
+            mask = 0
+            for J in range(abs(j1 - j2), j1 + j2 + 1, 2):
+                if same and (J // 2) % 2 == 1:
+                    continue
+                if _cg_nonzero(j1, m1, j2, m2, J):
+                    mask |= 1 << (J // 2)
+            k = ((int(chg[u] + chg[v]) * 1000) + (m1 + m2 + 500)) * 2 + int((l_[u] + l_[v]) % 2)
+            key[u, v] = key[v, u] = k
+            jm[u, v] = jm[v, u] = mask
+    iu, iv = np.triu_indices(nm, 1)
+    pk, pj = key[iu, iv], jm[iu, iv]
+    zz = int(np.count_nonzero(pj))
+
+    def allowed(w, x, y, z):
+        return (key[w, x] == key[y, z]) & ((jm[w, x] & jm[y, z]) != 0)
+
+    # 4-mode supports with at least one allowed pairing, each counted at its first allowed pairing
+    n4 = 0
+    order = np.argsort(pk, kind="stable")
+    pk_s, u_s, v_s, j_s = pk[order], iu[order], iv[order], pj[order]
+    bounds = np.flatnonzero(np.diff(pk_s)) + 1
+    for lo, hi in zip(np.r_[0, bounds], np.r_[bounds, len(pk_s)]):
+        U, V, JM = u_s[lo:hi], v_s[lo:hi], j_s[lo:hi]
+        for i in range(len(U) - 1):
+            a1, b1 = U[i], V[i]
+            c1, d1, jj = U[i + 1:], V[i + 1:], JM[i + 1:]
+            ok = (c1 != a1) & (c1 != b1) & (d1 != a1) & (d1 != b1) & ((jj & JM[i]) != 0)
+            if not ok.any():
+                continue
+            c1, d1 = c1[ok], d1[ok]
+            q4 = np.sort(np.stack([np.full_like(c1, a1), np.full_like(c1, b1), c1, d1], axis=1), axis=1)
+            w, x, y, z = q4[:, 0], q4[:, 1], q4[:, 2], q4[:, 3]
+            partner = np.where((a1 == w) , b1, np.where(b1 == w, a1, np.where(c1 == w, d1, c1)))
+            p1 = allowed(w, x, y, z)
+            p2 = allowed(w, y, x, z)
+            first = np.where(partner == x, True, np.where(partner == y, ~p1, ~p1 & ~p2))
+            n4 += int(np.count_nonzero(first))
+    # hops p < s: dressed by a spectator q, and bare (dressed or one-body)
+    dressed, bare = 0, 0
+    for p in range(nm):
+        for s in range(p + 1, nm):
+            if chg[p] != chg[s] or m_[p] != m_[s] or (l_[p] - l_[s]) % 2:
+                continue
+            q = np.ones(nm, dtype=bool)
+            q[[p, s]] = False
+            nd = int(np.count_nonzero((jm[p, q] & jm[s, q]) != 0))
+            one_body = l_[p] == l_[s] and tj_[p] == tj_[s]
+            dressed += nd
+            bare += int(nd > 0 or bool(one_body))
+    gamma = 8 * n4 + 2 * (bare + dressed) + zz + nm
+    return dict(gamma=gamma, modes=nm, supports4=n4, hops_bare=bare, hops_dressed=dressed, zz=zz, z=nm)
+
+
+@_lru_cache(maxsize=None)
+def hamiltonian_strings(key: str) -> int:
+    """Pauli strings per Trotter step in space `key` (rotations per step). The oscillator spaces at e_max >= 5
+    are too large to count at import and come from the stored COMPUTED counts (HAMILTONIAN_STRINGS_STORED)."""
+    if key in HAMILTONIAN_STRINGS_STORED:
+        return HAMILTONIAN_STRINGS_STORED[key]
+    return hamiltonian_strings_count(*step_space(key))["gamma"]
+
+
+# COMPUTED offline by applications/ch03_mu2e_0nubb/pauli/count_strings.py (same function, lenore_remote);
+# output pauli/strings_emax*.json. Tests recount the cheap ones.
+HAMILTONIAN_STRINGS_STORED: dict = {"emax8": 1944122242,      # 660 modes, 97 s (165^4 = 7.4e8)
+                                     "emax10": 14842974100}    # 1144 modes, 303 s (286^4 = 6.7e9)
+
+
 def insertion_in_circuit(a: Assumptions, gamma: int, n_rot_prep: float) -> dict:
     """One controlled BE query of a Gamma-string LCU inside a circuit that already holds n_rot_prep
     rotations: the R-TOL tolerance is set by the whole circuit's rotation count (R15 ruling 4)."""
@@ -1241,33 +1408,40 @@ def survey(a: Assumptions) -> dict:
     gap_s = _band(a.gap_small_mev)
     # R15 ruling 3: Mo/Ru puts protons in jj44 and neutrons in jj55, one species per shell: 22 + 32 = 54
     # modes (half of each shell's 4 N_orb), i.e. N_orb = 54/4 = 13.5 in eq:Nq11/eq:Ngate11 (was 11 + 16 = 27,
-    # 108 modes: both species in both shells). The N_orb^4 string count is then (54/4)^4, 1/16 of 27^4.
+    # 108 modes: both species in both shells). Its Trotter step carries the 114909 strings of that 54-mode space.
     n_mo = n_orb_mo_ru(a)
     cells = {
-        "al_sd":   dict(n_proj=1, n_orb=a.n_orb_sd.value,   label=r"$^{27}$Al $sd$"),
-        "pf":      dict(n_proj=2, n_orb=a.n_orb_pf.value,   label=r"$^{48}$Ca/Ti ($pf$)"),
-        "jj44":    dict(n_proj=2, n_orb=a.n_orb_jj44.value, label=r"$^{76}$Ge/Se, $^{82}$Se/Kr ($jj44$)"),
-        "jj55":    dict(n_proj=2, n_orb=a.n_orb_jj55.value, label=r"$^{130}$Te/Xe, $^{136}$Xe/Ba ($jj55$)"),
-        "mo_ru":   dict(n_proj=2, n_orb=n_mo,               label=r"$^{100}$Mo/Ru ($jj44\otimes jj55$)"),
+        "al_sd":   dict(n_proj=1, n_orb=a.n_orb_sd.value,   space="sd",    label=r"$^{27}$Al $sd$"),
+        "pf":      dict(n_proj=2, n_orb=a.n_orb_pf.value,   space="pf",    label=r"$^{48}$Ca/Ti ($pf$)"),
+        "jj44":    dict(n_proj=2, n_orb=a.n_orb_jj44.value, space="jj44",  label=r"$^{76}$Ge/Se, $^{82}$Se/Kr ($jj44$)"),
+        "jj55":    dict(n_proj=2, n_orb=a.n_orb_jj55.value, space="jj55",  label=r"$^{130}$Te/Xe, $^{136}$Xe/Ba ($jj55$)"),
+        "mo_ru":   dict(n_proj=2, n_orb=n_mo,               space="mo_ru", label=r"$^{100}$Mo/Ru ($jj44\otimes jj55$)"),
     }
     for e in (a.emax_first.lo, a.emax_first.hi, a.emax_converged_al.lo, a.emax_converged_al.hi):
-        cells[f"al_emax{e}"] = dict(n_proj=1, n_orb=ho_spatial_orbitals(e),
+        cells[f"al_emax{e}"] = dict(n_proj=1, n_orb=ho_spatial_orbitals(e), space=f"emax{e}",
                                     label=rf"$^{{27}}$Al $e_{{\max}}={e}$")
     for k, c in cells.items():
         c["qubits"] = register(a, 1, c["n_orb"])     # R14 option A: one Fock register for every cell
         c["lq"] = (c["qubits"] + a.n_anc.lo, c["qubits"] + a.n_anc.hi)
-        c["n_rot"] = prep_rotations(a, c["n_proj"], c["n_orb"], gap)
-        c["eps_rot"] = prep_eps_rot(a, c["n_proj"], c["n_orb"], gap)
-        c["c_T"] = prep_c_T(a, c["n_proj"], c["n_orb"], gap)
-        c["t"] = prep_t(a, c["n_proj"], c["n_orb"], gap)
+        # author ruling 2026-11-13: one rotation per Hamiltonian Pauli string per Trotter step (was N_orb^4)
+        c["n_str"] = hamiltonian_strings(c["space"])
+        c["n_rot"] = prep_rotations(a, c["n_proj"], c["n_str"], gap)
+        c["eps_rot"] = prep_eps_rot(a, c["n_proj"], c["n_str"], gap)
+        c["c_T"] = prep_c_T(a, c["n_proj"], c["n_str"], gap)
+        c["t"] = prep_t(a, c["n_proj"], c["n_str"], gap)
         c["multiple"] = _div(c["t"], env)
         c["eps_l"] = eps_l(a, c["t"])
-        c["t_large_gap"] = prep_t(a, c["n_proj"], c["n_orb"], gap_l)
+        c["t_large_gap"] = prep_t(a, c["n_proj"], c["n_str"], gap_l)
         c["multiple_large_gap"] = _div(c["t_large_gap"], env)
-        c["t_small_gap"] = prep_t(a, c["n_proj"], c["n_orb"], gap_s)
+        c["t_small_gap"] = prep_t(a, c["n_proj"], c["n_str"], gap_s)
         c["multiple_small_gap"] = _div(c["t_small_gap"], env)
-        c["t_after_lever"] = prep_t(a, c["n_proj"], c["n_orb"], gap, a.prep_lever.value)
+        c["t_after_lever"] = prep_t(a, c["n_proj"], c["n_str"], gap, a.prep_lever.value)
         c["multiple_after_lever"] = _div(c["t_after_lever"], env)
+    # the measured 0+ gaps of 100Mo and 100Ru (ENSDF), each projection at its own gap, prep only
+    mo = cells["mo_ru"]
+    mo["gaps_measured"] = (a.gap_0plus_ensdf_mo100_mev.value, a.gap_0plus_ensdf_ru100_mev.value)
+    mo["t_measured_gaps"] = prep_t_two_gaps(a, mo["n_str"], mo["gaps_measured"])
+    mo["multiple_measured_gaps"] = _div(mo["t_measured_gaps"], env)
     # R15 ruling 4: one controlled BE query of the operator, inside the same circuit as the preparation
     # (R-TOL on the whole circuit), at the selection-rule string count and at the dense count.
     shells = dict(pf=("pf", "pf"), jj44=("jj44", "jj44"), jj55=("jj55", "jj55"), mo_ru=("jj44", "jj55"))
@@ -1366,7 +1540,7 @@ def wall_one_machine(a: Assumptions, shots, t, d) -> tuple[float, float]:
                  for n, x, y in zip(sh, t, d))
 
 
-def _pair_prep_two_gaps(a: Assumptions, n_orb: float, gaps: tuple, shells: str) -> dict:
+def _pair_prep_two_gaps(a: Assumptions, gaps: tuple, shells: str) -> dict:
     """R7 (simplobs price.py): a 0nubb pair whose parent and daughter projections each run c_proj/Delta_i,
     summed, then one controlled BE query in the circuit (R-TOL on the whole circuit). Band ends: c_proj = pi
     and 2 pi."""
@@ -1374,7 +1548,7 @@ def _pair_prep_two_gaps(a: Assumptions, n_orb: float, gaps: tuple, shells: str) 
     out = []
     for cp in (a.c_proj.lo, a.c_proj.hi):
         nt = sum(cp * tau_gs(g) / dt for g in gaps)
-        n_rot = nt * n_orb ** 4
+        n_rot = nt * hamiltonian_strings(shells)
         gm = gamma_0nubb(shells, shells)["gamma"]
         q = insertion_in_circuit(a, gm, n_rot)
         out.append(dict(n_trotter=nt, n_rot=n_rot, gamma=gm, t=q["n_rot_circuit"] * q["c_T"] + q["t_toffoli"],
@@ -1383,17 +1557,17 @@ def _pair_prep_two_gaps(a: Assumptions, n_orb: float, gaps: tuple, shells: str) 
                 t=(out[0]["t"], out[1]["t"]), t_depth=(out[0]["t_depth"], out[1]["t_depth"]))
 
 
-def _rabi_cost(a: Assumptions, n_orb: float, lam_over_m) -> dict:
+def _rabi_cost(a: Assumptions, space: str, lam_over_m) -> dict:
     """R7 resonant-drive (Rabi) readout (simplobs price_rabi.py): evolve the closed-f7/2 reference under
     H + mu N_p + theta (O + O^dag) to t_pi/2 = (pi/2)/(theta|M|), then read proton number (Clifford). Trotter
-    steps t/dt at N_orb^4 rotations each, plus the qDRIFT-sampled drive, N_q = 2 (lambda/M)^2 (pi/2)^2 / eps_q
+    steps t/dt at one rotation per Hamiltonian Pauli string each, plus the qDRIFT-sampled drive, N_q = 2 (lambda/M)^2 (pi/2)^2 / eps_q
     single-Pauli rotations. Low end: strong drive and the smaller lambda/M; high end: weak drive, larger."""
     lm = lam_over_m if isinstance(lam_over_m, tuple) else (lam_over_m, lam_over_m)
     ends = []
     for th, r in ((a.rabi_drive_mev.hi, lm[0]), (a.rabi_drive_mev.lo, lm[1])):
         steps = (PI / 2) / th * 1e3 / a.dt_gev_inv.value
         nq = 2 * r ** 2 * (PI / 2) ** 2 / a.qdrift_eps.value
-        n_trot = steps * n_orb ** 4
+        n_trot = steps * hamiltonian_strings(space)
         n_rot = n_trot + nq
         ct = c_T(a, n_rot)
         # T-depth (R10): the Trotter part runs G commuting rotations in flight; the qDRIFT samples are random,
@@ -1418,8 +1592,8 @@ def simplified_0nubb(a: Assumptions) -> dict:
     t0, tg = a.shot_overhead_s.value, a.t_gate_s.value
     rows = {}
     # B: f7/2 p3/2, projection readout. Shots (lambda/|M|)^2 / (4 eps^2 p_ref) (app11 operator-insertion route)
-    b = _pair_prep_two_gaps(a, 6, gaps_f7p3, "f7p3")
-    b_ensdf = _pair_prep_two_gaps(a, 6, gaps_ensdf, "f7p3")                       # record: priced until M3
+    b = _pair_prep_two_gaps(a, gaps_f7p3, "f7p3")
+    b_ensdf = _pair_prep_two_gaps(a, gaps_ensdf, "f7p3")                       # record: priced until M3
     shots_b = a.lam_over_m_f7p3.value ** 2 / (4 * a.eps_simplified.value ** 2 * a.p_ref_f7p3.value)
     rows["f7p3_projection"] = dict(modes=24, lq=(24 + a.n_anc.lo, 24 + a.n_anc.hi), t=b["t"], gamma=b["gamma"],
                                    n_trotter=b["n_trotter"], multiple=_div(b["t"], env), shots=(shots_b, shots_b),
@@ -1429,8 +1603,8 @@ def simplified_0nubb(a: Assumptions) -> dict:
                                    gaps=gaps_f7p3, t_at_ensdf_gaps=b_ensdf["t"],
                                    wall_at_ensdf_gaps_s=wall_one_machine(a, shots_b, b_ensdf["t"], b_ensdf["t_depth"]))
     # B': f7/2 p3/2 p1/2 with the Rabi readout (and the projection readout it replaces, for the record)
-    bp = _rabi_cost(a, 7, a.lam_over_m_f7p3p1.value)
-    bp_proj = _pair_prep_two_gaps(a, 7, gaps_f7p3p1, "f7p3p1")
+    bp = _rabi_cost(a, "f7p3p1", a.lam_over_m_f7p3p1.value)
+    bp_proj = _pair_prep_two_gaps(a, gaps_f7p3p1, "f7p3p1")
     sh = _band(a.rabi_shots)
     rows["f7p3p1_rabi"] = dict(modes=28, lq=(28 + a.n_anc.lo, 28 + a.n_anc.hi), t=bp["t"], steps=bp["steps"],
                                n_qdrift=bp["n_qdrift"], multiple=_div(bp["t"], env), shots=sh,
@@ -1439,15 +1613,15 @@ def simplified_0nubb(a: Assumptions) -> dict:
                                wall_t_supply_s=(sh[0] * (bp["t"][0] * tg + t0), sh[1] * (bp["t"][1] * tg + t0)),
                                projection_t=bp_proj["t"], projection_gaps=gaps_f7p3p1)
     # H: full pf with the Rabi readout: a near miss in T, weeks in wall
-    h = _rabi_cost(a, a.n_orb_pf.value, _band(a.lam_over_m_pf))
+    h = _rabi_cost(a, "pf", _band(a.lam_over_m_pf))
     rows["pf_rabi"] = dict(modes=40, lq=(40 + a.n_anc.lo, 40 + a.n_anc.hi), t=h["t"], steps=h["steps"],
                            n_qdrift=h["n_qdrift"], multiple=_div(h["t"], env), shots=sh,
                            eps_l=eps_l(a, h["t"]), t_depth=h["t_depth"], f_star_per_end=(h["t"][0] / h["t_depth"][0], h["t"][1] / h["t_depth"][1]),
                            wall_s=wall_one_machine(a, sh, h["t"], h["t_depth"]),                           # 19-110 d
                            wall_t_supply_s=(sh[0] * (h["t"][0] * tg + t0), sh[1] * (h["t"][1] * tg + t0)))
     # A (reference): full pf, projection readout at the 0+ gaps: T near the envelope, shots out of reach
-    a_pf = _pair_prep_two_gaps(a, a.n_orb_pf.value, gaps_pf, "pf")
-    a_pf_ensdf = _pair_prep_two_gaps(a, a.n_orb_pf.value, gaps_ensdf, "pf")    # record: priced until M3
+    a_pf = _pair_prep_two_gaps(a, gaps_pf, "pf")
+    a_pf_ensdf = _pair_prep_two_gaps(a, gaps_ensdf, "pf")    # record: priced until M3
     lm = _band(a.lam_over_m_pf)
     sh_a = tuple(r ** 2 / (4 * a.eps_simplified.value ** 2) for r in lm)          # p_ref = 1: a lower bound
     rows["pf_projection_0plus"] = dict(t=a_pf["t"], multiple=_div(a_pf["t"], env), gamma=a_pf["gamma"],
@@ -1765,7 +1939,7 @@ def _model_2033(a: Assumptions) -> Result:
     # worked line (app11:90) carries the exact N_Trotter = 1000pi-4000pi and prints "1.1-4.4e8" (R4);
     # the round-first product (3.1e3-1.3e4 -> 1.1-4.6e8) is kept only as the record of what moved
     worked = al["t"]
-    worked_round_first = tuple(n * al["n_orb"] ** 4 * c_T(a, n * al["n_orb"] ** 4)
+    worked_round_first = tuple(n * al["n_str"] * c_T(a, n * al["n_str"])
                                for n in _band(a.n_trotter_quoted))
     # R15 ruling 4: the sd insertion is one controlled BE query of a general charge-conserving scalar
     # two-body operator in the sd register (the cover for the six Mu2e categories with two-body currents):
@@ -1858,7 +2032,7 @@ def _model_2033(a: Assumptions) -> Result:
     breakdown = (
         Primitive("trotter_rotations_prep_al_sd", al["n_rot"][0], al["ins_counts"][0]["c_T"],
                   CircuitStatus.SCALING, f"{TEX}:82,88,90",
-                  "N_proj N_Trotter N_orb^4 dense two-body Pauli-string rotations at the low end "
+                  "N_proj N_Trotter N_str rotations, one per Hamiltonian Pauli string (12900 in sd), at the low end "
                   "(Delta=2 MeV, c_proj=pi); RUS c_T at the circuit's R-TOL eps_rot = sqrt(1e-2/N_rot), "
                   f"N_rot = prep + insertion rotations: {al['ins_counts'][0]['eps_rot']:.3e} -> "
                   f"{al['ins_counts'][0]['c_T']:.3f} T (prep alone {al['c_T'][0]:.3f})"),
@@ -1887,7 +2061,8 @@ def _model_2033(a: Assumptions) -> Result:
         eps_l=eps_l(a, total), fault_budget=a.fault_budget.value,
         prep_pf=s["pf"]["t"], multiple_pf=s["pf"]["multiple"],
         prep_jj44=s["jj44"]["t"], multiple_jj44=s["jj44"]["multiple"],
-        eps_l_pf_jj44=(s["jj44"]["eps_l"][0], s["pf"]["eps_l"][1]),
+        # the band over both pairs (since the string-count step pf carries more strings than jj44)
+        eps_l_pf_jj44=(min(s["jj44"]["eps_l"][0], s["pf"]["eps_l"][0]), max(s["jj44"]["eps_l"][1], s["pf"]["eps_l"][1])),
         gamma_ins_jj44=(s["jj44"]["gamma_ins"]["gamma"], s["jj44"]["gamma_ins_dense"]["gamma"]),
         terms_ins_jj44=(s["jj44"]["gamma_ins"]["n_terms"], s["jj44"]["gamma_ins_dense"]["n_terms"]),
         insertion_jj44=s["jj44"]["t_ins"], insertion_jj44_dense=s["jj44"]["t_ins_dense"],
@@ -1917,8 +2092,11 @@ def _model_2033(a: Assumptions) -> Result:
         mo_ru_after_lever_generic=_div(s["mo_ru"]["t_after_lever"], env),
         jj44_worst_after_lever=s["jj44"]["multiple_after_lever"][1],
         pf_after_lever=s["pf"]["multiple_after_lever"], jj44_after_lever=s["jj44"]["multiple_after_lever"],
-        mo_ru_after_lever=(prep_t(a, 2, s["mo_ru"]["n_orb"], gap_l_band(a), a.prep_lever.value)[0] / env,
-                           prep_t(a, 2, s["mo_ru"]["n_orb"], _band(a.gap_small_mev), a.prep_lever.value)[1] / env),
+        mo_ru_after_lever=(prep_t(a, 2, s["mo_ru"]["n_str"], gap_l_band(a), a.prep_lever.value)[0] / env,
+                           prep_t(a, 2, s["mo_ru"]["n_str"], _band(a.gap_small_mev), a.prep_lever.value)[1] / env),
+        gaps_mo_ru_measured=s["mo_ru"]["gaps_measured"], prep_mo_ru_measured_gaps=s["mo_ru"]["t_measured_gaps"],
+        multiple_mo_ru_measured_gaps=s["mo_ru"]["multiple_measured_gaps"],
+        strings_per_step={k: s[k]["n_str"] for k in s},
         shots_per_operator=shots_per_op, shots_mu2e_per_scan=shots_mu2e, shots_survey_per_scan=shots_survey,
         shots=shots_camp, shots_pre_r25=shots, shots_with_basis_scans=shots_scans, shots_box_reading_pre_r11=shots_box, shots_r14=shots_r14,
         t_shot_s=t_shot_s, wall_time_s=wall, wall_time_with_basis_scans_s=wall_scans,
@@ -1950,7 +2128,7 @@ def _model_2033(a: Assumptions) -> Result:
         shots_first_result_at_30pct=shots_first_30, wall_first_result_at_30pct_s=wall_first_30,
         simplified_0nubb=simp,
         # referee M3 (2026-10-05): 27Al state prep at the USDB gap, against the generic band (record; band kept)
-        al27_prep_t_at_usdb_gap=prep_t(a, s["al_sd"]["n_proj"], s["al_sd"]["n_orb"],
+        al27_prep_t_at_usdb_gap=prep_t(a, s["al_sd"]["n_proj"], s["al_sd"]["n_str"],
                                        (a.gap_al27_usdb_mev.value, a.gap_al27_usdb_mev.value)),
         # pre-r25 record (six categories at the dipole factor, Hadamard test, 1 ms): wall_time_s_pre_r25
         wall_time_s_pre_r25=wall,
@@ -1993,7 +2171,7 @@ def _model_codesign(a: Assumptions) -> Result:
         Primitive(f"trotter_rotations_prep_al_emax{e_lo}", lo["n_rot"][0], lo["c_T"][0],
                   CircuitStatus.SCALING, f"{TEX}:152",
                   "converged 27Al, e_max=8 (165 spatial orbitals), low end of the gap band; "
-                  "dense N_orb^4 strings per step, RUS c_T at R-TOL eps_rot = "
+                  "one rotation per Hamiltonian Pauli string per step, RUS c_T at R-TOL eps_rot = "
                   f"{lo['eps_rot'][0]:.3e} -> {lo['c_T'][0]:.3f} T"),
     )
     return Result(
@@ -2052,16 +2230,18 @@ PUBLISHED = {
                           "17020.3-100516.3; referee G2 1.6e4-9.9e4 without them; the insertion alone 5.4e3 (R13) "
                           "was the headline before)",
                       rel_tol=0.05),
-    "2033": Published(lq=(74, 174), hard_ops=(1.1e8, 4.4e8),
+    "2033": Published(lq=(74, 174), hard_ops=(1.1e9, 4.7e9),
                       src="app11:2033 box lines 208-209 ('<= 250 (24 system + 50-150 ancilla)', "
                           "'1.1e8-4.4e8 T, prep + insertion'); LQ is the printed component sum, "
                           "'<= 250' being the envelope. R15: model 1.054e8-4.404e8 with the derived one-query "
-                          "insertion (1.092e8-4.771e8 in R14 with the scaled stated insertion)",
+                          "insertion (1.092e8-4.771e8 in R14 with the scaled stated insertion). 2026-11-13 string-count "
+                          "Trotter step: 1.118e9-4.657e9 (was 1.1e8-4.4e8)",
                       rel_tol=0.10),
-    "codesign": Published(lq=(700, 1100), hard_ops=(8.5e13, 3.3e15),
+    "codesign": Published(lq=(700, 1100), hard_ops=(2.3e14, 7.5e15),
                           src="app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', "
                               "'8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 "
-                              "at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+                              "at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15; 2026-11-13 string-count step "
+                              "2.3e14-7.5e15",
                           rel_tol=0.10),
 }
 
@@ -2104,7 +2284,11 @@ def printed(a: Assumptions) -> dict:
         "multiple_emax3:152,156": print_range(rcd["multiple_emax3"]),                 # 14--54
         "multiple_emax4:152,156": print_range(rcd["multiple_emax4"]),                 # 130--510
         "mo_ru_large_gap:162": print_range(s["mo_ru"]["multiple_large_gap"]),         # 3.0--6.0 (R15)
-        "mo_ru_small_gap:162,219": print_range(s["mo_ru"]["multiple_small_gap"]),     # 25--51 (R15)
+        "mo_ru_small_gap:162,219": print_range(s["mo_ru"]["multiple_small_gap"]),     # 90--180 (string step)
+        # 2026-11-13: the measured 100Mo/100Ru 0+ gaps (ENSDF 0.695 / 1.130 MeV), each projection at its own gap
+        "mo_ru_measured_gaps:41,box": print_range(s["mo_ru"]["multiple_measured_gaps"]),   # 51--100
+        "al_after_lever:194": "{:.2f}--{:g}".format(round_sig(s["al_sd"]["multiple_after_lever"][0]),
+                                                    round_sig(s["al_sd"]["multiple_after_lever"][1])),   # 0.10--0.43
         # overshoot as a percent, one figure (R4): 1.0109 -> "by about 1\\%" (R-TOL; was 0.99, under)
         "lever_worst:168": f"by about {round_sig(100 * (r33['jj44_worst_after_lever'] - 1), 1):g}\\%",
         "pf_after_lever:168": print_range(r33["pf_after_lever"]),                     # 0.16--0.68 (R16)
@@ -2145,8 +2329,8 @@ def printed(a: Assumptions) -> dict:
             *mant(r33["t_per_shot"][0]), *mant(r33["t_per_shot"][1])),                  # box spelling, both exponents
         "eps_l_mo_ru_row:246": fmt_t(r33["eps_l_mo_ru"]),
         # r23: the single-machine serial campaign as a share of the 5-year horizon, upper end, two figures
-        "wall_fraction_of_horizon_max:149": "at most ${:.1f}\\%$".format(
-            round_sig(100 * r33["wall_fraction_of_horizon"][1])),                       # at most $6.0\%$ (r25)
+        "wall_fraction_of_horizon_max:149": "at most ${:g}\\%$".format(
+            round_sig(100 * r33["wall_fraction_of_horizon"][1])),                       # at most $43\%$ (string step)
         **printed_r25(a),
     }
 
@@ -2200,27 +2384,29 @@ def printed_r25(a: Assumptions) -> dict:
         "sd_factor:149": f"= {round(i33['sd_hadamard_factor'][0])}$",
         "sd_shots_p1:149": f"= {g2(i33['sd_shots_per_hamiltonian_p1'][0] / 1e3)}\\times 10^{{3}}$ shots",
         "sd_shots:149,box": f"${g2(i33['sd_shots_per_hamiltonian'][0] / 1e3)}\\times 10^{{3}}$",
-        "t_depth_2033:151": f"${g2(i33['t_depth_per_shot'][0] / 1e6)}\\times 10^{{6}}$--"
-                            f"${g2(i33['t_depth_per_shot'][1] / 1e7)}\\times 10^{{7}}$",
+        "t_depth_2033:151": f"{sci(i33['t_depth_per_shot'][0])}--{sci(i33['t_depth_per_shot'][1])}",
         "f_star_2033:151": f"assumed concurrency of ${round(i33['f_star_per_end'][0])}$",   # SR-ch3-2 (2026-11-10)
-        "floor_g1_2033:151": f"below ${round(fl[0] / day)}$ days to ${round_sig(fl[1] / yr, 2):.1f}$ years",
+        "floor_g1_2033:151": f"below ${g2(fl[0] / yr)}$--${g2(fl[1] / yr)}$ years",
         "first_result_2033:151,box": f"${g2(w1[0] / day)}$--${g2(w1[1] / day)}$ days",
         "shots_campaign_2033:151,box": f"${g2(i33['shots_campaign'][0] / 1e3)}\\times 10^{{3}}$--"
                                        f"${g2(i33['shots_campaign'][1] / 1e4)}\\times 10^{{4}}$",
-        "campaign_2033:151": f"${g2(wc[0] / day)}$ days to ${round_sig(wc[1] / month, 2):.1f}$ months",
-        "campaign_box_2033": f"$\\approx {g2(wc[0] / day)}$ days--${round_sig(wc[1] / month, 2):.1f}$ months on one machine",
+        "campaign_2033:151": f"${g2(wc[0] / day)}$ days to ${g2(wc[1] / yr)}$ years",
+        "campaign_box_2033": f"$\\approx {g2(wc[0] / day)}$ days--${g2(wc[1] / yr)}$ years on one machine",
+        "t_shot_min_2033:box": f"$\\sim {g2(i33['t_shot_s'][0] / 60)}$--${g2(i33['t_shot_s'][1] / 60)}$ min per shot",
         "first_30pct_2033:151": f"${round_sig(w30[0] / 3600, 2):.1f}$--${g2(w30[1] / 3600)}$ hours",
         # R7 first light (app11:156-158 and the box)
-        "pf_0plus_t:156": f"${round_sig(apf['t'][0] / 1e9, 2):.2f}$--${round_sig(apf['t'][1] / 1e9, 2):.1f}\\times 10^{{9}}$ T",
+        "pf_0plus_t:156": f"{fact(apf['t'])} T",
+        "pf_0plus_multiple:150,box": f"$\\times {g2(apf['multiple'][0])}$--${g2(apf['multiple'][1])}$",
         "pf_0plus_shots:156": f"${g2(apf['shots_lower_bound'][0] / 1e6)}\\times 10^{{6}}$ shots",   # single value since 2026-10-12
         "pf_0plus_years:156": f"${g2(apf['wall_s'][0] / yr)}$--${g2(apf['wall_s'][1] / yr)}$ years",
-        "f7p3_t:156,box": fact(b["t"], 8),
+        "f7p3_t:156,box": fact(b["t"]),
         "f7p3_shots:156": f"${g2(b['shots'][0] / 1e5)}\\times 10^{{5}}$ shots",
-        "f7p3_wall:156,box": f"${g2(b['wall_s'][0] / day)}$--${g2(b['wall_s'][1] / day)}$ days",
-        "f7p3p1_t:157,box": fact(bp["t"], 8),
+        "f7p3_wall:156,box": f"${g2(b['wall_s'][0] / yr)}$--${g2(b['wall_s'][1] / yr)}$ years",
+        "eps_l_f7p3:box": f"{sci(b['eps_l'][0])}--{sci(b['eps_l'][1])}",
+        "f7p3p1_t:157,box": fact(bp["t"]),
         "f7p3p1_wall:157,box": f"${g2(bp['wall_s'][0] / day)}$--${g2(bp['wall_s'][1] / day)}$ days",
         "qdrift_f7p3p1:157": f"${g2(bp['n_qdrift'][0] / 1e6)}\\times 10^{{6}}$ at",
-        "pf_rabi_t:157": fact(h["t"], 9),
+        "pf_rabi_t:157": fact(h["t"]),
         "pf_rabi_multiple:157,box": f"$\\times {g2(h['multiple'][0])}$--${g2(h['multiple'][1])}$",
         "pf_rabi_wall:157,box": f"${g2(h['wall_s'][0] / day)}$--${g2(h['wall_s'][1] / day)}$ days",
         "rabi_factories:163": f"keep only ${round(min(min(bp['f_star_per_end']), min(h['f_star_per_end'])))}$--"
@@ -2239,10 +2425,12 @@ def INSTANCE_ROWS(a, era, r):
                           "conditional on D"})]
     s = survey(a)
     if era == "2033":
-        rows = [(r"$^{27}$Al $sd$ (prep+insertion)", r.lq, r.hard_ops, {"fits": True})]
+        rows = [(r"$^{27}$Al $sd$ (prep+insertion)", r.lq, r.hard_ops,
+                 {"fits": r.hard_ops[1] <= env, "multiple": tuple(x / env for x in r.hard_ops),
+                  "note": "near miss since the string-count Trotter step (2026-11-13)"})]
         c = s["pf"]
         rows.append((c["label"], c["lq"], c["t"], {"fits": False, "multiple": c["multiple"],
-                                                    "note": "near miss; state prep only"}))
+                                                    "note": "co-design; state prep only"}))
         return rows
     if era == "codesign":
         rows = []
@@ -2250,8 +2438,8 @@ def INSTANCE_ROWS(a, era, r):
             # R16: jj44 relabelled co-design (prep alone x10.8 at the top of its band)
             "jj44": "co-design (top of band past ~10x); state prep only",
             "jj55": "co-design; state prep only, generic gap band",
-            "mo_ru": "reach target; co-design at the generic gap band, near miss at a large gap "
-                     "(x3-6), x25-51 small gap; state prep only, generic gap band",
+            "mo_ru": "reach target; co-design at every gap band (x11-22 large gap, x90-180 small gap, x51-100 at "
+                     "the measured 0+ gaps); state prep only, generic gap band",
         }
         for k in ("jj44", "jj55", "mo_ru"):
             c = s[k]

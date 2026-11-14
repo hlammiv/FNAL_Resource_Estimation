@@ -19,7 +19,7 @@ def data():
     first = tuple(x / d_per_yr for x in i["wall_first_2033_days"])
     return i, [
         (r"$B/M$ first result", first, True, r"$13$–$103$ d", ""),
-        (r"$B/M$ campaign (trend + $L_\parallel=4$ check)", i["wall_campaign_2033_yr"], True, r"$3.3$–$26$ yr", r"high end $5.2\times$ window"),
+        (r"$B/M$ campaign (trend + $L_\parallel=4$ check)", i["wall_campaign_2033_yr"], True, r"$2.3$–$18$ yr", r"high end $3.7\times$ window"),
         (r"$L_\parallel=4$ check", i["wall_box_check_one_mode_yr"], True, r"$0.46$–$3.7$ yr", ""),
         (r"Static dipole Im$\,V$, three temperatures", tuple(x / yr for x in i["dipole_static"]["wall_scan_s"]), False, r"$0.51$–$0.87$ yr", ""),
         (r"Light-like dipole $\hat q$, three temperatures", tuple(x / yr for x in i["dipole_lightlike"]["wall_scan_s"]), False, r"$3.7$–$6.8$ d", ""),

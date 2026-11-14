@@ -31,12 +31,10 @@ def main(out=None):
         l.plot([n, n], [lo, hi], color=ff.GREEN if fits else ff.BLUE, lw=5, solid_capstyle="butt")
         l.annotate(name, (n, hi), xytext=(0, 3), textcoords="offset points", ha="center", fontsize=7, color=ff.INK)
     l.axhline(1e9, color=ff.ORANGE, ls="--", lw=0.9)
-    l.text(66.5, 1.15e9, "2033 target", color=ff.ORANGE, fontsize=7, ha="right")
-    n0, (lo0, hi0) = rows[1][1], rows[1][2]
-    g = [(n, (lo0 * hi0) ** 0.5 * (n / n0) ** 4) for n in (22, 68)]
-    l.plot(*zip(*g), color=ff.GREY, lw=0.7, ls=":")
-    l.text(30, 7.5e9, r"$\propto N_{\rm modes}^4$", color=ff.DARKGREY, fontsize=7)
-    l.set(yscale="log", xlim=(20, 70), ylim=(5e7, 2e11), xlabel="active modes", ylabel="T per shot, state preparation")
+    l.text(66.5, 0.75e9, "2033 target", color=ff.ORANGE, fontsize=7, ha="right")
+    # 2026-11-13: one rotation per Hamiltonian Pauli string per Trotter step; the string count is not a power of
+    # the mode count (jj44 carries fewer strings than pf), so the fourth-power guide is gone
+    l.set(yscale="log", xlim=(20, 70), ylim=(5e8, 5e11), xlabel="active modes", ylabel="T per shot, state preparation")
     b, apf = sim["f7p3_projection"], sim["pf_projection_0plus"]
     pts = [(r"$f_{7/2}p_{3/2}$", b["shots"][0]), (r"$+\,p_{1/2}$", mid), (r"full $pf$", apf["shots_lower_bound"][0])]
     x = range(len(pts))

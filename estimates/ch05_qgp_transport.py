@@ -2,7 +2,7 @@
 applications/app03_qgp_transport.tex.
 
 Two boxes: a 2028 pure-gauge SU(2)->2T benchmark on a 4^2 (2+1D) lattice, and a
-2033 Sigma(216x3) + 3-staggered-field target on 3^3 at H_I (s648 author ruling, 2026-10-05; was Sigma(72x3) at
+2033 Sigma(216x3) + 3-staggered-field target on 2^3 (staggered ruling 2026-11-13; was 3^3) at H_I (s648 author ruling, 2026-10-05; was Sigma(72x3) at
 H_KS; the rulings2 g^2 = 3.5 / a_s = 0.69 fm instance is retired and the box is back at a_s = 0.2 fm). Both count qubits with
 Eq. (Nq) at app03:68,  N_q = 3 L^d q_G + N_c N_stag L^d + N_anc, with q_G the
 register of the compiled primitive set (ruling R1, 2026-09-28: 2T 5; Sigma(216x3) 11 since s648, Sigma(72x3) 9 before),
@@ -33,7 +33,7 @@ INPUTS AND SOURCES
   t_gate_s = 1 us per T = 10 us logical cycle / 10 factories   app03:78
   per-shot overhead ~0.1 ms (init, readout, decode)      report rule (Ch. 1, R9); 0.2 s of the 2028 first
                                                           result's 94.9 s, 115 s of the 2033 campaign at tau = 1/k
-  L_2033=3, a_s=0.2 fm, a_t=0.1 fm/c                     app03:135
+  L_2033=2 (was 3), a_s=0.2 fm, a_t=0.1 fm/c             app03:135; staggered ruling 2026-11-13 (even side)
   Sigma(72x3): |G|=216, 9 qubits/link                    GROUPS["S72x3"].link_qubits (arxiv_2511_17437 :150)
   Sigma(72x3) magnetic term per link-step (H_KS, d=3)    groups.magnetic_per_link: 12 U_mul + 6 U_inv + U_Tr
                                                           = 1.888e4 T at eps=8.68e-6 (arxiv_2511_17437 tab:tgatecost)
@@ -288,7 +288,9 @@ class Assumptions:
                                      f"{R25}; factory.json")
 
     # ---- 2033 box (app03:131-171) --------------------------------------------
-    L_2033: Tagged = Stated(3, f"{TEX}:135", "Volume: V = 3^3")
+    L_2033: Tagged = Stated(2, f"{TEX}:135", "Volume: V = 2^3. Staggered ruling (H. Lamm, 2026-11-13): periodic "
+                                             "staggered fields need an even side; 4^3 does not fit the 2033 register "
+                                             "(2788-2888 LQ), so the target drops to 2^3. Was 3^3 (81 links, 1234-1334 LQ)")
     dim_2033: Tagged = Stated(3, f"{TEX}:135", "3+1D")
     group_2033: Tagged = Stated("S216x3", f"{TEX}:137", "s648 ruling (2026-10-05): Sigma(216x3) subset SU(3), |G| = 648, "
                                                          "11 qubits/link in the published qubit encoding (arxiv_2611_08161, "
@@ -1576,13 +1578,16 @@ def _referee_intermediates_2033(a: Assumptions, o: dict) -> dict:
         frac.append(added / r["campaign_s"])
     out["test_time_sigma_lnC"] = tuple(sig)                                # 0.295, 0.289 -> "+-0.3 in ln C"
     out["test_time_campaign_fraction"] = tuple(frac)                       # ~0.20, ~0.20 -> "a fifth"
-    # T3: the campaign's second spacing on the same 3^3 lattice shrinks the box; holding L = 0.6 fm needs 4^3
+    # T3: the campaign's second spacing on the same 2^3 lattice shrinks the box; holding L = 0.4 fm needs 4^3 at 0.1 fm
+    # (staggered ruling 2026-11-13; on 3^3 this was 4^3 at 0.15 fm holding 0.6 fm)
     a2 = a.second_spacing_a_s_fm.lo
     out["second_spacing_a_s_fm"] = a2
     out["second_spacing_L_fm_on_3cubed"] = L * a2                          # 0.45
     out["second_spacing_kmin_over_T_on_3cubed"] = tuple(2 * math.pi * hb / (L * a2) / T for T in Ts)   # 12.2, 9.2 (was 17.2)
     out["second_spacing_mpiL_on_3cubed"] = (a.m_pi_MeV.lo * L * a2 / hb, a.m_pi_MeV.hi * L * a2 / hb)   # 0.68, 0.91
-    a4 = _replace(a, L_2033=Stated(4, "fixed-volume second spacing"), a_s_fm=Stated(a2, "fixed-volume second spacing"))
+    a4s = L * a.a_s_fm.lo / 4                                            # 0.1 fm: the fixed box on 4^3
+    out["fixed_volume_4cubed_a_s_fm"] = a4s
+    a4 = _replace(a, L_2033=Stated(4, "fixed-volume second spacing"), a_s_fm=Stated(a4s, "fixed-volume second spacing"))
     o4 = own_depth_2033(a4, _nested=True)
     out["fixed_volume_4cubed_lq"] = lq_range(4, d, GROUPS[gk].link_qubits, int(a.n_c.lo), int(a.n_stag.lo), a.anc_2033)
     out["fixed_volume_4cubed_t_deepest"] = (o4["r"][0]["t_shot_max"], o4["r"][1]["t_shot_max"])   # with the quench prep
@@ -1841,8 +1846,11 @@ PUBLISHED = {
                           "per-shot T 'first result 9.5e4 (one step, inside 1e5); full benchmark 5.9e5 (six steps)', each "
                           "timeslice at its own depth (R4). Exact 9.473e4 / 5.939e5; tol 0.05 covers the rounding and 177-178.",
                       rel_tol=0.05),
-    "2033": Published(lq=(1234, 1334), hard_ops=(9.1e9, 3.2e10),
-                      src="app03:2033 box (temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route "
+    "2033": Published(lq=(436, 536), hard_ops=(2.5e9, 9.4e9),
+                      src="app03:2033 box (staggered ruling 2026-11-13: periodic staggered fields need an even side, "
+                          "4^3 is 2788-2888 LQ, so the box drops to 2^3: '~490 (436-536)', '2.5e9-9.4e9', exact "
+                          "(2.547e9, 9.407e9); the 3^3 box below was (1234, 1334), (9.1e9, 3.2e10). "
+                          "temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route "
                           "2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule "
                           "2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: "
                           "'9.1e9-3.2e10' (8.1e9-3.1e10 quench + 1.0e9-1.7e9 fit evolution), one circuit per shot, corners "
@@ -1851,8 +1859,9 @@ PUBLISHED = {
                           "'6.7e9-2.4e10', with the Sigma(72x3) placeholder). Was (1.051e10, 3.142e10) at T = 160 MeV. "
                           "tol 0.05: two figures.",
                       rel_tol=0.05),
-    "codesign": Published(lq=(1234, 1334), hard_ops=(2.1e9, 2.1e9),
-                          src="NOT A BOX. app03 route (a) '~2.1e9 T/shot ... if it is 10x cheaper than Trotter' on the "
+    "codesign": Published(lq=(436, 536), hard_ops=(6.1e8, 6.1e8),
+                          src="NOT A BOX. 2^3 since the staggered ruling 2026-11-13 ('~6.1e8'; was 2.1e9 on 3^3). "
+                              "app03 route (a) '~2.1e9 T/shot ... if it is 10x cheaper than Trotter' on the "
                               "400-step reference shot (s648: Sigma(216x3) / H_I; 1.5e9 with the Sigma(72x3) placeholder "
                               "hop before 2026-11-12; was 5.0e8 with Sigma(72x3) / H_KS). "
                               "Same register as 2033.",
@@ -1875,20 +1884,20 @@ def INSTANCE_ROWS(a: Assumptions, era: str, r: Result):
         ]
     if era == "2033":
         return [
-            ("Sigma(216x3)+3 stag, H_I, 3^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench "
+            ("Sigma(216x3)+3 stag, H_I, 2^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench "
              "ramp + c/T thermalization + Trotter to its own fit time; primitives arxiv_2611_08161, hop from the "
              "unpublished Fermion_Primitives draft's Sigma(216x3) row)",
              r.lq, i["t_deepest"],
-             {"group": "S216x3", "hamiltonian": "I", "lattice": "3^3", "route": "quench (ETH)",
+             {"group": "S216x3", "hamiltonian": "I", "lattice": "2^3", "route": "quench (ETH)",
               "electric": "Sigma(216x3) FFT (arxiv_2611_08161)",
               "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = "
                       "0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) "
-                      "late shot is 4.3e10 (t_deepest_campaign)",
-              "condition": "ETH with dynamical fermions at the chapter's couplings on 3^3 and the relaxation of the momentum "
+                      "late shot is 1.3e10 (t_deepest_campaign; 4.3e10 on the retired 3^3)",
+              "condition": "ETH with dynamical fermions at the chapter's couplings on 2^3 and the relaxation of the momentum "
                            "density within t_th assumed; T_c^lat measured in situ; shots at the thermal variance; "
                            "non-freezing H_I trajectory assumed",
               "exports_note": "R9 exports (t_per_shot, t_depth_per_shot, f_star, floor_wall_s, factories_for_1yr) are the "
-                              "campaign at the (300 MeV, tau = 1/k = 0.0955 fm/c, c = 2) corner only, over both spacings, "
+                              "campaign at the (300 MeV, tau = 1/k = 0.0637 fm/c, c = 2) corner only, over both spacings, "
                               "not a band (floor is the high/low depth schedule); wall_first_result_s and wall_campaign_s "
                               "are bands"}),
         ]

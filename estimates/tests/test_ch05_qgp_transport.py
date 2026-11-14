@@ -32,7 +32,7 @@ NA = "NEEDS_AUTHOR.md"
 EPS_28 = math.sqrt(1e-2 / 17184)          # R-TOL: 2028 shot, 17,184 synthesized rotations -> 7.628e-4
 # card RF3-ch5-s216 (2026-11-12): the hop is the draft's Sigma(216x3) row, 4925 rotations per link-step (was the
 # Sigma(72x3) placeholder's 2933: 4702 x 81 x 400 + mass = 1.52388e8, eps 8.101e-6, BE 2.562e-5)
-N_ROT_33 = 6694 * 81 * 400 + 4 * 27 * 400   # S648: (1769 H_I gauge + 4925 hop) x 81 x 400 + mass = 2.16929e8
+N_ROT_33 = 6694 * 24 * 400 + 4 * 8 * 400   # S648: (1769 H_I gauge + 4925 hop) x 24 x 400 + mass = 6.42752e7 (3^3: 81 links, 27 sites, 2.16929e8)
 EPS_33 = math.sqrt(1e-2 / N_ROT_33)       # R-TOL: 2033 evolution -> 6.790e-6 (arxiv_2611_08161 costs)
 EPS_BE = math.sqrt(1e-2 / (N_ROT_33 / 10))   # R-TOL: conjectured BE, N_rot / 10 -> 2.147e-5
 
@@ -88,8 +88,8 @@ def test_papers_convention_and_report_fit_sentence(r28, r33):
     terms and 1.45-1.65x to the electric terms over it (model check only, no longer printed)."""
     i28, i33 = r28.intermediates, r33.intermediates
     near(i28["t_per_rotation_papers"], 11.91, 0.001)
-    near(i33["t_per_rotation_papers"], 19.74, 0.001)
-    near(i33["t_per_rotation_full_fit"], 28.94, 0.001)       # s648 + the Sigma(216x3) hop (28.65 with the placeholder)
+    near(i33["t_per_rotation_papers"], 18.73, 0.001)   # 2^3 (staggered ruling 2026-11-13): was 19.74
+    near(i33["t_per_rotation_full_fit"], 27.93, 0.001)       # s648 + the Sigma(216x3) hop (28.65 with the placeholder)   # 2^3 (staggered ruling 2026-11-13): was 28.94
     near(i28["t_per_rotation_report"], 21.11, 0.001)
     assert 1.0 < i28["magnetic_report_over_papers_2028"] < 1.10
     assert 1.0 < i33["magnetic_report_over_papers_2033"] < 1.10
@@ -112,8 +112,8 @@ def test_rtol_rotation_counts_and_tolerances(a, r28, r33, rcd):
     near(i33["n_rot_per_shot_be"], N_ROT_33 / 10, 1e-12)
     near(i28["eps_rot_2028"], c.eps_rot_for(17184), 1e-15)
     near(i28["eps_rot_2028"], 7.628e-4, 1e-3)
-    near(i33["eps_rot_2033"], 6.790e-6, 1e-3)
-    near(i33["eps_rot_be"], 2.147e-5, 1e-3)
+    near(i33["eps_rot_2033"], 1.247e-5, 1e-3)   # 2^3 (staggered ruling 2026-11-13): was 6.790e-6
+    near(i33["eps_rot_be"], 3.944e-5, 1e-3)   # 2^3 (staggered ruling 2026-11-13): was 2.147e-5
     near(i28["synthesis_error_per_shot_2028"], 1e-2, 1e-12)
     near(i33["synthesis_error_per_shot_2033"], 1e-2, 1e-12)
     assert rcd.intermediates["eps_rot_be"] == i33["eps_rot_be"]
@@ -128,11 +128,11 @@ def test_rtol_rotation_count_is_complete_by_perturbation(a, era, key):
     if era == "2028":
         gk, d, links, steps, hop = "2T", 2, 32, 6.0, False
     else:
-        gk, d, links, steps, hop = "S216x3", 3, 81, 400.0, True
+        gk, d, links, steps, hop = "S216x3", 3, 24, 400.0, True # 2^3 (staggered ruling 2026-11-13): was 3^3
     def shot(eps):
         prims, _ = m.link_step_primitives(a, gk, d, links, steps, eps)
         if hop:
-            prims = prims + m.hop_primitives(a, gk, links, steps, eps, sites=27)
+            prims = prims + m.hop_primitives(a, gk, links, steps, eps, sites=8) # 2^3 (staggered ruling 2026-11-13): was 3^3
         return sum(p.count * p.t_each for p in prims)
     e1, e2 = 1e-4, 1e-6
     near(shot(e2) - shot(e1), n * 1.15 * math.log2(e1 / e2), 1e-9)
@@ -257,15 +257,15 @@ def test_2033_register_from_eq_Nq(r33):
     g = GROUPS["S216x3"]
     assert i["qubits_per_link_2033"] == g.link_qubits == 11      # s648: the paper's qubit register
     assert i["ceil_log2_order_2033"] == 10                       # "a dense ceil(log2 648) = 10 encoding would save 81 LQ"
-    assert i["n_links_2033"] == 81 and i["n_plaq_2033"] == 81
-    assert i["gauge_qubits_2033"] == 891            # "891 gauge (3 . 27 . 11)"
-    assert i["fermion_qubits_2033"] == 243          # "243 fermion (3 . 3 . 27)"
-    assert (i["lq_2033_lo"], i["lq_2033_hi"]) == (1234, 1334)   # "+ 100--200 ancilla" -> box "~1280 (1234-1334)"
-    assert r33.lq == (1234, 1334)
-    assert i["lq_2033_mid"] == 1284
-    near(i["lq_2033_lo_over_1000_limit"], 1.234, 1e-9)   # "overfill it by a quarter to a third"; box "1.2-1.3x"
-    near(i["log10_hilbert_dim_2033"], 81 * math.log10(648) + 243 * math.log10(2), 1e-12)  # 648^81 2^243
-    assert round(i["log10_hilbert_dim_2033"]) == 301                                      # "~10^301"
+    assert i["n_links_2033"] == 24 and i["n_plaq_2033"] == 24 # 2^3 (staggered ruling 2026-11-13): was 3^3
+    assert i["gauge_qubits_2033"] == 264            # "264 gauge (3 . 8 . 11)", was 891 # 2^3 (staggered ruling 2026-11-13): was 3^3
+    assert i["fermion_qubits_2033"] == 72          # "72 fermion (3 . 3 . 8)", was 243 # 2^3 (staggered ruling 2026-11-13): was 3^3
+    assert (i["lq_2033_lo"], i["lq_2033_hi"]) == (436, 536)   # "+ 100--200 ancilla" -> box "~490 (436-536)"; was (1234, 1334) on 3^3
+    assert r33.lq == (436, 536)   # 2^3; was (1234, 1334)
+    assert i["lq_2033_mid"] == 486   # 2^3; was 1284
+    near(i["lq_2033_lo_over_1000_limit"], 0.436, 1e-9)   # "overfill it by a quarter to a third"; box "1.2-1.3x"   # 2^3 (staggered ruling 2026-11-13): was 1.234
+    near(i["log10_hilbert_dim_2033"], 24 * math.log10(648) + 72 * math.log10(2), 1e-12)  # 648^24 2^72 # 2^3 (staggered ruling 2026-11-13): was 3^3
+    assert round(i["log10_hilbert_dim_2033"]) == 89                                       # "~10^89" (2^3; was 301)
 
 
 def test_2033_evolution_t_count(r33):
@@ -273,25 +273,25 @@ def test_2033_evolution_t_count(r33):
     assert i["dt_2033_fm"] == pytest.approx(0.01)   # Delta t = a_t/10
     assert i["trotter_steps_2033"] == pytest.approx(400)   # "4 x 10^2 2nd-order Trotter steps"
     near(i["magnetic_t_per_link_step_2033"], 2.8590e5, 0.001)   # "2.9e5": 56 U_mul + 24 U_inv + 3 U_Tr (H_I)
-    near(i["electric_t_per_link_step_2033_lower_bound"], 8.9087e4, 0.001)   # "8.9e4": 4 U_FFT + 2 U_Ph
-    near(i["gauge_t_per_link_step_2033"], 3.7500e5, 0.001)   # "3.7e5 T in all"
+    near(i["electric_t_per_link_step_2033_lower_bound"], 87347, 0.001)   # "8.9e4": 4 U_FFT + 2 U_Ph   # 2^3 (staggered ruling 2026-11-13): was 8.9087e4
+    near(i["gauge_t_per_link_step_2033"], 3.7321e5, 0.001)   # "3.7e5 T in all"   # 2^3 (staggered ruling 2026-11-13): was 3.7500e5
     # card RF3-ch5-s216 (2026-11-12): the draft's Sigma(216x3) hop row (was the Sigma(72x3) placeholder: hop 1.10095e5,
     # link-step 4.8463e5, step 3.9255e7, hop 22.7%, reference shot 1.5702e10, share='draft' 1.8116e10, BE 1.5411e9)
-    near(i["hop_t_per_link_step_2033"], 2.83815e5, 1e-4)     # Sigma(216x3) draft counts: "2.8e5 T"
-    near(i["mass_t_per_site_step_2033"], 164.77, 1e-4)       # one HWP(9) -> "160 T per site-step"
-    near(i["t_per_link_step_2033"], 6.5886e5, 0.001)         # "6.6e5 per link-step"
-    near(i["t_per_step_2033"], 5.3368e7, 0.001)              # "5.3e7 T"
-    near(i["hop_share_of_step_2033"], 0.4308, 0.002)          # "43% of the step"
+    near(i["hop_t_per_link_step_2033"], 278845, 1e-4)     # Sigma(216x3) draft counts: "2.8e5 T"   # 2^3 (staggered ruling 2026-11-13): was 2.83815e5
+    near(i["mass_t_per_site_step_2033"], 160.74, 1e-4)       # one HWP(9) -> "160 T per site-step"   # 2^3 (staggered ruling 2026-11-13): was 164.77
+    near(i["t_per_link_step_2033"], 6.5211e5, 0.001)         # "6.6e5 per link-step"   # 2^3 (staggered ruling 2026-11-13): was 6.5886e5
+    near(i["t_per_step_2033"], 1.5651e7, 0.001)              # "5.3e7 T"   # 2^3 (staggered ruling 2026-11-13): was 5.3368e7
+    near(i["hop_share_of_step_2033"], 0.4276, 0.002)          # "43% of the step"   # 2^3 (staggered ruling 2026-11-13): was 0.4308
     assert i["mass_share_of_step_2033"] < 1e-3               # "under 0.1% of the step"
-    near(i["t_per_shot_2033_mu0_evolution"], 2.1347e10, 0.001)   # reference shot to 4 fm/c "2.1e10"
-    near(i["t_per_shot_2033_mu0_evolution_share_draft"], 3.4336e10, 0.001)   # gap bullet "3.4e10"
-    near(i["t_per_shot_2033_be"], 2.0933e9, 0.001)  # route (a) "~2.1e9 T/shot" with BE, at the BE's own eps
+    near(i["t_per_shot_2033_mu0_evolution"], 6.2602e9, 0.001)   # reference shot to 4 fm/c "2.1e10"   # 2^3 (staggered ruling 2026-11-13): was 2.1347e10
+    near(i["t_per_shot_2033_mu0_evolution_share_draft"], 1.0109e10, 0.001)   # gap bullet "3.4e10"   # 2^3 (staggered ruling 2026-11-13): was 3.4336e10
+    near(i["t_per_shot_2033_be"], 6.1375e8, 0.001)  # route (a) "~2.1e9 T/shot" with BE, at the BE's own eps   # 2^3 (staggered ruling 2026-11-13): was 2.0933e9
     # quench ruling (2026-10-05): the box prints the deepest shot at a_s = 0.2 fm, one circuit of quench prep + fit
     # evolution, at the corners (T = 300 MeV, 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi) (temperature ruling
     # 2026-10-05: T = 1.5 T_c^lat, T_c^lat = 150-200 MeV; was 1.05086e10, 3.14203e10 at T = 160 MeV)
-    assert r33.hard_ops == (pytest.approx(9.06056e9, rel=1e-3), pytest.approx(3.23463e10, rel=1e-3))   # were 6.66665e9, 2.37886e10 (placeholder hop)
+    assert r33.hard_ops == (pytest.approx(2.54721e9, rel=1e-3), pytest.approx(9.40696e9, rel=1e-3))   # 2^3; were 9.06056e9, 3.23463e10 on 3^3;   # were 6.66665e9, 2.37886e10 (placeholder hop)
     # the retired working figure (5e3 T/plaquette) gave the old box's 1.62e8
-    assert i["legacy_t_per_shot_2033_at_5e3_per_plaq"] == pytest.approx(1.62e8)
+    assert i["legacy_t_per_shot_2033_at_5e3_per_plaq"] == pytest.approx(4.8e7)   # 2^3; was 1.62e8 on 3^3
 
 
 def test_2033_hop_is_the_fermion_primitives_draft(a, r33, r28):
@@ -317,16 +317,16 @@ def test_2033_hop_is_the_fermion_primitives_draft(a, r33, r28):
     t_rot = 1.15 * math.log2(1 / EPS_33) + 9.2
     near(i["hop_t_per_link_step_2033"], 7 * 20068 + 792 + 4925 * t_rot, 1e-12)
     near(i["hop_undo_t_per_link_step_2033"], 1668 * t_rot, 1e-9)             # the undo is 2 x 3 x 278 = 1,668 rotations
-    near(i["hop_undo_t_per_link_step_2033"], 4.8278e4, 0.002)                 # "inverse color basis change (4.8e4 T per link-step)"
+    near(i["hop_undo_t_per_link_step_2033"], 46595, 0.002)                 # "inverse color basis change (4.8e4 T per link-step)"   # 2^3 (staggered ruling 2026-11-13): was 4.8278e4
     near(i["hop_t_per_link_step_2033_share_draft"], 7 * 77336 + 792 + 4925 * t_rot, 1e-12)   # r17 headline
-    near(i["hop_t_per_link_step_2033_share_draft"], 6.8469e5, 0.001)
-    near(i["hop_t_per_link_step_2033_no_undo"], 2.3554e5, 0.002)
+    near(i["hop_t_per_link_step_2033_share_draft"], 6.7972e5, 0.001)   # 2^3 (staggered ruling 2026-11-13): was 6.8469e5
+    near(i["hop_t_per_link_step_2033_no_undo"], 2.3225e5, 0.002)   # 2^3 (staggered ruling 2026-11-13): was 2.3554e5
     assert hop_link_cost("S216x3", 3, eps=EPS_33, share="link")["t"] == h["t"]   # the default IS share='link'
-    near(i["hop_over_rhop_2033"], 18.26, 0.005)                               # model-only comparison (sentence dropped from the chapter, r17 fix)
+    near(i["hop_over_rhop_2033"], 17.95, 0.005)                               # model-only comparison (sentence dropped from the chapter, r17 fix)   # 2^3 (staggered ruling 2026-11-13): was 18.26
     near(i["rhop_t_per_link_step_2033_retired"], rhop_link("S216x3", 3, 3, EPS_33, synthesis="rus-slope")["t"], 1e-12)
     # the draft's squish scratch (su3_diag.tex:105) is recorded and sits inside the box's ancilla allowance; LQ unchanged
     assert i["hop_squish_ancilla_2033"] == FP_SQUISH_ANCILLA["S216x3"] == 29
-    assert 29 + c.hwp_ancilla(18) < a.anc_2033.lo and r33.lq == (1234, 1334)
+    assert 29 + c.hwp_ancilla(18) < a.anc_2033.lo and r33.lq == (436, 536)   # 2^3; was (1234, 1334)
     ms = staggered_mass_site(3, 3, eps=EPS_33)
     near(i["mass_t_per_site_step_2033"], ms["t"], 1e-12)
     near(i["mass_t_per_site_step_2033"], 4 * t_rot + 49, 1e-12)
@@ -341,8 +341,8 @@ def test_2033_hop_is_the_fermion_primitives_draft(a, r33, r28):
     assert all("unpublished gate counts" in p.note for p in r33.breakdown if p.name.startswith("hop_"))
     near(r33.breakdown_total(), r33.hard_ops[1], 1e-12)
     assert not any(p.name.startswith(("hop_", "mass_")) for p in r28.breakdown)
-    near(i["t_per_link_step_2033_at_papers_fiducial_eps"], 9.4452e5, 0.001)   # record (eps_T=1e-8 split over N_rot)
-    near(i["t_per_shot_2033_mu0_evolution_at_papers_fiducial_eps"], 3.0602e10, 0.001)
+    near(i["t_per_link_step_2033_at_papers_fiducial_eps"], 9.3101e5, 0.001)   # record (eps_T=1e-8 split over N_rot)   # 2^3 (staggered ruling 2026-11-13): was 9.4452e5
+    near(i["t_per_shot_2033_mu0_evolution_at_papers_fiducial_eps"], 8.9377e9, 0.001)   # 2^3 (staggered ruling 2026-11-13): was 3.0602e10
     with pytest.raises(ValueError):
         dataclasses.replace(a, fermion_synthesis=c.Cited("rus-slope", "x"))   # never slope-only for new prices
 
@@ -371,39 +371,40 @@ def test_2033_breakdown_is_one_quench_plus_fit_shot(a, r33):
     assert set(rows) == {"U_inv_S216x3", "U_mul_S216x3", "U_Tr_S216x3", "U_FFT_S216x3", "U_phi_S216x3",
                          "mass_hwp_S216x3"} | hop_rows
     steps = i["quench_prep_steps"][1] + i["fit_steps"][1][1]
-    assert steps == 572 + 32 == 604
+    assert steps == 572 + 27 == 599   # 2^3; was 572 + 32 = 604 on 3^3
     for n in hop_rows:
-        assert rows[n].count == pytest.approx(81 * steps)
-    assert rows["mass_hwp_S216x3"].count == pytest.approx(27 * steps)
+        assert rows[n].count == pytest.approx(24 * steps) # 2^3 (staggered ruling 2026-11-13): was 3^3
+    assert rows["mass_hwp_S216x3"].count == pytest.approx(8 * steps) # 2^3 (staggered ruling 2026-11-13): was 3^3
     near(r33.breakdown_total(), i["t_deepest"][1], 1e-9)
     near(r33.breakdown_total(), r33.hard_ops[1], 1e-9)
     for name, mult in (("U_mul_S216x3", 56), ("U_inv_S216x3", 24), ("U_Tr_S216x3", 3), ("U_FFT_S216x3", 4),
                        ("U_phi_S216x3", 2)):
-        assert rows[name].count == pytest.approx(mult * 81 * steps)
+        assert rows[name].count == pytest.approx(mult * 24 * steps) # 2^3 (staggered ruling 2026-11-13): was 3^3
     assert rows["U_mul_S216x3"].t_each == GROUPS["S216x3"].primitives["U_mul"].t(EPS_33) == 2548   # Toffoli-only
-    eps604 = c.eps_rot_for(N_ROT_33 * 604 / 400)                               # its own R-TOL tolerance (604 steps)
+    eps604 = c.eps_rot_for(N_ROT_33 * 599 / 400)   # 2^3: 599 steps (was 604)
+                                  # its own R-TOL tolerance (604 steps)
     near(rows["U_Tr_S216x3"].t_each, GROUPS["S216x3"].primitives["U_Tr"].t(eps604), 1e-12)
     assert not any("gibbs" in n or "eroq" in n for n in rows)
 
 
 def test_2033_momentum_and_decay_times(r33):
     i = r33.intermediates
-    near(i["L_2033_fm"], 0.6, 1e-9)                 # "L = 0.6 fm"
-    near(i["k_min_2033_GeV"], 2.1, 0.02)            # "k_min = 2 pi / L ~ 2.1 GeV"
+    near(i["L_2033_fm"], 0.4, 1e-9)                 # "L = 0.4 fm" (2^3; was 0.6)
+    near(i["k_min_2033_GeV"], 3.1, 0.02)            # "k_min = 2 pi / L ~ 3.1 GeV" (2^3; was 2.1)
     # temperature ruling (2026-10-05): T = 1.5 T_c^lat, T_c^lat = 150-200 MeV -> T = 225-300 MeV; pairs are (T lo, T hi)
     assert i["T_c_lat_2033_MeV"] == (150, 200) and i["T_2033_MeV"] == (225, 300)
     near(i["T_a_s_2033"][0], 0.228, 0.002) and near(i["T_a_s_2033"][1], 0.304, 0.002)
-    near(i["LT_2033"][0], 0.684, 0.002)                 # "LT ~ 0.7-0.9", below 1: a small hot box, not a medium
-    near(i["LT_2033"][1], 0.912, 0.002)
+    near(i["LT_2033"][0], 0.456, 0.002)                 # "LT ~ 0.5-0.6" (2^3; was 0.684, "0.7-0.9"), below 1: a small hot box, not a medium
+    near(i["LT_2033"][1], 0.608, 0.002)   # was 0.912
     assert max(i["LT_2033"]) < 1.0
-    near(i["k_min_over_T_2033"][0], 9.18, 0.002)        # "k_min ~ 7-9 T" (was ~13 T at 160 MeV)
-    near(i["k_min_over_T_2033"][1], 6.89, 0.002)
+    near(i["k_min_over_T_2033"][0], 13.78, 0.002)        # "k_min ~ 10-14 T" (2^3; was 9.18, "7-9 T") (was ~13 T at 160 MeV)
+    near(i["k_min_over_T_2033"][1], 10.33, 0.002)   # was 6.89
     # the hydrodynamic tau = T/((eta/s) k^2) at eta/s = 0.15 is a record the chapter says has no basis at this k
     assert i["eta_s_assumed"] == 0.15
-    near(i["tau_decay_at_eta_s_assumed_fm"][0], 0.0693, 0.002)   # "~0.07-0.09 fm/c" (was 0.049)
-    near(i["tau_decay_at_eta_s_assumed_fm"][1], 0.0924, 0.002)
-    near(i["n_decay_times_at_eta_s_assumed"][0], 57.7, 0.002)
-    near(i["n_decay_times_at_eta_s_assumed"][1], 43.3, 0.002)
+    near(i["tau_decay_at_eta_s_assumed_fm"][0], 0.0308, 0.002)   # "~0.07-0.09 fm/c" (was 0.049)   # 2^3 (staggered ruling 2026-11-13): was 0.0693
+    near(i["tau_decay_at_eta_s_assumed_fm"][1], 0.0411, 0.002)   # was 0.0924
+    near(i["n_decay_times_at_eta_s_assumed"][0], 129.8, 0.002)   # was 57.7
+    near(i["n_decay_times_at_eta_s_assumed"][1], 97.4, 0.002)   # was 43.3
 
 
 def test_temperature_is_1p5_tc_lat(a):
@@ -424,14 +425,15 @@ def test_temperature_is_1p5_tc_lat(a):
     assert r"$T=1.5\,T_c^{\rm lat}$" in tex and r"$T_c^{\rm lat}$" in tex
     assert r"\cite{arxiv_1903_04801}" in tex and r"\cite{arxiv_1812_08235}" in tex
     assert "160" not in tex.replace("$160$ T per site-step", "")      # no physical-QCD 160 MeV left in the chapter
-    assert r"$LT\approx 0.7$--$0.9$" in tex and "With $LT<1$ the box is smaller than the thermal wavelength, so it is not a medium" in tex
+    assert r"$LT\approx 0.5$--$0.6$" in tex   # 2^3; was 0.7--0.9
+    assert True and "With $LT<1$ the box is smaller than the thermal wavelength, so it is not a medium" in tex
     # re-pinned 2026-11-09 (referee cards, Q5-6): the decay-time sentence became Fig. (eta/s = 0.15 is in the plot label); T stays in the prose
     assert r"The counts are for $T=225$--$300$ MeV ($1.5\,T_c^{\rm lat}$ over that range)" in tex
 
 
 def test_2033_volume_requirements(r33):
     i = r33.intermediates
-    assert 0.9 <= i["m_pi_L_2033_lo"] <= 1.0 and 1.2 <= i["m_pi_L_2033_hi"] <= 1.3   # "m_pi L ~ 1"
+    assert 0.6 <= i["m_pi_L_2033_lo"] <= 0.61 and 0.81 <= i["m_pi_L_2033_hi"] <= 0.82   # "m_pi L ~ 0.6-0.8" (2^3; was 0.9-1.3, "~1")
     near(i["L_for_mpiL4_fm"], 2.3, 0.03)            # "L >~ 2.3 fm" (at m_pi = 350 MeV)
     near(i["L_ext_sites"], 12, 0.07)                # "~12^3 lattice"
     assert i["lq_12cubed_lo"] == 3 * 1728 * 11 + 9 * 1728 + 100 == 72676  # Eq. (Nq) at 11 qubits/link (s648)
@@ -447,7 +449,7 @@ def test_2033_volume_requirements(r33):
     near(i["L_for_kmin_eq_T_fm"][1], 4.13, 0.005)
     assert i["sigma360_qubits_per_link_dense"] == 11   # "ceil(log2 1080) = 11 dense"
     assert i["sigma360_qubits_per_link"] == 12      # "12 qubits/link in its compiled encoding"
-    assert i["sigma360_extra_lq"] == 81             # "+81 LQ on the 3^3 lattice": 81 x (12 - 11) (s648)
+    assert i["sigma360_extra_lq"] == 24             # "+24 LQ on the 2^3 lattice": 24 x (12 - 11); was 81 on 3^3
 
 
 def test_2033_eps_l_requirement_r3(r33):
@@ -455,11 +457,11 @@ def test_2033_eps_l_requirement_r3(r33):
     reference shot (the r23 box), kept as model records; r25 numbers are in test_2033_own_depth_*. s648 values."""
     i = r33.intermediates
     assert i["ceiling_2033_t"] == 1e9
-    near(i["ratio_reference_to_ceiling"], 21.35, 0.001)
-    near(i["eps_l_required_reference"], 4.684e-12, 0.001)
+    near(i["ratio_reference_to_ceiling"], 6.26, 0.001)   # 2^3 (staggered ruling 2026-11-13): was 21.35
+    near(i["eps_l_required_reference"], 1.597e-11, 0.001)   # 2^3 (staggered ruling 2026-11-13): was 4.684e-12
     # the reference-shot (4 fm/c) keys above are records; the box's eps_l are the deepest quench + fit shots
     assert r33.epsilon_l == (i["eps_l_deepest"][1], i["eps_l_deepest"][0])
-    near(0.1 / i["t_per_shot_2033_be"], 4.777e-11, 0.001)
+    near(0.1 / i["t_per_shot_2033_be"], 1.629e-10, 0.001)   # 2^3 (staggered ruling 2026-11-13): was 4.777e-11
 
 
 def test_2033_shots_campaign_and_wall_time_reference_records(r33):
@@ -478,39 +480,39 @@ def test_2033_own_depth_design_and_shots(a, r33):
     s648: the H_I step rule binds both deepest shots."""
     i = r33.intermediates
     assert i["T_corners_MeV"] == (300, 225)                                   # cheap corner at T hi, expensive at T lo
-    near(i["tau_band_fm"][0], 197.327 / (2 * math.pi * 197.327 / 0.6), 1e-12)   # T1: fast end 1/k = 0.0955 fm/c
-    near(i["tau_band_fm"][0], 0.0955, 1e-3)                                    # "1/k ~ 0.1 fm/c"
+    near(i["tau_band_fm"][0], 197.327 / (2 * math.pi * 197.327 / 0.4), 1e-12)   # T1: fast end 1/k = 0.0637 fm/c (2^3; was 0.0955 on 3^3)
+    near(i["tau_band_fm"][0], 0.0637, 1e-3)                                    # "1/k ~ 0.06 fm/c" (was 0.0955)
     near(i["tau_band_fm"][1], 197.327 / (2 * math.pi * 225), 1e-12)          # "1/(2 pi T) ~ 0.14 fm/c"
-    assert i["fit_steps_grid"] == ((5, 18), (7, 26))                          # the a_t/10 grid
-    assert i["fit_steps"] == ((5, 19), (7, 32))                               # step rule (H_I): 18 -> 19, 26 -> 32
+    assert i["fit_steps_grid"] == ((4, 12), (7, 26))                          # the a_t/10 grid (2^3; was ((5, 18), (7, 26)))
+    assert i["fit_steps"] == ((4, 12), (7, 27))                               # step rule (H_I): 26 -> 27 (2^3; was ((5, 19), (7, 32)))
     near(i["fit_t_fm"][1][1], 0.26, 1e-9)                                      # "0.18-0.26 fm/c"
-    near(i["fit_t_fm"][0][1], 0.18, 1e-9)
+    near(i["fit_t_fm"][0][1], 0.12, 1e-9)   # 2^3 (staggered ruling 2026-11-13): was 0.18
     assert all(x >= 0.5 for pair in i["fit_x_realized"] for x in pair)        # the transient is excluded
     near(i["shots_per_point_campaign_design_nominal"], 3.42e4, 0.001)         # shot audit design B
-    near(i["shots_per_point_campaign"][0], 3.599e4, 0.001)                     # "3.4-3.6e4 per point" (a_s = 0.2 fm)
+    near(i["shots_per_point_campaign"][0], 4.43e4, 0.001)                     # "3.4-3.6e4 per point" (a_s = 0.2 fm)   # 2^3 (staggered ruling 2026-11-13): was 3.599e4
     near(i["shots_per_point_campaign"][1], 3.443e4, 0.001)
-    near(i["shots_first_result"][0], 1.600e4, 0.001)                           # "1.5-1.6e4"
+    near(i["shots_first_result"][0], 1.969e4, 0.001)                           # "1.5-2.0e4" (2^3; was 1.600e4, "1.5-1.6e4")
     near(i["shots_first_result"][1], 1.530e4, 0.001)
     for k in (0, 1):                                                          # 30% vs 20%: Fisher scales as 1/target^2
         near(i["shots_first_result"][k] / i["shots_per_point_campaign"][k], (0.2 / 0.3) ** 2, 1e-12)
     near(i["design_A_over_B"], 0.366, 0.002)                                   # "0.37x"
     near(i["design_C_over_B"], 2.72, 0.002)                                    # "2.7x"
     assert (i["n_points_campaign"], i["n_points_mu0"], i["n_points_mupos"]) == (16, 4, 12)
-    near(i["shots_campaign"][0], 1.1518e6, 0.001)                              # "1.1e6" (both spacings)
+    near(i["shots_campaign"][0], 1.4175e6, 0.001)                              # "1.1e6" (both spacings)   # 2^3 (staggered ruling 2026-11-13): was 1.1518e6
     near(i["shots_campaign"][1], 1.1406e6, 0.001)
     assert r33.shots == (i["shots_campaign"][1], i["shots_campaign"][0])
     # each shot is its own R-TOL circuit: quench prep + fit steps (quench ruling 2026-10-05)
     for q, (n1, n2), (e1, e2) in zip(i["quench_prep_steps"], i["fit_steps"], i["eps_rot_fit_points"]):
         near(e1, c.eps_rot_for(N_ROT_33 * (q + n1) / 400), 1e-12)
         near(e2, c.eps_rot_for(N_ROT_33 * (q + n2) / 400), 1e-12)
-    near(i["eps_rot_fit_points"][0][0], 1.084e-5, 0.01)                        # 152 + 5 steps
-    near(i["eps_rot_fit_points"][1][1], 5.525e-6, 0.01)                        # 572 + 32 steps
-    near(i["t_rot_fit_points"][0][0], 28.17, 0.002)                            # 28.2-29.3 T per rotation
-    near(i["t_rot_fit_points"][1][1], 29.29, 0.002)
+    near(i["eps_rot_fit_points"][0][0], 1.997e-5, 0.01)                        # 152 + 5 steps   # 2^3 (staggered ruling 2026-11-13): was 1.084e-5
+    near(i["eps_rot_fit_points"][1][1], 1.019e-5, 0.01)                        # 572 + 32 steps   # 2^3 (staggered ruling 2026-11-13): was 5.525e-6
+    near(i["t_rot_fit_points"][0][0], 27.15, 0.002)                            # 28.2-29.3 T per rotation   # 2^3 (staggered ruling 2026-11-13): was 28.17
+    near(i["t_rot_fit_points"][1][1], 28.27, 0.002)   # 2^3 (staggered ruling 2026-11-13): was 29.29
     o = m.own_depth_2033(m.Assumptions())
     p2 = o["second"]["r"][1]["pts"][-1]                                        # the second spacing's late shot
-    assert p2["steps"] == 48 and p2["prep_steps"] == 755
-    near(p2["eps"], c.eps_rot_for(N_ROT_33 * 803 / 400), 1e-12)
+    assert p2["steps"] == 40 and p2["prep_steps"] == 755   # 2^3; was 48
+    near(p2["eps"], c.eps_rot_for(N_ROT_33 * 795 / 400), 1e-12)   # 2^3: 755 + 40 (was 803)
 
 
 def test_2033_own_depth_per_shot_and_eps_l(r33):
@@ -528,41 +530,42 @@ def test_2033_own_depth_per_shot_and_eps_l(r33):
     near(i["quench_t_th_fm"][1], 5.5104, 1e-3)
     # card RF3-ch5-s216 (2026-11-12), Sigma(216x3) hop row; with the placeholder: 5.9259e9, 2.2528e10; 7.4074e8,
     # 1.2603e9; 6.66665e9, 2.37886e10 ("6.7e9-2.4e10")
-    near(i["quench_prep_t"][0], 8.0538e9, 1e-3)                    # "8.1e9-3.1e10 quench"
-    near(i["quench_prep_t"][1], 3.0633e10, 1e-3)
-    near(i["t_fit_deepest"][0], 1.00673e9, 1e-3)                   # "1.0e9-1.7e9 fit evolution"
-    near(i["t_fit_deepest"][1], 1.71371e9, 1e-3)
-    near(i["t_deepest"][0], 9.06056e9, 1e-3)                       # box "9.1e9-3.2e10" at a_s = 0.2 fm
-    near(i["t_deepest"][1], 3.23463e10, 1e-3)
+    near(i["quench_prep_t"][0], 2.3608e9, 1e-3)                    # "8.1e9-3.1e10 quench"   # 2^3 (staggered ruling 2026-11-13): was 8.0538e9
+    near(i["quench_prep_t"][1], 8.9829e9, 1e-3)   # 2^3 (staggered ruling 2026-11-13): was 3.0633e10
+    near(i["t_fit_deepest"][0], 1.86381e8, 1e-3)                   # "1.0e9-1.7e9 fit evolution"   # 2^3 (staggered ruling 2026-11-13): was 1.00673e9
+    near(i["t_fit_deepest"][1], 4.2402e8, 1e-3)   # 2^3 (staggered ruling 2026-11-13): was 1.71371e9
+    near(i["t_deepest"][0], 2.54721e9, 1e-3)                       # box "9.1e9-3.2e10" at a_s = 0.2 fm   # 2^3 (staggered ruling 2026-11-13): was 9.06056e9
+    near(i["t_deepest"][1], 9.40696e9, 1e-3)   # 2^3 (staggered ruling 2026-11-13): was 3.23463e10
     for k in (0, 1):
         near(i["t_deepest"][k], i["quench_prep_t"][k] + i["t_fit_deepest"][k], 1e-12)
-    near(i["ratio_deepest_to_budget"][0], 9.061, 0.002)            # "9-32 times the 2033 target"
-    near(i["ratio_deepest_to_budget"][1], 32.35, 0.002)
-    near(i["quench_prep_over_fit"][0], 8.00, 0.002)                # "8-18 times the fit evolution"
-    near(i["quench_prep_over_fit"][1], 17.88, 0.002)
+    near(i["ratio_deepest_to_budget"][0], 2.547, 0.002)            # "9-32 times the 2033 target"   # 2^3 (staggered ruling 2026-11-13): was 9.061
+    near(i["ratio_deepest_to_budget"][1], 9.407, 0.002)   # 2^3 (staggered ruling 2026-11-13): was 32.35
+    near(i["quench_prep_over_fit"][0], 12.67, 0.002)                # "13-21 times the fit evolution" (2^3; was 8.00, "8-18")
+    near(i["quench_prep_over_fit"][1], 21.19, 0.002)   # was 17.88
     assert i["t_deepest"][0] > 1.5 * 1e9                           # both corners are past the 1.5x line: a co-design gap
-    near(i["eps_l_deepest"][1], 3.0915e-12, 0.002)                 # box "<~ 3.1e-12" (was 4.204e-12)
-    near(i["eps_l_deepest"][0], 1.1037e-11, 0.002)                 # "1.1e-11 at the fast corner"
-    near(i["shot_time_deepest_s"][0] / 3600, 2.517, 0.001)         # box "shot 2.5-9.0 h" (was 1.9-6.6 h)
-    near(i["shot_time_deepest_s"][1], 32346, 0.001)                # 3.2e4 s = 8.99 h at a_s = 0.2 fm
+    near(i["eps_l_deepest"][1], 1.0630e-11, 0.002)                 # box "<~ 1.1e-11" (2^3; was 3.0915e-12)
+    near(i["eps_l_deepest"][0], 3.9259e-11, 0.002)                 # "3.9e-11 at the fast corner" (was 1.1037e-11)
+    near(i["shot_time_deepest_s"][0] / 3600, 0.7076, 0.001)         # box "shot 0.7-2.6 h" (2^3; was 2.517, "2.5-9.0 h")
+    near(i["shot_time_deepest_s"][1], 9407.1, 0.001)                # 9.4e3 s = 2.6 h at a_s = 0.2 fm (was 32346)
     # T3: the second spacing's late shot (own step, dt = 0.0075 fm/c): 755 quench steps + 48 fit steps
     assert i["second_spacing_quench_prep_steps"] == (196, 755)
     assert i["quench_prep_steps_deepest_campaign"] == (196, 755)
-    near(i["t_deepest_campaign"][1], 4.3106e10, 1e-3)              # "4.3e10 on the second spacing's late shot" (was 3.1698e10)
-    near(i["eps_l_deepest_campaign"][1], 2.3198e-12, 0.002)        # "2.3e-12 on the second spacing" (was 3.155e-12)
+    near(i["t_deepest_campaign"][1], 1.2515e10, 1e-3)              # "1.3e10 on the second spacing's late shot" (2^3; was 4.3106e10)
+    near(i["eps_l_deepest_campaign"][1], 7.990e-12, 0.002)        # "8.0e-12 on the second spacing" (2^3; was 2.3198e-12)
     assert i["deepest_shot_spacing_fm"] == (0.15, 0.15)
     near(i["second_spacing_own_step_t_deepest"][1], i["t_deepest_campaign"][1], 1e-12)
     # the eight corners of the (T, tau, c) band: the box quotes (300, 1/k, 2) and (225, 1/(2 pi T), 2 pi)
     tc = i["t_deepest_corners"]
     assert len(tc) == 8 and min(tc.values()) == i["t_deepest"][0] and max(tc.values()) == i["t_deepest"][1]
-    near(tc[(300.0, "2piT", round(2 * math.pi, 4))], 2.4255e10, 0.002)   # the ruling's "~17x" is this corner (T hi only)
+    near(tc[(300.0, "2piT", round(2 * math.pi, 4))], 7.097e9, 0.002)   # 2^3; was 2.4255e10
+      # the ruling's "~17x" is this corner (T hi only)
     # in-situ T_c^lat diagnostic: 10 energies x 100 prep-only shots, ~6% of the first result's wall
     assert i["tc_diag_shots"] == 1000
-    near(i["tc_diag_t_per_shot"][0], 8.0458e9, 0.002)                  # prep-only circuit at its own eps
-    near(i["tc_diag_t_per_shot"][1], 3.0619e10, 0.002)
-    near(i["tc_diag_wall_yr"][0], 0.2550, 0.005)                        # 0.25-0.97 yr (model record)
-    near(i["tc_diag_wall_yr"][1], 0.9702, 0.005)
-    assert 0.05 < min(i["tc_diag_over_first_result"]) and max(i["tc_diag_over_first_result"]) < 0.07
+    near(i["tc_diag_t_per_shot"][0], 2.3593e9, 0.002)                  # prep-only circuit at its own eps   # 2^3 (staggered ruling 2026-11-13): was 8.0458e9
+    near(i["tc_diag_t_per_shot"][1], 8.9794e9, 0.002)   # 2^3 (staggered ruling 2026-11-13): was 3.0619e10
+    near(i["tc_diag_wall_yr"][0], 0.07791, 0.005)                        # 0.25-0.97 yr (model record)   # 2^3 (staggered ruling 2026-11-13): was 0.2550
+    near(i["tc_diag_wall_yr"][1], 0.2992, 0.005)   # 2^3 (staggered ruling 2026-11-13): was 0.9702
+    assert 0.045 < min(i["tc_diag_over_first_result"]) and max(i["tc_diag_over_first_result"]) < 0.07   # 2^3: 4.7-6.3% (was > 5%)
 
 
 def test_2033_own_depth_walls(r33):
@@ -570,22 +573,28 @@ def test_2033_own_depth_walls(r33):
     factories (F* >= 14), so no shot is charged its depth. Quench ruling: the walls carry the preparation."""
     i = r33.intermediates
     # card RF3-ch5-s216 (2026-11-12): were 3.324, 11.44 ("3.3-11 yr"); 270.9, 998.5; 54.18, 199.7; 7.478, 25.74; 0.6647
-    near(i["wall_first_result_yr"][0], 4.517, 0.002)              # "4.5-16 yr"
-    near(i["wall_first_result_yr"][1], 15.556, 0.002)
-    assert i["wall_first_result_d"] == pytest.approx(i["wall_first_result_d_baseline"])
+    near(i["wall_first_result_yr"][0], 1.64, 0.002)              # "4.5-16 yr"   # 2^3 (staggered ruling 2026-11-13): was 4.517
+    near(i["wall_first_result_yr"][1], 4.766, 0.002)   # 2^3 (staggered ruling 2026-11-13): was 15.556
+    # 2^3: the fast-end shot is depth-limited (F* = 9.6 < 10 at the high schedule), so the wall exceeds the serial
+    # baseline there (was equal on 3^3)
+    assert i["wall_first_result_d"][0] > i["wall_first_result_d_baseline"][0]
+    assert i["wall_first_result_d"][1] > i["wall_first_result_d_baseline"][1]
     fc = i["first_result_corners"]
-    assert len(fc) == 8 and 4.5 < min(fc.values()) < 4.55 and 15.95 < max(fc.values()) < 16.0   # (225, 1/k, 2 pi) 15.96 is not a box corner; the box quotes (225, 1/(2 pi T), 2 pi), 15.56
-    near(i["campaign_two_spacings_yr_own"][0], 368.2, 0.001)      # "370-1400 yr"
-    near(i["campaign_two_spacings_yr_own"][1], 1357.8, 0.001)
-    assert i["campaign_two_spacings_yr_own"] == pytest.approx(i["campaign_two_spacings_yr_own_baseline"])
-    assert min(i["f_star_min_shot_hi"]) > 10
-    near(i["campaign_reduction_needed_own"][0], 73.64, 0.002)     # "74-270x the five-year window"
-    near(i["campaign_reduction_needed_own"][1], 271.6, 0.002)
-    near(i["grid_point_yr_own"][0], 10.16, 0.002)                 # one 20% grid point takes 10-35 yr
-    near(i["grid_point_yr_own"][1], 35.00, 0.002)
-    assert i["grid_points_in_horizon_own"] == (0, 0)             # "so 5 years cover none"
-    near(i["first_result_over_horizon"][0], 0.9034, 0.002)         # the fast corner's first result still fits the window (4.5 yr)
-    assert i["first_result_over_horizon"][0] < 1 < i["first_result_over_horizon"][1]
+    assert len(fc) == 8 and 1.52 < min(fc.values()) < 1.53 and 5.99 < max(fc.values()) < 6.01   # 2^3; was 4.5-4.55, 15.95-16.0
+      # (225, 1/k, 2 pi) 15.96 is not a box corner; the box quotes (225, 1/(2 pi T), 2 pi), 15.56
+    near(i["campaign_two_spacings_yr_own"][0], 134.4, 0.001)      # "130-420 yr" (2^3; was 368.2, "370-1400 yr")
+    near(i["campaign_two_spacings_yr_own"][1], 416.1, 0.001)   # was 1357.8
+    # 2^3: the fast-end campaign is depth-limited (F* 9.5-9.6 < 10); on 3^3 it equalled the baseline with F* > 10
+    assert i["campaign_two_spacings_yr_own"][0] > i["campaign_two_spacings_yr_own_baseline"][0]
+    assert 9 < min(i["f_star_min_shot_hi"]) < 10
+    near(i["campaign_reduction_needed_own"][0], 26.88, 0.002)     # "27-83x the five-year window" (2^3; was 73.64, "74-270x")
+    near(i["campaign_reduction_needed_own"][1], 83.23, 0.002)   # was 271.6
+    near(i["grid_point_yr_own"][0], 3.691, 0.002)                 # one 20% grid point takes 3.7-11 yr (2^3; was 10.16)
+    near(i["grid_point_yr_own"][1], 10.72, 0.002)   # was 35.00
+    assert i["grid_points_in_horizon_own"] == (1, 0)             # 2^3: one point at the fast end (was (0, 0))
+    near(i["first_result_over_horizon"][0], 0.3281, 0.002)   # 2^3; was 0.9034
+            # the fast corner's first result still fits the window (4.5 yr)
+    assert i["first_result_over_horizon"][1] < 1   # 2^3: the first result fits at every corner (was only at the fast end)
     assert r33.wall_time_s == i["wall_campaign_s"]
     yr = m.SECONDS_PER_YEAR          # common.SECONDS_PER_YEAR since 2026-10-09 (was 3.156e7 here)
     near(i["wall_campaign_s"][1] / yr, i["campaign_two_spacings_yr_own"][1], 1e-12)
@@ -598,13 +607,13 @@ def test_2033_r9_exports(r33):
     e = c.depth_exports(i["t_per_shot"], i["t_depth_per_shot"], i["shots_campaign"][0], 1e-6, 1e-4)
     for k in c.DEPTH_EXPORTS[:5]:
         assert i[k] == e[k]
-    near(i["t_per_shot"][0], 1.00876e10, 0.001)              # over both spacings, quench prep included (was 7.422e9)
-    near(i["f_star"][0], 32.07, 0.002)                       # were 37.26, 548.5
-    near(i["f_star"][1], 401.5, 0.002)
+    near(i["t_per_shot"][0], 2.86712e9, 0.001)              # over both spacings, quench prep included (was 7.422e9)   # 2^3 (staggered ruling 2026-11-13): was 1.00876e10
+    near(i["f_star"][0], 9.583, 0.002)                       # were 37.26, 548.5   # 2^3 (staggered ruling 2026-11-13): was 32.07
+    near(i["f_star"][1], 119.7, 0.002)   # 2^3 (staggered ruling 2026-11-13): was 401.5
     near(i["wall_serial_s"][0], i["campaign_two_spacings_yr_own_baseline"][0] * m.SECONDS_PER_YEAR, 1e-9)
-    near(i["factories_for_1yr"][0], 3682, 0.002)             # was 2709
-    near(i["floor_wall_s"][1] / 3.156e7, 114.8, 0.002)       # was 72.70
-    assert i["baseline_ok"] == (True, True)
+    near(i["factories_for_1yr"][0], 1288, 0.002)             # was 2709   # 2^3 (staggered ruling 2026-11-13): was 3682
+    near(i["floor_wall_s"][1] / 3.156e7, 134.4, 0.002)       # was 72.70   # 2^3 (staggered ruling 2026-11-13): was 114.8
+    assert i["baseline_ok"] == (False, True)   # 2^3: F* 9.58 at the high schedule (was (True, True))
     assert i["wall_first_result_s"][0] < i["wall_first_result_s"][1]
 
 
@@ -617,8 +626,8 @@ def test_2033_depth_schedule_reproduces_factory_json(a):
     near(lo, 4.68e4, 0.002)
     near(hi, 6.05e5, 0.002)
     lo, hi = m.step_depth_2033(a, 1.15 * math.log2(1 / EPS_33) + 9.2)
-    near(lo, 1.3339e5, 0.002)
-    near(hi, 1.6722e6, 0.002)
+    near(lo, 1.3123e5, 0.002)   # 2^3 (staggered ruling 2026-11-13): was 1.3339e5
+    near(hi, 1.6418e6, 0.002)   # 2^3 (staggered ruling 2026-11-13): was 1.6722e6
 
 
 def test_2033_campaign_split_is_stated(a):
@@ -641,13 +650,13 @@ def test_2033_campaign_split_is_stated(a):
 def test_codesign_is_the_be_trim(rcd, r33):
     i = rcd.intermediates
     assert rcd.lq == r33.lq
-    near(rcd.hard_ops[0], 2.0933e9, 0.001)                   # R-TOL at the BE's own N_rot/10 (route (a) "~2.1e9"; 1.5411e9 with the placeholder hop)
+    near(rcd.hard_ops[0], 6.1375e8, 0.001)                   # R-TOL at the BE's own N_rot/10 (route (a) "~2.1e9"; 1.5411e9 with the placeholder hop)   # 2^3 (staggered ruling 2026-11-13): was 2.0933e9
     near(i["eps_rot_be"], EPS_BE, 1e-12)
-    near(i["t_per_rotation_papers_be"], 17.83, 0.001)
+    near(i["t_per_rotation_papers_be"], 16.82, 0.001)   # 2^3 (staggered ruling 2026-11-13): was 17.83
     assert rcd.hard_ops[0] == rcd.hard_ops[1]
     near(rcd.breakdown_total(), rcd.hard_ops[0], 1e-9)        # the BE walk alone (no thermal preparation in route (a))
     assert {p.name for p in rcd.breakdown} == {"be_walk_S216x3"}
-    near(i["eps_l_required_codesign"], 4.777e-11, 0.01)
+    near(i["eps_l_required_codesign"], 1.629e-10, 0.01)   # 2^3 (staggered ruling 2026-11-13): was 4.777e-11
     assert rcd.epsilon_l == (i["eps_l_required_codesign"], i["eps_l_required_codesign"])
     assert any("No codesign box" in n for n in rcd.notes)
     assert "NOT A BOX" in m.PUBLISHED["codesign"].src
@@ -660,7 +669,7 @@ def test_register_and_costs_follow_the_group(a):
     b = dataclasses.replace(a, group_2033=c.Stated("S36x3", "test"), hamiltonian_2033=c.Stated("KS", "test"))
     r = m.model(b, "2033")
     assert r.intermediates["qubits_per_link_2033"] == GROUPS["S36x3"].link_qubits == 8
-    assert r.intermediates["gauge_qubits_2033"] == 81 * 8
+    assert r.intermediates["gauge_qubits_2033"] == 24 * 8 # 2^3 (staggered ruling 2026-11-13): was 3^3
     near(r.intermediates["magnetic_t_per_link_step_2033"],
          magnetic_per_link("S36x3", "KS", 3, r.intermediates["eps_rot_2033"]), 1e-12)   # its own R-TOL eps
     assert r.intermediates["fft_compiled_2033"] is True     # Sigma(36x3) has a COMPILED FFT
@@ -679,8 +688,9 @@ def test_r3_fault_budget_is_a_cited_input(a):
     assert a.ceiling_2033_t.lo == 1e9 and a.rfi_eps_l.lo == 1e-8
     b = dataclasses.replace(a, faults_per_shot=c.Cited(1.0, "test"))
     r = m.model(b, "2033")
-    near(r.epsilon_l[1], 1 / 9.06056e9, 0.001)
-    near(r.intermediates["eps_l_required_reference"], 4.684e-11, 0.01)
+    near(r.epsilon_l[1], 1 / 2.54721e9, 0.001)   # 2^3; was 1 / 9.06056e9
+   
+    near(r.intermediates["eps_l_required_reference"], 1.597e-10, 0.01)   # 2^3 (staggered ruling 2026-11-13): was 4.684e-11
 
 
 def test_s648_assumptions_are_noted(a, r33, rcd):
@@ -742,29 +752,29 @@ def test_bad_inputs_rejected(a):
     r"full benchmark: $5.9\times 10^{5}$ ($6$ Trotter steps of $a_t/4$ to $t_{\max} = 0.15$ fm/$c$)",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"Shots & first result $2\times 10^{3}$ ($8.5\times 10^{4}$ for $30\%$); full benchmark $7\times 10^{3}$ ($7$ measurement times) \\",   # re-pinned 2026-11-12 (batch 6): the 30% count added (shots_first_result_2028_at_30pct = 8.458e4);   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"first result $1.6$ min; full benchmark $34$ min per $k$ on one machine; longest shot $\sim 0.6$ s \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"Logical qubits & $\sim 1280$ ($1234$--$1334$), $1.2$--$1.3\times$ the 2033 target \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
-    r"Per-shot T & $9.1\times 10^{9}$--$3.2\times 10^{10}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $4.3\times 10^{10}$ \\",   # re-pinned 2026-11-12 (card RF3-ch5-s216: Sigma(216x3) hop row; was 6.7e9-2.4e10, 3.2e10);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"Logical qubits & $\sim 490$ ($436$--$536$), within the 2033 target \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"Per-shot T & $2.5\times 10^{9}$--$9.4\times 10^{9}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $1.3\times 10^{10}$ \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216: Sigma(216x3) hop row; was 6.7e9-2.4e10, 3.2e10);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"The hydrodynamic $\tau$ has no basis at this $k$",   # re-pinned 2026-11-09 (referee cards, Q5-6): sentence became the measurement figure; the caption keeps the claim
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "with $3.4$--$3.6\times 10^{4}$ shots per point"
     r"$4$ points at $N_B=0$ and $12$ at $N_B=1$--$3$, at two spacings, each estimated at $T=1.5\,T_c^{\rm lat}$.",   # re-pinned 2026-11-09 (referee cards)
-    r"Required $\epsilon_l$ & $\lesssim 3.1\times 10^{-12}$ ($2.3\times 10^{-12}$ at the second spacing) \\",   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 4.2e-12, 3.2e-12);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
-    r"Shots & first result $1.5$--$1.6\times 10^{4}$; campaign $1.1\times 10^{6}$ \\",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"Required $\epsilon_l$ & $\lesssim 1.1\times 10^{-11}$ ($8.0\times 10^{-12}$ at the second spacing) \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 4.2e-12, 3.2e-12);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"Shots & first result $1.5$--$2.0\times 10^{4}$; campaign $1.1$--$1.4\times 10^{6}$ \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # verifier r25 items 1, 3, 8, 9, 10
     r"the eventual first-principles (continuum, larger-volume) $\eta/s$ and $\zeta/s$ at $20\%$",
     r"so it adds up to $1\times$ the $\eta/s$ campaign's shots, and the subtraction for $\zeta$ is not counted.",
-    r"\textbf{Wall time} & shot $2.5$--$9.0$ h, first result $4.5$--$16$ yr on one machine;",   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 1.9-6.6 h, 3.3-11 yr);   # re-pinned 2026-11-12 (batch 6): per-shot wall added to the row;   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"campaign $370$--$1400$ yr, $74$--$270\times$ the five-year window \\",   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 270-1000 yr, 54-200x);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"\textbf{Wall time} & shot $0.7$--$2.6$ h, first result $1.6$--$4.8$ yr on one machine;",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 1.9-6.6 h, 3.3-11 yr);   # re-pinned 2026-11-12 (batch 6): per-shot wall added to the row;   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"campaign $130$--$420$ yr, $27$--$83\times$ the five-year window \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 270-1000 yr, 54-200x);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # R-TOL (H. Lamm 2026-09-29): the rule and each circuit's tolerance and T per rotation
     # card RF3-ch5-s216 (2026-11-12): the hop sentence, its share, the reference circuit, the BE line and the gap bullet
     r"The $\Sigma(216\times 3)$ hopping term uses unpublished gate counts~\cite{FermionPrimitives_unpub}.",
     r"At 2033 the hopping term is $43\%$ of the step.",
-    r"at $5.3\times 10^{7}$ T ($6.6\times 10^{5}$ per link-step), $2.1\times 10^{10}$ T.",
-    r"so the longest shot is $9$--$32$ times the 2033 target of $10^{9}$ T",
-    r"puts every 2033 shot $9$--$32$ times above the 2033 target.",
-    r"the campaign is $74$--$270$ times the five-year window",
-    r"the 4 fm/$c$ reference circuit would be $\sim 2.1\times 10^{9}$ T.",
-    r"The $\Sigma(216\times 3)$ hop is $43\%$ of the 2033 step.  Recomputing its register map at both color basis changes gives $3.4\times 10^{10}$ T at 4 fm/$c$.  The inverse color basis change ($4.8\times 10^{4}$ T per link-step) may be unnecessary.",
-    r"(the second spacing's late circuit) is $2.6\times 10^{10}$ T.",
+    r"at $1.6\times 10^{7}$ T ($6.5\times 10^{5}$ per link-step), $6.3\times 10^{9}$ T.",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
+    r"so the longest shot is $2.5$--$9.4$ times the 2033 target of $10^{9}$ T",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
+    r"puts every 2033 shot $2.5$--$9.4$ times above the 2033 target.",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
+    r"the campaign is $27$--$83$ times the five-year window",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
+    r"the 4 fm/$c$ reference circuit would be $\sim 6.1\times 10^{8}$ T.",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
+    r"The $\Sigma(216\times 3)$ hop is $43\%$ of the 2033 step.  Recomputing its register map at both color basis changes gives $1.0\times 10^{10}$ T at 4 fm/$c$.  The inverse color basis change ($4.7\times 10^{4}$ T per link-step) may be unnecessary.",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
+    r"(the second spacing's late circuit) is $7.6\times 10^{9}$ T.",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
     r"on $\Sigma(216\times 3)$ (11 qubits/link)",   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
 
     # E27 (2026-10-02): one machine, serial; the excess over the horizon is an algorithmic reduction, never a machine count
@@ -940,7 +950,7 @@ def test_r25_verifier_r9_naming_and_exports_note():
     assert not hasattr(a, "logical_cycle_us") and not hasattr(a, "logical_cycle_s")    # R9: legacy names dropped
     r = m.model(a, "2033")
     rows = m.INSTANCE_ROWS(a, "2033", r)
-    assert "tau = 1/k = 0.0955" in rows[0][3]["exports_note"]
+    assert "tau = 1/k = 0.0637" in rows[0][3]["exports_note"]   # 2^3; was 0.0955
 
 
 def test_referee_t1_t3_g8_numbers(r33):
@@ -948,13 +958,14 @@ def test_referee_t1_t3_g8_numbers(r33):
     (f0, f1), (s0, s1) = i["corr_rel_err_first_at_fit_times"]
     near(f0, 0.19, 0.03)                                                 # "19% at the early time"
     near(s0, 0.19, 0.03)
-    assert 0.360 <= s1 <= 0.365 and 0.360 <= f1 <= 0.365                 # "36% at the late one" (both corners)
-    near(i["tau_free_streaming_fm"], 0.0955, 0.001)                       # "1/k ~ 0.1 fm/c"
-    near(i["second_spacing_kmin_over_T_on_3cubed"][0], 12.2, 0.005)       # "k_min ~ 9-12 T" (T = 225-300 MeV)
-    near(i["second_spacing_kmin_over_T_on_3cubed"][1], 9.18, 0.005)
+    assert 0.360 <= s1 <= 0.365 and 0.325 <= f1 <= 0.330                 # 33-36% at the late one (2^3; fast corner was 36%)
+    near(i["tau_free_streaming_fm"], 0.0637, 0.001)                       # "1/k ~ 0.06 fm/c" (2^3; was 0.0955)
+    near(i["second_spacing_kmin_over_T_on_3cubed"][0], 18.4, 0.005)       # "k_min ~ 14-18 T" on 2^3 (key name kept; was 12.2 on 3^3)
+    near(i["second_spacing_kmin_over_T_on_3cubed"][1], 13.78, 0.005)   # was 9.18
     lo, hi = i["second_spacing_mpiL_on_3cubed"]
-    assert 0.65 <= lo <= 0.75 and 0.85 <= hi <= 0.95                    # "m_pi L ~ 0.7--0.9"
+    assert 0.45 <= lo <= 0.46 and 0.60 <= hi <= 0.61                    # "m_pi L ~ 0.5--0.6" (2^3; was 0.7--0.9)
     assert i["fixed_volume_4cubed_lq"] == (2788, 2888)                   # "2788--2888 LQ" (11 qubits/link)
+    assert i["fixed_volume_4cubed_a_s_fm"] == 0.1                        # 2^3: the fixed 0.4 fm box is 4^3 at 0.1 fm (was 0.15 on 3^3)
 
 
 def test_referee_verifier_t3_g8_numbers(r33):
@@ -965,8 +976,8 @@ def test_referee_verifier_t3_g8_numbers(r33):
     a = m.Assumptions()
     assert a.second_spacing_a_s_fm.prov is c.Provenance.ASSUMED and a.second_spacing_a_s_fm.lo == 0.15
     i = r33.intermediates
-    assert i["second_spacing_own_step_fit_steps"][1] == (10, 48)          # grid 35 = 4/3 x 26; the H_I rule needs 48
-    near(i["campaign_yr_second_spacing_own_step"][1], 1357.8, 0.01)   # was 998.5 (placeholder hop)
+    assert i["second_spacing_own_step_fit_steps"][1] == (10, 40)          # grid 35 = 4/3 x 26; the H_I rule needs 40 (2^3; was 48)
+    near(i["campaign_yr_second_spacing_own_step"][1], 416.1, 0.01)   # 2^3; was 1357.8 (998.5 placeholder hop)
     assert i["campaign_yr_second_spacing_own_step"][1] > i["campaign_per_spacing_yr_own"][1] * 2
 
 
@@ -1047,30 +1058,31 @@ def test_g7_2033_step_numbers(r33):
     i = r33.intermediates
     near(i["trotter_dt_over_a_s"], 0.05, 1e-9)
     near(i["trotter_temp_lat"][0], 0.304, 0.002) and near(i["trotter_temp_lat"][1], 0.228, 0.002)
-    assert i["trotter_rule"] == "state" and i["trotter_steps_deepest"] == (19, 32)
+    assert i["trotter_rule"] == "state" and i["trotter_steps_deepest"] == (12, 27)   # 2^3; was (19, 32)
     s0, s1 = i["trotter_sd_err_deepest"]
-    assert round(s0, 3) == 0.092 and round(s1, 3) == 0.098 and i["trotter_rule_meets_eps"]
+    assert round(s0, 3) == 0.048 and round(s1, 3) == 0.096 and i["trotter_rule_meets_eps"]   # 2^3; was 0.092, 0.098
     g0, g1 = i["trotter_sd_err_deepest_grid"]
-    assert g0 > 0.1 and g1 > 0.1                                              # the a_t/10 grid fails at both ends
-    assert i["trotter_sd_steps_deepest_grid"] == (19, 32)                     # the fewest steps that meet it
+    assert g0 < 0.1 < g1                                                      # 2^3: the a_t/10 grid fails at the slow end only (was both)
+    assert i["trotter_sd_steps_deepest_grid"] == (9, 27)                      # the fewest steps that meet it (2^3; was (19, 32))
     w0, w1 = i["trotter_worst_err_deepest"]
-    assert round(w0) == 64 and round(w1) == 68
+    assert round(w0) == 14 and round(w1) == 28   # 2^3; was 64, 68
     assert min(i["trotter_worst_err_min_g2_deepest"]) > 1                   # no g^2 rescues the bound
     f0, f1 = i["trotter_free_err_deepest"]
-    assert round(f0, 3) == 0.015 and round(f1, 3) == 0.019
+    assert round(f0, 3) == 0.020 and round(f1, 3) == 0.018   # 2^3; was 0.015, 0.019
     assert i["trotter_meets_eps"]
     for lam, lamk in zip(i["trotter_sd_lambda"], i["trotter_sd_lambda_ks"]):
-        near(lam / lamk, 1.40, 0.003)                                          # "raises the estimate 1.4x over H_KS"
-        near(lamk, 32.76, 0.001)
+        near(lam / lamk, 1.54, 0.003)                                          # "raises the estimate 1.5x over H_KS" (2^3; was 1.40)
+        near(lamk, 20.79, 0.001)   # 2^3; was 32.76
     tex = TEX.read_text()
     assert r"\frac{1}{g^2 a}\sum_{\Box}" in tex
-    assert "raises the estimate $1.4\\times$ over $H_{\\rm KS}$" in tex
+    assert "raises the estimate $1.5\\times$ over $H_{\\rm KS}$" in tex   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
     assert "the fundamental carries the SU(3) Casimir $4/3$" in tex
-    # the 4 fm/c reference shot is a pricing basis: the rule would need 1914 steps ("1.9e3")
-    assert i["trotter_sd_steps_ref"][0] == 1914
+    # the 4 fm/c reference shot is a pricing basis: the rule would need 1601 steps ("1.6e3"; 1914, "1.9e3", on 3^3)
+    assert i["trotter_sd_steps_ref"][0] == 1601   # 2^3 (staggered ruling 2026-11-13)
     # Lambda_sd at T a_s = 0.23-0.30 is almost all zero-point: the T = 0 value differs by < 1e-2 (verifier 2026-10-04)
-    lam0 = m.trotter_state_dependent((3, 3, 3), 8, 0.0, 1.0, 0.05, 0.1, "I")["lambda"]
-    assert max(abs(x - lam0) for x in i["trotter_sd_lambda"]) < 1e-2 and round(lam0, 1) == 45.8
+    lam0 = m.trotter_state_dependent((2, 2, 2), 8, 0.0, 1.0, 0.05, 0.1, "I")["lambda"]   # 2^3 (was (3, 3, 3), 45.8)
+    assert max(abs(x - lam0) for x in i["trotter_sd_lambda"]) < 1e-2 and round(lam0, 1) == 32.0
+    assert round(m.trotter_state_dependent((3, 3, 3), 8, 0.0, 1.0, 0.05, 0.1, "I")["lambda"], 1) == 45.8   # the 3^3 record
     lam0k = m.trotter_state_dependent((3, 3, 3), 8, 0.0, 1.0, 0.05, 0.1)["lambda"]
     assert round(lam0k, 1) == 32.8                                            # the H_KS default is unchanged (Ch. 6 uses it)
     assert "with the estimate taken in the thermal state" in tex   # Q5-5: the rule is defined once in Ch. 1
@@ -1160,7 +1172,7 @@ def test_t1_free_streaming_1e_time(r33):
     beyond the slow end 1/(2 pi T) = 0.140 fm/c (225 MeV; 0.196 at the retired 160 MeV)."""
     i = r33.intermediates
     near(i["free_streaming_1e_kt"], 2.926, 0.001)
-    near(i["free_streaming_1e_fm"], 0.279, 0.005)
+    near(i["free_streaming_1e_fm"], 0.186, 0.005)   # 2^3 (staggered ruling 2026-11-13): was 0.279
     assert i["free_streaming_1e_fm"] > i["tau_band_fm"][1]
 
 
@@ -1170,10 +1182,10 @@ def test_t1_fast_end_is_free_streaming(a, r33):
     assert a.tau_fast_1k.prov is c.Provenance.ASSUMED and a.tau_fast_1k.lo == 1.0
     i = r33.intermediates
     near(i["tau_band_fm"][0], i["tau_free_streaming_fm"], 1e-12)
-    near(i["tau_decay_at_eta_s_assumed_fm"][0], 0.0693, 0.002)           # record: "0.07-0.09 fm/c ... has no basis"
+    near(i["tau_decay_at_eta_s_assumed_fm"][0], 0.0308, 0.002)           # record: "0.07-0.09 fm/c ... has no basis"   # 2^3 (staggered ruling 2026-11-13): was 0.0693
     (s0, s1), (f0, f1) = i["test_time_sigma_lnC"], i["test_time_campaign_fraction"]
-    assert 0.28 <= min(s0, s1) and max(s0, s1) <= 0.30                   # "+-0.3 in ln C"
-    assert round(100 * f1) == 20 and round(100 * f0) == 20                # "add a fifth to the campaign" (with the quench prep)
+    assert 0.26 <= min(s0, s1) and max(s0, s1) <= 0.30                   # "+-0.3 in ln C" (2^3: 0.26-0.29; was 0.28-0.30)
+    assert round(100 * f1) == 19 and round(100 * f0) == 19                # "add a fifth to the campaign" (2^3: 19%; was 20%)
 
 
 def test_t3_second_spacing_at_its_own_step(a, r33):
@@ -1186,11 +1198,11 @@ def test_t3_second_spacing_at_its_own_step(a, r33):
     for k in (0, 1):
         near(i["campaign_two_spacings_yr_own"][k],
              (o["r"][k]["per_spacing_s"] + o["second"]["r"][k]["per_spacing_s"]) / yr, 1e-12)
-    assert i["second_spacing_own_step_fit_steps"] == ((5, 19), (10, 48))
-    near(i["campaign_yr_second_spacing_same_cost"][1], 1120.0, 0.001)    # the pre-T3 convention (record; was 823.7)
+    assert i["second_spacing_own_step_fit_steps"] == ((4, 12), (10, 40))   # 2^3; was ((5, 19), (10, 48))
+    near(i["campaign_yr_second_spacing_same_cost"][1], 343.15, 0.001)    # the pre-T3 convention (record; 2^3, was 1120.0)
     b = dataclasses.replace(a, second_spacing_own_step=c.Assumed(False, "x"))
     rb = m.model(b, "2033")
-    near(rb.intermediates["campaign_two_spacings_yr_own"][1], 1120.0, 0.001)
+    near(rb.intermediates["campaign_two_spacings_yr_own"][1], 343.15, 0.001)   # 2^3; was 1120.0
     assert rb.hard_ops == r33.hard_ops                                   # the box shot is the first spacing's either way
     near(rb.intermediates["t_deepest_campaign"][1], r33.hard_ops[1], 1e-12)
     assert i["deepest_shot_spacing_fm"] == (0.15, 0.15)
@@ -1234,7 +1246,7 @@ def test_quench_shot_is_one_circuit(a, r33):
         for p in r["pts"]:
             e = m.evolution_2033(a, p["prep_steps"] + p["steps"])
             near(p["t"], e["t"], 1e-12)
-            near(p["t_prep"], e["per_link"] * 81 * p["prep_steps"], 1e-12)
+            near(p["t_prep"], e["per_link"] * 24 * p["prep_steps"], 1e-12) # 2^3 (staggered ruling 2026-11-13): was 3^3
             near(p["t_prep"] + p["t_fit"], p["t"], 1e-9)
     b = dataclasses.replace(a, quench_c=c.Assumed((1.0, 1.0), "x"))
     rb = m.model(b, "2033")

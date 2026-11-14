@@ -8,6 +8,8 @@ printed precision, and nothing is written down twice. Each symbol must be the on
 gives: the upper end of the range against the target, the worse of register and hard
 operations, or for the campaign against the five-year window. Fits means at or below the target
 at two significant figures, near means below 3 times it, and anything else is not yet fitting.
+A lower bound below its target is open; at or above it, it takes near or not yet fitting by the
+same rule (PR-q-09, 2026-11-13).
 
 Three things fail the run: a wall time that does not round to its model, a printed number with
 no source in SPEC, and a symbol that disagrees with its model. Qualifiers such as a lower-bound
@@ -73,21 +75,29 @@ def campaign_over_window(ch, end=1):
 
 
 # Cells whose per-shot count is a lower bound (the table prints ${\gtrsim}$; test_table.py t_rel). A campaign is a lower
-# bound when its 2033 shot is. Referee follow-up F6 (2026-11-11): a lower bound settles only a red mark.
+# bound when its 2033 shot is. PR-q-09 (2026-11-13, replaces referee follow-up F6): a lower bound below 1x its target
+# is open; at or above 1x it is near or a miss by the point-value thresholds. The bound applies to the hard operations
+# only; the register is a point value.
 LOWER_BOUND = {(8, "2028"), (10, "2028"), (6, "2033"), (8, "2033"), (10, "2033")}
 
 
+ORDER = (r"\fitsyes", r"\fitsopen", r"\fitsnear", r"\fitsno")
+
+
 def status(ratio, lower_bound=False):
-    """The symbol for a value as a multiple of its target; a lower bound that is not already more than NEAR over is open."""
+    """The symbol for a value as a multiple of its target. A lower bound below the target is open; at or above it,
+    it cannot fit, so it is near below NEAR and a miss from NEAR on."""
     rounded = float(f"{ratio:.2g}")
-    if lower_bound and rounded < NEAR:
+    if lower_bound and rounded < 1.0:
         return r"\fitsopen"
-    return r"\fitsyes" if rounded <= 1.0 else r"\fitsnear" if rounded < NEAR else r"\fitsno"
+    if rounded <= 1.0 and not lower_bound:
+        return r"\fitsyes"
+    return r"\fitsnear" if rounded < NEAR else r"\fitsno"
 
 
 def machine_status(ch, era):
     """The worse of register and hard operations, at the upper end of each range."""
-    return status(max(over(ch, era), lq(ch, era) / LQ_TARGET[era]), (ch, era) in LOWER_BOUND)
+    return max(status(lq(ch, era) / LQ_TARGET[era]), status(over(ch, era), (ch, era) in LOWER_BOUND), key=ORDER.index)
 
 
 def campaign_status(ch):
@@ -189,31 +199,40 @@ def test_registers_bullet():
     registers = [lq(ch, "2028") for ch in DIGITAL]
     assert f"All nine 2028 benchmarks fit the 250-LQ register, at {min(registers):.0f}--{max(registers):.0f} LQ." in top_line()
     assert max(registers) <= 250
-    large = [lq(ch, "2033") for ch in (5, 6, 7, 9)]
+    large = [lq(ch, "2033") for ch in (6, 7, 9)]   # staggered ruling 2026-11-13: Ch. 5 dropped to 2^3 (436-536 LQ); was (5, 6, 7, 9)
     assert f"reach ${min(large):.0f}$--${max(large):.0f}$ LQ in Chs." in top_line()
 
 
-@pytest.mark.parametrize("era,target,lo_end", [("2028", r"$10^{5}$", 1), ("2033", r"$10^{9}$", 1)])   # PR-cross-1 2026-11-13: the bullet compares upper ends (5.6 to 41)
-def test_hard_operations_bullet(era, target, lo_end):
+# PR-cross-1 2026-11-13: the bullet compares upper ends (5.6 to 41). Ch. 3 string-count Trotter step (2026-11-13):
+# Ch. 3's 2033 headline is 4.7x, so six 2033 instances exceed 1e9, from 4.7 to 41 (was five, 5.6 to 41)
+@pytest.mark.parametrize("era,target,lo_end,count", [("2028", r"$10^{5}$", 1, "Five"), ("2033", r"$10^{9}$", 1, "Six")])
+def test_hard_operations_bullet(era, target, lo_end, count):
     above = [ch for ch in DIGITAL if float(f"{over(ch, era):.2g}") > 1.0]
-    assert len(above) == 5
+    assert len(above) == {"Five": 5, "Six": 6}[count]
     lo = min(over(ch, era, lo_end) for ch in above)
     hi = max(over(ch, era) for ch in above)
-    assert (f"Five of the nine {era} " in top_line()
+    assert (f"{count} of the nine {era} " in top_line()
             and f"exceed {target}, by factors of {lo:.2g} to {hi:.2g}" in top_line())
 
 
 def test_co_design_band_in_bullet():
-    assert [ch for ch in DIGITAL if over(ch, "2033") >= 10] == [5, 6, 7, 9]
+    assert [ch for ch in DIGITAL if over(ch, "2033") >= 10] == [6, 7, 9]   # staggered ruling 2026-11-13: Ch. 5 on 2^3 is 2.5-9.4x (was [5, 6, 7, 9])
     assert over(6, "2033", 0) < 10 <= over(6, "2033", 1)      # "Ch. 6 at its upper end"
 
 
 def test_machine_time_bullet():
     within = [ch for ch in DIGITAL if campaign_over_window(ch) <= 1 and (ch, "2033") not in LOWER_BOUND]
     assert within == [2, 3, 7]          # r26-yukawa: Ch. 9 left (5.8-6.5 yr); F6 2026-11-11: Ch. 8 is a lower bound
-    assert [ch for ch in DIGITAL if campaign_status(ch) == r"\fitsopen"] == [8, 10]
+    assert [ch for ch in DIGITAL if campaign_status(ch) == r"\fitsopen"] == [8]     # PR-q-09: Ch. 10 (1.7x) is near
+    misses = [ch for ch in DIGITAL if campaign_status(ch) in (r"\fitsnear", r"\fitsno")]
+    assert misses == [4, 5, 6, 9, 10]
     text = top_line()
-    assert "Three of the nine campaigns fit the five-year window on one machine and two give lower bounds" in text   # re-pinned 2026-11-12 (batch 6): the sentence now continues with Ch. 8's scan
+    assert ("Three of the nine campaigns fit the five-year window on one machine and Ch.~\\ref{ch:baryogenesis}'s "
+            "gives a lower bound") in text                         # re-pinned PR-q-09 2026-11-13 (was 'two give lower bounds')
+    assert "The other five miss at their upper ends" in text
+    # 'every range but Ch. 10's': the depth floor at the upper end exceeds the window for every miss except Ch. 10
+    assert [ch for ch in misses if x(ch, "2033", "floor_wall_s") <= WINDOW_S] == [10]
+    assert "at the upper end of every range but Ch.~\\ref{ch:finite_density}'s the depth bound alone" in text   # re-pinned 2026-11-12 (batch 6): the sentence now continues with Ch. 8's scan
     assert f"{float(f'{campaign_over_window(5):.2g}'):.0f}\\times$ (Ch." in text
     lo, hi = result(8, "2033").intermediates["nucleation_scan_yr_with_prep_band"]      # batch 6, 2026-11-12: new clause, Ch. 8 model (7.81-50.2 yr at 10 temperatures, card RF3-ch8-M3; 78.1-501.9 at 100 points)
     assert f"scan reaching ${lo:.2g}$--${hi:.2g}$ yr with Gibbs preparation" in text

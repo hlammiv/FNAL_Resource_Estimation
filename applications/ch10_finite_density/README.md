@@ -322,7 +322,7 @@ eps_l = 0.1 / N_T, so that a shot accrues 0.1 expected faults. 2028: 0.1 / 399,9
 These are reported in the chapter text but are not the headline.
 
 - **The same filter at V = 2^2** (beta||H|| = 100, Assumed): 4.72e8 - 9.57e8 T, 4.7e3 - 9.6e3 times the 2028 cap (`qsvt_2x2_t`). This is why the 2028 benchmark is a ground-state ramp and not a thermal state.
-- **V = 3^3 at 2033 parameters**: beta||H|| scaled with the volume to 337.5, d_beta = 56, a 9.56e6-T step, 1.82e10 - 3.70e10 T per shot on 1,141 - 1,641 LQ (`v3cubed_*`; `test_2033_v3cubed_promotion`).
+- **V = 4^3 at 2033 parameters** (replaces V = 3^3, staggered ruling 2026-11-13: periodic staggered fields need an even side): beta||H|| scaled with the volume to 800, d_beta = 86, a 2.33e7-T step, 6.82e10 - 1.38e11 T per shot on 2,362 - 2,862 LQ (`v4cubed_*`; `test_2033_v4cubed_volume_row`). The old V = 3^3 row was 337.5, 56, 9.56e6, 1.82e10 - 3.70e10 T, 1,141 - 1,641 LQ.
 - **A Lindbladian Gibbs sampler** (Chen-Kastoryano-Gilyen, arXiv:2311.09207; `gibbs_sample`, lines 607-650) on the same Trotter step: 288 local jumps, 20 sweeps, 8.39e13 T per sample at the central structure and 4.42e14 with the x K segment factor of Thm. I.2 (`gibbs_t_per_shot_range`, which the chapter prints as ~8e13-4e14), 1.5e4 - 1.6e5 times the QSVT shot (`gibbs_over_qsvt`; `test_f2_sampler_step_derivation`). Over the sweep band of 10-40 the central structure spans 7.6e12 - 9.5e14 (`gibbs_t_sample_band`). The same sampler at V = 2^2 is 1.3e12 T (`gibbs_2x2_t_sample`; `test_f2_2028_gibbs_sample_priced`).
 - **2e3 plain Trotter steps** (c_mix x beta||H|| = 20 x 100) at 2.76e6 T each: 5.52e9 T (`t_hsim_lower_bound`). This circuit also sets the reference for the 2033 depth scaling.
 

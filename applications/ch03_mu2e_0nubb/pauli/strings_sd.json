@@ -1,0 +1,11 @@
+{
+ "gamma": 12900,
+ "modes": 24,
+ "supports4": 1488,
+ "hops_bare": 16,
+ "hops_dressed": 332,
+ "zz": 276,
+ "z": 24,
+ "space": "sd",
+ "seconds": 0.2
+}

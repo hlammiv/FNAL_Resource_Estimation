@@ -157,33 +157,35 @@ def test_c_T_goes_through_common_synthesis(a, r33):
     # "giving eps_rot = 2.5e-6-5.0e-5 and c_T = 26-31 T per rotation across the survey's cells" (R15: the
     # top end is the jj55 pair, the largest cell once Mo/Ru is 54 modes)
     lo, hi = i["c_T_survey_range"]
-    assert 25.6 <= lo <= 25.7 and 30.6 <= hi <= 30.7, (lo, hi)
-    _rng(i["eps_rot_survey"], (4.956e-5, 2.464e-6), 1e-3)
+    assert 27.5 <= lo <= 27.6 and 31.6 <= hi <= 31.7, (lo, hi)        # re-pinned 2026-11-13 (Pauli-string Trotter step); was 25.6-25.7 / 30.6-30.7
+    _rng(i["eps_rot_survey"], (1.5708e-5, 1.3570e-6), 1e-3)            # re-pinned 2026-11-13 (Pauli-string Trotter step); was 4.956e-5 / 2.464e-6
     # "Were the errors instead to add coherently, c_T would rise to 42-52 ... by ~70%"
     clo, chi = i["c_T_coherent_range"]
-    assert 42 <= clo <= 42.2 and 52.0 <= chi <= 52.1, (clo, chi)
+    assert 45.8 <= clo <= 46.0 and 54.0 <= chi <= 54.1, (clo, chi)    # re-pinned 2026-11-13 (Pauli-string Trotter step); was 42-42.2 / 52.0-52.1
     for x in i["c_T_coherent_over_randomized"]:
         assert 1.6 <= x <= 1.8                                      # "~70%"
 
 
 def test_rtol_each_band_end_is_its_own_circuit(a, r33, rcd):
-    # every band end: N_rot = N_reg N_Trotter N_orb^4, eps_rot = sqrt(1e-2/N_rot), c_T = 1.15 log2(1/eps) + 9.2
+    # every band end: N_rot = N_reg N_Trotter N_str (Pauli strings per step; was N_orb^4 until 2026-11-13),
+    # eps_rot = sqrt(1e-2/N_rot), c_T = 1.15 log2(1/eps) + 9.2
     nt = r33.intermediates["n_trotter"]
-    for key, n_reg, n_orb in (("prep_al_sd", 1, 6), ("prep_pf", 2, 10), ("prep_jj44", 2, 11),
-                              ("prep_jj55", 2, 16), ("prep_mo_ru", 2, 13.5)):
+    for key, n_reg, n_str in (("prep_al_sd", 1, 12900), ("prep_pf", 2, 82940), ("prep_jj44", 2, 53854),
+                              ("prep_jj55", 2, 216072), ("prep_mo_ru", 2, 114909)):
         for end in (0, 1):
-            n = n_reg * nt[end] * n_orb ** 4
+            n = n_reg * nt[end] * n_str
             eps = math.sqrt(1e-2 / n)
             _is(r33.intermediates[key][end], n * (1.15 * math.log2(1 / eps) + 9.2))
     # inventory values (apply_log/rtol_shared.md)
-    _rng(r33.intermediates["eps_rot_al_sd"], (4.956e-5, 2.478e-5), 1e-3)
-    _rng(r33.intermediates["c_T_al_sd"], (25.646, 26.796), 1e-4)
-    _rng(r33.intermediates["c_T_pf"], (27.916, 29.066), 1e-4)
-    _rng(r33.intermediates["c_T_jj44"], (28.232, 29.382), 1e-4)
-    _rng(rcd.intermediates["c_T_jj55"], (29.475, 30.625), 1e-4)
-    _rng(rcd.intermediates["c_T_mo_ru"], (28.911, 30.061), 1e-4)              # R15: 54 modes (was 31.2-32.4)
-    _rng(rcd.intermediates["c_T_flagship"], (36.643, 39.618), 1e-4)
-    _rng(rcd.intermediates["eps_rot_flagship"], (6.553e-8, 1.091e-8), 1e-3)
+    # re-pinned 2026-11-13 (Pauli-string Trotter step): every c_T rises with the ~3-10x larger rotation count (old values in the comments)
+    _rng(r33.intermediates["eps_rot_al_sd"], (1.5708e-5, 7.854e-6), 1e-3)      # was 4.956e-5 / 2.478e-5
+    _rng(r33.intermediates["c_T_al_sd"], (27.552, 28.702), 1e-4)               # was 25.646 / 26.796
+    _rng(r33.intermediates["c_T_pf"], (29.671, 30.821), 1e-4)                  # was 27.916 / 29.066
+    _rng(r33.intermediates["c_T_jj44"], (29.312, 30.462), 1e-4)                # was 28.232 / 29.382
+    _rng(rcd.intermediates["c_T_jj55"], (30.465, 31.615), 1e-4)                # was 29.475 / 30.625
+    _rng(rcd.intermediates["c_T_mo_ru"], (29.941, 31.091), 1e-4)              # R15: 54 modes; was 28.911 / 30.061
+    _rng(rcd.intermediates["c_T_flagship"], (37.443, 40.279), 1e-4)            # was 36.643 / 39.618
+    _rng(rcd.intermediates["eps_rot_flagship"], (4.046e-8, 7.322e-9), 1e-3)    # was 6.553e-8 / 1.091e-8
     # the 2028 insertion (R13): one query, 254 rotations and 127 Toffolis, its own eps_rot;
     # the R12 sensitivity ends (511/272, 1021/538) are their own circuits too
     r28 = ch3.model(a, "2028")
@@ -194,8 +196,8 @@ def test_rtol_each_band_end_is_its_own_circuit(a, r33, rcd):
         eps = math.sqrt(1e-2 / n_rot)
         _is(r28.intermediates["qsp_reading_t"][end], n_rot * (1.15 * math.log2(1 / eps) + 9.2) + 7 * n_tof)
     # a gap variant is its own circuit: Delta = 4 MeV carries its own eps
-    n = 2 * math.pi * 250 / 0.5 * 16 ** 4
-    _is(ch3.prep_t(a, 2, 16, (4.0, 4.0))[0], n * c.t_per_rotation(c.eps_rot_for(n)))
+    n = 2 * math.pi * 250 / 0.5 * 216072
+    _is(ch3.prep_t(a, 2, 216072, (4.0, 4.0))[0], n * c.t_per_rotation(c.eps_rot_for(n)))
 
 
 def test_c_proj_is_the_declared_working_assumption(a):
@@ -259,16 +261,16 @@ def test_state_prep_horizon(r33):
 
 
 def test_worked_line_27al(r33):
-    # "27Al has N_reg=1, N_orb=6, N_Trotter = 1000pi-4000pi, so eps_rot = 2.5-5.0e-5 and
-    #  c_T = 25.6-26.8, and Eq. gives ~1.0-4.4e8 T"   app11:90 (R-TOL)
+    # 27Al: N_reg=1, 12900 Pauli strings per step, N_Trotter = 1000pi-4000pi -> 1.1-4.7e9 T (R-TOL; re-pinned 2026-11-13 (Pauli-string Trotter step),
+    # was N_orb^4 = 1296 rotations per step and 1.0-4.4e8)
     i = r33.intermediates
     assert i["worked_line"] == i["prep_al_sd"]                    # exact carry (R4)
-    n = (1000 * math.pi * 6 ** 4, 4000 * math.pi * 6 ** 4)
+    n = (1000 * math.pi * 12900, 4000 * math.pi * 12900)
     _is(i["worked_line"][0], n[0] * c.t_per_rotation(c.eps_rot_for(n[0])))
     _is(i["worked_line"][1], n[1] * c.t_per_rotation(c.eps_rot_for(n[1])))
-    _rng(i["worked_line"], (1.044e8, 4.364e8), 1e-3)                                    # app11:139
+    _rng(i["worked_line"], (1.1166e9, 4.6527e9), 1e-3)          # re-pinned 2026-11-13 (Pauli-string Trotter step); was 1.044e8 / 4.364e8
     # the record of what rounding N_Trotter first would give (each end at its own eps)
-    _rng(i["worked_line_round_first"], (1.03e8, 4.52e8), 0.01)
+    _rng(i["worked_line_round_first"], (1.10e9, 4.82e9), 0.01)  # re-pinned 2026-11-13 (Pauli-string Trotter step); was 1.03e8 / 4.52e8
 
 
 # ------------------------------------------------------------- 2028 register
@@ -695,7 +697,7 @@ def test_0nubb_projection_route(a, r33, rcd, tex):
     # each pair's T equals 2 x N_Trotter x N_orb^4 x c_T at that doubled rotation count
     assert i["n_proj_pairs"] == 2 and i["n_registers_pairs"] == 1
     nt = i["n_trotter"]
-    n = 2 * nt[1] * 11 ** 4
+    n = 2 * nt[1] * 53854                                      # jj44 strings per step (was 11^4)
     _is(i["prep_jj44"][1], n * c.t_per_rotation(c.eps_rot_for(n)))
     # the projection readout: 25 (lambda/|M|)^2 runs per element at eps = 0.1
     _is(i["shots_0nubb_per_lambda_over_m_sq"], 25.0)
@@ -747,8 +749,8 @@ def test_2033_heavier_pairs_lq(rcd, tex):
 
 def test_2033_al_sd_cell(r33):
     i = r33.intermediates
-    _rng(i["prep_al_sd"], (1.0e8, 4.4e8), 0.05)                    # "1.0-4.4e8 for 27Al (sd)"
-    _rng(i["fraction_of_envelope_prep"], (0.10, 0.44), 0.05)       # "0.10-0.44x ... on state prep"
+    _rng(i["prep_al_sd"], (1.1e9, 4.7e9), 0.05)                    # "1.1-4.7e9 for 27Al (sd)"; re-pinned 2026-11-13 (Pauli-string Trotter step), was 1.0-4.4e8
+    _rng(i["fraction_of_envelope_prep"], (1.1, 4.7), 0.05)         # "1.1--4.7" in the table; was 0.10-0.44
     # R15 ruling 4: one controlled query, Gamma = 12900 (selection rules) / 49140 (dense), in the prep circuit
     assert i["gamma_ins_sd"] == (12900, 49140)
     lo, hi = i["insertion_sd_counts"]
@@ -756,35 +758,37 @@ def test_2033_al_sd_cell(r33):
     assert (hi["k"], hi["n_rot"], hi["n_toffoli"]) == (16, 2 * 65535, 49139)
     _is(lo["n_rot_circuit"], ch3.survey(ch3.Assumptions())["al_sd"]["n_rot"][0] + 2 * 16383)
     _is(lo["eps_rot"], math.sqrt(1e-2 / lo["n_rot_circuit"]))
-    _rng(i["insertion_sd"], (9.3e5, 3.9e6), 0.02)                  # "9.3e5-3.9e6 T"
-    _rng(i["t_per_shot"], (1.1e8, 4.4e8), 0.05)                    # box "1.1e8-4.4e8 T, prep + insertion"
-    _rng(i["t_per_shot"], (1.0537e8, 4.4036e8), 1e-3)              # R14 1.092e8-4.771e8
-    _rng(i["fraction_of_envelope_total"], (0.11, 0.44), 0.05)      # "= 0.11-0.44x the box"
+    _rng(i["insertion_sd"], (9.9e5, 4.1e6), 0.02)                  # "9.9e5-4.1e6 T"; re-pinned 2026-11-13 (Pauli-string Trotter step), was 9.3e5-3.9e6 (tighter eps_rot)
+    _rng(i["t_per_shot"], (1.1e9, 4.7e9), 0.05)                    # box "1.1e9-4.7e9 T"; was 1.1e8-4.4e8
+    _rng(i["t_per_shot"], (1.11760e9, 4.65696e9), 1e-3)            # was 1.0537e8-4.4036e8 (R14 1.092e8-4.771e8)
+    _rng(i["fraction_of_envelope_total"], (1.1, 4.7), 0.05)        # "1.1-4.7x the 2033 target"; was 0.11-0.44
+    assert r33.hard_ops[1] > 1e9                                   # 2026-11-13: the 27Al headline no longer fits
     assert r33.hard_ops == i["t_per_shot"]
     _is(r33.breakdown_total(), i["t_per_shot"][0])
-    _rng(i["eps_l"], (2.3e-10, 9.5e-10), 0.02)                     # "eps_l required 2.3-9.5e-10"
+    _rng(i["eps_l"], (2.147e-11, 8.948e-11), 1e-3)                   # "2.1-8.9e-11"; re-pinned 2026-11-13 (Pauli-string Trotter step), was 2.3-9.5e-10
     assert r33.epsilon_l == i["eps_l"]
 
 
 
 def test_2033_valence_pairs(r33):
     i = r33.intermediates
-    _rng(i["prep_pf"], (1.754e9, 7.305e9), 1e-3)         # "1.8-7.3e9 for 48Ca/48Ti (pf)"      app11:139
-    _rng(i["prep_jj44"], (2.597e9, 1.081e10), 1e-3)      # "2.6e9-1.1e10 for 76Ge/76Se"        app11:139
-    _rng(i["multiple_pf"], (1.8, 7.3), 0.03)             # "x1.8-7.3 for 48Ca/48Ti"            app11:147
-    _rng(i["multiple_jj44"], (2.6, 11), 0.03)            # "x2.6-11 for 76Ge/76Se and 82Se/82Kr"
-    _rng(i["near_miss_multiple"], (1.8, 7.3), 0.03)      # R16: pf alone, box near-miss row    app11:45,217
+    # re-pinned 2026-11-13 (Pauli-string Trotter step): pf 82940 and jj44 53854 strings per step (pf now above jj44); old values in comments
+    _rng(i["prep_pf"], (1.5462e10, 6.4246e10), 1e-3)     # "1.5-6.4e10 (pf)"; was 1.754e9-7.305e9
+    _rng(i["prep_jj44"], (9.9185e9, 4.1231e10), 1e-3)    # "9.9e9-4.1e10 (jj44)"; was 2.597e9-1.081e10
+    _rng(i["multiple_pf"], (15.5, 64), 0.03)             # "x15-64"; was x1.8-7.3
+    _rng(i["multiple_jj44"], (9.9, 41), 0.03)            # "x9.9-41"; was x2.6-11
+    _rng(i["near_miss_multiple"], (15.5, 64), 0.03)      # R16: pf alone (now a co-design row); was 1.8-7.3
     assert i["near_miss_multiple"] == i["multiple_pf"]
     assert i["codesign_multiple_jj44"] == i["multiple_jj44"]   # R16: jj44 relabelled co-design
-    _rng(i["eps_l_pf_jj44"], (9.2e-12, 5.7e-11), 0.02)   # "9.2e-12-5.7e-11 (pf/jj44)"         app11:240
+    _rng(i["eps_l_pf_jj44"], (1.56e-12, 1.01e-11), 0.02) # "1.6e-12-1.0e-11 (pf/jj44)"; re-pinned 2026-11-13 (Pauli-string Trotter step), band over both pairs, was 9.2e-12-5.7e-11
     assert i["multiple_pf"][0] > 1                        # "one cell fits across its full band and the rest exceed it"
     # the pair carries "the same factor of two" as the others (same N_rot per register, doubled)
-    n = i["n_trotter"][0] * 10 ** 4
+    n = i["n_trotter"][0] * 82940
     _is(i["prep_pf"][0], 2 * n * c.t_per_rotation(c.eps_rot_for(2 * n)))
-    # the exact products, each end at its own eps: 7.305e9 and 1.0812e10, printed 7.3e9 / 1.1e10
-    n = 2 * 4000 * math.pi * 11 ** 4
+    # the exact products, each end at its own eps: 6.4246e10 and 4.1231e10, printed 6.4e10 / 4.1e10 (were 7.3e9 / 1.1e10)
+    n = 2 * 4000 * math.pi * 53854
     _is(i["prep_jj44"][1], n * c.t_per_rotation(c.eps_rot_for(n)))
-    assert ch3.round_sig(i["prep_pf"][1]) == 7.3e9 and ch3.round_sig(i["prep_jj44"][1]) == 1.1e10
+    assert ch3.round_sig(i["prep_pf"][1]) == 6.4e10 and ch3.round_sig(i["prep_jj44"][1]) == 4.1e10
 
 
 def test_2033_jj44_with_insertion_crosses_ten(r33):
@@ -807,16 +811,17 @@ def test_2033_operator_insertion_is_subdominant(r33):
     assert i["gamma_ins_jj44"] == (16 * 2501, 16 * 53361) == (40016, 853776)
     lo = i["insertion_jj44_counts"][0]
     assert (lo["k"], lo["n_rot"], lo["n_toffoli"]) == (16, 2 * 65535, 40015)
-    _rng(i["insertion_jj44"], (3.98e6, 4.13e6), 1e-3)            # "4.0-4.1e6 T"
-    _rng(i["insertion_jj44_dense"], (6.52e7, 6.76e7), 1e-3)      # "6.5-6.8e7 T"
+    _rng(i["insertion_jj44"], (4.122e6, 4.273e6), 1e-3)          # re-pinned 2026-11-13 (Pauli-string Trotter step): tighter eps_rot; was 3.98e6-4.13e6
+    _rng(i["insertion_jj44_dense"], (6.746e7, 6.986e7), 1e-3)    # was 6.52e7-6.76e7
     assert i["insertion_fraction_of_jj44_prep"][1] < 0.05        # "sub-dominant but not zero"
     assert i["insertion_sd"][1] < i["prep_al_sd"][0]
-    lo, hi = i["insertion_fraction_of_jj44_prep"]                # "0.04-0.2% of the jj44 pair preparation"
-    assert (ch3.round_sig(100 * lo, 1), ch3.round_sig(100 * hi, 1)) == (0.04, 0.2)
-    lo, hi = i["insertion_fraction_near_miss"]                   # box "(the insertion adds 0.06-0.2%)", pf alone (R16)
-    assert (ch3.round_sig(100 * lo, 1), ch3.round_sig(100 * hi, 1)) == (0.06, 0.2)
-    lo, hi = i["insertion_fraction_pf_jj44"]                     # main-overview:71 "all but 0.04-0.2%"
-    assert (ch3.round_sig(100 * lo, 1), ch3.round_sig(100 * hi, 1)) == (0.04, 0.2)
+    # re-pinned 2026-11-13 (Pauli-string Trotter step): the shares fall with the larger preparation (old values in comments)
+    lo, hi = i["insertion_fraction_of_jj44_prep"]                # "0.01-0.04% of the pair preparation" (was 0.04-0.2%)
+    assert (ch3.round_sig(100 * lo, 1), ch3.round_sig(100 * hi, 1)) == (0.01, 0.04)
+    lo, hi = i["insertion_fraction_near_miss"]                   # pf alone (R16), not printed (was 0.06-0.2%)
+    assert (ch3.round_sig(100 * lo, 1), ch3.round_sig(100 * hi, 1)) == (0.007, 0.03)
+    lo, hi = i["insertion_fraction_pf_jj44"]                     # main-overview "all but 0.007-0.04%" (was 0.04-0.2%)
+    assert (ch3.round_sig(100 * lo, 1), ch3.round_sig(100 * hi, 1)) == (0.007, 0.04)
     # the other pairs (not printed): pf 62208, jj55 158592, Mo/Ru 78176 strings
     ins = i["insertions"]
     assert (ins["pf"]["gamma"]["gamma"], ins["jj55"]["gamma"]["gamma"], ins["mo_ru"]["gamma"]["gamma"]) == \
@@ -827,23 +832,32 @@ def test_2033_operator_insertion_is_subdominant(r33):
 
 def test_2033_jj55_codesign_pairs(r33):
     i = r33.intermediates
-    _rng(i["multiple_jj55"], (12, 50), 0.02)                 # "exceed the envelope by x12-50"      app11:150
-    _rng(i["multiple_jj55_large_gap"], (6, 12), 0.02)        # "still by x6-12 at ... Delta = 4 MeV"
-    n = 2 * (math.pi * 250 / 0.5) * 16 ** 4
-    _is(i["multiple_jj55_large_gap"][0], n * c.t_per_rotation(c.eps_rot_for(n)) / 1e9)   # 5.95 exact
-    _rng(i["eps_l_jj55"], (2.0e-12, 8.2e-12), 0.03)          # "2.0-8.2e-12 (jj55)"                 app11:240
+    # re-pinned 2026-11-13 (Pauli-string Trotter step): 216072 strings per step (old values in comments)
+    _rng(i["multiple_jj55"], (41.4, 172), 0.02)              # "x41-170"; was x12-50
+    _rng(i["multiple_jj55_large_gap"], (20.3, 41.4), 0.02)   # "x20-41 at Delta = 4 MeV"; was x6-12
+    n = 2 * (math.pi * 250 / 0.5) * 216072
+    _is(i["multiple_jj55_large_gap"][0], n * c.t_per_rotation(c.eps_rot_for(n)) / 1e9)   # 20.29 exact (was 5.95)
+    _rng(i["eps_l_jj55"], (5.82e-13, 2.42e-12), 0.03)        # "5.8e-13-2.4e-12 (jj55)"; was 2.0-8.2e-12
 
 
 def test_2033_mo_ru_generic_gap(r33):
-    # R15 ruling 3: 54 modes, N_orb^4 = 13.5^4 = 27^4 / 16
+    # R15 ruling 3: 54 modes; re-pinned 2026-11-13 (Pauli-string Trotter step): 114909 strings per step (was 13.5^4 = 33215 rotations)
     i = r33.intermediates
-    _rng(i["multiple_mo_ru"], (6.0, 25), 0.02)                # "x6-25 over the envelope at the generic gap band"
-    _rng(i["codesign_multiple"], (12, 50), 0.02)              # box co-design row, jj55 alone: "x12-50"
-    _rng(i["multiple_mo_ru_large_gap"], (3.0, 6.0), 0.02)     # "x3-6 for a large gap"
+    _rng(i["multiple_mo_ru"], (21.6, 90), 0.02)               # "x22-90 at the generic gap band"; was x6-25
+    _rng(i["codesign_multiple"], (41.4, 172), 0.02)           # jj55 alone: "x41-170"; was x12-50
+    _rng(i["multiple_mo_ru_large_gap"], (10.6, 21.6), 0.02)   # "x11-22 for a large gap"; was x3-6
     assert i["multiple_mo_ru"][1] < i["multiple_jj55"][1]                       # cheaper than a jj55 pair
-    assert i["multiple_mo_ru_large_gap"][1] < i["near_miss_multiple"][1]        # large gap: a near miss
-    assert i["multiple_mo_ru"][0] < 10 < i["multiple_mo_ru"][1]                 # straddles the ~10x line
-    _rng(ch3.prep_t(a_default(), 2, 13.5, (4.0, 4.0)), (2.957e9, 6.034e9), 1e-3)
+    assert i["multiple_mo_ru_large_gap"][1] < i["near_miss_multiple"][1]        # large gap below the pf band
+    assert i["multiple_mo_ru_large_gap"][0] > 10                                # 2026-11-13: co-design at every gap (was a near miss at 4 MeV, and straddled 10x at the generic band)
+    _rng(ch3.prep_t(a_default(), 2, 114909, (4.0, 4.0)), (1.0601e10, 2.1617e10), 1e-3)   # was 2.957e9-6.034e9
+    # 2026-11-13 ruling (2): the measured 0+ gaps, ENSDF 0.695 (100Mo) and 1.130 MeV (100Ru), each projection at its
+    # own gap: x51-100 (the chapter printed x14-29, which the N_orb^4 step reproduced: 14.36-29.28)
+    assert i["gaps_mo_ru_measured"] == (0.695, 1.130)
+    _rng(i["multiple_mo_ru_measured_gaps"], (51.408, 104.745), 1e-3)
+    assert ch3.print_range(i["multiple_mo_ru_measured_gaps"]) == "51--100"
+    for e, cp in ((0, math.pi), (1, 2 * math.pi)):
+        n = cp * (1e3 / 0.695 + 1e3 / 1.130) / 0.5 * 114909
+        _is(i["prep_mo_ru_measured_gaps"][e], n * c.t_per_rotation(c.eps_rot_for(n)))
 
 
 
@@ -852,11 +866,11 @@ def a_default():
 
 
 def test_2033_mo_ru_small_gap(r33):
-    # "x25-51 at a Delta = 0.5 MeV small-gap end" (box "up to x51"); R11 (A) Stated gap
+    # "x90-180 at a Delta = 0.5 MeV small-gap end"; R11 (A) Stated gap; re-pinned 2026-11-13 (Pauli-string Trotter step), was x25-51
     i = r33.intermediates
-    _rng(i["multiple_mo_ru_small_gap"], (25.1, 51.1), 0.01)
+    _rng(i["multiple_mo_ru_small_gap"], (89.79, 182.9), 0.01)
     assert i["multiple_mo_ru_small_gap"][0] > 10                  # small gap: co-design
-    _rng(i["eps_l_mo_ru"], (4.0e-12, 1.7e-11), 0.03)          # "4.0e-12-1.7e-11 (100Mo/Ru)"; re-pinned 2026-11-09 (referee cards, REF-ch3-ch4-18)
+    _rng(i["eps_l_mo_ru"], (1.11e-12, 4.63e-12), 0.03)        # "1.1-4.6e-12 (100Mo/Ru)"; re-pinned 2026-11-13 (Pauli-string Trotter step), was 4.0e-12-1.7e-11
 
 
 
@@ -864,15 +878,17 @@ def test_2033_prep_lever(r33):
     i = r33.intermediates
     # "A preparation algorithm that improves ... by a factor of ten ... the top of the jj44 band ...
     #  sits just over it, by about 1%"  app11:163. The x10 shorter circuit gets its own eps (R-TOL).
-    n = 2 * 4000 * math.pi / 10 * 11 ** 4
+    n = 2 * 4000 * math.pi / 10 * 53854
     _is(i["jj44_worst_after_lever"], n * c.t_per_rotation(c.eps_rot_for(n)) / 1e9)
-    assert 1 < i["jj44_worst_after_lever"] < 1.02                     # just over (was 0.99 at c_T = 27)
-    assert ch3.round_sig(100 * (i["jj44_worst_after_lever"] - 1), 1) == 1   # "by about 1%", two-figure rule kept
-    assert i["jj44_worst_after_lever"] - 1 > 0.003                    # outside the ~0.3% overshoot ruling: an overrun
+    # re-pinned 2026-11-13 (Pauli-string Trotter step): the jj44 top after the lever is 3.86x (was 1.01x, "by about 1%"); the chapter now quotes 27Al and pf
+    assert 3.8 < i["jj44_worst_after_lever"] < 3.9
     assert i["jj44_worst_after_lever"] < i["multiple_jj44"][1] / 10   # "slightly more than that factor"
-    # "The 100Mo estimate would fall to 0.28-4.8 times the limit ... (0.56-2.4 at the generic band)" (R15)
-    _rng(i["mo_ru_after_lever"], (0.2758, 4.796), 1e-3)
-    _rng(i["mo_ru_after_lever_generic"], (0.5635, 2.350), 1e-3)
+    al = ch3.survey(a_default())["al_sd"]["multiple_after_lever"]       # "0.10-0.43 times the 2033 target"
+    _rng(al, (0.10392, 0.43431), 1e-3)
+    _rng(i["pf_after_lever"], (1.4, 6.0), 0.05)                      # "1.4-6 times"; was 0.16-0.68
+    # the 100Mo lever (not printed since the cut pass): 0.99-17 (was 0.28-4.8), generic 2.0-8.4 (was 0.56-2.4)
+    _rng(i["mo_ru_after_lever"], (0.99115, 17.187), 1e-3)
+    _rng(i["mo_ru_after_lever_generic"], (2.0238, 8.4274), 1e-3)
 
 
 def test_2033_shots_wall_time_campaign(r33):
@@ -892,8 +908,8 @@ def test_2033_shots_wall_time_campaign(r33):
     assert i["shots_box_reading_pre_r11"] == (2000, 8000)   # the retired "~2-8e3" = (100-400) x 20
     assert i["survey_elements_sum"] == 21                   # 6 + 5x3, quoted as "~20"
     assert 42 <= i["subroutine_calls"][0] <= 50 <= i["subroutine_calls"][1] <= 63   # "~50"
-    # 1 us per T-gate on 1.054e8-4.404e8 T -> 105.4-440.4 s: "~1.8-7.3 min"
-    assert round(i["t_shot_s"][0] / 60, 1) == 1.8 and round(i["t_shot_s"][1] / 60, 1) == 7.3
+    # 1 us per T-gate on 1.118e9-4.657e9 T -> 1118-4657 s: "~19-78 min" (re-pinned 2026-11-13 (Pauli-string Trotter step); was 1.8-7.3 min)
+    assert round(i["t_shot_s"][0] / 60) == 19 and round(i["t_shot_s"][1] / 60) == 78
     _rng(i["t_shot_s"], (r33.hard_ops[0] / 1e6 + 1e-4, r33.hard_ops[1] / 1e6 + 1e-4), 1e-12)   # r25 + 0.1 ms
     # pre-r25 record: six categories at the dipole factor, 2-3 scans (8.5 d-1.8 mo)
     _rng(i["wall_time_s_pre_r25"], (4800 * f * i["t_shot_s"][0], 7200 * f * i["t_shot_s"][1]), 1e-12)
@@ -928,8 +944,9 @@ def test_2033_shots_as_printed(a, r33, tex):
     # style pass 2026-10-08: box rows hold quantity and value only (rule 10); numbers unchanged
     assert ("$4.9\\times 10^{3}$ per Hamiltonian; "
             "$9.8\\times 10^{3}$--$1.5\\times 10^{4}$ over the $2$--$3$ VS-IMSRG Hamiltonians") in tex
-    assert "$\\sim 1.8$--$7.3$ min per shot" in tex and "T-depth & $8.9\\times 10^{6}$--$3.7\\times 10^{7}$" in tex
-    assert "Flagship $^{27}$Al & $e_{\\max}{=}8$--$10$: $\\approx 700$--$1100$ system qubits, $\\times 8.5\\times 10^{4}$--$3.3\\times 10^{6}$ the 2033 target" in tex   # re-pinned 2026-11-12 (batch 6): the box row says 'system qubits', was 'LQ'; box row; multiple_flagship is in retired
+    assert "$\\sim 19$--$78$ min per shot" in tex and "T-depth & $9.3\\times 10^{7}$--$3.9\\times 10^{8}$" in tex   # re-pinned 2026-11-13
+    assert ch3.printed(a)["t_shot_min_2033:box"] in tex
+    assert "Flagship $^{27}$Al & $e_{\\max}{=}8$--$10$: $\\approx 700$--$1100$ system qubits, $\\times 2.3\\times 10^{5}$--$7.5\\times 10^{6}$ the 2033 target" in tex   # re-pinned 2026-11-12 (batch 6): the box row says 'system qubits', was 'LQ'; box row; multiple_flagship is in retired
     assert "(all six categories at the dipole's shot factor)" not in tex and "estimand;" not in tex
     assert "per basis scan" not in tex
     assert "2$--$8\\times 10^{3}$ across the survey" not in tex
@@ -941,36 +958,37 @@ def test_2033_tiers_depth_and_walls(a, r33, tex):
     i = r33.intermediates
     day, month, yr = 86400, ch3.YEAR_S / 12, ch3.YEAR_S
     assert a.trotter_concurrency.value == 12
-    # T-depth = N_rot c_T / G + insertion tail; G = 1 returns the T-count; factory.json G = 10: 1.07e7-4.5e7
+    # T-depth = N_rot c_T / G + insertion tail; G = 1 returns the T-count; G = 10: 1.12e8-4.66e8 (re-pinned 2026-11-13 (Pauli-string Trotter step); old in comments)
     _rng(i["t_depth_gate_by_gate"], r33.hard_ops, 1e-9)
-    assert tuple(ch3.round_sig(x, 3) for x in i["t_depth_g10"]) == (1.07e7, 4.46e7)
-    assert tuple(ch3.round_sig(x) for x in i["t_depth_per_shot"]) == (8.9e6, 3.7e7)
-    assert all(11.7 < f < 11.9 for f in i["f_star_per_end"])         # >= 10: the baseline holds
+    assert tuple(ch3.round_sig(x, 3) for x in i["t_depth_g10"]) == (1.12e8, 4.66e8)      # was 1.07e7, 4.46e7
+    assert tuple(ch3.round_sig(x) for x in i["t_depth_per_shot"]) == (9.3e7, 3.9e8)     # was 8.9e6, 3.7e7
+    assert all(11.9 < f < 12.0 for f in i["f_star_per_end"])         # >= 10: the baseline holds (was 11.7-11.9)
     # walls: shots x (max(N_T t_g, D_T t_r) + 0.1 ms); here the T supply binds
     for key, shots in (("wall_first_result_s", i["shots_first_result"]), ("wall_campaign_s", i["shots_campaign"])):
         _rng(i[key], (shots[0] * i["t_shot_s"][0], shots[1] * i["t_shot_s"][1]), 1e-12)
-    assert (round(i["wall_first_result_s"][0] / day, 1), round(i["wall_first_result_s"][1] / day)) == (6.0, 25)
-    assert round(i["wall_campaign_s"][0] / day) == 12 and round(i["wall_campaign_s"][1] / month, 1) == 2.5
-    assert round(100 * i["wall_fraction_of_horizon"][1], 1) == 4.1 and i["wall_fits_horizon_on_one_machine"]
-    # gate by gate (G = 1): campaign floor 120 d - 2.1 yr (was 135 d - 3.0 yr at the audit's shots)
-    assert round(i["floor_wall_gate_by_gate_s"][0] / day) == 120
-    assert round(i["floor_wall_gate_by_gate_s"][1] / yr, 1) == 2.1
+    # re-pinned 2026-11-13 (Pauli-string Trotter step): walls x~10 (old values in comments)
+    assert (round(i["wall_first_result_s"][0] / day), round(i["wall_first_result_s"][1] / day, -1)) == (63, 260)   # was 6.0, 25
+    assert round(i["wall_campaign_s"][0] / day, -1) == 130 and round(i["wall_campaign_s"][1] / yr, 1) == 2.2     # was 12 d, 2.5 mo
+    assert round(100 * i["wall_fraction_of_horizon"][1]) == 43 and i["wall_fits_horizon_on_one_machine"]       # was 4.1
+    # gate by gate (G = 1): campaign floor 3.5-22 yr (was 120 d - 2.1 yr)
+    assert round(i["floor_wall_gate_by_gate_s"][0] / yr, 1) == 3.5
+    assert round(i["floor_wall_gate_by_gate_s"][1] / yr) == 22
     # the p sensitivity band (0.1-0.9) is retired now that p is computed; R1's generic 30% on SD: 136 shots, 4.0-17 h
     assert "wall_campaign_p_band_s" not in i and not hasattr(a, "projection_success_band")
     assert tuple(round(x) for x in i["shots_first_result_at_30pct"]) == (136, 136)
-    assert round(i["wall_first_result_at_30pct_s"][0] / 3600, 1) == 4.0
-    assert round(i["wall_first_result_at_30pct_s"][1] / 3600) == 17
+    assert round(i["wall_first_result_at_30pct_s"][0] / 3600) == 42      # re-pinned 2026-11-13; was 4.0 h
+    assert round(i["wall_first_result_at_30pct_s"][1] / 3600) == 176     # was 17 h
     # exports (campaign run), via common.depth_exports
     ex = c.depth_exports(r33.hard_ops, i["t_depth_per_shot"], i["shots_campaign"], a.t_gate_s, a.shot_overhead_s)
     for k in ("t_depth_per_shot", "f_star", "floor_wall_s", "factories_for_1yr"):
         assert i[k] == ex[k], k
-    assert tuple(round(x, 2) for x in i["factories_for_1yr"]) == (0.33, 2.05)
+    assert tuple(round(x, 2) for x in i["factories_for_1yr"]) == (3.47, 21.70)    # re-pinned 2026-11-13; was 0.33, 2.05
     if tex is None:
         pytest.skip("chapter .tex not on disk")
-    for frag in ("one Hamiltonian, $5\\%$ on the spin-dependent element: $\\approx 6.0$--$25$ days on one machine",
-                 "$\\approx 12$ days--$2.5$ months on one machine ($2$--$3$ scans)",   # referee M2: SD element only
-                 "takes at most $4.1\\%$ of the five-year window on one machine",     # style pass: rule 7 wording
-                 "no number of factories brings the campaign below $120$ days to $2.1$ years"):   # the p band and the 30% alternative are cut
+    for frag in ("one Hamiltonian, $5\\%$ on the spin-dependent element: $\\approx 63$--$260$ days on one machine",
+                 "$\\approx 130$ days--$2.2$ years on one machine ($2$--$3$ scans)",   # referee M2: SD element only
+                 "takes at most $43\\%$ of the five-year window on one machine",     # style pass: rule 7 wording
+                 "no number of factories brings the campaign below $3.5$--$22$ years"):   # re-pinned 2026-11-13
         assert frag in tex, frag
     assert "8.5$ days" not in tex and "$2.9\\%$" not in tex
 
@@ -987,33 +1005,34 @@ def test_simplified_0nubb_rows(a, r33, tex):
     # 20-40 d; kept as t_at_ensdf_gaps)
     assert b["gaps"] == (6.100132, 3.684720) and apf["gaps"] == (5.174846, 4.264629)
     _rng(b["n_trotter"], (2735.2, 5470.4), 1e-4)
-    _rng(b["t"], (9.098e7, 1.856e8), 2e-3)
-    _rng(b["t_at_ensdf_gaps"], (1.194e8, 2.436e8), 2e-3)
-    assert round(b["shots"][0]) == 109766 and round(b["wall_s"][0] / day) == 116 and round(b["wall_s"][1] / day) == 236   # KB3G 2026-10-12 (were 14262, 15-31 d)
-    _rng(bp["t"], (6.753e8, 9.582e8), 2e-3)                     # were 4.399-7.200e8 (toy lambda/|M| 164)
+    # re-pinned 2026-11-13 (Pauli-string Trotter step): f7p3 9620, f7p3p1 18230, pf 82940 strings per step (old values in comments)
+    _rng(b["t"], (7.1604e8, 1.4618e9), 2e-3)                    # was 9.098e7-1.856e8
+    _rng(b["t_at_ensdf_gaps"], (9.403e8, 1.9194e9), 2e-3)       # was 1.194e8-2.436e8
+    assert round(b["shots"][0]) == 109766 and round(b["wall_s"][0] / yr, 1) == 2.5 and round(b["wall_s"][1] / yr, 1) == 5.1   # was 116-236 d
+    _rng(bp["t"], (3.5412e9, 5.7959e9), 2e-3)                   # was 6.753e8-9.582e8
     assert round(bp["n_qdrift"][0], -4) == 9.79e6                   # was 1.33e6
     # E29 (verifier, R10): the qDRIFT samples run one at a time, D_T = N_trot c_T / 12 + N_q c_T
     for r_ in (b, bp, h):
         for e in (0, 1):
             assert r_["wall_s"][e] >= r_["wall_t_supply_s"][e] * (1 - 1e-12)
             assert r_["f_star_per_end"][e] == pytest.approx(r_["t"][e] / r_["t_depth"][e])
-    _rng(bp["t_depth"], (3.0e8, 3.26e8), 1e-2)
-    assert (round(bp["f_star_per_end"][0], 1), round(bp["f_star_per_end"][1], 1)) == (2.3, 2.9)   # were 6.4, 7.7
-    assert (round(bp["wall_s"][0] / day, 1), round(bp["wall_s"][1] / day)) == (8.7, 38)          # were 2.0, 11
-    assert (round(bp["wall_t_supply_s"][0] / day, 1), round(bp["wall_t_supply_s"][1] / day, 1)) == (2.0, 11.1)
-    _rng(h["t"], (4.593e9, 5.834e9), 2e-3)                     # were 2.267-3.716e9 (toy 600-720)
-    _rng(h["t_depth"], (2.94e9, 3.06e9), 1e-2)
-    assert (round(h["f_star_per_end"][0], 1), round(h["f_star_per_end"][1], 1)) == (1.6, 1.9)
-    assert (round(h["wall_s"][0] / day), round(h["wall_s"][1] / day, -1)) == (85, 350)          # were 19, 110
+    _rng(bp["t_depth"], (5.507e8, 7.422e8), 1e-2)                                                  # was 3.0e8-3.26e8
+    assert (round(bp["f_star_per_end"][0], 1), round(bp["f_star_per_end"][1], 1)) == (6.4, 7.8)   # was 2.3, 2.9
+    assert (round(bp["wall_s"][0] / day), round(bp["wall_s"][1] / day)) == (16, 86)              # was 8.7, 38
+    assert (round(bp["wall_t_supply_s"][0] / day, 1), round(bp["wall_t_supply_s"][1] / day, 1)) == (10.2, 67.1)   # was 2.0, 11.1
+    _rng(h["t"], (1.8436e10, 2.9150e10), 2e-3)                 # was 4.593e9-5.834e9
+    _rng(h["t_depth"], (4.194e9, 5.120e9), 1e-2)              # was 2.94e9-3.06e9
+    assert (round(h["f_star_per_end"][0], 1), round(h["f_star_per_end"][1], 1)) == (4.4, 5.7)     # was 1.6, 1.9
+    assert (round(h["wall_s"][0] / day), round(h["wall_s"][1] / day, -1)) == (121, 590)          # was 85, 350
     assert b["f_star_per_end"][0] > 10 and b["wall_s"] == b["wall_t_supply_s"]   # 12 in flight, F* ~ 12
-    _rng(b["eps_l"], (5.39e-10, 1.10e-9), 1e-2)
-    _rng(bp["eps_l"], (1.04e-10, 1.48e-10), 2e-2)
-    _rng(h["eps_l"], (1.71e-11, 2.18e-11), 1e-2)
-    assert 1.5 < h["multiple"][0] and h["multiple"][1] < 10        # a near miss, not co-design
-    _rng(apf["t"], (7.354e8, 1.498e9), 2e-3)
-    _rng(apf["t_at_ensdf_gaps"], (9.821e8, 2.001e9), 2e-3)
+    _rng(b["eps_l"], (6.84e-11, 1.397e-10), 1e-2)                 # was 5.39e-10-1.10e-9
+    _rng(bp["eps_l"], (1.725e-11, 2.824e-11), 2e-2)               # was 1.04e-10-1.48e-10
+    _rng(h["eps_l"], (3.43e-12, 5.42e-12), 1e-2)                  # was 1.71e-11-2.18e-11
+    assert 10 < h["multiple"][0] and h["multiple"][1] < 30        # 2026-11-13: x18-29, co-design (was a near miss)
+    _rng(apf["t"], (6.4609e9, 1.31739e10), 2e-3)                  # was 7.354e8-1.498e9
+    _rng(apf["t_at_ensdf_gaps"], (8.6346e9, 1.76049e10), 2e-3)    # was 9.821e8-2.001e9
     assert round(apf["shots_lower_bound"][0]) == 5474656 and apf["shots_lower_bound"][0] == apf["shots_lower_bound"][1]   # KB3G lambda/|M| 1404 (was 1.0-1.44e6 at 600-720)
-    assert (round(apf["wall_s"][0] / yr), round(apf["wall_s"][1] / yr)) == (128, 260)                     # were 23, 68
+    assert (round(apf["wall_s"][0] / yr, -2), round(apf["wall_s"][1] / yr, -2)) == (1100, 2300)        # re-pinned 2026-11-13; were 128, 260
     assert all(g < e for g, e in zip(bp["projection_gaps"], (6.100132, 3.684720)))   # p1/2 lowers both gaps
     if tex is None:
         pytest.skip("chapter .tex not on disk")
@@ -1021,10 +1040,10 @@ def test_simplified_0nubb_rows(a, r33, tex):
     # follow the vocabulary of rule 12 (readout -> estimate, resonant drive -> resonant transition); numbers unchanged
     for frag in ("are $5.17$ and $4.26$ MeV, against the measured $4.28$ and $3.00$ MeV~\\cite{ENSDF}",
                  "so KB3G is the conservative choice", "\\cite{arxiv_nucl-th_0012077}",
-                 "$74$--$174$ LQ, $0.91$--$1.9\\times 10^{8}$ T, projection estimate: $120$--$240$ days",
-                 "($\\times 0.74$--$1.5$ at the model $0^+$ gaps)",
+                 "$74$--$174$ LQ, $0.72$--$1.5\\times 10^{9}$ T, projection estimate: $2.5$--$5.1$ years",   # re-pinned 2026-11-13
+                 "($\\times 6.5$--$13$ at the model $0^+$ gaps)",
                  "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$",
-                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$ and thus $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ shots, or $130$--$260$ years",
+                 "$\\lambda/|M|\\approx 1.4\\times 10^{3}$ and thus $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ shots, or $1100$--$2300$ years",
                  "With per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
                  "We take the daughter projection at the parent's cost, which a smaller daughter gap raises in proportion to $1/\\Delta$"):
         assert frag in tex, frag
@@ -1054,8 +1073,8 @@ def test_single_machine_serial_campaign(a, r28, r33, tex):
     _is(ch3.YEAR_S, 365.25 * 86400)
     _is(i["campaign_horizon_s"], 5 * 365.25 * 86400)
     _rng(i["wall_fraction_of_horizon"], _div(r33.wall_time_s, i["campaign_horizon_s"]), 1e-12)
-    assert tuple(ch3.round_sig(100 * x) for x in i["wall_fraction_of_horizon"]) == (0.65, 4.1)
-    assert tuple(ch3.round_sig(100 * x) for x in i["wall_fraction_of_horizon_pre_r25"]) == (0.47, 2.9)   # record
+    assert tuple(ch3.round_sig(100 * x) for x in i["wall_fraction_of_horizon"]) == (6.9, 43)    # re-pinned 2026-11-13; was 0.65, 4.1
+    assert tuple(ch3.round_sig(100 * x) for x in i["wall_fraction_of_horizon_pre_r25"]) == (4.9, 31)   # record; was 0.47, 2.9
     assert i["wall_fits_horizon_on_one_machine"] is True and r33.wall_time_s[1] < i["campaign_horizon_s"]
     with pytest.raises(ValueError, match="campaign_horizon_yr"):
         ch3.Assumptions(campaign_horizon_yr=c.Stated((5, 10), "x"))
@@ -1089,11 +1108,12 @@ def test_2033_external_comparison_is_cited_not_derived(a, r33):
 def test_codesign_emax3(rcd):
     i = rcd.intermediates
     assert i["register_emax3"] == 80                        # "approximately 80 system qubits"    app11:152
-    _rng(i["t_emax3"], (1.49e10, 6.19e10), 0.005)           # "1.5-6.2e10 T operations" (1.490e10 exact)
-    _rng(i["multiple_emax3"], (15, 62), 0.01)               # "exceeding the limit by a factor of 15-62"
-    n = 4000 * math.pi * 20 ** 4
-    _is(i["t_emax3"][1], n * c.t_per_rotation(c.eps_rot_for(n)))     # exact 6.19e10
-    assert ch3.round_sig(i["t_emax3"][1]) == 6.2e10
+    # re-pinned 2026-11-13: 767264 strings per step at e_max = 3 (was 20^4 = 160000)
+    _rng(i["t_emax3"], (7.458e10, 3.094e11), 0.005)         # was 1.49e10-6.19e10
+    _rng(i["multiple_emax3"], (74.6, 309), 0.01)            # "x75-310"; was 15-62
+    n = 4000 * math.pi * 767264
+    _is(i["t_emax3"][1], n * c.t_per_rotation(c.eps_rot_for(n)))     # exact 3.094e11
+    assert ch3.round_sig(i["t_emax3"][1]) == 3.1e11
 
 
 def test_codesign_emax4(rcd):
@@ -1101,8 +1121,8 @@ def test_codesign_emax4(rcd):
     # (x127-509 at c_T = 27; the older "150-600" was the e_max=3 pair scaled with N_orb = 36.)
     i = rcd.intermediates
     assert i["ho_orbitals"][4] == 35
-    _rng(i["multiple_emax4"], (148.5, 615.6), 0.005)
-    assert (ch3.round_sig(i["multiple_emax4"][0]), ch3.round_sig(i["multiple_emax4"][1])) == (150, 620)
+    _rng(i["multiple_emax4"], (634.68, 2628.06), 0.005)     # re-pinned 2026-11-13 (6183358 strings); was 148.5-615.6
+    assert (ch3.round_sig(i["multiple_emax4"][0]), ch3.round_sig(i["multiple_emax4"][1])) == (630, 2600)
 
 
 def test_codesign_flagship(rcd):
@@ -1112,12 +1132,13 @@ def test_codesign_flagship(rcd):
     assert i["lq_with_ancilla"] == (710, 1294)              # + N_anc 50-150
     assert i["fits_1000_lq_emax8"] and i["fits_1000_lq_emax8_with_ancilla"]   # 660 / 710 fit
     assert not i["fits_1000_lq_emax10"]                     # 1144 does not
-    _rng(i["t_flagship"], (8.532e13, 3.331e15), 1e-3)       # "8.5e13-3.3e15 T operations per state preparation"
-    n = 4000 * math.pi * 286 ** 4
-    _is(i["t_flagship"][1], n * c.t_per_rotation(c.eps_rot_for(n)))   # exact 3.331e15 at 39.62 T/rot
-    assert ch3.round_sig(i["t_flagship"][1]) == 3.3e15
-    _rng(i["multiple_flagship"], (8.5e4, 3.3e6), 0.01)      # "x8.5e4-3.3e6"                     app11:152,215
-    _rng(i["eps_l_flagship"], (3e-17, 1e-15), 0.25)        # "3e-17-1e-15 (flagship)", one figure  app11:240
+    # re-pinned 2026-11-13: e_max = 8 / 10 carry 1944122242 / 14842974100 strings per step (were 165^4 / 286^4)
+    _rng(i["t_flagship"], (2.2869e14, 7.5129e15), 1e-3)     # "2.3e14-7.5e15"; was 8.532e13-3.331e15
+    n = 4000 * math.pi * 14842974100
+    _is(i["t_flagship"][1], n * c.t_per_rotation(c.eps_rot_for(n)))   # exact 7.513e15 at 40.28 T/rot
+    assert ch3.round_sig(i["t_flagship"][1]) == 7.5e15
+    _rng(i["multiple_flagship"], (2.29e5, 7.51e6), 0.01)    # "x2.3e5-7.5e6"; was 8.5e4-3.3e6
+    _rng(i["eps_l_flagship"], (1e-17, 4e-16), 0.25)         # "1e-17-4e-16 (flagship)", one figure; was 3e-17-1e-15
     assert rcd.hard_ops == i["t_flagship"]
     _is(rcd.breakdown_total(), i["t_flagship"][0])
 
@@ -1156,12 +1177,13 @@ def test_all_cells_share_one_formula(a, r33, rcd):
 
     def f(n):          # N_rot x c_T(N_rot), R-TOL
         return n * c.t_per_rotation(c.eps_rot_for(n))
-    for key, n_reg, n_orb in (("prep_al_sd", 1, 6), ("prep_pf", 2, 10), ("prep_jj44", 2, 11),
-                              ("prep_jj55", 2, 16), ("prep_mo_ru", 2, 13.5)):
-        _is(r33.intermediates[key][0], f(n_reg * nt[0] * n_orb ** 4))
-        _is(r33.intermediates[key][1], f(n_reg * nt[1] * n_orb ** 4))
-    _is(rcd.intermediates["t_emax3"][0], f(nt[0] * 20 ** 4))
-    _is(rcd.intermediates["t_flagship"][0], f(nt[0] * 165 ** 4))
+    # 2026-11-13: N_orb^4 replaced by the Hamiltonian's Pauli strings per step
+    for key, n_reg, space in (("prep_al_sd", 1, "sd"), ("prep_pf", 2, "pf"), ("prep_jj44", 2, "jj44"),
+                              ("prep_jj55", 2, "jj55"), ("prep_mo_ru", 2, "mo_ru")):
+        _is(r33.intermediates[key][0], f(n_reg * nt[0] * ch3.hamiltonian_strings(space)))
+        _is(r33.intermediates[key][1], f(n_reg * nt[1] * ch3.hamiltonian_strings(space)))
+    _is(rcd.intermediates["t_emax3"][0], f(nt[0] * 767264))
+    _is(rcd.intermediates["t_flagship"][0], f(nt[0] * 1944122242))
 
 
 def test_band_ratio_is_four(r33):
@@ -1176,9 +1198,9 @@ def test_published_is_the_box_as_printed():
     assert ch3.PUBLISHED["2028"].lq == (120, 170)
     assert ch3.PUBLISHED["2028"].hard_ops == (1.7e4, 1.0e5)          # M3 ruling: + angle rotations; G2 1.6e4-9.9e4; R13 5.4e3
     assert ch3.PUBLISHED["2033"].lq == (74, 174)
-    assert ch3.PUBLISHED["2033"].hard_ops == (1.1e8, 4.4e8)                # R15 derived insertion
+    assert ch3.PUBLISHED["2033"].hard_ops == (1.1e9, 4.7e9)                # 2026-11-13 string step; was 1.1e8-4.4e8
     assert ch3.PUBLISHED["codesign"].lq == (700, 1100)
-    assert ch3.PUBLISHED["codesign"].hard_ops == (8.5e13, 3.3e15)    # R-TOL (2026-09-29); was 6e13-2.3e15
+    assert ch3.PUBLISHED["codesign"].hard_ops == (2.3e14, 7.5e15)    # 2026-11-13 string step; was 8.5e13-3.3e15 (R-TOL), 6e13-2.3e15
 
 
 # ---------------------------------------------------- printed strings (R4)
@@ -1195,55 +1217,57 @@ def test_round_once_at_print():
 def test_printed_strings_are_in_the_tex(a, tex):
     """Every string printed(a) returns must appear verbatim in the chapter (exact carry, one rounding)."""
     p = ch3.printed(a)
-    expected = {
-        "worked_line:90": "$1.0$--$4.4\\times 10^{8}$",
-        "prep_al_sd:139": "$1.0$--$4.4\\times 10^{8}$",
-        "prep_pf:139": "$1.8$--$7.3\\times 10^{9}$",
-        "prep_jj44:139": "$2.6\\times 10^{9}$--$1.1\\times 10^{10}$",
-        "fraction_total_sd:147,210": "0.11--0.44",
-        "multiple_pf:147": "1.8--7.3",
-        "multiple_jj44:147": "2.6--11",
-        "near_miss:45,217": "1.8--7.3",
-        "multiple_jj55:150": "12--50",
-        "jj55_large_gap:150": "6--12",
-        "t_emax3:152": "$1.5$--$6.2\\times 10^{10}$",
-        "multiple_emax3:152,156": "15--62",
-        "multiple_emax4:152,156": "150--620",
+    expected = {   # re-pinned 2026-11-13 (Pauli-string Trotter step; the 2026-11-12 values are in git)
+        "worked_line:90": "$1.1$--$4.7\\times 10^{9}$",
+        "prep_al_sd:139": "$1.1$--$4.7\\times 10^{9}$",
+        "prep_pf:139": "$1.5$--$6.4\\times 10^{10}$",
+        "prep_jj44:139": "$9.9\\times 10^{9}$--$4.1\\times 10^{10}$",
+        "fraction_total_sd:147,210": "1.1--4.7",
+        "multiple_pf:147": "15--64",
+        "multiple_jj44:147": "9.9--41",
+        "near_miss:45,217": "15--64",
+        "multiple_jj55:150": "41--170",
+        "jj55_large_gap:150": "20--41",
+        "t_emax3:152": "$7.5\\times 10^{10}$--$3.1\\times 10^{11}$",
+        "multiple_emax3:152,156": "75--310",
+        "multiple_emax4:152,156": "630--2600",
         # R15 ruling 3: Mo/Ru on 54 modes
-        "mo_ru_generic:46,162,219": "6--25",
-        "mo_ru_large_gap:162": "3--6",
-        "mo_ru_small_gap:162,219": "25--51",
-        "codesign_multiple:218": "12--50",
-        "codesign_jj44:45,152,218,244": "2.6--11",
-        "lever_worst:168": "by about 1\\%",
-        "pf_after_lever:168": "0.16--0.68",
-        "mo_ru_after_lever:169": "0.28--4.8",
-        "mo_ru_after_lever_generic:169": "0.56--2.4",
-        "n_rot_flagship:152": "$2.3\\times 10^{12}$--$8.4\\times 10^{13}$",
-        "t_flagship:152,239": "$8.5\\times 10^{13}$--$3.3\\times 10^{15}$",
-        "multiple_flagship:152,215": "$8.5\\times 10^{4}$--$3.3\\times 10^{6}$",
-        "eps_l_sd:205,240": "$2.3$--$9.5\\times 10^{-10}$",
-        "eps_l_pf_jj44:240": "$9.2\\times 10^{-12}$--$5.7\\times 10^{-11}$",
-        "eps_l_jj55:240": "$2.0$--$8.2\\times 10^{-12}$",
-        "eps_l_mo_ru_row:246": "$4.0\\times 10^{-12}$--$1.7\\times 10^{-11}$",   # re-pinned 2026-11-09 (referee cards, REF-ch3-ch4-18)
-        "eps_l_flagship:240": "$3\\times 10^{-17}$--$1\\times 10^{-15}$",
+        "mo_ru_generic:46,162,219": "22--90",
+        "mo_ru_large_gap:162": "11--22",
+        "mo_ru_small_gap:162,219": "90--180",
+        "mo_ru_measured_gaps:41,box": "51--100",          # 2026-11-13: ENSDF 0+ gaps 0.695 / 1.130 MeV
+        "al_after_lever:194": "0.10--0.43",               # 2026-11-13: the lever sentence quotes 27Al
+        "codesign_multiple:218": "41--170",
+        "codesign_jj44:45,152,218,244": "9.9--41",
+        "lever_worst:168": "by about 300\\%",
+        "pf_after_lever:168": "1.4--6",
+        "mo_ru_after_lever:169": "0.99--17",
+        "mo_ru_after_lever_generic:169": "2--8.4",
+        "n_rot_flagship:152": "$6.1\\times 10^{12}$--$1.9\\times 10^{14}$",
+        "t_flagship:152,239": "$2.3\\times 10^{14}$--$7.5\\times 10^{15}$",
+        "multiple_flagship:152,215": "$2.3\\times 10^{5}$--$7.5\\times 10^{6}$",
+        "eps_l_sd:205,240": "$2.1$--$8.9\\times 10^{-11}$",
+        "eps_l_pf_jj44:240": "$1.6\\times 10^{-12}$--$1.0\\times 10^{-11}$",
+        "eps_l_jj55:240": "$5.8\\times 10^{-13}$--$2.4\\times 10^{-12}$",
+        "eps_l_mo_ru_row:246": "$1.1$--$4.6\\times 10^{-12}$",
+        "eps_l_flagship:240": "$1\\times 10^{-17}$--$4\\times 10^{-16}$",
         # R-TOL (2026-09-29): the rule sentence and the worked line, app11:90; flagship, app11:152
-        "eps_rot_sd:90": "$2.5$--$5.0\\times 10^{-5}$",
-        "c_T_sd:90": "25.6$--$26.8",
-        "eps_rot_survey:90": "$2.5\\times 10^{-6}$--$5.0\\times 10^{-5}$",
-        "c_T_survey:90": "26--31",
-        "c_T_coherent:90": "42--52",
-        "eps_rot_flagship:152": "$1.1$--$6.6\\times 10^{-8}$",
+        "eps_rot_sd:90": "$7.9\\times 10^{-6}$--$1.6\\times 10^{-5}$",
+        "c_T_sd:90": "27.6$--$28.7",
+        "eps_rot_survey:90": "$1.4\\times 10^{-6}$--$1.6\\times 10^{-5}$",
+        "c_T_survey:90": "28--32",
+        "c_T_coherent:90": "46--54",
+        "eps_rot_flagship:152": "$7.3\\times 10^{-9}$--$4.0\\times 10^{-8}$",
         "c_T_flagship:152": "37--40",
         # R15 ruling 4: the derived insertions
-        "insertion_share_jj44:143": "0.04$--$0.2\\%",
-        "insertion_share_near_miss:217": "0.06$--$0.2\\%",
-        "insertion_jj44:143": "$4.0$--$4.1\\times 10^{6}$",
-        "insertion_jj44_dense:143": "$6.5$--$6.8\\times 10^{7}$",
-        "insertion_sd:143": "$9.3\\times 10^{5}$--$3.9\\times 10^{6}$",
-        "t_per_shot_sd:209,243": "$1.1\\times 10^{8}$--$4.4\\times 10^{8}$",
+        "insertion_share_jj44:143": "0.01$--$0.04\\%",
+        "insertion_share_near_miss:217": "0.007$--$0.03\\%",
+        "insertion_jj44:143": "$4.1$--$4.3\\times 10^{6}$",
+        "insertion_jj44_dense:143": "$6.7$--$7.0\\times 10^{7}$",
+        "insertion_sd:143": "$9.9\\times 10^{5}$--$4.1\\times 10^{6}$",
+        "t_per_shot_sd:209,243": "$1.1\\times 10^{9}$--$4.7\\times 10^{9}$",
         # r23: the single-machine serial campaign as a share of the 5-year horizon
-        "wall_fraction_of_horizon_max:149": "at most $4.1\\%$",
+        "wall_fraction_of_horizon_max:149": "at most $43\\%$",
     }
     r25 = ch3.printed_r25(a)
     assert set(expected) | set(r25) == set(p), set(expected) ^ set(p)
@@ -1263,6 +1287,8 @@ def test_printed_strings_are_in_the_tex(a, tex):
                "t_emax3:152",
                # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "we have $c_T=25.6$--$26.8$" for 27Al
                "c_T_sd:90",
+               # retired 2026-11-13: the lever sentence now quotes 27Al and 48Ca (al_after_lever, pf_after_lever)
+               "lever_worst:168",
                "f7p3p1_t:157,box", "f7p3p1_wall:157,box", "pf_rabi_multiple:157,box", "pf_rabi_wall:157,box", "rabi_factories:163", "eps_l_first_light:254"}
     assert retired <= set(p), retired - set(p)
     if tex is not None:
@@ -1288,12 +1314,12 @@ def test_instance_rows(a, r28, r33, rcd):
     rows33 = ch3.INSTANCE_ROWS(a, "2033", r33)
     rowscd = ch3.INSTANCE_ROWS(a, "codesign", rcd)
     assert len(rows28) == 1 and rows28[0][1] == r28.lq and rows28[0][2] == r28.hard_ops
-    assert len(rows33) == 2 and rows33[0][3]["fits"] is True      # sd + pf (R16: jj44 moved to co-design)
+    assert len(rows33) == 2 and rows33[0][3]["fits"] is False     # sd + pf; 2026-11-13: sd 1.1-4.7x, no longer fits
     assert all(not row[3]["fits"] for row in rows33[1:])
     assert all(row[1][1] <= 250 for row in rows33)          # "<= 250 LQ" for the near-miss cells   app11:238
     assert len(rowscd) == 4 and rowscd[-1][1] == rcd.lq and rowscd[-1][2] == rcd.hard_ops
     assert "jj44" in rowscd[0][0] and rowscd[0][3]["note"].startswith("co-design")     # R16
-    assert rowscd[2][3]["note"].startswith("reach target; co-design at the generic gap band")
+    assert rowscd[2][3]["note"].startswith("reach target; co-design at every gap band")     # 2026-11-13
     assert all(row[1][1] <= 250 for row in rowscd[:3])
     assert ch3.INSTANCE_ROWS(a, "2040", r33) == []
 
@@ -1350,25 +1376,30 @@ def test_complete_load_counts(a, r28, tex):
 
 def test_insertion_share_and_moru_wording(a, tex):
     p = ch3.printed(a)
-    assert p["insertion_share_jj44:143"] == "0.04$--$0.2\\%"
-    assert p["insertion_share_near_miss:217"] == "0.06$--$0.2\\%"                # R16: pf alone
+    assert p["insertion_share_jj44:143"] == "0.01$--$0.04\\%"                  # re-pinned 2026-11-13; was 0.04-0.2%
+    assert p["insertion_share_near_miss:217"] == "0.007$--$0.03\\%"              # R16: pf alone; was 0.06-0.2%
     if tex is not None:
-        assert "The query is then $0.04$--$0.2\\%$ of the pair preparation" in tex
+        assert "The query is then $0.01$--$0.04\\%$ of the pair preparation" in tex
         # style pass 2026-10-08: retired, the sentence was cut (rule 1/2); the value stays pinned on the model
         assert "0.5$--$2\\%" not in tex
         # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "$\\Gamma=40016$ Pauli strings (an upper bound)"
         # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "to $49140$ (dense) Pauli strings besides the identity"
         assert "we bound the Pauli strings of the scalar $0\\nu\\beta\\beta$ operator from above by its selection rules" in tex
-        assert "($12900$ Pauli strings in $sd$)" in tex and "from symmetry-restricted to dense Pauli strings" in tex
+        # 2026-11-13 ruling: one rotation per Pauli string per Trotter step (was "a nominal N_orb^4 rotations")
+        assert "one rotation per Pauli string of the Hamiltonian, $N_{\\rm str}=12900$ in $sd$" in tex
+        assert "from symmetry-restricted to dense Pauli strings" in tex and "nominal $N_{\\rm orb}^4$ rotations" not in tex
         assert "5.4$--$5.6" not in tex and "4.4$--$4.6" not in tex and "scaling by $N_{\\rm orb}^{4}$" not in tex
         assert "same factor of two in Eq." not in tex and "each register spans" not in tex
         assert "register asymmetry" not in tex
         # R15 ruling 3: Mo/Ru classification and register
         assert "The pair is a co-design target" in tex     # R16, wording tightened on the markup board
         assert "near-miss cross-check" not in tex and "near-miss pairs" not in tex
-        assert "$0\\nu\\beta\\beta$ co-design & $^{76}$Ge/Se, $^{82}$Se/Kr: $\\times 2.6$--$11$" in tex
-        assert "$0\\nu\\beta\\beta$ near miss & $^{48}$Ca/Ti: $\\times 1.8$--$7.3$" in tex
-        assert "$0\\nu\\beta\\beta$ reach target & $^{100}$Mo/Ru: $\\times 6$--$25$ on state prep" in tex
+        # re-pinned 2026-11-13: 48Ca/Ti joins the co-design row; Mo/Ru carries the measured-gap band
+        assert "& $^{76}$Ge/Se, $^{82}$Se/Kr: $\\times 9.9$--$41$" in tex
+        assert "$0\\nu\\beta\\beta$ co-design & $^{48}$Ca/Ti: $\\times 15$--$64$" in tex
+        assert ("$0\\nu\\beta\\beta$ reach target & $^{100}$Mo/Ru: $\\times 22$--$90$ on state prep at the generic $1$--$2$ MeV "
+                "gap ($\\times 51$--$100$ at the measured $0^+$ gaps)") in tex
+        assert "measured $0^+$ gaps of $0.70$ and $1.13$ MeV~\\cite{ENSDF} put it at $\\times 51$--$100$" in tex
         assert "co-design target at every plausible spectral gap" not in tex and "$\\times 880$" not in tex
 
 
@@ -1480,8 +1511,8 @@ def test_referee_max_subroutine_time(a, tex):
     i33 = ch3.model(a, "2033").intermediates
     rabi = i33["simplified_0nubb"]["f7p3p1_rabi"]
     per_shot = [w / n for w, n in zip(rabi["wall_s"], rabi["shots"])]
-    assert round(max(per_shot) / 60) == 54                                          # "~54 min per shot" (KB3G; was 16)
-    assert (round(i33["t_shot_s"][0] / 60, 1), round(i33["t_shot_s"][1] / 60, 1)) == (1.8, 7.3)
+    assert round(max(per_shot) / 60) == 124                                         # re-pinned 2026-11-13 (was 54; 16 before KB3G)
+    assert (round(i33["t_shot_s"][0] / 60), round(i33["t_shot_s"][1] / 60)) == (19, 78)   # was 1.8, 7.3
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     assert "Maximum subroutine time & N/A" not in tex
@@ -1545,13 +1576,13 @@ def test_referee_m3_al27_usdb_gap(a, r33, tex):
     an M = 5/2 reference reaches; exact Lanczos in sd) is printed as the check that the band is conservative."""
     assert a.gap_al27_usdb_mev.value > a.gap_mev.hi
     lo, hi = r33.intermediates["al27_prep_t_at_usdb_gap"]
-    assert (ch3.round_sig(lo), ch3.round_sig(hi)) == (8.9e7, 1.8e8)
-    assert tuple(ch3.round_sig(x) for x in r33.hard_ops) == (1.1e8, 4.4e8)          # 2033 headline unchanged
+    assert (ch3.round_sig(lo), ch3.round_sig(hi)) == (9.5e8, 1.9e9)                  # re-pinned 2026-11-13; was 8.9e7, 1.8e8
+    assert tuple(ch3.round_sig(x) for x in r33.hard_ops) == (1.1e9, 4.7e9)          # was 1.1e8, 4.4e8
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     assert "in full $pf$ GXPF1A costs about $2\\%$ more" in tex
     assert ("the $7/2^+$, is $2.33$ MeV above the ground state. That gap would lower the preparation to "
-            "$0.89$--$1.8\\times 10^{8}$ T") in tex and "\\cite{Brown_Richter_USDB_2006}" in tex
+            "$0.95$--$1.9\\times 10^{9}$ T") in tex and "\\cite{Brown_Richter_USDB_2006}" in tex
 
 
 def test_survey_table_matches_the_model(a, tex):
@@ -1560,12 +1591,43 @@ def test_survey_table_matches_the_model(a, tex):
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     assert i["lq_jj55"] == (114, 214) and i["lq_mo_ru"] == (104, 204)
-    for lo_hi, printed in ((i["prep_al_sd"], (1.0e8, 4.4e8)), (i["prep_pf"], (1.8e9, 7.3e9)), (i["prep_jj44"], (2.6e9, 1.1e10)),
-                           (i["prep_mo_ru"], (6.0e9, 2.5e10)), (i["prep_jj55"], (1.2e10, 5.0e10))):
+    # re-pinned 2026-11-13 (Pauli-string Trotter step)
+    for lo_hi, printed in ((i["prep_al_sd"], (1.1e9, 4.7e9)), (i["prep_pf"], (1.5e10, 6.4e10)), (i["prep_jj44"], (9.9e9, 4.1e10)),
+                           (i["prep_mo_ru"], (2.2e10, 9.0e10)), (i["prep_jj55"], (4.1e10, 1.7e11))):
         assert float(f"{lo_hi[0]:.2g}") == printed[0] and float(f"{lo_hi[1]:.2g}") == printed[1]
-    for row in ("$^{27}$Al & $sd$ & 24 & 74--174 & $1.0$--$4.4\\times 10^{8}$ & 0.10--0.44",
-                "$^{48}$Ca/Ti & $pf$ & 40 & 90--190 & $1.8$--$7.3\\times 10^{9}$ & 1.8--7.3",
-                "$^{76}$Ge/Se & $jj44$ & 44 & 94--194 & $2.6\\times 10^{9}$--$1.1\\times 10^{10}$ & 2.6--11",
-                "$jj44$, $jj55$ & 54 & 104--204 & $6.0\\times 10^{9}$--$2.5\\times 10^{10}$ & 6--25",
-                "$^{136}$Xe/Ba & $jj55$ & 64 & 114--214 & $1.2$--$5.0\\times 10^{10}$ & 12--50"):
+    for row in ("$^{27}$Al & $sd$ & 24 & 74--174 & $1.1$--$4.7\\times 10^{9}$ & 1.1--4.7",
+                "$^{48}$Ca/Ti & $pf$ & 40 & 90--190 & $1.5$--$6.4\\times 10^{10}$ & 15--64",
+                "$^{76}$Ge/Se & $jj44$ & 44 & 94--194 & $9.9\\times 10^{9}$--$4.1\\times 10^{10}$ & 9.9--41",
+                "$jj44$, $jj55$ & 54 & 104--204 & $2.2$--$9.0\\times 10^{10}$ & 22--90",
+                "$^{136}$Xe/Ba & $jj55$ & 64 & 114--214 & $4.1\\times 10^{10}$--$1.7\\times 10^{11}$ & 41--170"):
         assert row in tex, row
+
+
+# ------------------------------------------- Pauli-string Trotter step (author ruling 2026-11-13)
+
+def test_hamiltonian_strings_match_explicit_jw_algebra():
+    """The structured string count equals the explicit JW algebra of gamma_mu2e_two_body (generic rank-0 one- plus
+    two-body, charge conserving) in the valence spaces, where both apply. The Mo/Ru and e_max = 1, 2 checks with
+    the oscillator one-body hops ran in the change log (scratch explicit_check.py): 114909, 1800, 57500."""
+    for key in ("sd", "f7p3", "f7p3p1", "pf"):
+        assert ch3.hamiltonian_strings_count(*ch3.step_space(key))["gamma"] == ch3.gamma_mu2e_two_body(key)["gamma"]
+
+
+def test_hamiltonian_strings_per_step():
+    """One rotation per Pauli string per Trotter step; app11 'Trotter steps ... (12900 Pauli strings in sd)'."""
+    expect = dict(sd=12900, f7p3=9620, f7p3p1=18230, pf=82940, jj44=53854, mo_ru=114909, jj55=216072,
+                  emax3=767264, emax4=6183358)
+    for k, v in expect.items():
+        assert ch3.hamiltonian_strings(k) == v, k
+    # the stored oscillator counts (pauli/strings_emax*.json) agree with the counter's own output files
+    import json, pathlib
+    d = pathlib.Path(ch3.__file__).resolve().parents[1] / "applications" / "ch03_mu2e_0nubb" / "pauli"
+    for k, v in ch3.HAMILTONIAN_STRINGS_STORED.items():
+        f = d / f"strings_{k}.json"
+        if f.exists():
+            assert json.loads(f.read_text())["gamma"] == v, k
+    # the per-step rotations of every survey cell are its string count, not N_orb^4
+    s = ch3.survey(ch3.Assumptions())
+    nt = ch3.n_trotter(ch3.Assumptions(), (1.0, 2.0))
+    for k, cell in s.items():
+        _is(cell["n_rot"][0], cell["n_proj"] * nt[0] * ch3.hamiltonian_strings(cell["space"]))

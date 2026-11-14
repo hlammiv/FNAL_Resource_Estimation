@@ -77,12 +77,17 @@
     174
    ],
    "t": [
-    105373917.6283394,
-    440358279.6675963
+    1117600592.1586134,
+    4656958178.490752
    ],
    "codesign": false,
-   "src": "app11:2033 box lines 208-209 ('<= 250 (24 system + 50-150 ancilla)', '1.1e8-4.4e8 T, prep + insertion'); LQ is the printed component sum, '<= 250' being the envelope. R15: model 1.054e8-4.404e8 with the derived one-query insertion (1.092e8-4.771e8 in R14 with the scaled stated insertion)",
-   "fits": true
+   "src": "app11:2033 box lines 208-209 ('<= 250 (24 system + 50-150 ancilla)', '1.1e8-4.4e8 T, prep + insertion'); LQ is the printed component sum, '<= 250' being the envelope. R15: model 1.054e8-4.404e8 with the derived one-query insertion (1.092e8-4.771e8 in R14 with the scaled stated insertion). 2026-11-13 string-count Trotter step: 1.118e9-4.657e9 (was 1.1e8-4.4e8)",
+   "fits": false,
+   "multiple": [
+    1.1176005921586134,
+    4.656958178490752
+   ],
+   "note": "near miss since the string-count Trotter step (2026-11-13)"
   },
   {
    "ch": 3,
@@ -93,17 +98,17 @@
     190
    ],
    "t": [
-    1753988134.026748,
-    7304979060.237253
+    15462124429.473848,
+    64245683709.03178
    ],
    "codesign": false,
-   "src": "app11:2033 box lines 208-209 ('<= 250 (24 system + 50-150 ancilla)', '1.1e8-4.4e8 T, prep + insertion'); LQ is the printed component sum, '<= 250' being the envelope. R15: model 1.054e8-4.404e8 with the derived one-query insertion (1.092e8-4.771e8 in R14 with the scaled stated insertion)",
+   "src": "app11:2033 box lines 208-209 ('<= 250 (24 system + 50-150 ancilla)', '1.1e8-4.4e8 T, prep + insertion'); LQ is the printed component sum, '<= 250' being the envelope. R15: model 1.054e8-4.404e8 with the derived one-query insertion (1.092e8-4.771e8 in R14 with the scaled stated insertion). 2026-11-13 string-count Trotter step: 1.118e9-4.657e9 (was 1.1e8-4.4e8)",
    "fits": false,
    "multiple": [
-    1.753988134026748,
-    7.304979060237253
+    15.462124429473848,
+    64.24568370903178
    ],
-   "note": "near miss; state prep only"
+   "note": "co-design; state prep only"
   },
   {
    "ch": 3,
@@ -114,19 +119,19 @@
     194
    ],
    "t": [
-    2597107279.301216,
-    10811592851.183979
+    9918537537.561989,
+    41230673593.29906
    ],
    "codesign": true,
-   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15; 2026-11-13 string-count step 2.3e14-7.5e15",
    "fits": false,
    "multiple": [
-    2.597107279301216,
-    10.81159285118398
+    9.918537537561988,
+    41.23067359329906
    ],
    "multiple_large_gap": [
-    1.2721059062769133,
-    2.597107279301216
+    4.861986053590299,
+    9.918537537561988
    ],
    "note": "co-design (top of band past ~10x); state prep only"
   },
@@ -139,19 +144,19 @@
     214
    ],
    "t": [
-    12137126408.678886,
-    50442669863.25562
+    41359656562.624306,
+    171683680162.68457
    ],
    "codesign": true,
-   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15; 2026-11-13 string-count step 2.3e14-7.5e15",
    "fits": false,
    "multiple": [
-    12.137126408678887,
-    50.442669863255624
+    41.35965656262431,
+    171.68368016268457
    ],
    "multiple_large_gap": [
-    5.950177940055688,
-    12.137126408678887
+    20.28951241180044,
+    41.35965656262431
    ],
    "note": "co-design; state prep only, generic gap band"
   },
@@ -164,21 +169,21 @@
     204
    ],
    "t": [
-    6033703802.486152,
-    25094818616.259045
+    21617223810.28277,
+    89790070127.25948
    ],
    "codesign": true,
-   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15; 2026-11-13 string-count step 2.3e14-7.5e15",
    "fits": false,
    "multiple": [
-    6.033703802486151,
-    25.094818616259044
+    21.61722381028277,
+    89.79007012725947
    ],
    "multiple_large_gap": [
-    2.9568516883484235,
-    6.033703802486151
+    10.601038474758356,
+    21.61722381028277
    ],
-   "note": "reach target; co-design at the generic gap band, near miss at a large gap (x3-6), x25-51 small gap; state prep only, generic gap band"
+   "note": "reach target; co-design at every gap band (x11-22 large gap, x90-180 small gap, x51-100 at the measured 0+ gaps); state prep only, generic gap band"
   },
   {
    "ch": 3,
@@ -189,15 +194,15 @@
     1144
    ],
    "t": [
-    85324362665820.72,
-    3330925991891527.5
+    228686078826669.94,
+    7512906845819328.0
    ],
    "codesign": true,
-   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15",
+   "src": "app11:2033 box lines 214-215 and summary line 239 ('~700-1100 LQ', '8.5e13-3.3e15 hard ops (co-design)'; R-TOL 2026-09-29, was 6e13-2.3e15 at c_T = 27); model 660-1144 LQ, 8.53e13-3.33e15; 2026-11-13 string-count step 2.3e14-7.5e15",
    "fits": false,
    "multiple": [
-    85324.36266582072,
-    3330925.9918915275
+    228686.07882666992,
+    7512906.845819328
    ],
    "note": "system qubits only; per state preparation"
   },
@@ -332,25 +337,25 @@
   {
    "ch": 5,
    "era": "2033",
-   "label": "Sigma(216x3)+3 stag, H_I, 3^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench ramp + c/T thermalization + Trotter to its own fit time; primitives arxiv_2611_08161, hop from the unpublished Fermion_Primitives draft's Sigma(216x3) row)",
+   "label": "Sigma(216x3)+3 stag, H_I, 2^3, quench-prepared thermal state, deepest shot at a_s = 0.2 fm (quench ramp + c/T thermalization + Trotter to its own fit time; primitives arxiv_2611_08161, hop from the unpublished Fermion_Primitives draft's Sigma(216x3) row)",
    "lq": [
-    1234,
-    1334
+    436,
+    536
    ],
    "t": [
-    9060558937.9613,
-    32346275923.471703
+    2547208414.397455,
+    9406955416.583345
    ],
    "codesign": false,
-   "src": "app03:2033 box (temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route 2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule 2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: '9.1e9-3.2e10' (8.1e9-3.1e10 quench + 1.0e9-1.7e9 fit evolution), one circuit per shot, corners (300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (9.061e9, 3.235e10); hop from the draft's Sigma(216x3) row (card RF3-ch5-s216, 2026-11-12; was (6.667e9, 2.379e10), '6.7e9-2.4e10', with the Sigma(72x3) placeholder). Was (1.051e10, 3.142e10) at T = 160 MeV. tol 0.05: two figures.",
+   "src": "app03:2033 box (staggered ruling 2026-11-13: periodic staggered fields need an even side, 4^3 is 2788-2888 LQ, so the box drops to 2^3: '~490 (436-536)', '2.5e9-9.4e9', exact (2.547e9, 9.407e9); the 3^3 box below was (1234, 1334), (9.1e9, 3.2e10). temperature ruling 2026-10-05: T = 1.5 T_c^lat = 225-300 MeV; quench thermal route 2026-10-05; s648: Sigma(216x3), 11 qubits/link, H_I, a_s = 0.2 fm; T1/T3 2026-10-05; step rule 2026-10-04; r25 2026-10-02): '~1280 (1234-1334)'; per-shot T, deepest shot at a_s = 0.2 fm: '9.1e9-3.2e10' (8.1e9-3.1e10 quench + 1.0e9-1.7e9 fit evolution), one circuit per shot, corners (300 MeV, tau = 1/k, c = 2) and (225 MeV, 1/(2 pi T), c = 2 pi). hard_ops = (9.061e9, 3.235e10); hop from the draft's Sigma(216x3) row (card RF3-ch5-s216, 2026-11-12; was (6.667e9, 2.379e10), '6.7e9-2.4e10', with the Sigma(72x3) placeholder). Was (1.051e10, 3.142e10) at T = 160 MeV. tol 0.05: two figures.",
    "group": "S216x3",
    "hamiltonian": "I",
-   "lattice": "3^3",
+   "lattice": "2^3",
    "route": "quench (ETH)",
    "electric": "Sigma(216x3) FFT (arxiv_2611_08161)",
-   "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = 0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) late shot is 4.3e10 (t_deepest_campaign)",
-   "condition": "ETH with dynamical fermions at the chapter's couplings on 3^3 and the relaxation of the momentum density within t_th assumed; T_c^lat measured in situ; shots at the thermal variance; non-freezing H_I trajectory assumed",
-   "exports_note": "R9 exports (t_per_shot, t_depth_per_shot, f_star, floor_wall_s, factories_for_1yr) are the campaign at the (300 MeV, tau = 1/k = 0.0955 fm/c, c = 2) corner only, over both spacings, not a band (floor is the high/low depth schedule); wall_first_result_s and wall_campaign_s are bands"
+   "band": "corners (T = 300 MeV, tau = 1/k, c = 2) to (T = 225 MeV, tau = 1/(2 pi T), c = 2 pi) at a_s = 0.2 fm, T = 1.5 T_c^lat with T_c^lat = 150-200 MeV assumed; the second spacing (0.15 fm, own step) late shot is 1.3e10 (t_deepest_campaign; 4.3e10 on the retired 3^3)",
+   "condition": "ETH with dynamical fermions at the chapter's couplings on 2^3 and the relaxation of the momentum density within t_th assumed; T_c^lat measured in situ; shots at the thermal variance; non-freezing H_I trajectory assumed",
+   "exports_note": "R9 exports (t_per_shot, t_depth_per_shot, f_star, floor_wall_s, factories_for_1yr) are the campaign at the (300 MeV, tau = 1/k = 0.0637 fm/c, c = 2) corner only, over both spacings, not a band (floor is the high/low depth schedule); wall_first_result_s and wall_campaign_s are bands"
   },
   {
    "ch": 6,
@@ -383,10 +388,10 @@
    ],
    "t": [
     4901429609.565304,
-    26158908076.972164
+    25380949960.063095
    ],
    "codesign": false,
-   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.6e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (step rule 2026-10-04: the 4.65 GeV point at 50 a runs 575 steps, exact 4.9014e9 and 2.6159e10; r26 2.5381e10 at 500 steps; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
+   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.5e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (t2e 2026-11-13: the top trend point is pa = pi/2, 500 steps under the step rule, exact 4.9014e9 and 2.5381e10; 2026-10-04 to t2e the 4.65 GeV point ran 575 steps, 2.6159e10; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
    "group": "S72x3",
    "lattice": "4x8 (cut from 4x16)",
    "observable": "B/M, kaon rates (sampling; V/PS conditional); D_pi^q(z) (FCC era)",
@@ -396,8 +401,8 @@
     244
    ],
    "shots_campaign": [
-    24192,
-    25344
+    18144,
+    19008
    ],
    "shots_fragmentation": [
     75000.0,
@@ -408,8 +413,8 @@
     8889027
    ],
    "wall_time_s_campaign": [
-    103525862,
-    814795173
+    73882016,
+    577317859
    ],
    "wall_time_s_fragmentation": [
     367607228,
@@ -430,7 +435,7 @@
     16396859944.394287
    ],
    "codesign": false,
-   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.6e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (step rule 2026-10-04: the 4.65 GeV point at 50 a runs 575 steps, exact 4.9014e9 and 2.6159e10; r26 2.5381e10 at 500 steps; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
+   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.5e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (t2e 2026-11-13: the top trend point is pa = pi/2, 500 steps under the step rule, exact 4.9014e9 and 2.5381e10; 2026-10-04 to t2e the 4.65 GeV point ran 575 steps, 2.6159e10; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
    "group": "S216x3",
    "hamiltonian": "I",
    "lattice": "3^3",
@@ -458,7 +463,7 @@
     550325562.0069797
    ],
    "codesign": false,
-   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.6e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (step rule 2026-10-04: the 4.65 GeV point at 50 a runs 575 steps, exact 4.9014e9 and 2.6159e10; r26 2.5381e10 at 500 steps; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
+   "src": "app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.5e10 (window + 2 x 1e2--1e3 ramp steps; electric term a lower bound)' (t2e 2026-11-13: the top trend point is pa = pi/2, 500 steps under the step rule, exact 4.9014e9 and 2.5381e10; 2026-10-04 to t2e the 4.65 GeV point ran 575 steps, 2.6159e10; referee J1: the readout map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window 30--50 a). Two-figure prints: tol 0.035",
    "group": "2O",
    "lattice": "3x3x5",
    "observable": "q-hat from singlet survival at L = 0.5 and 1 fm",

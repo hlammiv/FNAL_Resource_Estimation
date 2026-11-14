@@ -134,7 +134,7 @@ def featured(ax):
         ct.txt(ax, (x, ax_y + 0.30), lab, size=6.5, color=ff.BLUE)
     ct.arrow(ax, (0.50, ax_y - 0.26), (0.18, ax_y - 0.26), color=ff.MIDGREY, lw=0.7, mut=5)
     ct.arrow(ax, (1.50, ax_y - 0.26), (1.82, ax_y - 0.26), color=ff.MIDGREY, lw=0.7, mut=5)
-    ct.txt(ax, (1.00, 0.86), r"color-singlet source, $P\!\sim\!1.5$--$4.7$ GeV", size=5.6, color=ff.MIDGREY)
+    ct.txt(ax, (1.00, 0.86), r"color-singlet source, $P\!\sim\!1.5$--$3.1$ GeV", size=5.6, color=ff.MIDGREY)
     ct.txt(ax, (1.00, 2.20), "injected into the vacuum", size=6.0, color=ff.ORANGE)
 
     # real-time evolution across the window

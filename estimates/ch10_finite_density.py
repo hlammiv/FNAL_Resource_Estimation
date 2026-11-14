@@ -162,7 +162,7 @@ eps_rot = common.eps_rot_for(N_rot) = sqrt(eps_syn / N_rot), N_rot = synthesized
 ONE shot of that circuit (_rot_per_step x steps). The papers' slope-only 1.15 log2(1/eps) is
 kept; only eps changes (was a fixed 1e-4). 2028: N_rot = 3,740, eps_rot = 1.635e-3, 10.645 T
 per rotation, 72,515.5 T/shot (was 89,854.5). 2033: N_rot = 2.28e7, eps_rot = 2.094e-5,
-17.875 T per rotation, 7.818e8 T/shot (was 7.227e8). The QSVT rail and the V=3^3 promotion
+17.875 T per rotation, 7.818e8 T/shot (was 7.227e8). The QSVT rail and the V=4^3 volume row (was V=3^3)
 are their own circuits and set their own eps from their own N_rot.
 
 R-HOP report-wide (ruling H. Lamm 2026-09-29; apply_log/rhop_ch10.md; RETIRED by r17, kept as the
@@ -1343,20 +1343,23 @@ def _model_2033(a: Assumptions) -> Result:
                   toffoli_t(1, a.toffoli_convention.value), CircuitStatus.SCALING, "author ruling 2026-10-05",
                   "one reflection about the start state per round, on the full register (high end, 1014 Toffolis, MBU)"))
 
-    # "V=3^3" (open questions): the same filter on V=3^3 (beta||H|| extensive, 337.5), same amplitude assumed
-    geo3 = _geometry(d, 3, a.n_stag_2033.value, a.nc.value, a.group.value)
+    # volume row (tab:ch10_volumes): the same filter on V=4^3 (beta||H|| extensive, 800), same amplitude assumed.
+    # Staggered ruling (H. Lamm, 2026-11-13): periodic staggered fields need an even side, so the old V=3^3 row
+    # (1141-1641 LQ, d_beta 56, c_step 9.6e6, 1.8-3.7e10 T) is replaced by V=4^3, over the 2033 register target.
+    LV = 4
+    geo3 = _geometry(d, LV, a.n_stag_2033.value, a.nc.value, a.group.value)
     v3_lq = (geo3["gauge_lq"] + geo3["fermion_lq"] + anc_lo, geo3["gauge_lq"] + geo3["fermion_lq"] + anc_hi)
     v3_beta_h = beta_h * geo3["n_sites"] / geo["n_sites"]
-    v3_qb = qsvt_band(a, d, 3, ns33, v3_beta_h, geo3["gauge_lq"] + geo3["fermion_lq"], v3_lq[1])
-    v3_t = (v3_qb["low"]["t_shot"], v3_qb["high"]["t_shot"])      # 1.8e10 - 3.7e10
+    v3_qb = qsvt_band(a, d, LV, ns33, v3_beta_h, geo3["gauge_lq"] + geo3["fermion_lq"], v3_lq[1])
+    v3_t = (v3_qb["low"]["t_shot"], v3_qb["high"]["t_shot"])
     # records (pre-ruling): uncontrolled 2e3-step / 10x-cut Hamiltonian simulation and the 10x-cut Gibbs sampler
-    v3_steps = (n_steps * geo3["n_sites"] / geo["n_sites"]) / 10.0  # 675
-    v3_n_rot = v3_steps * _rot_per_step(a, d, 3, ns33)["total"]
+    v3_steps = (n_steps * geo3["n_sites"] / geo["n_sites"]) / 10.0
+    v3_n_rot = v3_steps * _rot_per_step(a, d, LV, ns33)["total"]
     v3_eps = _eps(a, v3_n_rot)
-    v3_c_be = _t_per_step(a, d, 3, ns33, v3_eps)
+    v3_c_be = _t_per_step(a, d, LV, ns33, v3_eps)
     v3_t_hsim = v3_steps * v3_c_be
-    v3_gb = gibbs_band(a, d, 3, ns33, v3_beta_h, mix_cut=10.0)
-    v3_g_shot = v3_gb["central"]["t_sample"]                       # 3.1e14
+    v3_gb = gibbs_band(a, d, LV, ns33, v3_beta_h, mix_cut=10.0)
+    v3_g_shot = v3_gb["central"]["t_sample"]
 
     inter = dict(
         n_sites=geo["n_sites"], n_links=geo["n_links"], n_plaquettes=geo["n_plaquettes"],
@@ -1435,11 +1438,11 @@ def _model_2033(a: Assumptions) -> Result:
         rfi_over_eps_l=(a.eps_l_floor.lo / eps_l_req[1], a.eps_l_floor.lo / eps_l_req[0]),
         sigma360_link_qubits_min=math.ceil(math.log2(1080)),
         compression_36_vs_72=GROUPS[a.group_stretch.value].link_qubits / GROUPS[a.group.value].link_qubits,
-        v3cubed_lq=v3_lq, v3cubed_beta_h=v3_beta_h, v3cubed_qsvt=v3_qb, v3cubed_d_beta=v3_qb["low"]["d_beta"],
-        v3cubed_c_step=v3_qb["low"]["c_step"], v3cubed_t_per_shot=v3_t,
-        v3cubed_steps=v3_steps, v3cubed_n_rot_per_shot=v3_n_rot, v3cubed_eps_rot=v3_eps,
-        v3cubed_c_be=v3_c_be, v3cubed_t_hsim_with_10x_cut_superseded=v3_t_hsim,
-        v3cubed_n_jumps=v3_gb["central"]["n_jumps"], v3cubed_gibbs=v3_gb, v3cubed_gibbs_t_with_10x_cut=v3_g_shot,
+        v4cubed_lq=v3_lq, v4cubed_beta_h=v3_beta_h, v4cubed_qsvt=v3_qb, v4cubed_d_beta=v3_qb["low"]["d_beta"],
+        v4cubed_c_step=v3_qb["low"]["c_step"], v4cubed_t_per_shot=v3_t,
+        v4cubed_steps=v3_steps, v4cubed_n_rot_per_shot=v3_n_rot, v4cubed_eps_rot=v3_eps,
+        v4cubed_c_be=v3_c_be, v4cubed_t_hsim_with_10x_cut_superseded=v3_t_hsim,
+        v4cubed_n_jumps=v3_gb["central"]["n_jumps"], v4cubed_gibbs=v3_gb, v4cubed_gibbs_t_with_10x_cut=v3_g_shot,
         # r25 R9 exports (names fixed by CONTRACT rule 12): campaign = the 5x5 grid
         t_per_shot=dx["t_per_shot"], t_depth_per_shot=dx["t_depth_per_shot"], f_star=dx["f_star"],
         floor_wall_s=dx["floor_wall_s"], factories_for_1yr=dx["factories_for_1yr"],
@@ -1499,8 +1502,10 @@ def _model_2033(a: Assumptions) -> Result:
             "epsilon_l (R3): 0.1 expected faults per shot -> 1.8e-11 (upper end) to 3.6e-11, 280-560x below the RFI rate.",
             "R9: the factory.json T-depth (2e3-step circuit) scaled by each end's T ratio, F* 17.5-56 at either end "
             "(f_star_matched); the cross-paired export is 8.6-114.",
-            "V=3^3: beta||H|| 337.5, d_beta 56, c_step 9.6e6: 1.8-3.7e10 T at the same amplitude (records: 10x-cut Gibbs "
-            "3.1e14; 675-step Hamiltonian simulation 6.3e9).",
+            "V=4^3 volume row (replaces V=3^3, staggered ruling 2026-11-13: periodic staggered fields need an even side): "
+            "beta||H|| 800, d_beta 86, c_step 2.3e7: 6.8e10-1.4e11 T at the same amplitude on 2362-2862 LQ (records: "
+            "10x-cut Gibbs 4.5e15; 1600-step Hamiltonian simulation 3.7e10). Was V=3^3: 337.5, 56, 9.6e6, 1.8-3.7e10 T, "
+            "1141-1641 LQ.",
         ),
     )
 

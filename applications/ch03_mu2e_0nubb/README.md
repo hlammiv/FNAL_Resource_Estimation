@@ -11,8 +11,10 @@ The chapter asks what a fault-tolerant machine costs to compute nuclear matrix e
 The model has three eras (`model(a, era)`, lines 1996-2004):
 
 - **2028 benchmark** (`_model_2028`): the 4He dipole operator, the proton charge monopole Σ_i ½(1+τ3,i) j0(q r_i) at q = m_μ, in the 10-orbital 0s-0p-1s0d space (40 qubits). The ground state is not prepared: it is loaded from D classically computed configurations, and the load is counted. The observable is ⟨Ψ0|O|Ψ0⟩ by a Hadamard test on one controlled query of the block encoding. Result: 120-170 LQ, 1.7e4-1.0e5 T per shot over D = 100-600.
-- **2033 target** (`_model_2033`): the 27Al μ→e element in the sd valence space (6 orbitals, 24 qubits), state preparation by projection plus one controlled operator query per shot. Result: 74-174 LQ, 1.05e8-4.40e8 T per shot. The 2033 era also carries the 48Ca/48Ti pf pair (1.75-7.30x the 1e9 budget, a near miss) and a 48Ca 0νββ validation ladder in truncated pf spaces.
-- **Co-design** (`_model_codesign`): the converged 27Al calculation at e_max = 8-10 (165-286 orbitals, 660-1144 system qubits, 8.5e13-3.3e15 T per preparation), plus the jj44, jj55 and 100Mo/100Ru 0νββ pairs at 2.6-50x the 2033 budget.
+- **2033 target** (`_model_2033`): the 27Al μ→e element in the sd valence space (6 orbitals, 24 qubits), state preparation by projection plus one controlled operator query per shot. Result: 74-174 LQ, 1.12e9-4.66e9 T per shot (1.1-4.7x the 1e9 budget, a near miss since the Pauli-string Trotter step of 2026-11-13; was 1.05e8-4.40e8). The 2033 era also carries the 48Ca/48Ti pf pair (15-64x, co-design) and a 48Ca 0νββ validation ladder in truncated pf spaces.
+- **Co-design** (`_model_codesign`): the converged 27Al calculation at e_max = 8-10 (165-286 orbitals, 660-1144 system qubits, 2.3e14-7.5e15 T per preparation), plus the jj44, jj55 and 100Mo/100Ru 0νββ pairs at 9.9-170x the 2033 budget.
+
+**2026-11-13 change (author ruling).** Each Trotter step is one synthesized rotation per Pauli string of the two-body Hamiltonian (`hamiltonian_strings`, the structured count in `pauli/`, checked against explicit Jordan-Wigner algebra), not N_orb^4. Strings per step: sd 12900 (N_orb^4 = 1296), f7p3 9620, f7p3p1 18230, pf 82940, jj44 53854, 100Mo/Ru 114909, jj55 216072, e_max = 3 767264, 4 6183358, 8 1944122242, 10 14842974100 (`pauli/strings_*.json`; e_max = 8, 10 counted on a 32-core host in 97 s and 303 s). Section 4 below is updated; the later sections (validation ladder, instance rows, checks table) quote pre-change values in places, and the tests carry the current ones. 100Mo/100Ru at the measured 0+ gaps (ENSDF 0.695 and 1.130 MeV, each projection at its own gap) is x51-100 (`multiple_mo_ru_measured_gaps`).
 
 ## 2. How to run
 
@@ -25,15 +27,15 @@ python -m pytest estimates/tests/test_ch03_mu2e_0nubb.py -q
 python applications/ch03_mu2e_0nubb/dump_assumptions.py   # the table in section 3 (--raw: notes verbatim)
 ```
 
-The model needs numpy and scipy (oscillator integrals in `he4_dipole` and `al27_dipole_sd`) and sympy (Clebsch-Gordan coefficients in `_cg`, used by the 2033 operator string counts). The `--chapter ch03` report has three blocks. ASSUMPTIONS lists the 99 inputs with value, provenance and source. INSTANCES lists the seven rows the chapter writes to `resources.json`. EXPORTS gives, per era, the headline LQ and T against the published box (`[ok]` when inside its tolerance), shots, wall time, ε_l, T-depth, F* (= N_T/D_T, the number of factories the circuit can keep busy), the factory-limited floor (EXPORTS' `f_star` pairs the low-T end with the high-depth end and vice versa, so it is a wider band than the per-end F* quoted below, which the model keeps as `f_star_per_end`: 7.1-14.3 in 2028, 11.8 in 2033), and the primitive breakdown with its T sum. The run takes a few seconds.
+The model needs numpy and scipy (oscillator integrals in `he4_dipole` and `al27_dipole_sd`) and sympy (Clebsch-Gordan coefficients in `_cg`, used by the 2033 operator string counts). The `--chapter ch03` report has three blocks. ASSUMPTIONS lists the 101 inputs with value, provenance and source. INSTANCES lists the seven rows the chapter writes to `resources.json`. EXPORTS gives, per era, the headline LQ and T against the published box (`[ok]` when inside its tolerance), shots, wall time, ε_l, T-depth, F* (= N_T/D_T, the number of factories the circuit can keep busy), the factory-limited floor (EXPORTS' `f_star` pairs the low-T end with the high-depth end and vice versa, so it is a wider band than the per-end F* quoted below, which the model keeps as `f_star_per_end`: 7.1-14.3 in 2028, 11.8 in 2033), and the primitive breakdown with its T sum. The run takes a few seconds.
 
 The test file runs 57 tests and skips 15 in this repository. The skips are the parts of tests that compare against the chapter's `.tex`, which is not shipped here; numeric assertions placed before the skip still run. Next to the paper source all 72 pass.
 
 ## 3. Assumptions
 
-`Assumptions` (lines 239-587) is one frozen dataclass of 104 `Tagged` fields:
+`Assumptions` (lines 233-546) is one frozen dataclass of 106 `Tagged` fields:
 
-- 21 Cited: a published source gives the value, and the source column is its bibliography key.
+- 23 Cited: a published source gives the value, and the source column is its bibliography key.
 - 40 Assumed: a working assumption the chapter declares.
 - 43 Stated-not-derived: the chapter prints the value without derivation. The source is `app11:NN`, a reference into the chapter source; the tests match the printed strings by content, not by line.
 
@@ -190,7 +192,7 @@ The table below is the output of `dump_assumptions.py`, which reads the live dat
 | `ext_qubitization_pb208_toffoli` | 30000000000.0 | Cited | arxiv_2607_21563 | '~3e10 ... 102-orbital 208Pb-core space' |
 | `nme_spread` | 3 | Cited | arxiv_2308_15634 | 'factor-three spread across nuclear models' |
 
-104 fields: Cited 21, Stated-not-derived 43, Assumed 40
+106 fields: Cited 23, Stated-not-derived 43, Assumed 40
 
 ## 4. How the numbers are built
 
@@ -236,23 +238,23 @@ D is the one physics input that moves this headline. The model carries an exact 
 
 `prep_t` (lines 630-635) is the chapter's formula for every survey cell:
 
-N_T(shot) = N_rot × c_T(N_rot), N_rot = N_proj × N_Trotter × N_orb^4, N_Trotter = c_proj τ_gs / δt, τ_gs = 1/Δ.
+N_T(shot) = N_rot × c_T(N_rot), N_rot = N_proj × N_Trotter × N_str, N_Trotter = c_proj τ_gs / δt, τ_gs = 1/Δ.
 
-With Δ = 1-2 MeV (τ_gs = 500-1000 GeV^-1), c_proj = π to 2π and δt = 0.5 GeV^-1, N_Trotter = 1000π to 4000π (3142-12566), the low end pairing c_proj = π with Δ = 2 MeV (`n_trotter`, lines 599-603). Each Trotter step applies the dense N_orb^4 two-body Pauli strings as rotations. N_proj = 1 for 27Al (one preparation) and 2 for a 0νββ pair (parent preparation plus projection onto the daughter, priced at the parent's gap). `survey` (lines 1236-1289) evaluates every cell at the generic band, at Δ = 4 MeV, at Δ = 0.5 MeV, and with the preparation depth divided by 10 (`prep_lever`):
+With Δ = 1-2 MeV (τ_gs = 500-1000 GeV^-1), c_proj = π to 2π and δt = 0.5 GeV^-1, N_Trotter = 1000π to 4000π (3142-12566), the low end pairing c_proj = π with Δ = 2 MeV (`n_trotter`, lines 558-562). Each Trotter step applies one rotation per Pauli string of the Hamiltonian, N_str (was N_orb^4 until 2026-11-13). N_proj = 1 for 27Al (one preparation) and 2 for a 0νββ pair (parent preparation plus projection onto the daughter, priced at the parent's gap). `survey` (lines 1195-1248) evaluates every cell at the generic band, at Δ = 4 MeV, at Δ = 0.5 MeV, and with the preparation depth divided by 10 (`prep_lever`):
 
-| cell | N_proj | N_orb | system qubits | N_rot | c_T | T per shot | x 1e9 |
+| cell | N_proj | N_str | system qubits | N_rot | c_T | T per shot | x 1e9 |
 |---|---|---|---|---|---|---|---|
-| 27Al sd | 1 | 6 | 24 | 4.07e6-1.63e7 | 25.6-26.8 | 1.04e8-4.36e8 | 0.10-0.44 |
-| 48Ca/Ti pf | 2 | 10 | 40 | 6.28e7-2.51e8 | 27.9-29.1 | 1.75e9-7.30e9 | 1.75-7.30 |
-| jj44 pairs | 2 | 11 | 44 | 9.20e7-3.68e8 | 28.2-29.4 | 2.60e9-1.08e10 | 2.60-10.8 |
-| 100Mo/Ru | 2 | 13.5 | 54 | 2.09e8-8.35e8 | 28.9-30.1 | 6.03e9-2.51e10 | 6.03-25.1 |
-| jj55 pairs | 2 | 16 | 64 | 4.12e8-1.65e9 | 29.5-30.6 | 1.21e10-5.04e10 | 12.1-50.4 |
-| 27Al e_max = 3 | 1 | 20 | 80 | 5.03e8-2.01e9 | 29.6-30.8 | 1.49e10-6.19e10 | 14.9-61.9 |
-| 27Al e_max = 4 | 1 | 35 | 140 | 4.71e9-1.89e10 | 31.5-32.6 | 1.48e11-6.16e11 | 148-616 |
-| 27Al e_max = 8 | 1 | 165 | 660 | 2.33e12-9.31e12 | 36.6-37.8 | 8.53e13-3.52e14 | 8.5e4-3.5e5 |
-| 27Al e_max = 10 | 1 | 286 | 1144 | 2.10e13-8.41e13 | 38.5-39.6 | 8.09e14-3.33e15 | 8.1e5-3.3e6 |
+| 27Al sd | 1 | 12900 | 24 | 4.05e7-1.62e8 | 27.6-28.7 | 1.12e9-4.65e9 | 1.12-4.65 |
+| 48Ca/Ti pf | 2 | 82940 | 40 | 5.21e8-2.08e9 | 29.7-30.8 | 1.55e10-6.42e10 | 15.5-64.2 |
+| jj44 pairs | 2 | 53854 | 44 | 3.38e8-1.35e9 | 29.3-30.5 | 9.92e9-4.12e10 | 9.92-41.2 |
+| 100Mo/Ru | 2 | 114909 | 54 | 7.22e8-2.89e9 | 29.9-31.1 | 2.16e10-8.98e10 | 21.6-89.8 |
+| jj55 pairs | 2 | 216072 | 64 | 1.36e9-5.43e9 | 30.5-31.6 | 4.14e10-1.72e11 | 41.4-172 |
+| 27Al e_max = 3 | 1 | 767264 | 80 | 2.41e9-9.64e9 | 30.9-32.1 | 7.46e10-3.09e11 | 74.6-309 |
+| 27Al e_max = 4 | 1 | 6183358 | 140 | 1.94e10-7.77e10 | 32.7-33.8 | 6.35e11-2.63e12 | 635-2630 |
+| 27Al e_max = 8 | 1 | 1944122242 | 660 | 6.11e12-2.44e13 | 37.4-38.6 | 2.29e14-9.43e14 | 2.3e5-9.4e5 |
+| 27Al e_max = 10 | 1 | 14842974100 | 1144 | 4.66e13-1.87e14 | 39.1-40.3 | 1.82e15-7.51e15 | 1.8e6-7.5e6 |
 
-The co-design flagship takes the low end of e_max = 8 and the high end of e_max = 10: 8.53e13-3.33e15 T, ε_l = 3.0e-17 to 1.2e-15. Gap variants (`multiple_*_large_gap`, `multiple_mo_ru_small_gap`): jj55 5.95-12.1 at Δ = 4 MeV; 100Mo/Ru 2.96-6.03 at 4 MeV and 25.1-51.1 at 0.5 MeV. With the preparation depth cut tenfold, pf falls to 0.16-0.68 of the budget, jj44 to 0.24-1.01, 100Mo/Ru to 0.28-4.8 across the gap variants (0.56-2.35 at the generic band).
+The co-design flagship takes the low end of e_max = 8 and the high end of e_max = 10: 2.29e14-7.51e15 T, ε_l = 1.3e-17 to 4.4e-16. Gap variants (`multiple_*_large_gap`, `multiple_mo_ru_small_gap`): jj55 20.3-41.4 at Δ = 4 MeV; 100Mo/Ru 10.6-21.6 at 4 MeV, 89.8-183 at 0.5 MeV and 51.4-105 at the measured 0+ gaps. With the preparation depth cut tenfold, 27Al falls to 0.10-0.43 of the budget, pf to 1.4-6.0, jj44 to 0.93-3.86, 100Mo/Ru to 0.99-17 across the gap variants (2.0-8.4 at the generic band).
 
 ### 4.4 2033: the operator insertion
 

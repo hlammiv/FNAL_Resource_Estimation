@@ -2,6 +2,15 @@
 applications/app10_collider_physics.tex, the 2026-08-28/29 rewrite (in-tree since 2026-09-29; author
 rulings on its framing and instances in ch6_rewrite/CHANGE_MAP.md).
 
+t2e (author ruling 2026-11-13, two trend energies): free staggered quarks have E = sin(pa) / a, so the box momenta
+pa = pi/4, pi/2, 3pi/4 of the 0.8 fm axis give the pair energies 1.40, 1.97, 1.40 GeV (pi/4 and 3pi/4 degenerate). The
+2033 campaign is B/M at the two distinct energies, pa = pi/4 and pi/2 (n_source_momenta 3 -> 2). The assumed change
+between them stays 25% (trend_size): the three-point design spanned the same two energies, so the end-point
+assumption carries over; 5.9% per point, 6.0-6.3e3 shots per configuration as before. The 4.65 GeV point and its
+575-step shot leave the campaign; the step rule is applied at the top trend mode, pa = pi/2 (gluon phase 0.059 at
+500 steps), so hard_ops 2.6e10 -> 2.54e10. Campaign 2.4-2.5e4 -> 1.8-1.9e4 shots, 3.3-26 -> 2.3-18 yr (5.2x -> 3.7x the
+window). The smallest box with both energies and a third is L_par = 16. Records (r23 sampling, z-bins) keep 3.
+
 q1 (author rulings A and B, 2026-10-05; "Drop the EPOQ unless it really adds something"): E-rho-OQ is dropped from the
 chapter and the model (the r27 G8 penalty exports, eroq_* assumptions and the 1e4-T thermal_prep_t placeholder are
 retired). The two 2033 dipole media are quench-prepared: electric vacuum, coupling ramp over one lattice unit (20 steps,
@@ -200,9 +209,10 @@ INPUTS AND SOURCES
                                    L_par=10 (V=40) a sensitivity parenthetical; N_anc=100   app10:95,139,141
   2033 steps                       300-500 evolution (t = 30-50 a; R4) + ramp 1e2-1e3 steps 'at the same cost'   app10:90,141,143
   3+1D extension                   L_s=4 (V=64, n_link=3, 192 links); 1e3 steps; no ramp  app10:90
-  sampling shots                   n_s ~ 0.1 (Assumed); 30% first result; 5.9% per point for the 3-sigma trend  app10:80,146-147
+  sampling shots                   n_s ~ 0.1 (Assumed); 30% first result; 5.9% per point for the 3-sigma change between
+                                   the two pair energies (t2e)  app10:94,152
   fragmentation shots              A = 0.05-0.2 (Assumed), eps = 0.2, N_z=10, N_tens=4, N_boost=3      app10:86,148-149
-  campaign                         3 source momenta, one spacing; 120 FF calls; 2 dipole rows x 3 T; 5 yr app10:168-169
+  campaign                         2 pair energies (t2e; was 3 source momenta), one spacing; 120 FF calls; 2 dipole rows x 3 T; 5 yr app10:159-160
   systematics                      O(a^2) 10-20%, volume 30%, subgroup 5%; 20% stat per z-bin         app10:48,155-156,176
   Ch. 9 counting rules             estimates.ch09_chiral_gauge: the HWP helpers of R-HOP, and the ch9_rules_*
                                    record (Ch. 9's PRE-R-HOP 2-string, 30-T accounting on this lattice, the basis
@@ -234,7 +244,7 @@ WALL TIME AND FACTORIES
   (False, True)) is common.depth_exports' cross-pairing of the two ramp ends, i.e. of two different circuits; it is
   kept for the CONTRACT test and is printed nowhere.
   First result: one sampling configuration at 30% -> wall_first_result_s (dipole rows recorded beside it).
-  Campaign: the 3-momentum trend at 3 sigma (3 configurations, one spacing) -> wall_campaign_s.
+  Campaign: B/M at the two pair energies at 3 sigma (2 configurations, one spacing; t2e) + the L_par = 4 check -> wall_campaign_s.
 """
 
 from __future__ import annotations
@@ -399,7 +409,10 @@ class Assumptions:
 
     # ---- campaign (requirements table, app10:171-179) -------------------------
     n_spacings: Tagged = Stated(2, f"{TEX}:172", "'2 lattice spacings'")
-    n_source_momenta: Tagged = Stated(3, f"{TEX}:172", "'x 3 source momenta' (CHANGE_MAP ruling 4)")
+    n_source_momenta: Tagged = Stated(2, f"{TEX}:160", "t2e ruling 2026-11-13: '2 sampling configurations (2 pair energies, "
+                                                         "one spacing)'. The box momenta pa = pi/4, pi/2 (1.40, 1.97 GeV); pa = "
+                                                         "3pi/4 repeats 1.40 GeV (staggered doubler), so the r25-r27 '3 source "
+                                                         "momenta' (CHANGE_MAP ruling 4) were two pair energies")
     n_qhat_T: Tagged = Stated(3, f"{TEX}:172", "'q-hat: 3 temperature points' (CHANGE_MAP ruling 5)")
     n_species_channels: Tagged = Stated(5, f"{TEX}:172", "'all ~5 species channels ... read from the same event records'")
     campaign_horizon_yr: Tagged = Stated(5, f"{TEX}:171", "'Campaign horizon 5 years'")
@@ -472,10 +485,14 @@ class Assumptions:
                                                      "chapter carried c = 1-2 and a 120-240 / 3.2-6.3e3 shot band)")
     n_meson: Tagged = Assumed((0.5, 1.0), "mesons per event in the ratio's denominator; the shot audit's range, giving "
                                           "(c / n_s + 1 / n_M) / delta^2 = 1.1e3-2.2e3 at 10%", src=f"{TEX}:80")
-    trend_size: Tagged = Assumed(0.25, "the size of the B/M change across the three source momenta the campaign must "
-                                       "resolve (shot audit's reference trend)", src=f"{TEX}:80")
-    trend_sigma: Tagged = Stated(3, f"{TEX}:80", "R2: the campaign states N-sigma on the 3-momentum trend; N = 3. The "
-                                                 "end-to-end change carries sqrt(2) x the per-point error")
+    trend_size: Tagged = Assumed(0.25, "the size of the B/M change between the two pair energies 1.40 and 1.97 GeV (pa = "
+                                       "pi/4, pi/2) the campaign must resolve (shot audit's reference trend). t2e (2026-11-13): "
+                                       "kept at 25%, since the r25 three-momentum design spanned the same two energies (pi/4 "
+                                       "and 3pi/4 are degenerate), so its end-point change is this one. Scaling 25% by ln E "
+                                       "from the nominal 1.55-4.65 GeV span instead gives 7.9% (trend_log_scaled_record)",
+                                 src=f"{TEX}:94")
+    trend_sigma: Tagged = Stated(3, f"{TEX}:94", "R2: the campaign states N-sigma on the B/M change; N = 3. The "
+                                                 "difference of two points carries sqrt(2) x the per-point error")
     fake_rate_over_n_s: Tagged = Assumed((0.002, 0.04), "vacuum fake rate b of the source-free circuit (the leak of U|0> out "
                                                         "of the vacuum label under the window) over n_s; the subtraction's "
                                                         "optimal split multiplies the species shots by (sqrt(1 + r) + "
@@ -1019,7 +1036,8 @@ def ratio_shots(a: Assumptions, delta: float) -> tuple[float, float]:
 
 
 def trend_delta(a: Assumptions) -> float:
-    """R2: per-point error at which the 3-momentum trend shows at trend_sigma: trend / (N sqrt(2))."""
+    """R2: per-point error at which the change between two points shows at trend_sigma: trend / (N sqrt(2)).
+    t2e (2026-11-13): the two points are the pair energies 1.40 and 1.97 GeV (was the end points of three momenta)."""
     return float(a.trend_size) / (float(a.trend_sigma) * math.sqrt(2))
 
 
@@ -1403,10 +1421,11 @@ def pair_phase(w: float, dt: float, n: int) -> float:
 
 
 def rule_steps_top_mode(a: Assumptions) -> dict:
-    """Step rule at the top box mode (n = 3, 4.65 GeV): the fewest steps over the window's upper end (50 a) at which
-    the injected gluon's dispersion phase is <= eps; never fewer than the chosen 0.1 a grid gives."""
+    """Step rule at the top trend mode (n = n_source_momenta; t2e 2026-11-13: n = 2, pa = pi/2, 3.1 GeV; was n = 3,
+    4.65 GeV): the fewest steps over the window's upper end (50 a) at which the injected gluon's dispersion phase is
+    <= eps; never fewer than the chosen 0.1 a grid gives."""
     L_par = int(a.L_par_priced.value)
-    w = 2 * math.sin(math.pi * 3 / L_par)
+    w = 2 * math.sin(math.pi * int(a.n_source_momenta.value) / L_par)
     t = float(a.window_over_a.hi)
     n0 = int(round(t / 0.1))
     n = n0
@@ -1676,20 +1695,21 @@ def _model_2033(a: Assumptions) -> Result:
     crossings_window = (a.window_over_a.lo / a.L_par_priced.value, a.window_over_a.hi / a.L_par_priced.value)   # (3.75, 6.25)
     inv_lambda_fm = (hbarc / a.lambda_qcd_GeV.hi, hbarc / a.lambda_qcd_GeV.lo)                     # (0.66, 0.99) fm/c
 
-    # step rule (2026-10-04): the 4.65 GeV point at 50 a runs n_top evolution steps (575, was 500); its own circuit,
-    # rotation count and R-TOL tolerance. The 30 a end meets the rule at 0.1 a (phase 0.079), so only this shot moves
+    # step rule (2026-10-04): the top trend point at 50 a runs n_top evolution steps, its own circuit, rotation count
+    # and R-TOL tolerance. t2e (2026-11-13): the top point is pa = pi/2 (3.1 GeV), phase 0.059 at 500 steps, so
+    # n_top = 500 and this shot is the 500-step circuit (r26-r27: the 4.65 GeV point ran 575)
     top = rule_steps_top_mode(a)
-    n_steps_top = top["n"] + n_ramps * ramp[1]                            # 2575
+    n_steps_top = top["n"] + n_ramps * ramp[1]                            # 2500 (t2e; 2575 at 4.65 GeV)
     n_rot_top = n_steps_top * n_rot_step
     a_top = _at_eps(a, rtol_eps(a, n_rot_top), n_rot_top)
     t_step_top, gs_top, _, _ = _step(a_top, V)
-    t_top = n_steps_top * t_step_top                                      # 2.61e10 -> '2.6e10'
+    t_top = n_steps_top * t_step_top                                      # 2.54e10 (t2e; 2.61e10 at 4.65 GeV)
     hard_ops_2033 = (t_total[0], max(t_total[1], t_top))
 
     # logical faults (app10:90)
     eps_l = float(a.rfi_eps_l)
-    faults_rfi = (t_total[0] * eps_l, hard_ops_2033[1] * eps_l)           # (49, 261)
-    eps_l_req = (float(a.clean_shot_faults) / hard_ops_2033[1], float(a.clean_shot_faults) / t_total[0])   # (3.8e-12, 2.0e-11)
+    faults_rfi = (t_total[0] * eps_l, hard_ops_2033[1] * eps_l)           # (49, 254) (t2e; 261 at 4.65 GeV)
+    eps_l_req = (float(a.clean_shot_faults) / hard_ops_2033[1], float(a.clean_shot_faults) / t_total[0])   # (3.9e-12, 2.0e-11)
 
     # shots: the r23 accounting (1/(n_s delta^2), 5-10%), kept as the record
     n_s = float(a.n_s)
@@ -1719,7 +1739,7 @@ def _model_2033(a: Assumptions) -> Result:
     shot_s = (max(t_total[0] * gate, d_shot[0] * REACTION_TIME_S) + t0,
               max(t_total[1] * gate, d_shot[1] * REACTION_TIME_S) + t0)   # (3.99e3, 2.17e4) s
     depth_penalty = (shot_s[0] / wall_shot[0], shot_s[1] / wall_shot[1])  # (1.0, 1.43)
-    # the top point's shot time (step rule), and the campaign's mean shot at the high end (one of three momenta)
+    # the top point's shot time (step rule), and the campaign's mean shot at the high end (one of the n_mom points)
     d_top = n_steps_top * depth_2033_step(a_top, gs_top["t_per_rotation_fermion"], n_links, 1)
     shot_s_top = max(t_top * gate, d_top * REACTION_TIME_S) + t0
     n_mom_ = int(a.n_source_momenta.value)
@@ -1729,15 +1749,25 @@ def _model_2033(a: Assumptions) -> Result:
     delta_first = float(a.delta_first_2033)
     shots_first = ratio_shots(a, delta_first)                             # (122, 244)
     wall_first = (shots_first[0] * shot_s[0], shots_first[1] * shot_s[1])
-    # R2 campaign: the 3-momentum trend at trend_sigma, one spacing (whether box effects cancel in the trend is open, J2)
-    n_mom = int(a.n_source_momenta.value)                                 # 3
+    # R2 campaign: the B/M change between the two pair energies at trend_sigma, one spacing (t2e 2026-11-13; was
+    # three momenta; whether box effects cancel in the change is open, J2)
+    n_mom = int(a.n_source_momenta.value)                                 # 2 (t2e; was 3)
     delta_tr = trend_delta(a)                                             # 0.0589 per point
-    shots_pt = ratio_shots(a, delta_tr)                                   # (3.17e3, 6.34e3) per configuration
-    shots_trend = (n_mom * shots_pt[0], n_mom * shots_pt[1])              # (9.5e3, 1.9e4)
+    shots_pt = ratio_shots(a, delta_tr)                                   # (6.05e3, 6.34e3) per configuration
+    shots_trend = (n_mom * shots_pt[0], n_mom * shots_pt[1])              # (1.21e4, 1.27e4) (t2e; 3 points 1.8-1.9e4)
+    # t2e: the trend points' box momenta and free staggered pair energies E = sin(pa) / a
+    pa_trend = tuple(2 * math.pi * k / int(a.L_par_priced.value) for k in range(1, n_mom + 1))   # (pi/4, pi/2)
+    e_trend = tuple(math.sin(x) * float(a.hbarc_GeV_fm) / float(a.a_fm) for x in pa_trend)        # (1.395, 1.973) GeV
+    # record: the alternative reading, 25% scaled by ln E from the nominal 1.55-4.65 GeV span to 1.40-1.97 GeV
+    trend_log = float(a.trend_size) * math.log(e_trend[-1] / e_trend[0]) / math.log(3.0)          # 0.079
+    delta_log = trend_log / (float(a.trend_sigma) * math.sqrt(2))                                   # 0.019
+    shots_pt_log = ratio_shots(a, delta_log)
     wall_trend = (shots_trend[0] * shot_s[0], shots_trend[1] * shot_s_campaign_hi)   # step rule: the top point's shot
     trend_over_horizon = (wall_trend[0] / horizon_s, wall_trend[1] / horizon_s)   # (0.30, 4.4)
     configs_in_horizon = (horizon_s / (shots_pt[1] * shot_s_campaign_hi), horizon_s / (shots_pt[0] * shot_s[0]))
     sigma_at = {d: float(a.trend_size) / (math.sqrt(2) * d) for d in (0.05, 0.10, delta_first)}   # 3.5, 1.8, 0.59 sigma
+    shots_trend_log = (n_mom * shots_pt_log[0], n_mom * shots_pt_log[1])
+    wall_trend_log = (shots_trend_log[0] * shot_s[0], shots_trend_log[1] * shot_s_campaign_hi)
     ratio_10 = ratio_shots(a, 0.10)                                       # (1.1e3, 2.2e3): the shot audit's range
     # a second spacing (requirements row): on the same 4x8 lattice it doubles the steps (box 0.2 x 0.4 fm) and adds
     # 2 x the one-spacing campaign; at fixed physical volume it needs 4x the sites
@@ -1754,7 +1784,8 @@ def _model_2033(a: Assumptions) -> Result:
 
     # the r23 sampling record: 1e3-4e3 shots per configuration at the 100 a window, serial
     wall_a = (shots_a[0] * wall_shot_full[0], shots_a[1] * wall_shot_full[1])   # (1.1e7, 8.1e7), r23
-    n_config = int(a.n_spacings.value) * int(a.n_source_momenta.value)    # 6 (requirements row)
+    n_mom_r23 = 3                                                         # the r23 record's three source momenta
+    n_config = int(a.n_spacings.value) * n_mom_r23                        # 6 (r23 requirements row, record)
     camp_a_10 = (n_config * shots_a[0] * wall_shot_full[0] / yr, n_config * shots_a[0] * wall_shot_full[1] / yr)   # r23
     camp_a_5 = (n_config * shots_a[1] * wall_shot_full[0] / yr, n_config * shots_a[1] * wall_shot_full[1] / yr)    # r23
 
@@ -1864,13 +1895,17 @@ def _model_2033(a: Assumptions) -> Result:
     # windings grow with p, so cancellation in the trend is not expected (box-effect size on B/M not derived).
     kap = float(a.lund_kappa_GeV_fm)
     L_ax_fm = int(a.L_par_priced.value) * a_fm_
-    box_modes = tuple(k * p_unit[0] for k in range(1, n_mom + 1))          # 1.55, 3.10, 4.65 GeV
-    yoyo_t_fm = tuple(p / kap for p in box_modes)                          # 1.55, 3.10, 4.65 fm/c
-    yoyo_windings = tuple(2 * p / (kap * L_ax_fm) for p in box_modes)      # 3.9, 7.7 (7.749), 11.6
+    box_modes = tuple(k * p_unit[0] for k in range(1, n_mom + 1))          # 1.55, 3.10 GeV (t2e; was + 4.65)
+    yoyo_t_fm = tuple(p / kap for p in box_modes)                          # 1.55, 3.10 fm/c
+    yoyo_windings = tuple(2 * p / (kap * L_ax_fm) for p in box_modes)      # 3.9, 7.7 (7.749)
     # a second box in the same reduced model shares box mode k of L_par = 8 iff k L / 8 is an integer
     L8 = int(a.L_par_priced.value)
     shared = {L: tuple(k for k in range(1, n_mom + 1) if (k * L) % L8 == 0) for L in range(1, 2 * L8 + 1) if L != L8}
     L_all = min(L for L, ks in shared.items() if len(ks) == n_mom)          # 16: every trend point
+    # t2e: distinct free staggered pair energies sin(2 pi k / L) / a, k = 1 .. floor(L / 4), per box of Table ch06_lengths
+    energies_by_L = {L: tuple(math.sin(2 * math.pi * k / L) * float(a.hbarc_GeV_fm) / float(a.a_fm)
+                              for k in range(1, L // 4 + 1)) for L in (4, 8, 10, 16, 20)}
+    L_three = min(L for L in range(L8 + 1, 4 * L8) if L % L8 == 0 and L // 4 >= 3)   # 16: both 2033 energies and more
     L_one = min(L for L, ks in shared.items() if ks)                        # 4: the 3.1 GeV point only
     lq_box_all = register(q_g, L_perp * L_all, D, n_c, n_stag, n_anc)[3]   # 1828
     lq_box_one = register(q_g, L_perp * L_one, D, n_c, n_stag, n_anc)[3]   # 532
@@ -1886,10 +1921,10 @@ def _model_2033(a: Assumptions) -> Result:
         shot_one.append(max(tt * gate, dd * REACTION_TIME_S) + t0)
     wall_box_one = (shots_pt[0] * shot_one[0], shots_pt[1] * shot_one[1])  # one configuration at the trend precision
     # smaller ruling (a) (2026-10-05, Henry: "do ... the smaller things"; Claude's recommended default): the L_par = 4
-    # box-dependence check is part of the campaign. Campaign = the 3-momentum trend + the one-point check.
-    shots_camp = (shots_trend[0] + shots_pt[0], shots_trend[1] + shots_pt[1])     # (1.27e4, 2.53e4)
-    wall_camp = (wall_trend[0] + wall_box_one[0], wall_trend[1] + wall_box_one[1])   # 1.72-25.8 yr (was 1.48-22.1)
-    camp_over_horizon = (wall_camp[0] / horizon_s, wall_camp[1] / horizon_s)     # (0.34, 5.2) (was 4.4)
+    # box-dependence check is part of the campaign. Campaign = the two-energy trend + the one-point check.
+    shots_camp = (shots_trend[0] + shots_pt[0], shots_trend[1] + shots_pt[1])     # (1.81e4, 1.90e4) (t2e; 2.4-2.5e4)
+    wall_camp = (wall_trend[0] + wall_box_one[0], wall_trend[1] + wall_box_one[1])   # 2.34-18.3 yr (t2e; 3.3-25.8)
+    camp_over_horizon = (wall_camp[0] / horizon_s, wall_camp[1] / horizon_s)     # (0.47, 3.66) (t2e; was 5.16)
 
     # J3: the N_h insertion. Hadamard test with the projector on both branches: (|0>|a> + |1>|b>)/sqrt2, then the
     # backward ramp (uncontrolled, already in every 2033 shot) and the label measurement; the estimator X 1_h has mean
@@ -1903,14 +1938,14 @@ def _model_2033(a: Assumptions) -> Result:
                     sum(z ** (2 / 3) for z in zc) ** 3 / nz)                # 23.1 (variance bound)
     ff_nh_extra_t = 0.0                                                    # 0 for the projector; momentum transform unpriced
 
-    # requirements row: 3 sampling configurations + 120 fragmentation calls + 2 dipole rows x 3 temperatures
+    # requirements row: 2 sampling configurations + 120 fragmentation calls + 2 dipole rows x 3 temperatures
     n_ff_calls = int(a.n_z.value) * int(a.n_tens.value) * int(a.n_boost.value)   # 120
-    n_calls = n_mom + n_ff_calls + 2 * n_T                                # 129 -> '~130'
+    n_calls = n_mom + n_ff_calls + 2 * n_T                                # 128 -> '~130' (t2e; was 129)
     n_calls_r23 = n_config + n_ff_calls + int(a.n_qhat_T.value)           # 129, r23
 
     # R9 exports for the era: the campaign run (one machine)
-    # step rule: at the high end one of the three momenta runs the 575-step shot, so the exports take the campaign's
-    # shot-averaged T and depth there (the low end, 30 a, is one circuit)
+    # step rule: at the high end the top trend point runs its own rule-step shot (t2e: the 500-step circuit itself),
+    # so the exports take the campaign's shot-averaged T and depth there (the low end, 30 a, is one circuit)
     t_camp_mean = (t_total[0], ((n_mom_ - 1) * t_total[1] + t_top) / n_mom_)
     d_camp_mean = (d_shot[0], ((n_mom_ - 1) * d_shot[1] + d_top) / n_mom_)
     dx = depth_exports(t_camp_mean, d_camp_mean, shots_trend, gate, t0)   # the trend run on 4x8 (the check is its own circuit)
@@ -2020,10 +2055,12 @@ def _model_2033(a: Assumptions) -> Result:
         "L_par_for_separation": L_par_sep,                                # 20 sites (2 fm)
         "lq_separation_volume": lq_sep,                                   # 2260
         # r27 (2026-10-05)
-        "source_box_modes_GeV": box_modes,                                # (1.55, 3.10, 4.65)
-        "yoyo_full_extension_fm": yoyo_t_fm,                              # (1.55, 3.10, 4.65) fm/c at kappa = 1 GeV/fm
-        "yoyo_windings_at_full_extension": yoyo_windings,                 # (3.9, 7.7, 11.6)
+        "source_box_modes_GeV": box_modes,                                # (1.55, 3.10) (t2e; was + 4.65)
+        "yoyo_full_extension_fm": yoyo_t_fm,                              # (1.55, 3.10) fm/c at kappa = 1 GeV/fm
+        "yoyo_windings_at_full_extension": yoyo_windings,                 # (3.9, 7.7)
         "box_check_L_par_all_modes": L_all,                               # 16
+        "pair_energies_GeV_by_L_par": energies_by_L,                      # t2e: 8 -> (1.40, 1.97); 16 -> (0.76, 1.40, 1.82, 1.97)
+        "L_par_three_energies_with_2033_points": L_three,                 # 16
         "box_check_L_par_one_mode": L_one,                                # 4 (shares 3.1 GeV)
         "box_check_shared_modes_one": shared[L_one],                      # (2,)
         "lq_box_check_all_modes": lq_box_all,                             # 1828
@@ -2066,15 +2103,15 @@ def _model_2033(a: Assumptions) -> Result:
         "momentum_unit_GeV_at_Lpar_8_10_16": p_unit,                      # (1.55, 1.24, 0.77)
         "source_momentum_in_units_Lpar_8": float(a.source_momentum_GeV) / p_unit[0],   # 1.29: 2 GeV is not a mode at L_par = 8
         "source_momentum_times_a": float(a.source_momentum_GeV) * a_fm / hbarc,        # 1.01
-        "source_momenta_box_modes_GeV": tuple(k * p_unit[0] for k in (1, 2, 3)),       # (1.55, 3.10, 4.65), J2 v2
+        "source_momenta_box_modes_GeV": tuple(k * p_unit[0] for k in (1, 2, 3)),       # (1.55, 3.10, 4.65), J2 v2 (record: all three box modes)
         "top_box_mode_times_a": 3 * p_unit[0] * a_fm / hbarc,                          # 2.36: lattice-artifact region
         "t_had_over_L_par_cut": crossings,                                # (10, 12.5) lattice lengths in the window
         "inverse_lambda_qcd_fm": inv_lambda_fm,                           # (0.66, 0.99): workflow step 4's 't ~ 1/Lambda_QCD'
         "t_had_over_inverse_lambda_qcd": (t_had_fm / inv_lambda_fm[1], t_had_fm / inv_lambda_fm[0]),   # (10, 15)
         # logical faults
-        "faults_per_shot_2033_at_rfi_eps_l": faults_rfi,                  # (49.0, 261.6) -> '49--260' (step rule; r26 250)
-        "faults_per_shot_2033_at_1e-9": (t_total[0] * 1e-9, t_total[1] * 1e-9),   # (4.90, 25.4)
-        "eps_l_required_2033": eps_l_req,                                 # (3.82e-12, 2.04e-11) -> '3.8e-12--2.0e-11' (step rule)
+        "faults_per_shot_2033_at_rfi_eps_l": faults_rfi,                  # (49.0, 253.8) -> '49--250' (t2e; 261.6 at 4.65 GeV)
+        "faults_per_shot_2033_at_1e-9": (t_total[0] * 1e-9, t_total[1] * 1e-9),   # (3.90, 15.1)
+        "eps_l_required_2033": eps_l_req,                                 # (3.94e-12, 2.04e-11) -> '3.9e-12--2.0e-11' (t2e)
         # R9/R10 depth (factory.json schedule P) and the corrected per-shot time
         "t_depth_per_step_2033": {f"{('lo', 'hi')[e]}_circuit_{('lo', 'hi')[k]}_est": v for (e, k), v in d_step.items()},
         "f_star_per_circuit_2033": f_star_circuit,                        # ((7.0, 18.5), (7.0, 18.5)) per ramp end
@@ -2087,25 +2124,30 @@ def _model_2033(a: Assumptions) -> Result:
         "shots_first_2033": shots_first,                                  # (233, 244) -> '~240'
         "wall_first_2033_s": wall_first,
         "wall_first_2033_days": (wall_first[0] / day, wall_first[1] / day),
-        # R2 campaign: the 3-momentum trend at 3 sigma, one spacing
-        "ratio_shots_at_10pct": ratio_10,                                 # (2.1e3, 2.2e3), pair clustering (R2)
+        # R2 campaign: the B/M change between the two pair energies at 3 sigma, one spacing (t2e)
+        "ratio_shots_at_10pct": ratio_10,                                 # (1.1e3, 2.2e3), pair clustering (R2)
         # 2026-10-12: vacuum-baseline subtraction (not in any printed shot count): x(sqrt(1 + r) + sqrt(r))^2 at
         # r = b / n_s = 0.002-0.04 -> 1.09-1.49 ("+9-50%"); the FCC-era row's resolvable z-bins at L_par = 8: the
         # hadron momentum quantum is 1.55 GeV and the source carries at most three box modes, so about 3 bins
         "baseline_subtraction_factor": tuple((math.sqrt(1 + r) + math.sqrt(r)) ** 2
                                              for r in (a.fake_rate_over_n_s.lo, a.fake_rate_over_n_s.hi)),
-        "z_bins_resolvable_Lpar8": n_mom,                                 # 3 (box modes 1.55, 3.10, 4.65 GeV)
+        "z_bins_resolvable_Lpar8": L8 // 2 - 1,                           # 3 (box modes 1.55, 3.10, 4.65 GeV; not the trend points)
         "trend_delta_per_point": delta_tr,                                # 0.0589
+        "trend_pa": pa_trend,                                             # (pi/4, pi/2) (t2e)
+        "trend_pair_energies_GeV": e_trend,                               # (1.395, 1.973) (t2e)
+        "trend_log_scaled_record": {"trend": trend_log, "delta_per_point": delta_log,   # record, not applied (t2e)
+                                    "shots_per_configuration": shots_pt_log, "shots_trend": shots_trend_log,
+                                    "wall_trend_yr": (wall_trend_log[0] / yr, wall_trend_log[1] / yr)},
         "trend_sigma_at_delta": sigma_at,                                 # {0.05: 3.5, 0.10: 1.8, 0.30: 0.59}
         "shots_per_configuration_campaign": shots_pt,                     # (6.05e3, 6.34e3)
-        "shots_trend_2033": shots_trend,                                  # (1.81e4, 1.90e4)
+        "shots_trend_2033": shots_trend,                                  # (1.21e4, 1.27e4) (t2e; 1.8-1.9e4 at 3 points)
         "wall_trend_2033_s": wall_trend,
-        "wall_trend_2033_yr": (wall_trend[0] / yr, wall_trend[1] / yr),    # (2.82, 22.1)
-        "trend_over_horizon": trend_over_horizon,                         # (0.56, 4.4)
-        "shots_campaign_2033": shots_camp,                                # (2.42e4, 2.53e4): trend + L_par = 4 check
+        "wall_trend_2033_yr": (wall_trend[0] / yr, wall_trend[1] / yr),    # (1.88, 14.6) (t2e; 2.82-22.1 at 3 points)
+        "trend_over_horizon": trend_over_horizon,                         # (0.38, 2.92)
+        "shots_campaign_2033": shots_camp,                                # (1.81e4, 1.90e4): trend + L_par = 4 check
         "wall_campaign_2033_s": wall_camp,
-        "wall_campaign_2033_yr": (wall_camp[0] / yr, wall_camp[1] / yr),  # (3.28, 25.8) -> '3.3--26 yr'
-        "campaign_over_horizon": camp_over_horizon,                       # (0.66, 5.16) -> '5.2x'
+        "wall_campaign_2033_yr": (wall_camp[0] / yr, wall_camp[1] / yr),  # (2.34, 18.3) -> '2.3--18 yr' (t2e; 3.3--26)
+        "campaign_over_horizon": camp_over_horizon,                       # (0.47, 3.66) -> '3.7x' (t2e; 5.2x)
         "configurations_in_horizon": configs_in_horizon,
         "wall_campaign_two_spacings_yr": (wall_camp_2sp[0] / yr, wall_camp_2sp[1] / yr),
         "lq_second_spacing_fixed_volume": lq_fixed_volume_2sp,           # 3556
@@ -2123,8 +2165,8 @@ def _model_2033(a: Assumptions) -> Result:
         "dipole_steps_rule": {"static": steps_static, "light": steps_light},   # (72, 203), (64, 181): step rule
         "dipole_sd_err_rule": {k: tuple(x[2] for x in v["rows"]) for k, v in dr.items()},   # each <= 0.1
         "dipole_sd_lambda": {k: v["lambda"] for k, v in dr.items()},
-        "step_rule_top_mode": top,                                        # n 575 (was 500), phase 0.0997 (was 0.132)
-        "t_shot_top_mode_2033": t_top,                                    # 2.61e10
+        "step_rule_top_mode": top,                                        # t2e: n 500, phase 0.059 at pa = pi/2 (4.65 GeV: 575, 0.0997)
+        "t_shot_top_mode_2033": t_top,                                    # 2.54e10 (t2e; 2.61e10 at 4.65 GeV)
         "wall_shot_top_mode_2033_s": shot_s_top,
         "wall_shot_campaign_mean_hi_2033_s": shot_s_campaign_hi,
         "t_campaign_mean_2033": t_camp_mean, "d_campaign_mean_2033": d_camp_mean,   # R9 export inputs (step rule)
@@ -2147,10 +2189,10 @@ def _model_2033(a: Assumptions) -> Result:
         "ff_shots_per_call": shots_per_ff_call,                           # (625, 1e4) = eps^-2 A^-2 (not printed)
         "ff_calls_in_horizon": ff_calls_in_horizon,
         # campaign bookkeeping
-        "n_sampling_configurations": n_mom,                               # 3 (one spacing)
+        "n_sampling_configurations": n_mom,                               # 2 (one spacing; t2e, was 3)
         "n_sampling_configurations_r23": n_config,                        # 6
         "n_ff_calls": n_ff_calls,                                         # 120
-        "n_subroutine_calls": n_calls,                                    # 129 -> '~130'
+        "n_subroutine_calls": n_calls,                                    # 128 -> '~130' (t2e; was 129)
         "n_subroutine_calls_r23": n_calls_r23,                            # 129
         "campaign_horizon_yr": horizon,                                   # 5
         # R9 exports (common.depth_exports, the campaign run)
@@ -2166,7 +2208,7 @@ def _model_2033(a: Assumptions) -> Result:
     notes = (
         "Step rule (2026-10-04, Claude's decision on G7, NEEDS_AUTHOR closed): the state-dependent estimate at eps = 0.1 "
         "sets the step. The window evolves the ramp-prepared vacuum (an eigenstate; its error is the bounded free-field "
-        f"0.04-0.05), so the rule binds on the injected pair: the 4.65 GeV point at 50 a runs {top['n']} steps (phase "
+        f"0.04-0.05), so the rule binds on the injected pair: the top trend point (pa = pi/2) at 50 a runs {top['n']} steps (phase "
         f"{top['phase']:.4f}), {t_top:.4g} T per shot, the box's upper end. The thermal dipole rows take the literal "
         f"estimate: {steps_static} and {steps_light} steps.",
         f"Register (eq:Nq_collider) at q_G = {q_g} (R1): uncut 4x16 {gauge_u} + {fermion_u} + {n_anc} = {lq_uncut}; "
@@ -2202,8 +2244,9 @@ def _model_2033(a: Assumptions) -> Result:
         "the serial time at the high end).",
         f"First result (R1): one configuration at {100 * delta_first:.0f}%, {shots_first[0]:.0f}-{shots_first[1]:.0f} shots "
         f"(R2 pair clustering), {wall_first[0] / day:.1f}-{wall_first[1] / day:.0f} d on one machine.",
-        f"Campaign (R2): the {n_mom}-momentum trend at {float(a.trend_sigma):g} sigma ({100 * delta_tr:.1f}% per point "
-        f"for a {100 * float(a.trend_size):.0f}% trend), {shots_pt[0]:.3g}-{shots_pt[1]:.3g} shots per configuration, "
+        f"Campaign (R2, t2e): B/M at the {n_mom} pair energies {e_trend[0]:.2f}-{e_trend[-1]:.2f} GeV at "
+        f"{float(a.trend_sigma):g} sigma ({100 * delta_tr:.1f}% per point "
+        f"for a {100 * float(a.trend_size):.0f}% change), {shots_pt[0]:.3g}-{shots_pt[1]:.3g} shots per configuration, "
         f"{wall_trend[0] / yr:.2f}-{wall_trend[1] / yr:.1f} yr on one machine; with the L_par = 4 box check "
         f"(ruling 2026-10-05) {wall_camp[0] / yr:.2f}-{wall_camp[1] / yr:.1f} yr, {camp_over_horizon[1]:.1f}x the "
         f"horizon at the top; {configs_in_horizon[0]:.2f}-"
@@ -2384,10 +2427,11 @@ PUBLISHED = {
                           "(E20), R-TOL eps = 1.6e-3, the overshoot accepted by ruling 2026-10-01). tol 0.02 covers "
                           "132,175 -> 1.3e5",
                       rel_tol=0.02),
-    "2033": Published(lq=(964, 964), hard_ops=(4.9e9, 2.6e10),
-                      src="app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.6e10 (window + 2 x 1e2--1e3 "
-                          "ramp steps; electric term a lower bound)' (step rule 2026-10-04: the 4.65 GeV point at 50 a runs "
-                          "575 steps, exact 4.9014e9 and 2.6159e10; r26 2.5381e10 at 500 steps; referee J1: the readout "
+    "2033": Published(lq=(964, 964), hard_ops=(4.9e9, 2.5e10),
+                      src="app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.5e10 (window + 2 x 1e2--1e3 "
+                          "ramp steps; electric term a lower bound)' (t2e 2026-11-13: the top trend point is pa = pi/2, "
+                          "500 steps under the step rule, exact 4.9014e9 and 2.5381e10; 2026-10-04 to t2e the 4.65 GeV "
+                          "point ran 575 steps, 2.6159e10; referee J1: the readout "
                           "map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window "
                           "30--50 a). Two-figure prints: tol 0.035",
                       rel_tol=0.035),
