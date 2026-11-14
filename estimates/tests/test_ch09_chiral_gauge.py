@@ -2725,3 +2725,50 @@ def test_ncs_counting_trotter_error_free_lattice():
         ex = m.ncs_counting_design({x: m.ncs_counting_lnG(3, 3, 0.5, 1.0, tt, x) for x in chis}, bg, pf, 0.2)
         tr = m.ncs_counting_design({x: m.ncs_counting_lnG(3, 3, 0.5, 1.0, tt, x, n_trotter=n) for x in chis}, bg, pf, 0.2)
         assert abs((1 + tr["bias"]) / (1 + ex["bias"]) - 1) < 0.004
+
+
+# --- author decision 2026-11-14 (option 2): the 2033 rate instance, pure SU(2) on 4^3, 2T, beta_L = 3 ---------------
+
+def test_rate_instance_register_and_shot(a, r33):
+    """984 LQ = 3 x 64 links x 5 qubits + 2 primitive + 21 counting workspace + 1 readout; the KS gauge terms (group
+    FFT) and the 2T counting term every step of the window, the state-dependent step count over thermalization +
+    window; the two-time counting-field slope to 30% with the classical-statistical S and Re G(chi)."""
+    x = r33.intermediates["rate_2033"]
+    assert a.rate_group_2033.value == "2T" and a.rate_L_2033.value == 4 and a.rate_beta_L_2033.value == 3.0
+    assert GROUPS["2T"].link_qubits == 5
+    assert x["lq"] == 984 and x["lq_parts"] == {"links": 960, "primitive_ancilla": 2, "counting_workspace": 21, "readout": 1}
+    assert math.isclose(x["g2"], 8 / 3) and math.isclose(x["L_g2T"]["improved"], 4 * 4 / 2.4)
+    r1, r2 = x["runs"]["t1"], x["runs"]["t2"]
+    assert (r1["t"], r2["t"]) == (5.0, 20.0) and (r1["n_steps"], r2["n_steps"]) == (1031, 2915)
+    assert rel(r2["t_shot"], 1.429e10) <= 1e-3 and rel(r1["t_shot"], 2.966e9) <= 1e-3
+    assert round(x["t_per_shot_max"] / 1e10, 1) == 1.4 and 0.80 < x["counting_share"] < 0.82        # chapter '81%'
+    assert m.NCS_COUNTING_LINK_2T == {"U_mul": 56, "U_inv": 32, "U_FFT": 6, "toffoli": 1482, "rotations": 108}
+    assert round(x["eps_l"] * 1e12, 1) == 7.0                                                     # box '7.0e-12'
+    assert round(x["shots_total"], -2) == 2100 and round(x["wall_yr"], 2) == 0.57                  # box '2.1e3', '0.57 yr'
+    assert 1.2 < x["wall_yr_at_20pct"] < 1.35
+    alt = r33.intermediates["rate_2033_alternatives"]
+    assert alt["2O_L4"]["lq"] == 1186 and alt["2O_tree_L4"]["lq"] == 808 and alt["2T_L5"]["lq"] == 1899
+    assert alt["2T_L3"]["lq"] == 429
+    # the chapter headline does not move
+    assert r33.lq == (1235, 1235) and round(r33.hard_ops[0] / 1e10, 1) == 4.4
+
+
+def test_rate_instance_classical_inputs():
+    """The classical-statistical inputs: the Kubo growth is linear from 5a (S/t equal at 5a and 20a to 7%), the
+    counting settings keep Re G above 0.05, and chi kappa stays below 0.3 at g^2 = 8/3."""
+    C = m.SPH3D_CLASSICAL
+    assert (C["N"], C["beta_L"], C["replicas"]) == (4, 3.0, 48)
+    assert abs((C["S"][20.0] / 20) / (C["S"][5.0] / 5) - 1) < 0.07
+    assert all(g > 0.05 for t in C["G"] for g in C["G"][t].values())
+    assert max(m.Assumptions().rate_counting_chis_2033.value) * (8 / 3) / (8 * math.pi ** 2) < 0.3
+
+
+def test_rate_instance_row_and_prints(r33):
+    rows = m.INSTANCE_ROWS(m.Assumptions(), "2033", r33)
+    assert len(rows) == 2 and rows[1][1] == (984, 984) and "4^3 pure SU(2)/2T" in rows[1][0]
+    tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex").read_text()
+    for frag in (r"Rate instance & $4^3$ pure SU(2), $2T$, $\beta_L=3$: $984$ LQ; $1.4\times 10^{10}$ T ($20a$); "
+                 r"$\epsilon_l\lesssim 7.0\times 10^{-12}$; $2.1\times 10^{3}$ shots ($5a$--$20a$ slope, $30\%$); $0.57$~yr",
+                 r"as it is $81\%$ of the $4^3$ rate shot",
+                 r"the lattice side is $L=6.7/(g^2T)$ at one loop"):
+        assert frag in tex, frag

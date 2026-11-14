@@ -1009,6 +1009,124 @@ NCS_COUNTING_LINK = {"U_mul": 8 * 3 * 2 + 2 * 2 * 2, "U_inv": 8 * 2 * 2, "U_FFT"
 NCS_COUNTING_WORKSPACE = {"accumulators": 2 * (5 + 4), "m_values": 2 * 3, "lookup_and_lines": 5}
 
 
+# --------------------------------------------------------------------------- #
+# 2033 rate instance (author decision 2026-11-14, option 2): pure SU(2) Chern-Simons diffusion on 4^3, 2T links,
+# beta_L = 4/(g^2 a T) near 2.5, a same-lattice quantum-against-classical comparison. Classical inputs from the
+# real-time classical-statistical study in applications/ch09_chiral_gauge/sph3d/ (su2rt.py, analyze.py, CLASSICAL).
+# --------------------------------------------------------------------------- #
+
+# The counting term on 2T, DERIVED HERE as NCS_COUNTING_LINK with the 2T values: plaquette components
+# -i Tr(sigma^a U_p) = 2 u_a in {0, +-1, +-2}, so 4 B = n1 in [-8, 8] (5 bits) with no sqrt2 part; a 24-entry lookup
+# (23 Toffolis, 3-bit output) and the 5-bit add per plaquette, computed and uncomputed; the (rho, m, m') lookup over
+# the 24 link states (23 Toffolis); the frame for a = 1, 2 by the 120-degree element about (1,1,1), which permutes
+# J^1, J^2, J^3 (2T has no 90-degree rotation), at U_mul as on 2O. Phase: sign, two magnitude bits, 5 accumulator
+# bits and their 10 products = 18 per site, 36 per a.
+NCS_COUNTING_LINK_2T = {"U_mul": 8 * 3 * 2 + 2 * 2 * 2, "U_inv": 8 * 2 * 2, "U_FFT": 3 * 2,
+                        "toffoli": 3 * (2 * 8 * (23 + 5) + 2 * 23), "rotations": 3 * 2 * (1 + 2 + 5 + 10)}
+NCS_COUNTING_WORKSPACE_2T = {"accumulators": 2 * 5, "m_values": 2 * 3, "lookup_and_lines": 5}
+RATE_READOUT_ANCILLA = 1          # the counting-field ancilla
+
+
+def _counting_link_t(table: dict, g, eps_rot: float, tc: str, t_rot: float) -> float:
+    return (table["U_mul"] * g.primitives["U_mul"].t(eps_rot) + table["U_inv"] * g.primitives["U_inv"].t(eps_rot)
+            + table["U_FFT"] * g.primitives["U_FFT"].t(eps_rot) + toffoli_t(table["toffoli"], tc)
+            + table["rotations"] * t_rot)
+
+
+def _gauge_link_t(g, eps_rot: float, D: int = 3) -> float:
+    return (PRIMCOST["KS"]["U_F"](D) * g.primitives["U_FFT"].t(eps_rot)
+            + sum(PRIMCOST["KS"][k](D) * g.primitives[k].t(eps_rot) for k in ("U_Tr", "U_inv", "U_mul")))
+
+
+def _rotations_gauge_link(g, D: int = 3) -> float:
+    return (PRIMCOST["KS"]["U_F"](D) * g.primitives["U_FFT"].n_rot
+            + sum(PRIMCOST["KS"][k](D) * g.primitives[k].n_rot for k in ("U_Tr", "U_inv", "U_mul")))
+
+
+def _rotations_counting_link(g, table: dict) -> float:
+    return (table["U_FFT"] * g.primitives["U_FFT"].n_rot + table["U_mul"] * g.primitives["U_mul"].n_rot
+            + table["U_inv"] * g.primitives["U_inv"].n_rot + table["rotations"])
+
+
+def sph_rate_point(group: str, L: int, temp_lat: float, t_window: tuple, t_therm: float, classical: dict,
+                   eps: float, p_fault: float, eps_syn: float, synthesis: str, tc: str, t_gate_s: float,
+                   shot_overhead_s: float, eps_trotter: float = 0.1, tree: bool = False, floor: float = 0.2) -> dict:
+    """One pure-gauge Chern-Simons-diffusion point on L^3 (DERIVED HERE; author decision 2026-11-14).
+    Register: 3 L^3 links (2 L^3 + 1 after maximal-tree fixing, whose nonlocal electric term is NOT estimated) +
+    the largest primitive's ancilla + the counting workspace + the readout ancilla. Each shot: a quench from a product
+    state, t_therm of gauge-only evolution (classical check: local observables equilibrate in ~2a at beta_L 2.5), then
+    t_i of evolution with the counting term, i = 1, 2. Step count: the state-dependent second-order estimate
+    (weak coupling, as the 3^3 test) over the whole evolution. Readout: two-time counting field, the slope
+    (S2 - S1)/(t2 - t1) of the naive (Kubo) <(Delta N_CS)^2> with S_i and Re G(chi) at the settings from the
+    classical-statistical samples (CLASSICAL), fit as ncs_counting_design; shots split to minimize T."""
+    g = GROUPS[group]
+    D = 3
+    V = L ** D
+    n_links = 2 * V + 1 if tree else D * V
+    table = NCS_COUNTING_LINK_2T if group == "2T" else NCS_COUNTING_LINK
+    work = NCS_COUNTING_WORKSPACE_2T if group == "2T" else NCS_COUNTING_WORKSPACE
+    prim_anc = max(p.ancilla for k, p in g.primitives.items() if k in ("U_inv", "U_mul", "U_Tr", "U_FFT"))
+    anc = prim_anc + sum(work.values()) + RATE_READOUT_ANCILLA
+    lq = n_links * g.link_qubits + anc
+    t1, t2 = t_window
+    runs = {}
+    for k, t in (("t1", t1), ("t2", t2)):
+        sd = trotter_state_dependent_steps(L, 3, t_therm + t, eps_trotter, temp_lat, d=D)
+        n_steps = sd["n_central"]
+        n_count = math.ceil(n_steps * t / (t_therm + t))         # steps that carry the counting term
+        n_rot = n_links * (n_steps * _rotations_gauge_link(g) + n_count * _rotations_counting_link(g, table))
+        eps_rot = eps_rot_for(n_rot, eps_syn)
+        t_rot = t_per_rotation(eps_rot, synthesis)
+        t_g, t_c = _gauge_link_t(g, eps_rot), _counting_link_t(table, g, eps_rot, tc, t_rot)
+        t_shot = n_links * (n_steps * t_g + n_count * t_c)
+        runs[k] = {"t": t, "n_steps": n_steps, "n_counting_steps": n_count, "lambda_sd": sd["lambda_var"],
+                   "n_rot": n_rot, "eps_rot": eps_rot, "t_rot": t_rot, "t_gauge_link": t_g, "t_counting_link": t_c,
+                   "t_shot": t_shot, "eps_l": 0.1 / t_shot}
+    c1, c2 = classical["S"][t1], classical["S"][t2]
+    d1 = ncs_counting_design({x: math.log(gv) for x, gv in classical["G"][t1].items()}, c1, p_fault, floor)
+    d2 = ncs_counting_design({x: math.log(gv) for x, gv in classical["G"][t2].items()}, c2, p_fault, floor)
+    # Var(slope)/slope^2 = (S1^2 s1/n1 + S2^2 s2/n2) / (S2 - S1)^2; minimize sum n_i T_i: n_i ~ S_i sqrt(s_i / T_i)
+    a1, a2 = c1 * c1 * d1["sigma2"], c2 * c2 * d2["sigma2"]
+    T1, T2 = runs["t1"]["t_shot"], runs["t2"]["t_shot"]
+    w1, w2 = math.sqrt(a1 / T1), math.sqrt(a2 / T2)
+    den = (c2 - c1) ** 2 * eps ** 2
+    cfac = (a1 / w1 + a2 / w2) / den
+    n1, n2 = cfac * w1, cfac * w2
+    wall = n1 * (T1 * t_gate_s + shot_overhead_s) + n2 * (T2 * t_gate_s + shot_overhead_s)
+    return {"group": group, "L": L, "tree": tree, "n_links": n_links, "lq": lq, "ancilla": anc,
+            "lq_parts": {"links": n_links * g.link_qubits, "primitive_ancilla": prim_anc,
+                         "counting_workspace": sum(work.values()), "readout": RATE_READOUT_ANCILLA},
+            "runs": runs, "design": {"t1": d1, "t2": d2}, "shots": (n1, n2), "shots_total": n1 + n2,
+            "sigma2_slope": (a1 / (n1 / (n1 + n2)) + a2 / (n2 / (n1 + n2))) / (c2 - c1) ** 2,
+            "wall_s": wall, "wall_yr": wall / SEC_PER_YR, "t_per_shot_max": max(T1, T2),
+            "counting_share": runs["t2"]["n_counting_steps"] * runs["t2"]["t_counting_link"] * n_links / T2}
+
+# CLASSICAL (author decision 2026-11-14): the classical-statistical inputs of the rate instance, from the real-time
+# simulations in applications/ch09_chiral_gauge/sph3d/ (su2rt.py; Kogut-Susskind Hamiltonian, canonical ensemble at
+# beta_L, leapfrog dt = 0.1a, Gauss's law to 1e-9, energy drift < 1e-3). 48 replicas of 3000a on 4^3 at beta_L = 3.
+# 'S': the Kubo-form <(Delta N_CS)^2>(t) with E the link generator and B the clover plaquette angle averaged over the
+# link ends (the readout's definition); 'G': Re G(chi) = <cos(chi Delta N_CS)> at the counting settings. Records:
+# the Kubo and cooled rates kappa = Gamma/(alpha T)^4 (tree-level a = 4/(beta_L g^2 T); 'imp' with the one-loop
+# a = 4/((beta_L - 0.6) g^2 T) of Moore_Rummukainen_2000), the large-volume means (N = 6-16), and the share of the Kubo
+# growth that tracks the cooled N_CS (regression of Delta N_Kubo on Delta N_cool over 20a-80a windows).
+SPH3D_CLASSICAL = {
+    "N": 4, "beta_L": 3.0, "replicas": 48, "t_run": 3000.0,
+    "S": {5.0: 0.023271467582337536, 20.0: 0.08867238345003521},
+    "S_err": {5.0: 0.0005455594199018612, 20.0: 0.002326588654166402},
+    "G": {5.0: {3.5: 0.8676788292350581, 6.0: 0.6612602658159925, 8.5: 0.44095185644951124},
+          20.0: {3.5: 0.5840992456418099, 6.0: 0.2172860648647009, 8.5: 0.06172438397964314}},
+    # records (not used by the model; applications/ch09_chiral_gauge/sph3d/summary.json):
+    "kubo_kappa_tree_4cube": (0.520, 0.017), "kubo_kappa_tree_large_volume": (0.500, 0.019),   # ratio 1.04 +- 0.05
+    "cooled_kappa_tree_4cube": (3.437, 0.162), "cooled_kappa_tree_large_volume": (4.38, 0.23),  # ratio 0.79 +- 0.06
+    "topological_share_4cube": 0.379, "Z_kubo_on_cooled_4cube": 0.246,
+    "a_matching_factor": (3.0 / 2.4) ** 4,          # tree over one-loop kappa at beta_L = 3: 2.44
+    "cooling_depth_spread_4cube": 0.2,              # 2a^2 -> 8a^2 flow moves the 4^3 cooled rate by ~15-25% (beta_L 2.5)
+    "validation_MR_beta8": {5.0: ((0.47, 0.12), (0.545, 0.035)), 6.0: ((1.04, 0.20), (1.18, 0.04)),
+                            8.0: ((1.45, 0.19), (1.61, 0.07))},   # L g^2 T: (ours at beta_L 8.6, Moore_Rummukainen_2000 Table 1)
+}
+
+
+
 
 # --------------------------------------------------------------------------- #
 # r25 (ruling R9/R10, H. Lamm 2026-10-02): T-depth of one shot (factory analysis, apply_log/r25_ch09.md)
@@ -1643,6 +1761,26 @@ class Assumptions:
                                                                                     "(1059.7-1318.7)")
     L5_campaign_2028: Tagged = Assumed((2, 4), "shot audit (r25): residual-mass scaling needs at least three L5 values; "
                                                "the 2028 campaign is L5 = 2, 3, 4 at the box's 1125 shots each")
+    # ---- 2033 rate instance (author decision 2026-11-14, option 2): pure SU(2) Chern-Simons diffusion ----------
+    rate_group_2033: Tagged = Assumed("2T", "author decision 2026-11-14: the 2033 sphaleron-rate deliverable is pure SU(2) "
+                                            "near 4^3 on 2T, a same-lattice quantum-against-classical comparison; 4^3 on "
+                                            "2T is 984 LQ, on 2O 1186 (808 after maximal-tree fixing, electric term not "
+                                            "estimated)")
+    rate_L_2033: Tagged = Assumed(4, "author decision 2026-11-14: 4^3; 5^3 on 2T is 1899 LQ, 3^3 is L g^2 T = 4.4")
+    rate_beta_L_2033: Tagged = Assumed(3.0, "classical study 2026-11-14 (applications/ch09_chiral_gauge/sph3d): beta_L = "
+                                            "4/(g^2 a T) = 3 (g^2 = 8/3 at T a = 0.5); at 4^3 the Kubo rate is 1.04 +- 0.05 "
+                                            "of its large-volume value and 38% of it tracks the cooled N_CS, whose rate "
+                                            "is 0.79 +- 0.06 of large volume (beta_L = 2: 0.98, 18%, 1.05; 2.5: 0.95, "
+                                            "26%, 0.88)")
+    rate_t_window_2033: Tagged = Assumed((5.0, 20.0), "classical study: the Kubo <(Delta N_CS)^2> is linear from 5a "
+                                                      "(slope over 5a-20a within 2% of 20a-80a at beta_L = 3); two "
+                                                      "times give the slope and its linearity")
+    rate_t_therm_2033: Tagged = Assumed(10.0, "a quench from a product state, 10a of gauge evolution before the window; "
+                                              "classical check (sph3d/quench.py): plaquette and kinetic energies settle in "
+                                              "~2a at beta_L = 2.5. That the quantum quench reaches the target "
+                                              "temperature is ASSUMED")
+    rate_counting_chis_2033: Tagged = Assumed((3.5, 6.0, 8.5), "counting settings for <(Delta N)^2> ~ 0.02-0.09: "
+                                                               "chi^2 S/2 ~ 0.1-3; chi kappa <= 0.29 at g^2 = 8/3")
 
     def __post_init__(self):
         for f in fields(self):
@@ -2839,6 +2977,27 @@ def _model_2033(a: Assumptions) -> Result:
     ncs_unit_s2 = {cx: ncs_counting_design({c: ncs_counting_lnG(L, n_adj, temp, g2_ncs, 10.0, c) for c in (cx / 2, cx)},
                                            ncs_bg[10.0], p_fault)["sigma2"]
                    for cx in (float(a.ncs_counting_unit_chi_max.lo), float(a.ncs_counting_unit_chi_max.hi))}  # 1.1e8, 6.9e6
+    # Author decision 2026-11-14 (option 2): the 2033 rate instance, pure SU(2) Chern-Simons diffusion on 4^3, 2T links,
+    # beta_L = 4/(g^2 a T) = 3, against the classical-statistical rate of the same lattice (sph_rate_point, CLASSICAL)
+    rate_chis = tuple(float(c) for c in a.rate_counting_chis_2033.value)
+    rate_window = (float(a.rate_t_window_2033.lo), float(a.rate_t_window_2033.hi))
+    rate_L = int(a.rate_L_2033.value)
+    rate_beta = float(a.rate_beta_L_2033.value)
+    assert (SPH3D_CLASSICAL["N"], SPH3D_CLASSICAL["beta_L"]) == (rate_L, rate_beta)
+    assert all(tuple(SPH3D_CLASSICAL["G"][t_]) == rate_chis for t_ in rate_window)
+    rate_args = dict(temp_lat=temp, t_window=rate_window, t_therm=float(a.rate_t_therm_2033.value),
+                     classical=SPH3D_CLASSICAL, eps=eps_first, p_fault=p_fault, eps_syn=eps_syn,
+                     synthesis=a.rot_synthesis.value, tc=tc, t_gate_s=float(a.t_gate_s.value),
+                     shot_overhead_s=float(a.shot_overhead_s.value), eps_trotter=eps_tr, floor=floor_c)
+    rate = sph_rate_point(a.rate_group_2033.value, rate_L, **rate_args)
+    rate["beta_L"] = rate_beta
+    rate["g2"] = 4.0 / (rate_beta * temp)                                                   # 8/3 at T a = 0.5
+    rate["L_g2T"] = {"tree": rate_L * 4.0 / rate_beta, "improved": rate_L * 4.0 / (rate_beta - 0.6)}   # 5.3, 6.7
+    rate["eps_l"] = faults / rate["t_per_shot_max"]
+    rate["wall_yr_at_20pct"] = rate["wall_yr"] * (eps_first / 0.2) ** 2
+    rate_alternatives = {f"{grp}{'_tree' if tr else ''}_L{L_}": sph_rate_point(grp, L_, tree=tr, **rate_args)
+                         for grp, L_, tr in (("2O", rate_L, False), ("2O", rate_L, True), ("2T", rate_L, True),
+                                             ("2T", rate_L + 1, False), ("2T", rate_L + 1, True), ("2T", rate_L - 1, False))}
     kappa_ncs = g2_ncs / (8.0 * math.pi ** 2)
     first_shots = {k: v / eps_first ** 2 for k, v in s2_count.items()}                         # 377, 872
     shots_first_hadamard = {tt: ncs_relvar[tt] / eps_first ** 2 for tt in ncs_relvar}            # 3.7e14, 1.2e15
@@ -3105,6 +3264,7 @@ def _model_2033(a: Assumptions) -> Result:
         "typical_ref_ln_norm_offset": typ["ln_norm_offset"], "typical_ref_n_frozen": typ["n_frozen"],
         "heralded_accept_min": 1.0 / n_filter_calls,
         "ncs_free_background": ncs_bg, "ncs_lambda": ncs_lam, "ncs_hadamard_rel_var": ncs_relvar,
+        "rate_2033": rate, "rate_2033_alternatives": rate_alternatives, "rate_2033_classical": SPH3D_CLASSICAL,
         "ncs_counting": ncs_counting, "ncs_counting_sigma2": s2_count, "shots_first_r26": first_shots_r26,
         "ncs_counting_unit_sigma2": ncs_unit_s2, "ncs_counting_chi_kappa_max": max(chis_c) * kappa_ncs,
         "ncs_counting_S_over_kappa2": {tt: ncs_bg[tt] / kappa_ncs ** 2 for tt in ncs_bg},
@@ -3407,5 +3567,14 @@ def INSTANCE_ROWS(a: Assumptions, era: str, r: Result):
                   "t_short_time": i["t_per_shot_short"],
                   "wall_first_result_s": i["wall_first_result_s"], "wall_campaign_s": i["wall_campaign_s"],
                   "f_star": i["f_star"],
-                  "t_box": PUBLISHED["2033"].hard_ops})]
+                  "t_box": PUBLISHED["2033"].hard_ops}),
+                ("3D 4^3 pure SU(2)/2T, beta_L = 3 (Chern-Simons diffusion, same-lattice classical comparison)",
+                 (i["rate_2033"]["lq"], i["rate_2033"]["lq"]),
+                 (i["rate_2033"]["t_per_shot_max"], i["rate_2033"]["t_per_shot_max"]),
+                 {"group": "2T", "shots": i["rate_2033"]["shots_total"], "route": "Trotter (KS) + counting field",
+                  "conditional": True,
+                  "note": "author decision 2026-11-14 (option 2): pure gauge, no fermions; quench thermalization "
+                          "assumed; Trotter steps from the weak-coupling state-dependent estimate at g^2 = 8/3; shots "
+                          "from the classical-statistical Kubo <(Delta N_CS)^2> and Re G(chi) on the same lattice",
+                  "wall_s": i["rate_2033"]["wall_s"], "t_short_time": i["rate_2033"]["runs"]["t1"]["t_shot"]})]
     return []
