@@ -19,7 +19,7 @@ These are the exploratory numerics behind the chapter's quench paragraph (method
 
 `output/` holds the JSON files the runs wrote (`out_<model>_<lattice>_<couplings>.json`) and `logs/` their console logs. Each `qa.analyze` file has the spectrum bounds, a canonical table (`canonical`, `curves`), and per quench ensemble (`quench`) the matched temperature `T_matched`, the local observables against time with their canonical values at that temperature (`local`, `local_canon_at_T`), and the correlators with their decay times (`corr`). `out_z2_4x3_h0.5.json` and `out_z2f_N14_m0.5_h1.0.json` lack the `curves` table (the canonical values at the matched temperature are present). `out_z2k_*` and `out_z2_4x4_*` were not written (the runs were stopped).
 
-The chapter's summary figures (local observables within 1-4% of canonical, 6% on 3x3, relaxation within t of about 0.6-2.5/T, the k_min decay rate of a non-conserved operator to 5%, and the matched temperatures Ta = 0.75-1.4) were read from these outputs. The script that extracted them was not kept; the outputs are the record.
+The chapter's summary figures (local observables within 1-4% of canonical, 6% on 3x3, relaxation within t of about 0.6-2.5/T, the k_min decay rate of a non-conserved operator to 5%, and the matched temperatures Ta = 0.75-1.4) were read from these outputs. The script that extracted them was not kept. The 1-4%, 6% and 5% compare the diagonal ensemble of the `vac` quench with the canonical ensemble at `T_matched` (`local_diag` against `local_canon_at_T`, `t_e_diag` against `t_e_canon`). At fixed times (`local`, `t_e_tw`) the deviations are 15-50% and up to about 40%.
 
 ## Rerunning
 

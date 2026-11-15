@@ -335,4 +335,4 @@ for k_, o_sp in ops_sp.items():
 res['ops'] = ops
 res['seconds'] = time.time() - t0
 print(json.dumps(res, indent=1))
-json.dump(res, open(f'light_{NAME}_b{BETA}_n{NEXTRA}.json', 'w'), indent=1)
+json.dump(res, open(__import__('pathlib').Path(__file__).resolve().parent / f'light_{NAME}_b{BETA}_n{NEXTRA}.json', 'w'), indent=1)

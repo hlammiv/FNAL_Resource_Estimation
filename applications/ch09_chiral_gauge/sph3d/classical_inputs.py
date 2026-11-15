@@ -5,7 +5,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def inputs(N, beta, times=(5.0, 10.0, 20.0, 40.0), chis=(1.5, 2.5, 3.5), key="Nnaive"):
+def inputs(N, beta, times=(5.0, 20.0), chis=(3.5, 6.0, 8.5), key="Nnaive"):
     rows = []
     for f in sorted(glob.glob(os.path.join(HERE, "runs", f"c_N{N}_b{beta:g}_s*.json"))):
         b = os.path.basename(f)

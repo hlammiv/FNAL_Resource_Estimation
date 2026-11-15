@@ -9,7 +9,7 @@ U = np.zeros((B, 3, N, N, N, 4)); U[..., 0] = 1
 e = s.project_gauss(U, rng.normal(size=(B, 3, N, N, N, 3)) / math.sqrt(beta / 2))
 F = None; out = []
 for t in range(0, 41):
-    kin = float((0.5 * (e * e).sum((1, 2, 3, 4, 5)) / (3 * N ** 3)).mean() * beta * 1.5)  # = 1 at equilibrium
+    kin = float((0.5 * (e * e).sum((1, 2, 3, 4, 5)) / (3 * N ** 3)).mean() * beta * 1.5)  # compared with the same quantity in the thermal ensemble ('thermal')
     pl = float((s.plaq_energy(U) / (3 * N ** 3)).mean())
     out.append((t, kin, pl))
     U, e, F = s.leapfrog(U, e, 0.2, 10, F)

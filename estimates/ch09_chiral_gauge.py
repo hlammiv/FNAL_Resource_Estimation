@@ -1121,7 +1121,7 @@ SPH3D_CLASSICAL = {
     "topological_share_4cube": 0.379, "Z_kubo_on_cooled_4cube": 0.246,
     "a_matching_factor": (3.0 / 2.4) ** 4,          # tree over one-loop kappa at beta_L = 3: 2.44
     "cooling_depth_spread_4cube": 0.2,              # 2a^2 -> 8a^2 flow moves the 4^3 cooled rate by ~15-25% (beta_L 2.5)
-    "validation_MR_beta8": {5.0: ((0.47, 0.12), (0.545, 0.035)), 6.0: ((1.04, 0.20), (1.18, 0.04)),
+    "validation_MR_beta8": {4.0: ((-0.0009, 0.0006), (0.112, 0.012)), 5.0: ((0.47, 0.12), (0.545, 0.035)), 6.0: ((1.04, 0.20), (1.18, 0.04)),
                             8.0: ((1.45, 0.19), (1.61, 0.07))},   # L g^2 T: (ours at beta_L 8.6, Moore_Rummukainen_2000 Table 1)
 }
 
@@ -1777,7 +1777,8 @@ class Assumptions:
                                                       "times give the slope and its linearity")
     rate_t_therm_2033: Tagged = Assumed(10.0, "a quench from a product state, 10a of gauge evolution before the window; "
                                               "classical check (sph3d/quench.py): plaquette and kinetic energies settle in "
-                                              "~2a at beta_L = 2.5. That the quantum quench reaches the target "
+                                              "~2a at beta_L = 2.5, about 5% below their thermal values because the initial field is drawn at beta_L/2 "
+                                              "(not run at beta_L = 3). That the quantum quench reaches the target "
                                               "temperature is ASSUMED")
     rate_counting_chis_2033: Tagged = Assumed((3.5, 6.0, 8.5), "counting settings for <(Delta N)^2> ~ 0.02-0.09: "
                                                                "chi^2 S/2 ~ 0.1-3; chi kappa <= 0.29 at g^2 = 8/3")

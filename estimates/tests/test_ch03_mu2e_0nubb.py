@@ -1233,8 +1233,8 @@ def test_printed_strings_are_in_the_tex(a, tex):
         "multiple_emax4:152,156": "630--2600",
         # R15 ruling 3: Mo/Ru on 54 modes
         "mo_ru_generic:46,162,219": "22--90",
-        "mo_ru_large_gap:162": "11--22",
-        "mo_ru_small_gap:162,219": "90--180",
+        # "mo_ru_large_gap:162": "11--22",   retired 2026-11-15: R2-nuclear-2 drops the 4 MeV gap (value stays pinned on the model)
+        # "mo_ru_small_gap:162,219": "90--180",   # retired 2026-11-15 (R2-nuclear-2): no longer printed
         "mo_ru_measured_gaps:41,box": "51--100",          # 2026-11-13: ENSDF 0+ gaps 0.695 / 1.130 MeV
         "al_after_lever:194": "0.10--0.43",               # 2026-11-13: the lever sentence quotes 27Al
         "codesign_multiple:218": "41--170",
@@ -1392,13 +1392,12 @@ def test_insertion_share_and_moru_wording(a, tex):
         assert "same factor of two in Eq." not in tex and "each register spans" not in tex
         assert "register asymmetry" not in tex
         # R15 ruling 3: Mo/Ru classification and register
-        assert "The pair is a co-design target" in tex     # R16, wording tightened on the markup board
+        assert "thus make it a co-design target" in tex     # R16; R2-nuclear-3 2026-11-15 rewording (was "The pair is a co-design target")
         assert "near-miss cross-check" not in tex and "near-miss pairs" not in tex
         # re-pinned 2026-11-13: 48Ca/Ti joins the co-design row; Mo/Ru carries the measured-gap band
         assert "& $^{76}$Ge/Se, $^{82}$Se/Kr: $\\times 9.9$--$41$" in tex
         assert "$0\\nu\\beta\\beta$ co-design & $^{48}$Ca/Ti: $\\times 15$--$64$" in tex
-        assert ("$0\\nu\\beta\\beta$ reach target & $^{100}$Mo/Ru: $\\times 22$--$90$ on state prep at the generic $1$--$2$ MeV "
-                "gap ($\\times 51$--$100$ at the measured $0^+$ gaps)") in tex
+        assert ("$0\\nu\\beta\\beta$ reach target & $^{100}$Mo/Ru: $\\times 51$--$100$ on state prep at the measured $0^+$ gaps") in tex   # R2-nuclear-2 2026-11-15: the box drops the generic-gap band
         assert "measured $0^+$ gaps of $0.70$ and $1.13$ MeV~\\cite{ENSDF} put it at $\\times 51$--$100$" in tex
         assert "co-design target at every plausible spectral gap" not in tex and "$\\times 880$" not in tex
 
@@ -1669,9 +1668,9 @@ def test_rn_p1_01_li7_second_instance(a, r28, tex):
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     for frag in ("On $^4$He the other five responses are null tests, four by $0^+$ selection rules",
-                 "The same register holds a $^7$Li ground state ($3/2^-$)",
+                 "The same register holds $^7$Li ($3/2^-$)",   # R2-nuclear-1 2026-11-15 (was "holds a $^7$Li ground state")
                  "$(\\lambda/|\\langle\\hat{\\mathcal{O}}\\rangle|)^2=1.7\\times 10^{4}$",
-                 "Fidelity $0.99$ needs $D=248$--$359$, which holds the six proxies to $1.3\\%$",
+                 "Fidelity $0.99$ needs $D=248$--$359$, which holds the six proton proxies to $1.3\\%$",   # R2-nuclear-7 2026-11-15 (proton)
                  "$0.999$ needs $2.0$--$2.8\\times 10^{3}$, above the 2028 target",
                  "six insertions at $\\epsilon=0.1$; $3.1\\times 10^{5}$ on $^7$Li",
                  "on one machine; $3$--$5$ h on $^7$Li"):

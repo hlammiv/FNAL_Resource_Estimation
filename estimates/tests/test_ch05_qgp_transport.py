@@ -1280,7 +1280,7 @@ def test_systematics_row_2026_10_12(a):
                  "not quantified",   # SR-ch5-3 (2026-11-10)
                  "Neither spacing is in the $a^2$ scaling regime, since $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm, so the two give neither an $a^2$ slope nor a continuum limit.",
                  # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- ", and we assign it no percentage" (prose clause; the Table 5.2 cell stays)
-                 "whose relation to infinite-volume $\\eta/s$ is uncontrolled at order one.",
+                 "measure a method test with no $\\eta/s$ limit.",   # R2-lqcd-8 2026-11-15 (was "relation to infinite-volume eta/s is uncontrolled at order one")
                  "a few percent or less & no percentage \\\\",
                  "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648,arxiv_1906_11213}"):
         assert frag in tex, frag

@@ -108,7 +108,7 @@ WHAT IS NOT DERIVED HERE
   Quench thermalization time c / T with c in [2, 2 pi] (quench_c, Assumed): ETH at the chapter's couplings on 3^3,
     the relaxation of the momentum density within t_th and the thermal variance of the prepared state are ASSUMED;
     checked only by exact evolution on toys (Z2 up to 5x3, 2T up to 2x2, Z2 + staggered fermion N = 16; internal
-    study, not archived). The ramp length (one a_s) is a floor. The preparation runs at the grid step, not the state-dependent
+    study in applications/ch05_qgp_transport/eth_quench). The ramp length (one a_s) is a floor. The preparation runs at the grid step, not the state-dependent
     fit rule (it needs energy conservation, O(dt^2), not a faithful unitary); a coarser prep step (2-5x) is an
     UNPRICED lever (NEEDS_AUTHOR). The E-rho-OQ penalties (G8, computed 2026-10-05) and the 1e9 Gibbs prep are
     retired from the model with the methods (author ruling 2026-10-05; the computed values stay in NEEDS_AUTHOR).
@@ -374,8 +374,8 @@ class Assumptions:
     quench_ramp_a_s: Tagged = Assumed(1.0, "energy tuning of the initial state by a coupling ramp of one a_s (lattice "
                                            "time unit), priced as ceil(a_s / dt) steps of the same Trotter circuit, a "
                                            "FLOOR (a single magnetic layer is the alternative). On 2T 2x2 a ramp of a "
-                                           "few a_s moves T_eff from 0.80 to 0.30 (internal study, not archived; "
-                                           "no script or output is on disk)", "internal study, not archived")
+                                           "single a_s lowers T_eff by 17%; 0.80 to 0.30 takes 16 a_s (eth_quench/g2t_ramp.py, "
+                                           "g2t_ramp2.py, logs/log_ramp22*.txt)", "applications/ch05_qgp_transport/eth_quench")
     be_trim: Tagged = Stated(10, f"{TEX}:91,147", "qubitized BE trims 10x; Sigma(72x3) BE not yet synthesized")
     ceiling_2033_t: Tagged = Cited(RFI_T_2033, RFI_SRC, "'the RFI's ~1e9-hard-op 2033 envelope' (app03 budget split (classical-sample rail),149); R3: the ceiling")
     rfi_eps_l: Tagged = Cited(RFI_EPS_L, RFI_SRC, "the RFI's logical error rate; eps_l is printed as a requirement instead")

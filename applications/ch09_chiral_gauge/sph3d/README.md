@@ -12,4 +12,4 @@ Classical-statistical inputs for the 2033 rate instance in `estimates/ch09_chira
 - `classical_inputs.py N beta`: the S(t) and Re G(chi, t) that `SPH3D_CLASSICAL` holds (4^3, beta_L = 3).
 - `quench.py`: equilibration from U = 1 (product state), the thermalization assumption.
 
-Run data (`runs/`, about 70 MB) are not committed; `jobs.txt` regenerates them.
+Run data (`runs/`, about 70 MB) are not committed. From this folder, `xargs -P 32 -L 1 python3 drive.py < jobs.txt` regenerates them, then `python3 analyze.py`, `python3 summary.py` and `python3 classical_inputs.py 4 3` (the `S` and `G` of `SPH3D_CLASSICAL`).

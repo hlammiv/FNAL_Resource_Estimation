@@ -9,6 +9,6 @@ tag = sys.argv[8] if len(sys.argv) > 8 else ""
 t0 = time.time()
 r = su2rt.run(N, beta, B=B, t_max=t_max, dt_meas=dtm, depths=(db / 2, db, 2 * db), seed=seed)
 r["cpu_s"] = time.time() - t0
-os.makedirs("runs", exist_ok=True)
-json.dump(r, open(f"runs/c_N{N}_b{beta:g}_s{seed}{tag}.json", "w"))
+RUNS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "runs"); os.makedirs(RUNS, exist_ok=True)
+json.dump(r, open(os.path.join(RUNS, f"c_N{N}_b{beta:g}_s{seed}{tag}.json"), "w"))
 print(N, beta, seed, tag, round(r["cpu_s"]), r["energy_drift_rel"], r["gauss_max"], flush=True)

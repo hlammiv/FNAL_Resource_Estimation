@@ -6,7 +6,7 @@ Every number below was produced by the model as it stands, through `python -m es
 
 ## 1. What is estimated
 
-The chapter has two instances and no co-design row (`model(a, era)` raises for any era other than `2028` and `2033`).
+The chapter has three instances (2028, the 2033 method test, and the 2033 rate instance in pure SU(2) on 4^3 with 2T at beta_L = 3: `sph_rate_point`, `SPH3D_CLASSICAL`, classical inputs in `sph3d/`) and no co-design row (`model(a, era)` raises for any era other than `2028` and `2033`).
 
 **2028 benchmark: 1+1D domain-wall fermions with a Z3 gauge field.** One Dirac flavor, three colors, L = 8 sites, fifth-direction extent L5 = 4, gauge group Z3 inside SU(3) at 2 qubits per link. The state is prepared by an adiabatic ramp of 20 Trotter steps, and one probe step follows. The observable is the chiral condensate ⟨ψ̄ψ⟩ and its residual-mass scaling in L5, compared with a classical Z3 domain-wall calculation at the same L5. The benchmark exercises the register layout and the fifth-direction hopping. It does not exercise the overlap sign function, non-Abelian digitization, the Higgs sector or thermal-state preparation. The first result is L5 = 4 at 30%; the campaign is L5 = 2, 3, 4 at 10%.
 
@@ -428,7 +428,7 @@ All are in `--intermediates` and none enters a headline.
 
 Other exports (`python -m estimates --chapter ch09`): 2028 ε_l 3.47e-7-3.72e-7, wall 36.1 s first result and 794.2 s campaign, T-depth per shot 22,255-27,694, campaign floor wall 653-771 s; 2033 ε_l 2.41e-12, T-depth per 10a shot 3.425e9-3.454e9, campaign floor wall 1.514e8-1.689e8 s, and 58.3-64.5 factories to run the campaign in one year.
 
-Table 1.1 prints, for Ch. 9: 250 LQ and 2.7-2.9e5 T (2028); 1235 LQ and 4e10 T (2033). The 2028 box prints 250 = 192 + 16 + 42, 2.7-2.9e5 T, ε_l ≲ 3.5e-7, 1.3e2 and 1.1e3 shots, 36 s and 13 min. The 2033 box prints 1235 = 432 (216 doublet, 216 singlet) + 486 + 270 + 47, 4.9e9 T (condensate), 4.1e10 T (10a, 3.4-5.1e10 over the Yukawa-weight band) and 2.2e10 T (5a), ε_l ≲ 2.0e-11 / 2.4e-12 / 4.7e-12, 1.1e3 + 5.5e3 shots, 5.2 yr and 5.8-6.5 yr.
+Table 1.1 prints, for Ch. 9: 250 LQ and 2.7-2.9e5 T (2028); 1235 LQ and 4e10 T (2033). The 2028 box prints 250 = 192 + 16 + 42, 2.7-2.9e5 T, ε_l ≲ 3.5e-7, 1.3e2 and 1.1e3 shots, 36 s and 13 min. The 2033 box prints 1235 = 432 (216 doublet, 216 singlet) + 486 + 270 + 47, 4.9e9 T (condensate), ≳4.4e10 T (10a, 3.6-5.3e10 over the Yukawa-weight band) and 2.2e10 T (5a), ε_l ≲ 2.0e-11 / 2.3e-12 / 4.5e-12, 5.0e2 + 1.2e3 counting-field shots, ≳1.5 yr and ≳2.1-2.8 yr. Its rate-instance row prints 984 LQ, 1.4e10 T (20a), ε_l ≲ 7.0e-12, 2.1e3 shots and 0.57 yr. The tables above predate the counting term and the rate instance.
 
 Tests that pin them:
 

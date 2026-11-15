@@ -1455,7 +1455,7 @@ def hamiltonian_strings(key: str) -> int:
     return hamiltonian_strings_count(*step_space(key))["gamma"]
 
 
-# COMPUTED offline by applications/ch03_mu2e_0nubb/pauli/count_strings.py (same function, lenore_remote);
+# COMPUTED offline by applications/ch03_mu2e_0nubb/pauli/count_strings.py (same function, a 32-core host);
 # output pauli/strings_emax*.json. Tests recount the cheap ones.
 HAMILTONIAN_STRINGS_STORED: dict = {"emax8": 1944122242,      # 660 modes, 97 s (165^4 = 7.4e8)
                                      "emax10": 14842974100}    # 1144 modes, 303 s (286^4 = 6.7e9)
@@ -2354,8 +2354,8 @@ def printed(a: Assumptions) -> dict:
         "t_emax3:152": fmt_t(rcd["t_emax3"]),                                         # $1.4$--$5.4\times 10^{10}$
         "multiple_emax3:152,156": print_range(rcd["multiple_emax3"]),                 # 14--54
         "multiple_emax4:152,156": print_range(rcd["multiple_emax4"]),                 # 130--510
-        "mo_ru_large_gap:162": print_range(s["mo_ru"]["multiple_large_gap"]),         # 3.0--6.0 (R15)
-        "mo_ru_small_gap:162,219": print_range(s["mo_ru"]["multiple_small_gap"]),     # 90--180 (string step)
+        # "mo_ru_large_gap:162" retired 2026-11-15 (R2-nuclear-2): the 4 MeV gap is no longer printed
+        # "mo_ru_small_gap:162,219": print_range(s["mo_ru"]["multiple_small_gap"]),     # 90--180 (string step)   # retired 2026-11-15 (R2-nuclear-2): no longer printed
         # 2026-11-13: the measured 100Mo/100Ru 0+ gaps (ENSDF 0.695 / 1.130 MeV), each projection at its own gap
         "mo_ru_measured_gaps:41,box": print_range(s["mo_ru"]["multiple_measured_gaps"]),   # 51--100
         "al_after_lever:194": "{:.2f}--{:g}".format(round_sig(s["al_sd"]["multiple_after_lever"][0]),
