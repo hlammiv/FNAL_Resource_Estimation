@@ -768,7 +768,7 @@ def test_bad_inputs_rejected(a):
     # card RF3-ch5-s216 (2026-11-12): the hop sentence, its share, the reference circuit, the BE line and the gap bullet
     r"The $\Sigma(216\times 3)$ hopping term uses unpublished gate counts~\cite{FermionPrimitives_unpub}.",
     r"At 2033 the hopping term is $43\%$ of the step.",
-    r"at $1.6\times 10^{7}$ T ($6.5\times 10^{5}$ per link-step), $6.3\times 10^{9}$ T.",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
+    r"each $1.6\times 10^{7}$ T ($6.5\times 10^{5}$ per link-step), or $6.3\times 10^{9}$ T in total.",   # staggered ruling 2026-11-13 (2^3); VP2-ch5 2026-11-15 wording
     r"so the longest shot is $2.5$--$9.4$ times the 2033 target of $10^{9}$ T",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
     r"puts every 2033 shot $2.5$--$9.4$ times above the 2033 target.",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
     r"the campaign is $27$--$83$ times the five-year window",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers
@@ -1280,7 +1280,7 @@ def test_systematics_row_2026_10_12(a):
                  "not quantified",   # SR-ch5-3 (2026-11-10)
                  "Neither spacing is in the $a^2$ scaling regime, since $(\\pi a_s T)^2=0.5$--$0.9$ at $0.2$ fm, so the two give neither an $a^2$ slope nor a continuum limit.",
                  # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- ", and we assign it no percentage" (prose clause; the Table 5.2 cell stays)
-                 "measure a method test with no $\\eta/s$ limit.",   # R2-lqcd-8 2026-11-15 (was "relation to infinite-volume eta/s is uncontrolled at order one")
+                 "a method test with no $\\eta/s$ limit.",   # OR2-Human-voice-5 2026-11-15; was   # R2-lqcd-8 2026-11-15 (was "relation to infinite-volume eta/s is uncontrolled at order one")
                  "a few percent or less & no percentage \\\\",
                  "\\cite{arxiv_1802_07718}", "\\cite{arxiv_2401_01169}", "\\cite{Bhanot_1982_S648,arxiv_1906_11213}"):
         assert frag in tex, frag

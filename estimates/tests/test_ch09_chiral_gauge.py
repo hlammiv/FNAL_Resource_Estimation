@@ -2473,15 +2473,15 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  r"On the free lattice $\sigma^2=45$ at $10a$ and $104$ at $5a$, with a $4\%$ fit-form systematic",
                  r"at $\chi=0$, $32$, $56$ and $80$", r"the closed-time-path quasi-characteristic function",
                  r"so the test does not reach $\Gamma_{\rm sph}$", r"counting term $E_L\cdot B(x)+E_R\cdot B(x+\hat\imath)$ on each link ($5\%$)",
-                 r"$29$-qubit workspace on ancillas idle between applications", r"but not its effect on the Trotter step count",
+                 r"$29$-qubit workspace sits on ancillas idle between applications", r"but not its effect on the Trotter step count",
                  r"at $\chi\lesssim 1$ and $\sigma^2\sim 10^{7}$ on the free lattice", r"which must exceed $(g^2/8\pi^2)^2$",
                  r"has no zero-point part and is $1.3\times 10^{-4}$ at $10a$",
                  # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "or $430$--$2400\times$)" (the classical rate-suppression range)
                  # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "The test at $10\%$ would take $47$~yr"
                  r"checks the evolution and the readout but not the thermal state",   # rn_est v2 (was 'estimator')
                  r"less than $5\%$ between $Ta=0.4$ and $0.6$",   # rn_est: '4.9 times the relative variance' retired
-                 r"$\lesssim 2.0\times 10^{-11}$ (condensate), $\lesssim 2.3\times 10^{-12}$ ($N_{CS}$ test, $10a$; "
-                 r"$4.5\times 10^{-12}$ at $5a$)",   # rn_est v2 (was 2.4e-12, 4.7e-12)
+                 r"$\lesssim 2.0\times 10^{-11}$ (condensate), $\lesssim 2.3\times 10^{-12}$ ($N_{CS}$ test at $10a$, "
+                 r"$4.5\times 10^{-12}$ at $5a$)",   # rn_est v2 (was 2.4e-12, 4.7e-12); VP2-ch9 2026-11-15 semicolon out
                  # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "$\beta\lambda=2592$" (the thermal-state filter paragraph)
                  r"$\lambda=Q(2+y\rho_{\max})=1296$", r"$\lambda t=1.3\times 10^{4}$ applications",
                  # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,

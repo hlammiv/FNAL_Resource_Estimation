@@ -1543,7 +1543,7 @@ PHRASES = [
     # R16 sweep: the 2033 step breakdown moved from the box to the plug-in prose
     # E27 (2026-10-02): one machine, shots in series; the horizon gap is a cost reduction, not a machine count
     r"First result & $\approx 240$ shots, $13$--$103$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"Campaign & trend $+\,L_\parallel{=}4$ check: $1.8$--$1.9\times 10^{4}$ shots, $2.3$--$18$ yr (on one machine at $1\,\mu$s per T gate, Ch.~\ref{ch:overview}; high end $3.7\times$ the five-year window) \\",   # t2e (2026-11-13): two trend energies
+    r"Campaign & trend $+\,L_\parallel{=}4$ check: $1.8$--$1.9\times 10^{4}$ shots, $2.3$--$18$ yr on one machine at $1\,\mu$s per T gate (Ch.~\ref{ch:overview}), the high end $3.7\times$ the five-year window \\",   # t2e (2026-11-13): two trend energies
     # cut pass 2026-10-06: the gap paragraph's one-machine sentence restated the campaign box row (pinned above) and is cut
     # requirements
     r"Subroutine calls & $\sim 130$",
@@ -1858,7 +1858,7 @@ def test_tex_states_the_conventions():
     assert text.count(r"$1\,\mu$s per T gate") == 2   # re-pinned 2026-11-12 (batch 6): 'T-gate' -> 'T gate' in the three pins here
     assert text.count(r"\cite{arxiv_2409_17349}") == 1      # round-E ruling E1: the published structure
     assert r"at $1\,\mu$s per T gate; Ch.~\ref{ch:overview})" in text
-    assert r"on one machine at $1\,\mu$s per T gate, Ch.~\ref{ch:overview};" in text   # E27: serial, one machine
+    assert r"on one machine at $1\,\mu$s per T gate (Ch.~\ref{ch:overview})," in text   # E27: serial, one machine; VP2-ch6 2026-11-15
     assert text.count(r"\cite{FermionPrimitives_unpub}") == 2   # r17: 2028 hop scope, 2033 hop (r25: box row cut for length)
     assert "our estimate" in text                           # the frame undo is labeled as ours
     assert text.count(r"\cite{arxiv_2108_13305}") == 1      # the basis sentence
@@ -2075,7 +2075,7 @@ def test_pair_convention_and_baseline_2026_10_12(a, r33):
     near(i["shots_campaign_2033"][0], 18144, 1e-9); near(i["shots_campaign_2033"][1], 19008, 1e-9)   # '1.8--1.9e4' (t2e)
     if TEX.exists():
         tex = TEX.read_text()
-        for frag in ("after $\\big(2/\\bar n_s+1/\\bar n_M\\big)/\\delta_{\\rm rel}^2$ shots, where $\\bar n_s$ counts $B+\\bar B$",
+        for frag in ("after $\\big(2/\\bar n_s+1/\\bar n_M\\big)/\\delta_{\\rm rel}^2$ shots.  Here $\\bar n_s$ counts $B+\\bar B$",   # VP2-ch6 2026-11-15 split
                      "$1.1$--$1.5$ for $b/\\bar n_s=0.002$--$0.04$. This factor is not included below.",
                      # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "($6.0$--$6.3\\times 10^{3}$ shots each)"
                      "so an assumed $25\\%$ change at $3\\sigma$ needs $5.9\\%$ points.", "First result & $\\approx 240$ shots, $13$--$103$ d",

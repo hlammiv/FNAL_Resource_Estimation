@@ -788,7 +788,7 @@ def test_g4_fault_bias_model(a, r33):
     assert round(i["first_result_null_yr"], 2) == 0.12 and round(i["scan_plus_first_null_yr"], 2) == 0.35   # 0.11 at S_int 2.14e-2; 3.3 with the 100-point scan
     assert i["scan_plus_first_null_yr"] < i["horizon_yr"]
     tex = TEX.read_text()
-    assert "$\\lesssim 7\\times 10^{-13}$ per location" in tex and "7\\times 10^{-14}" not in tex   # per-bin target 3e-3 (2026-10-12)
+    assert "7\\times 10^{-13}$ per location" not in tex and "7\\times 10^{-14}" not in tex   # OR2-R2-01 2026-11-15: the near-zero bound is no longer printed; G4 model redo pending
     box = tex.split("2033 target: wall scattering")[1].split("end{benchmarkbox}")[0]
     assert "idle qubit-cycle" not in box and "10^{-14}" not in box
 
@@ -820,7 +820,7 @@ def test_referee_text_hooks():
     assert "flavor-summed asymmetry vanishes" in tex                               # C'
     assert "unquantified" not in tex and "is not priced. We write $r$ for the full" not in tex
     assert r"$\gtrsim 1.3\times 10^{8}$ T" in tex                                  # B5
-    assert r"$\lesssim 7\times 10^{-13}$ per location" in tex                     # G4 (idles counted), per-bin target
+    assert r"cannot fake it" in tex or r"not fake the first result" in tex       # OR2-R2-01 2026-11-15 (was the 7e-13 per-location bound)
     assert "break down for the fermions" not in tex                                 # B1
     assert "where no classical method is established" not in tex                    # B1
     assert "imprint a bubble profile" not in tex                                    # B2

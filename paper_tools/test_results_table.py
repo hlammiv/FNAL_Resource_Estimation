@@ -229,16 +229,16 @@ def test_machine_time_bullet():
     misses = [ch for ch in DIGITAL if campaign_status(ch) in (r"\fitsnear", r"\fitsno")]
     assert misses == [4, 5, 6, 10]
     text = top_line()
-    assert ("Three of the nine campaigns fit the five-year window on one machine, and Chs.~\\ref{ch:baryogenesis} and~"
-            "\\ref{ch:chiral} give lower bounds below it") in text   # re-pinned rn_est v2 2026-11-14 (PR-q-09: 'Ch. 8's gives a lower bound')
-    assert "Ch.~\\ref{ch:chiral}'s only under the free-lattice readout" in text
+    assert ("Three of the nine campaigns fit the five-year window on one machine. Chs.~\\ref{ch:baryogenesis} and~"
+            "\\ref{ch:chiral} give lower bounds below it") in text   # VP2-ch1-a 2026-11-15 split   # re-pinned rn_est v2 2026-11-14 (PR-q-09: 'Ch. 8's gives a lower bound')
+    assert "Ch.~\\ref{ch:chiral}'s bound holds only under the free-lattice readout" in text   # VP2-ch1-a 2026-11-15
     assert "The other four miss at their upper ends" in text
     # 'every range but Ch. 10's': the depth floor at the upper end exceeds the window for every miss except Ch. 10
     assert [ch for ch in misses if x(ch, "2033", "floor_wall_s") <= WINDOW_S] == [10]
-    assert "at the upper end of every range but Ch.~\\ref{ch:finite_density}'s the depth bound alone" in text   # re-pinned 2026-11-12 (batch 6): the sentence now continues with Ch. 8's scan
+    assert "At the upper end of every range but Ch.~\\ref{ch:finite_density}'s, the depth bound alone" in text   # VP2-ch1-a 2026-11-15 split;   # re-pinned 2026-11-12 (batch 6): the sentence now continues with Ch. 8's scan
     assert f"{float(f'{campaign_over_window(5):.2g}'):.0f}\\times$ (Ch." in text
     lo, hi = result(8, "2033").intermediates["nucleation_scan_yr_with_prep_band"]      # batch 6, 2026-11-12: new clause, Ch. 8 model (7.81-50.2 yr at 10 temperatures, card RF3-ch8-M3; 78.1-501.9 at 100 points)
-    assert f"scan reaching ${lo:.2g}$--${hi:.2g}$ yr with Gibbs preparation" in text
+    assert f"scan reaches ${lo:.2g}$--${hi:.2g}$ yr with Gibbs preparation" in text
     assert lo * YEAR > WINDOW_S                      # the clause says the scan misses the window
 
 
