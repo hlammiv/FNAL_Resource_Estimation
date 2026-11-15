@@ -1667,11 +1667,11 @@ def test_rn_p1_01_li7_second_instance(a, r28, tex):
         assert all(v["shot_factor"] is None for n, v in he["ops"].items() if not n.startswith("M0"))
     if tex is None:
         pytest.skip("chapter .tex not on disk")
-    for frag in ("On $^4$He the other five responses are null tests, four by $0^+$ selection rules",
+    for frag in ("On $^4$He four of the other five responses vanish by $0^+$ selection rules",   # R2-nuclear-5 2026-11-15 (was "the other five responses are null tests, four by")
                  "The same register holds $^7$Li ($3/2^-$)",   # R2-nuclear-1 2026-11-15 (was "holds a $^7$Li ground state")
                  "$(\\lambda/|\\langle\\hat{\\mathcal{O}}\\rangle|)^2=1.7\\times 10^{4}$",
                  "Fidelity $0.99$ needs $D=248$--$359$, which holds the six proton proxies to $1.3\\%$",   # R2-nuclear-7 2026-11-15 (proton)
                  "$0.999$ needs $2.0$--$2.8\\times 10^{3}$, above the 2028 target",
-                 "six insertions at $\\epsilon=0.1$; $3.1\\times 10^{5}$ on $^7$Li",
+                 "six insertions, each at the dipole's $\\epsilon=0.1$ count; $3.1\\times 10^{5}$ on $^7$Li",
                  "on one machine; $3$--$5$ h on $^7$Li"):
         assert frag in tex, frag
