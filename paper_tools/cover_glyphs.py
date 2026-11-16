@@ -1029,23 +1029,9 @@ HORN_PTS = np.array([
     (-0.630, 0.420), (-0.614, 0.398), (-0.598, 0.390),
 ])
 
-EYE = (-0.672, 0.288)
-NOSTRIL = (-0.693, 0.064)
-MOUTH = np.array([(-0.694, 0.036), (-0.680, 0.034), (-0.666, 0.036)])
-# a fringe of the topknot hanging over the eye
-BROW = np.array([(-0.704, 0.312), (-0.690, 0.318), (-0.674, 0.318), (-0.660, 0.312)])
 # cheek and jaw: where the big head meets the shaggy neck
 CHEEK = np.array([(-0.598, 0.334), (-0.590, 0.288), (-0.582, 0.242), (-0.572, 0.200),
                   (-0.560, 0.162), (-0.548, 0.134)])
-# Edge of the woolly cape behind the shoulder, where the shaggy front coat
-# meets the sleeker hindquarters.
-CAPE = np.array([
-    (-0.020, 0.640), (0.010, 0.590), (-0.004, 0.540), (0.020, 0.490),
-    (0.004, 0.440), (0.024, 0.390), (0.006, 0.340), (0.022, 0.290),
-    (0.000, 0.240), (0.012, 0.196),
-])
-
-
 def _chaikin(p, n=2, closed=True):
     """Corner-cutting: rounds the outline into woolly tufts, keeps hooves flat."""
     for _ in range(n):
@@ -1058,14 +1044,13 @@ def _chaikin(p, n=2, closed=True):
 
 BISON_OUTLINE = _chaikin(BISON_PTS)
 HORN_OUTLINE = _chaikin(HORN_PTS, 1)
-CAPE_LINE = _chaikin(CAPE, 2, closed=False)
 
 
 def bison(ax, xy, s, c, alpha=0.9, z=6, ink="#0d2c56"):
     """Grazing bison silhouette, facing left; xy is the point under the hooves.
 
-    Thin strokes in the plate colour mark the horn, eye, mouth and the edge
-    of the shaggy cape, so the head reads as a head at cover size.
+    A faint stroke in the plate colour marks the cheek, where the head meets
+    the shaggy neck. No eye or mouth marks: the face stays expressionless.
     """
     x, y = xy
     off = np.array([x, y])
@@ -1075,20 +1060,5 @@ def bison(ax, xy, s, c, alpha=0.9, z=6, ink="#0d2c56"):
                          zorder=z - 0.01, joinstyle="round"))
     ax.add_patch(Polygon(BISON_OUTLINE * s + off, closed=True, facecolor=c,
                          edgecolor="none", alpha=alpha, zorder=z))
-    ax.plot(*(MOUTH * s + off).T, color=ink, lw=0.5 * lw, alpha=0.8,
-            solid_capstyle="round", zorder=z + 0.1)
-    ax.plot(*(BROW * s + off).T, color=ink, lw=0.40 * lw, alpha=0.45,
-            solid_capstyle="round", zorder=z + 0.1)
     ax.plot(*(_chaikin(CHEEK, 2, closed=False) * s + off).T, color=ink,
             lw=0.40 * lw, alpha=0.35, solid_capstyle="round", zorder=z + 0.1)
-    ax.add_patch(Polygon(_eye(NOSTRIL, 0.007) * s + off, closed=True,
-                         facecolor=ink, edgecolor="none", alpha=0.7,
-                         zorder=z + 0.1))
-    ax.add_patch(Polygon(_eye(EYE, 0.0095) * s + off, closed=True,
-                         facecolor=ink, edgecolor="none", alpha=0.85,
-                         zorder=z + 0.1))
-
-
-def _eye(c, r):
-    t = np.linspace(0, 2 * np.pi, 16, endpoint=False)
-    return np.column_stack([c[0] + r * np.cos(t), c[1] + 0.8 * r * np.sin(t)])
