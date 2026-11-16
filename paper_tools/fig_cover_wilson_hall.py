@@ -911,8 +911,8 @@ def draw_flagpoles(ax):
 
 
 def draw_bison(ax):
-    cg.bison(ax, (7.58, GROUND + 0.13), 0.36, WHITE, alpha=0.88)
-    cg.bison(ax, (8.16, GROUND + 0.10), 0.23, WHITE, alpha=0.74)
+    cg.bison(ax, (7.71, GROUND - 0.004), 0.36, WHITE, alpha=1.0)
+    cg.bison(ax, (8.15, GROUND - 0.003), 0.23, WHITE, alpha=0.80)
 
 
 def draw_plate(ax):

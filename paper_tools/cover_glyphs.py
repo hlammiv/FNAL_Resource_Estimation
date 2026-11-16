@@ -960,34 +960,73 @@ def pmns_matrix(ax, xy, s, c, lw, accent=None):
 
 # ------------------------------------------------------------- scenery ----
 
-def bison(ax, xy, s, c, alpha=0.9, z=6):
-    """Grazing bison silhouette, facing left.
+# Grazing bison facing left, hooves on local y = 0. Outline cues: shaggy mane
+# over the forehead and the tall front hump, short hooked horn, low head with
+# a ragged beard, woolly chaps on the forelegs, hind legs with a backward
+# hock, hooves, and a tufted tail. Chaikin corner-cutting softens the tufts.
+BISON_PTS = np.array([
+    # big head hanging low to graze: muzzle, face, horn
+    (-0.655, 0.060), (-0.695, 0.090), (-0.712, 0.140), (-0.704, 0.192),
+    (-0.682, 0.240), (-0.662, 0.282), (-0.648, 0.310),
+    (-0.668, 0.336), (-0.676, 0.366), (-0.658, 0.378), (-0.640, 0.352),
+    (-0.620, 0.334),
+    # shaggy topknot and mane climbing the hump
+    (-0.598, 0.372), (-0.574, 0.360), (-0.560, 0.404), (-0.532, 0.394),
+    (-0.514, 0.442), (-0.486, 0.434), (-0.470, 0.500), (-0.440, 0.482),
+    (-0.414, 0.546), (-0.380, 0.548), (-0.360, 0.592), (-0.330, 0.612),
+    (-0.292, 0.648), (-0.252, 0.652), (-0.214, 0.678), (-0.170, 0.696),
+    (-0.110, 0.694), (-0.058, 0.684),
+    # back sloping down to the rump
+    (-0.005, 0.656), (0.060, 0.614), (0.130, 0.568), (0.205, 0.530),
+    (0.280, 0.502), (0.350, 0.480), (0.410, 0.458), (0.462, 0.428),
+    (0.500, 0.390), (0.520, 0.348),
+    # tail hanging with a tuft
+    (0.532, 0.360), (0.552, 0.330), (0.562, 0.260), (0.566, 0.190),
+    (0.584, 0.158), (0.578, 0.118), (0.556, 0.112), (0.544, 0.150),
+    (0.540, 0.200), (0.534, 0.270),
+    # hindquarter down to the far hind leg, hock bent backward
+    (0.526, 0.250), (0.512, 0.200), (0.498, 0.160), (0.502, 0.122),
+    (0.486, 0.090), (0.474, 0.050), (0.478, 0.020), (0.490, 0.000),
+    (0.418, 0.000), (0.422, 0.024), (0.426, 0.064), (0.428, 0.110),
+    (0.412, 0.150),
+    # near hind leg
+    (0.398, 0.140), (0.392, 0.110), (0.378, 0.080), (0.370, 0.040),
+    (0.378, 0.016), (0.390, 0.000), (0.316, 0.000), (0.320, 0.022),
+    (0.326, 0.060), (0.330, 0.110), (0.316, 0.160), (0.290, 0.190),
+    # belly with a slight sag
+    (0.230, 0.180), (0.150, 0.168), (0.070, 0.166), (0.000, 0.172),
+    (-0.040, 0.176),
+    # far foreleg with woolly chaps
+    (-0.052, 0.150), (-0.040, 0.128), (-0.060, 0.116), (-0.050, 0.094),
+    (-0.068, 0.082), (-0.066, 0.050), (-0.062, 0.020), (-0.052, 0.000),
+    (-0.130, 0.000), (-0.126, 0.024), (-0.128, 0.060), (-0.128, 0.100),
+    (-0.140, 0.140), (-0.160, 0.160),
+    # near foreleg with chaps
+    (-0.176, 0.140), (-0.170, 0.116), (-0.190, 0.104), (-0.182, 0.080),
+    (-0.198, 0.066), (-0.194, 0.036), (-0.188, 0.014), (-0.176, 0.000),
+    (-0.256, 0.000), (-0.256, 0.024), (-0.258, 0.062), (-0.262, 0.100),
+    (-0.280, 0.130), (-0.300, 0.160),
+    # brisket, dewlap and ragged beard under the low head
+    (-0.340, 0.170), (-0.380, 0.156), (-0.420, 0.140), (-0.460, 0.124),
+    (-0.500, 0.100), (-0.520, 0.048), (-0.540, 0.086), (-0.560, 0.036),
+    (-0.580, 0.076), (-0.600, 0.030), (-0.616, 0.066), (-0.636, 0.050),
+])
 
-    Identity comes from three cues: the tall hump over the FRONT shoulders,
-    the head hanging low off its front face, and the slighter hindquarters.
-    """
+
+def _chaikin(p, n=2):
+    """Corner-cutting: rounds the outline into woolly tufts, keeps hooves flat."""
+    for _ in range(n):
+        q = np.roll(p, -1, axis=0)
+        p = np.column_stack([0.75 * p + 0.25 * q, 0.25 * p + 0.75 * q]).reshape(-1, 2)
+    p[:, 1] = np.maximum(p[:, 1], 0.0)
+    return p
+
+
+BISON_OUTLINE = _chaikin(BISON_PTS)
+
+
+def bison(ax, xy, s, c, alpha=0.9, z=6):
+    """Grazing bison silhouette, facing left; xy is the point under the hooves."""
     x, y = xy
-    pts = np.array([
-        # nose, low and forward
-        (-0.58, -0.10), (-0.60, -0.02),
-        # forehead rising steeply into the hump
-        (-0.55, 0.06), (-0.48, 0.14), (-0.40, 0.26), (-0.30, 0.38),
-        # hump peak over the front shoulders
-        (-0.18, 0.44), (-0.06, 0.44),
-        # back sloping DOWN toward the rear
-        (0.10, 0.34), (0.24, 0.26), (0.36, 0.20),
-        # rump and tail nub
-        (0.46, 0.16), (0.50, 0.10), (0.53, 0.12), (0.52, 0.06),
-        # rear legs
-        (0.48, -0.02), (0.46, -0.24), (0.40, -0.24), (0.39, -0.04),
-        (0.20, -0.04), (0.18, -0.24), (0.12, -0.24), (0.11, -0.04),
-        # belly
-        (-0.06, -0.06),
-        # front legs, under the hump
-        (-0.12, -0.06), (-0.14, -0.24), (-0.20, -0.24), (-0.21, -0.06),
-        (-0.34, -0.06), (-0.36, -0.24), (-0.42, -0.24), (-0.43, -0.08),
-        # beard hanging from the low head, back up to the nose
-        (-0.47, -0.10), (-0.50, -0.22), (-0.54, -0.20), (-0.56, -0.12),
-    ]) * s
-    ax.add_patch(Polygon(pts + np.array([x, y]), closed=True, facecolor=c,
-                         edgecolor="none", alpha=alpha, zorder=z))
+    ax.add_patch(Polygon(BISON_OUTLINE * s + np.array([x, y]), closed=True,
+                         facecolor=c, edgecolor="none", alpha=alpha, zorder=z))
