@@ -960,22 +960,25 @@ def pmns_matrix(ax, xy, s, c, lw, accent=None):
 
 # ------------------------------------------------------------- scenery ----
 
-# Grazing bison facing left, hooves on local y = 0. Outline cues: shaggy mane
-# over the forehead and the tall front hump, short hooked horn, low head with
-# a ragged beard, woolly chaps on the forelegs, hind legs with a backward
-# hock, hooves, and a tufted tail. Chaikin corner-cutting softens the tufts.
+# Grazing bison, facing left, hooves on local y = 0 (xy is the ground point).
+# Body outline, clockwise from the muzzle. The head hangs almost vertically
+# from the hump, as a grazing bison's does: a broad woolly forehead, a blunt
+# muzzle at grass height, and one long beard tuft under the jaw.
 BISON_PTS = np.array([
-    # big head hanging low to graze: muzzle, face, horn
-    (-0.655, 0.060), (-0.695, 0.090), (-0.712, 0.140), (-0.704, 0.192),
-    (-0.682, 0.240), (-0.662, 0.282), (-0.648, 0.310),
-    (-0.668, 0.336), (-0.676, 0.366), (-0.658, 0.378), (-0.640, 0.352),
-    (-0.620, 0.334),
-    # shaggy topknot and mane climbing the hump
-    (-0.598, 0.372), (-0.574, 0.360), (-0.560, 0.404), (-0.532, 0.394),
-    (-0.514, 0.442), (-0.486, 0.434), (-0.470, 0.500), (-0.440, 0.482),
-    (-0.414, 0.546), (-0.380, 0.548), (-0.360, 0.592), (-0.330, 0.612),
-    (-0.292, 0.648), (-0.252, 0.652), (-0.214, 0.678), (-0.170, 0.696),
-    (-0.110, 0.694), (-0.058, 0.684),
+    # muzzle at grass height: upper lip, rounded nose
+    (-0.672, 0.026), (-0.688, 0.028), (-0.699, 0.044), (-0.702, 0.072),
+    # nose bridge rising under the hair
+    (-0.698, 0.110), (-0.694, 0.150), (-0.697, 0.190), (-0.705, 0.226),
+    # massive woolly topknot bulging forward past the nose
+    (-0.716, 0.256), (-0.727, 0.288), (-0.722, 0.316), (-0.732, 0.340),
+    (-0.714, 0.364), (-0.702, 0.386), (-0.678, 0.392), (-0.660, 0.410),
+    (-0.632, 0.406), (-0.612, 0.422), (-0.584, 0.416), (-0.560, 0.434),
+    (-0.534, 0.428), (-0.514, 0.448),
+    # neck, then the mane climbing the hump
+    (-0.494, 0.466), (-0.476, 0.488), (-0.462, 0.478),
+    (-0.446, 0.512), (-0.418, 0.520), (-0.404, 0.556), (-0.374, 0.566),
+    (-0.358, 0.600), (-0.326, 0.614), (-0.298, 0.646), (-0.258, 0.654),
+    (-0.220, 0.680), (-0.172, 0.694), (-0.112, 0.696), (-0.058, 0.684),
     # back sloping down to the rump
     (-0.005, 0.656), (0.060, 0.614), (0.130, 0.568), (0.205, 0.530),
     (0.280, 0.502), (0.350, 0.480), (0.410, 0.458), (0.462, 0.428),
@@ -986,7 +989,7 @@ BISON_PTS = np.array([
     (0.540, 0.200), (0.534, 0.270),
     # hindquarter down to the far hind leg, hock bent backward
     (0.526, 0.250), (0.512, 0.200), (0.498, 0.160), (0.502, 0.122),
-    (0.486, 0.090), (0.474, 0.050), (0.478, 0.020), (0.490, 0.000),
+    (0.486, 0.090), (0.478, 0.050), (0.478, 0.020), (0.490, 0.000),
     (0.418, 0.000), (0.422, 0.024), (0.426, 0.064), (0.428, 0.110),
     (0.412, 0.150),
     # near hind leg
@@ -998,35 +1001,94 @@ BISON_PTS = np.array([
     (-0.040, 0.176),
     # far foreleg with woolly chaps
     (-0.052, 0.150), (-0.040, 0.128), (-0.060, 0.116), (-0.050, 0.094),
-    (-0.068, 0.082), (-0.066, 0.050), (-0.062, 0.020), (-0.052, 0.000),
+    (-0.066, 0.082), (-0.066, 0.050), (-0.062, 0.020), (-0.052, 0.000),
     (-0.130, 0.000), (-0.126, 0.024), (-0.128, 0.060), (-0.128, 0.100),
     (-0.140, 0.140), (-0.160, 0.160),
     # near foreleg with chaps
     (-0.176, 0.140), (-0.170, 0.116), (-0.190, 0.104), (-0.182, 0.080),
-    (-0.198, 0.066), (-0.194, 0.036), (-0.188, 0.014), (-0.176, 0.000),
+    (-0.194, 0.066), (-0.194, 0.036), (-0.188, 0.014), (-0.176, 0.000),
     (-0.256, 0.000), (-0.256, 0.024), (-0.258, 0.062), (-0.262, 0.100),
     (-0.280, 0.130), (-0.300, 0.160),
-    # brisket, dewlap and ragged beard under the low head
-    (-0.340, 0.170), (-0.380, 0.156), (-0.420, 0.140), (-0.460, 0.124),
-    (-0.500, 0.100), (-0.520, 0.048), (-0.540, 0.086), (-0.560, 0.036),
-    (-0.580, 0.076), (-0.600, 0.030), (-0.616, 0.066), (-0.636, 0.050),
+    # brisket and the long, uneven hair of the cape under the neck
+    (-0.330, 0.162), (-0.346, 0.118), (-0.362, 0.146), (-0.380, 0.112),
+    (-0.392, 0.150), (-0.414, 0.090), (-0.430, 0.138), (-0.446, 0.108),
+    (-0.468, 0.128), (-0.482, 0.094), (-0.500, 0.124), (-0.512, 0.110),
+    # throat notch behind the jaw
+    (-0.530, 0.140), (-0.548, 0.112),
+    # shaggy beard along the lowered jaw
+    (-0.560, 0.066), (-0.574, 0.040), (-0.584, 0.064), (-0.598, 0.020),
+    (-0.612, 0.050), (-0.626, 0.016), (-0.640, 0.036),
+    # chin
+    (-0.656, 0.030),
+])
+
+# Horn: short, thick at the base, curving up and back out of the topknot.
+HORN_PTS = np.array([
+    (-0.644, 0.388), (-0.656, 0.410), (-0.660, 0.436), (-0.654, 0.460),
+    (-0.640, 0.478), (-0.626, 0.486), (-0.632, 0.468), (-0.636, 0.446),
+    (-0.630, 0.420), (-0.614, 0.398), (-0.598, 0.390),
+])
+
+EYE = (-0.672, 0.288)
+NOSTRIL = (-0.693, 0.064)
+MOUTH = np.array([(-0.694, 0.036), (-0.680, 0.034), (-0.666, 0.036)])
+# a fringe of the topknot hanging over the eye
+BROW = np.array([(-0.704, 0.312), (-0.690, 0.318), (-0.674, 0.318), (-0.660, 0.312)])
+# cheek and jaw: where the big head meets the shaggy neck
+CHEEK = np.array([(-0.598, 0.334), (-0.590, 0.288), (-0.582, 0.242), (-0.572, 0.200),
+                  (-0.560, 0.162), (-0.548, 0.134)])
+# Edge of the woolly cape behind the shoulder, where the shaggy front coat
+# meets the sleeker hindquarters.
+CAPE = np.array([
+    (-0.020, 0.640), (0.010, 0.590), (-0.004, 0.540), (0.020, 0.490),
+    (0.004, 0.440), (0.024, 0.390), (0.006, 0.340), (0.022, 0.290),
+    (0.000, 0.240), (0.012, 0.196),
 ])
 
 
-def _chaikin(p, n=2):
+def _chaikin(p, n=2, closed=True):
     """Corner-cutting: rounds the outline into woolly tufts, keeps hooves flat."""
     for _ in range(n):
         q = np.roll(p, -1, axis=0)
-        p = np.column_stack([0.75 * p + 0.25 * q, 0.25 * p + 0.75 * q]).reshape(-1, 2)
+        r = np.column_stack([0.75 * p + 0.25 * q, 0.25 * p + 0.75 * q]).reshape(-1, 2)
+        p = r if closed else np.vstack([p[:1], r[:-2], p[-1:]])
     p[:, 1] = np.maximum(p[:, 1], 0.0)
     return p
 
 
 BISON_OUTLINE = _chaikin(BISON_PTS)
+HORN_OUTLINE = _chaikin(HORN_PTS, 1)
+CAPE_LINE = _chaikin(CAPE, 2, closed=False)
 
 
-def bison(ax, xy, s, c, alpha=0.9, z=6):
-    """Grazing bison silhouette, facing left; xy is the point under the hooves."""
+def bison(ax, xy, s, c, alpha=0.9, z=6, ink="#0d2c56"):
+    """Grazing bison silhouette, facing left; xy is the point under the hooves.
+
+    Thin strokes in the plate colour mark the horn, eye, mouth and the edge
+    of the shaggy cape, so the head reads as a head at cover size.
+    """
     x, y = xy
-    ax.add_patch(Polygon(BISON_OUTLINE * s + np.array([x, y]), closed=True,
-                         facecolor=c, edgecolor="none", alpha=alpha, zorder=z))
+    off = np.array([x, y])
+    lw = 2.2 * s
+    ax.add_patch(Polygon(HORN_OUTLINE * s + off, closed=True, facecolor=c,
+                         edgecolor=ink, lw=0.55 * lw, alpha=alpha,
+                         zorder=z - 0.01, joinstyle="round"))
+    ax.add_patch(Polygon(BISON_OUTLINE * s + off, closed=True, facecolor=c,
+                         edgecolor="none", alpha=alpha, zorder=z))
+    ax.plot(*(MOUTH * s + off).T, color=ink, lw=0.5 * lw, alpha=0.8,
+            solid_capstyle="round", zorder=z + 0.1)
+    ax.plot(*(BROW * s + off).T, color=ink, lw=0.40 * lw, alpha=0.45,
+            solid_capstyle="round", zorder=z + 0.1)
+    ax.plot(*(_chaikin(CHEEK, 2, closed=False) * s + off).T, color=ink,
+            lw=0.40 * lw, alpha=0.35, solid_capstyle="round", zorder=z + 0.1)
+    ax.add_patch(Polygon(_eye(NOSTRIL, 0.007) * s + off, closed=True,
+                         facecolor=ink, edgecolor="none", alpha=0.7,
+                         zorder=z + 0.1))
+    ax.add_patch(Polygon(_eye(EYE, 0.0095) * s + off, closed=True,
+                         facecolor=ink, edgecolor="none", alpha=0.85,
+                         zorder=z + 0.1))
+
+
+def _eye(c, r):
+    t = np.linspace(0, 2 * np.pi, 16, endpoint=False)
+    return np.column_stack([c[0] + r * np.cos(t), c[1] + 0.8 * r * np.sin(t)])
