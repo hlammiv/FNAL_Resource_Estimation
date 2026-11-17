@@ -23,7 +23,7 @@ def data():
 
 
 def main(out=None):
-    ff.setup()
+    ff.setup(truetype=True)
     rows, sim, mid = data()
     fig, (l, r) = plt.subplots(1, 2, figsize=(6.5, 2.6), gridspec_kw={"width_ratios": [1.5, 1]})
     for name, n, (lo, hi) in rows:
@@ -50,5 +50,5 @@ def main(out=None):
 if __name__ == "__main__":
     import sys
     fig = main()
-    ff.setup()
+    ff.setup(truetype=True)
     fig.savefig(sys.argv[1] + ".pdf"); fig.savefig(sys.argv[1] + ".png", dpi=130)

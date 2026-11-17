@@ -28,11 +28,11 @@ def data():
 
 
 def main():
-    ff.setup()
+    ff.setup(truetype=True, tight=False)   # canvas = printed size, so 7pt prints as 7pt
     i, rows = data()
     h = i["campaign_horizon_yr"]
     n = len(rows)
-    fig, ax = plt.subplots(figsize=(6.5, 2.1))
+    fig, ax = plt.subplots(figsize=(ff.TEXTWIDTH_IN, 1.86))
     ax.axvline(h, color=ff.ORANGE, ls="--", lw=0.9)
     for k, (name, (lo, hi), bound, txt, extra) in enumerate(rows):
         y = n - 1 - k
@@ -41,16 +41,16 @@ def main():
         if bound:
             ax.annotate("", xy=(hi * 2.1, y), xytext=(hi, y), arrowprops=dict(arrowstyle="-|>", color=ff.BLUE, lw=0.9, mutation_scale=7, shrinkA=0, shrinkB=0))
             r = hi * 2.1
-        s = txt + (f"; {extra}" if extra else "")
+        s = txt + ((";\n" if r > 1e3 else "; ") + extra if extra else "")  # wrap the last row to fit the canvas
         if lo < h and r * 30 > h and hi < h:                  # the label would cross the window line: put it left of the bar
             ax.text(lo / 1.2, y, s, va="center", ha="right", fontsize=7, color=ff.INK)
         else:
             ax.text(r * 1.2, y, s, va="center", ha="left", fontsize=7, color=ff.INK)
-    ax.text(h * 1.15, n - 0.35, "five-year window", color=ff.ORANGE, fontsize=7, ha="left", va="center")
+    ax.text(h * 1.15, n - 0.4, "five-year window", color=ff.ORANGE, fontsize=7, ha="left", va="center")
     ax.set(xscale="log", xlim=(1e-3, 3e6), ylim=(-0.6, n), yticks=range(n), yticklabels=[r[0] for r in reversed(rows)],
            xlabel="serial wall time on one machine (yr)")
     ax.tick_params(axis="y", which="both", length=0)
-    fig.tight_layout()
+    fig.tight_layout(pad=0.2)
     return fig
 
 

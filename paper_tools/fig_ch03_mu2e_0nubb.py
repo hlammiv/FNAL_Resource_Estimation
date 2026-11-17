@@ -39,16 +39,16 @@ def mu2e(ax):
 
     ct.nucleus(ax, (2.86, 1.24), r=0.76, n=17, color=ff.BLUE, alt=ff.SKY, seed=5)
     ct.txt(ax, (2.60, 0.08), r"$^{27}$Al, same state in and out",
-           size=6.2, color=ff.BLUE)
+           size=7.2, color=ff.BLUE)
 
     vx = (1.90, 1.86)
     vertex(ax, vx, r=0.17)
 
     # incoming muon and outgoing electron, both meeting the same vertex
     ct.arrow(ax, (0.10, 2.72), vx, color=ff.INK, lw=1.05, shrinkB=5)
-    ct.txt(ax, (0.26, 2.90), r"$\mu^-$", size=7.5)
+    ct.txt(ax, (0.26, 2.90), r"$\mu^-$", size=8)
     ct.arrow(ax, vx, (4.10, 2.86), color=ff.INK, lw=1.05, shrinkA=5)
-    ct.txt(ax, (4.24, 2.94), r"$e^-$", size=7.5)
+    ct.txt(ax, (4.24, 2.94), r"$e^-$", size=8)
 
     # The nucleon leg: the vertex is a four-fermion contact, two leptons
     # against a nucleon, so it needs a hadronic line as well as the two leptons.
@@ -56,12 +56,12 @@ def mu2e(ax):
     # arm, back into it on the other, so the nucleus ends where it began
     ct.arrow(ax, (2.39, 1.30), vx, color=ff.BLUE, lw=1.0, shrinkB=6, mut=6)
     ct.arrow(ax, vx, (2.61, 1.64), color=ff.BLUE, lw=1.0, shrinkA=6, mut=6)
-    ct.txt(ax, (2.20, 1.26), "N", size=6.5, color=ff.BLUE)
+    ct.txt(ax, (2.20, 1.26), "N", size=7.2, color=ff.BLUE)
 
-    ct.txt(ax, (1.52, 1.64), r"$\hat{\mathcal{O}}_{\rm BSM}$", size=7.5,
+    ct.txt(ax, (1.52, 1.64), r"$\hat{\mathcal{O}}_{\rm BSM}$", size=8,
            color=ff.ORANGE)
 
-    ct.txt(ax, (2.6, 3.02), "(a)  Mu2e: one register", size=7, color=ff.INK)
+    ct.txt(ax, (2.6, 3.02), "(a)  Mu2e: one register", size=7.4, color=ff.INK)
 
 
 def zeronubb(ax):
@@ -70,14 +70,14 @@ def zeronubb(ax):
     ax.set_ylim(0, 3.15)
 
     ct.nucleus(ax, (1.02, 1.30), r=0.72, n=15, color=ff.BLUE, alt=ff.SKY, seed=2)
-    ct.txt(ax, (1.02, 0.16), r"$^{76}$Ge", size=7, color=ff.BLUE)
+    ct.txt(ax, (1.02, 0.16), r"$^{76}$Ge", size=7.4, color=ff.BLUE)
     ct.nucleus(ax, (4.36, 1.30), r=0.72, n=15, color=ff.GREEN, alt="#7fd4bd",
                seed=9)
-    ct.txt(ax, (4.36, 0.16), r"$^{76}$Se", size=7, color=ff.GREEN)
+    ct.txt(ax, (4.36, 0.16), r"$^{76}$Se", size=7.4, color=ff.GREEN)
 
     vx = (2.69, 1.44)
     vertex(ax, vx, r=0.19)
-    ct.txt(ax, (2.69, 1.06), r"$\hat{\mathcal{O}}^{0\nu}$", size=7.5,
+    ct.txt(ax, (2.69, 1.06), r"$\hat{\mathcal{O}}^{0\nu}$", size=8,
            color=ff.ORANGE)
 
     # two neutrons in, two protons out -- the lepton-number-violating core
@@ -86,24 +86,25 @@ def zeronubb(ax):
                  shrinkB=6)
         ct.arrow(ax, vx, (3.58, 1.44 + dy), color=ff.GREEN, lw=0.9, mut=6,
                  shrinkA=6)
-    ct.txt(ax, (1.95, 1.78), r"$2n$", size=6.2, color=ff.BLUE)
-    ct.txt(ax, (3.45, 1.78), r"$2p$", size=6.2, color=ff.GREEN)
+    ct.txt(ax, (1.95, 1.78), r"$2n$", size=7.2, color=ff.BLUE)
+    ct.txt(ax, (3.45, 1.78), r"$2p$", size=7.2, color=ff.GREEN)
 
     # the two emitted electrons
     ct.arrow(ax, vx, (1.98, 2.66), color=ff.INK, lw=1.0, mut=6, shrinkA=6)
     ct.arrow(ax, vx, (3.42, 2.66), color=ff.INK, lw=1.0, mut=6, shrinkA=6)
-    ct.txt(ax, (1.82, 2.76), r"$e^-$", size=7.5)
-    ct.txt(ax, (3.58, 2.76), r"$e^-$", size=7.5)
+    ct.txt(ax, (1.82, 2.76), r"$e^-$", size=8)
+    ct.txt(ax, (3.58, 2.76), r"$e^-$", size=8)
 
-    ct.txt(ax, (2.7, 0.06), "parent prepared, daughter projected",
-           size=6.2, color=ff.MIDGREY)
-    ct.txt(ax, (2.7, 3.00), r"(b)  $0\nu\beta\beta$: one register, two projections", size=7,
+    ct.txt(ax, (2.7, 0.40), "parent prepared,\ndaughter projected",
+           size=7.2, color=ff.MIDGREY)
+    ct.txt(ax, (2.7, 3.00), r"(b)  $0\nu\beta\beta$: one register, two projections", size=7.4,
            color=ff.INK)
 
 
 def main():
-    ff.setup()
-    fig, axes = plt.subplots(1, 2, figsize=(6.5, 2.35), dpi=300,
+    # canvas = printed size (0.98 textwidth), so every label prints at >= 7pt
+    ff.setup(truetype=True, tight=False)
+    fig, axes = plt.subplots(1, 2, figsize=(ff.TEXTWIDTH_IN * 0.98, 1.9), dpi=300,
                              gridspec_kw=dict(width_ratios=[0.96, 1.04],
                                               wspace=0.05))
     mu2e(axes[0])

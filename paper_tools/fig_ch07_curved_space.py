@@ -50,7 +50,7 @@ def expansion(ax):
 
     for s_ in (-1, 1):
         ax.plot(s_ * half, y, color=ff.GREEN, lw=1.0, zorder=3)
-    ct.txt(ax, (1.31, 1.90), r"$a(t)$", size=7, color=ff.GREEN, ha="right")
+    ct.txt(ax, (1.31, 1.90), r"$a(t)$", size=7.6, color=ff.GREEN, ha="right")
 
     # quanta popping out of the vacuum, denser as the occupation rises
     npart = 0
@@ -74,15 +74,15 @@ def expansion(ax):
     ax.plot([-1.20, 1.30], [1.02, 1.02], color=ff.GREY, lw=0.6, ls=(0, (3, 2)),
             zorder=3)
 
-    ct.txt(ax, (-1.48, 0.30), "in-vacuum:\npure positive\nfrequency", size=5.8,
+    ct.txt(ax, (-1.48, 0.30), "in-vacuum:\npure positive\nfrequency", size=7.2,
            color=ff.MIDGREY, ha="left")
-    ct.txt(ax, (0.02, 2.16), "out-state: mixed, populated", size=5.8,
+    ct.txt(ax, (0.02, 2.16), "out-state: mixed, populated", size=7.2,
            color=ff.BLUE, va="bottom")
     ct.arrow(ax, (-1.64, 0.06), (-1.64, 2.42), color=ff.INK, lw=0.7, mut=6)
-    ct.txt(ax, (-1.52, 2.48), r"$t$", size=6.5)
+    ct.txt(ax, (-1.52, 2.48), r"$t$", size=7.4)
 
     ax.annotate("(a)  quanta created by the expansion", xy=(0.5, -0.135),
-                xycoords="axes fraction", ha="center", fontsize=6.8,
+                xycoords="axes fraction", ha="center", fontsize=7.4,
                 color=ff.INK, annotation_clip=False)
 
 
@@ -99,22 +99,23 @@ def bogoliubov(ax):
 
     # the resolvable band -- what a finite lattice actually delivers
     ax.axvspan(0.14, 0.62, color=ff.ORANGE, alpha=0.13, lw=0, zorder=1)
-    ct.txt(ax, (0.38, 1.00), "resolved\nmomentum bins", size=6, color=ff.ORANGE)
+    ct.txt(ax, (0.38, 1.00), "resolved\nmomentum bins", size=7.2, color=ff.ORANGE)
 
     ax.set_xlim(-0.02, 1.06)
     ax.set_ylim(-0.16, 1.20)
-    ct.txt(ax, (0.52, -0.085), r"comoving momentum $k$", size=6.5)
-    ct.txt(ax, (0.05, 1.12), r"$\langle n_k\rangle = |\beta_k|^2$", size=7,
+    ct.txt(ax, (0.52, -0.085), r"comoving momentum $k$", size=7.4)
+    ct.txt(ax, (0.05, 1.12), r"$\langle n_k\rangle = |\beta_k|^2$", size=7.6,
            ha="left", color=ff.BLUE)
 
     ax.annotate(r"(b)  the observable", xy=(0.5, -0.135),
-                xycoords="axes fraction", ha="center", fontsize=6.8,
+                xycoords="axes fraction", ha="center", fontsize=7.4,
                 color=ff.INK, annotation_clip=False)
 
 
 def main():
-    ff.setup()
-    fig, axes = plt.subplots(1, 2, figsize=(6.5, 2.25), dpi=300,
+    # canvas = printed size (0.98 textwidth), so every label prints at >= 7pt
+    ff.setup(truetype=True, tight=False)
+    fig, axes = plt.subplots(1, 2, figsize=(ff.TEXTWIDTH_IN * 0.98, 2.18), dpi=300,
                              gridspec_kw=dict(width_ratios=[0.92, 1.08],
                                               wspace=0.14))
     expansion(axes[0])

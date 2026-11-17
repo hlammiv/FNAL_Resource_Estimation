@@ -34,7 +34,7 @@ def collision(ax):
     for rr, a in ((1.24, 0.07), (0.96, 0.11), (0.68, 0.17), (0.40, 0.26)):
         ax.add_patch(Ellipse((0, 0), 2 * rr * 0.60, 2 * rr, facecolor=ff.ORANGE,
                              alpha=a, edgecolor="none", zorder=2))
-    ct.txt(ax, (0, -0.04), "QGP", size=6.2, color="#7a3300", z=6)
+    ct.txt(ax, (0, -0.04), "QGP", size=7.2, color="#7a3300", z=6)
 
     # spectator nuclei receding along the beam
     for s in (-1, 1):
@@ -55,10 +55,13 @@ def collision(ax):
                 color=ff.ORANGE, lw=0.55, alpha=0.75, zorder=3,
                 solid_capstyle="round")
 
-    ct.txt(ax, (0, -1.86), "spatial asymmetry $\\to$ momentum asymmetry",
-           size=5.9, color=ff.MIDGREY)
-    ax.annotate("(a)  a heavy-ion collision", xy=(0.5, -0.075),
-                xycoords="axes fraction", ha="center", fontsize=6.8,
+    ct.txt(ax, (0, -1.92), "spatial asymmetry\n$\\to$ momentum asymmetry",
+           size=7.2, color=ff.MIDGREY,
+           bbox=dict(fc="white", ec="none", alpha=0.8, pad=0.3))
+    # figure-fraction height matches the (b) and (c) captions (this axes is
+    # aspect-equal, so its own box is not the same height as theirs)
+    ax.annotate("(a)  a heavy-ion collision", xy=(0.5, 0.034),
+                xycoords=("axes fraction", "figure fraction"), ha="center", fontsize=7.4,
                 color=ff.INK, annotation_clip=False)
 
 
@@ -74,13 +77,13 @@ def correlator(ax):
 
     ax.set_xlim(0, 1.05)
     ax.set_ylim(-0.85, 1.05)
-    ct.txt(ax, (0.52, -0.80), r"time separation $t$", size=6.5)
-    ct.txt(ax, (0.02, 0.97), r"$\langle T^{xy}(0)\,T^{xy}(t)\rangle_T$", size=7,
+    ct.txt(ax, (0.52, -0.80), r"time separation $t$", size=7.2)
+    ct.txt(ax, (0.02, 0.97), r"$\langle T^{xy}(0)\,T^{xy}(t)\rangle_T$", size=7.6,
            ha="left")
-    ct.txt(ax, (0.62, 0.52), "thermal state,\nreal-time evolution", size=6,
+    ct.txt(ax, (0.45, 0.52), "thermal state,\nreal-time evolution", size=7.2,
            color=ff.MIDGREY, ha="left")
     ax.annotate("(b)  what the device measures", xy=(0.5, -0.155),
-                xycoords="axes fraction", ha="center", fontsize=6.8,
+                xycoords="axes fraction", ha="center", fontsize=7.4,
                 color=ff.INK, annotation_clip=False)
 
 
@@ -98,32 +101,33 @@ def spectral(ax):
     slope = 0.92 * 2.6
     xs = np.linspace(0, 0.40, 20)
     ax.plot(xs, slope * xs, color=ff.ORANGE, lw=1.0, ls=(0, (4, 2)), zorder=5)
-    ct.txt(ax, (0.46, 0.82), r"slope $\propto \eta$", size=6.5, color=ff.ORANGE,
+    ct.txt(ax, (0.46, 0.82), r"slope $\propto \eta$", size=7.2, color=ff.ORANGE,
            ha="left")
     ct.arrow(ax, (0.44, 0.78), (0.26, 0.62), color=ff.ORANGE, lw=0.7, mut=6)
 
     ax.plot([0], [0], "o", ms=3.4, color=ff.ORANGE, zorder=6)
-    ct.txt(ax, (0.02, -0.115), r"$\omega\to 0$", size=6, color=ff.ORANGE,
+    ct.txt(ax, (0.02, -0.115), r"$\omega\to 0$", size=7.2, color=ff.ORANGE,
            ha="left")
 
     # What the slope buys: eta/s against the conjectured lower bound.
-    ct.txt(ax, (0.99, 0.30), r"$\eta/s$ to 20%,", size=6, color=ff.BLUE,
+    ct.txt(ax, (0.99, 0.30), r"$\eta/s$ to 20%,", size=7.2, color=ff.BLUE,
            ha="right")
-    ct.txt(ax, (0.99, 0.18), r"vs. the $1/4\pi$ bound", size=6, color=ff.MIDGREY,
+    ct.txt(ax, (0.99, 0.18), r"vs. the $1/4\pi$ bound", size=7.2, color=ff.MIDGREY,
            ha="right")
 
     ax.set_xlim(-0.03, 1.05)
     ax.set_ylim(-0.20, 1.12)
-    ct.txt(ax, (0.52, -0.155), r"frequency $\omega$", size=6.5)
-    ct.txt(ax, (0.06, 1.05), r"$\rho(\omega)$", size=7, ha="left")
+    ct.txt(ax, (0.52, -0.155), r"frequency $\omega$", size=7.2)
+    ct.txt(ax, (0.06, 1.05), r"$\rho(\omega)$", size=7.6, ha="left")
     ax.annotate(r"(c)  Kubo relation $\to\ \eta$", xy=(0.5, -0.155),
-                xycoords="axes fraction", ha="center", fontsize=6.8,
+                xycoords="axes fraction", ha="center", fontsize=7.4,
                 color=ff.INK, annotation_clip=False)
 
 
 def main():
-    ff.setup()
-    fig, axes = plt.subplots(1, 3, figsize=(6.5, 2.25), dpi=300,
+    # canvas = printed size (0.98 textwidth), so every label prints at >= 7pt
+    ff.setup(truetype=True, tight=False)
+    fig, axes = plt.subplots(1, 3, figsize=(ff.TEXTWIDTH_IN * 0.98, 2.15), dpi=300,
                              gridspec_kw=dict(width_ratios=[0.90, 1.05, 1.0],
                                               wspace=0.17))
     collision(axes[0])

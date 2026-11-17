@@ -1369,7 +1369,9 @@ def test_r23_no_machine_count(r33):
     assert not any("machines" in n for n in r33.notes)
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex").read_text()
     assert not re.search(r"machines|shot-parallel|machine-years|fold parallelism|serialized|embarrassingly", tex)
-    assert tex.count("one machine") == 3          # the 2028 box, the 2033 box and the wall-time paragraph (r25)
+    assert tex.count("one machine") == 1          # the 2028 box, the 2033 box and the wall-time paragraph (r25)
+    # MD1117-20b 2026-11-17: both box wall rows dropped 'one machine, $1\,\mu$s/T gate:' (was == 3); Ch. 1 states it once
+    assert "Every wall time is serial on one machine" in (Path(m.__file__).resolve().parents[2] / "main-overview.tex").read_text()
 
 
 # --- RECORD: the retired second-quantized construction (r17-r21) -----------------------------
@@ -2468,7 +2470,7 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  r"first result $36$~s; campaign $13$~min",
                  # rn_est v2 2026-11-14: counting-field readout, four settings, counting term counted (was 5.2 yr,
                  # 5.8-6.5 yr, 1.1e3 + 5.5e3 shots, the 1.2e15 Hadamard item)
-                 r"first result $1.5$~yr;", r"$2.1$--$2.8$~yr for $4$--$8$ temperatures",
+                 r"first result $1.5$~yr,", r"$2.1$--$2.8$~yr for $4$--$8$ temperatures",   # MD1117-20b 2026-11-17: was 'first result $1.5$~yr;'
                  r"$5.0\times 10^{2}$ at $10a$ $+$ $1.2\times 10^{3}$ at $5a$, one temperature",
                  r"On the free lattice $\sigma^2=45$ at $10a$ and $104$ at $5a$, with a $4\%$ fit-form systematic",
                  r"at $\chi=0$, $32$, $56$ and $80$", r"the closed-time-path quasi-characteristic function",

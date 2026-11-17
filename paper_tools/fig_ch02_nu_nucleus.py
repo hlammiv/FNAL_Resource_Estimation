@@ -21,20 +21,20 @@ def process(ax):
     ax.set_ylim(0, 3.2)
 
     ct.nucleus(ax, (1.55, 1.5), r=0.72, n=13, color=ff.BLUE, alt=ff.SKY, seed=7)
-    ct.txt(ax, (1.55, 0.50), r"$^{40}$Ar", size=7, color=ff.BLUE)
+    ct.txt(ax, (1.55, 0.50), r"$^{40}$Ar", size=7.4, color=ff.BLUE)
 
     # incoming neutrino
     ct.arrow(ax, (0.05, 2.62), (0.72, 2.26), color=ff.INK, lw=1.0)
-    ct.txt(ax, (0.20, 2.80), r"$\nu_\mu$", size=7.5)
+    ct.txt(ax, (0.20, 2.80), r"$\nu_\mu$", size=8)
 
     # W exchange into the nucleus
     ct.wavy(ax, (0.72, 2.26), (1.52, 1.72), n=4, amp=0.075,
             color=ff.ORANGE, lw=0.95)
-    ct.txt(ax, (1.20, 2.15), r"$W$", size=7, color=ff.ORANGE)
+    ct.txt(ax, (1.20, 2.15), r"$W$", size=7.4, color=ff.ORANGE)
 
     # outgoing lepton -- the measured leg
     ct.arrow(ax, (0.72, 2.26), (1.92, 3.02), color=ff.INK, lw=1.0)
-    ct.txt(ax, (2.06, 3.06), r"$\mu^-$", size=7.5)
+    ct.txt(ax, (2.06, 3.06), r"$\mu^-$", size=8)
 
     # hadronic final state, summed over
     rng = np.random.default_rng(11)
@@ -44,11 +44,11 @@ def process(ax):
         p0 = (1.55 + 0.62 * np.cos(ang), 1.5 + 0.62 * np.sin(ang))
         p1 = (p0[0] + L * np.cos(ang), p0[1] + L * np.sin(ang))
         ct.arrow(ax, p0, p1, color=ff.GREY, lw=0.7, mut=5, z=2)
-    ct.txt(ax, (4.02, 1.62), "hadrons,\nsummed over", size=6, color=ff.MIDGREY,
+    ct.txt(ax, (4.02, 1.62), "hadrons,\nsummed over", size=7.2, color=ff.MIDGREY,
            ha="center")
 
     ct.txt(ax, (2.5, 0.06), r"inclusive: $\nu_\mu\,^{40}$Ar $\to \mu^- X$",
-           size=6.5, color=ff.INK)
+           size=7.2, color=ff.INK)
 
 
 def response(ax):
@@ -81,28 +81,29 @@ def response(ax):
                 arrowprops=dict(arrowstyle="<|-|>", color=ff.ORANGE, lw=0.9,
                                 mutation_scale=6), zorder=6)
     ct.txt(ax, (0.022, 0.70), r"resolution window" "\n" r"$\sigma\!\sim\!50\,$MeV",
-           size=6, color=ff.ORANGE, ha="left")
+           size=7.2, color=ff.ORANGE, ha="left")
     ct.arrow(ax, (0.175, 0.655), (0.352, 0.145), color=ff.ORANGE, lw=0.7,
              mut=5, z=6)
 
     ax.set_xlim(0, 1.0)
     ax.set_ylim(0, 1.16)
     ax.plot([0, 1.0], [0, 0], color=ff.INK, lw=0.7)
-    ct.txt(ax, (0.5, -0.115), r"energy transfer $\omega$", size=6.5)
-    ct.txt(ax, (0.035, 1.05), r"$W^{\mu\nu}(\omega)$", size=7, ha="left")
-    ct.txt(ax, (0.985, 0.83), "window-smeared\nresponse (returned)", size=6,
+    ct.txt(ax, (0.5, -0.115), r"energy transfer $\omega$", size=7.2)
+    ct.txt(ax, (0.035, 1.05), r"$W^{\mu\nu}(\omega)$", size=7.4, ha="left")
+    ct.txt(ax, (0.985, 0.83), "window-smeared\nresponse (returned)", size=7.2,
            color=ff.BLUE, ha="right")
-    ct.txt(ax, (0.985, 0.36), "true finite-volume\nlevels (unresolved)", size=6,
+    ct.txt(ax, (0.985, 0.36), "true finite-volume\nlevels (unresolved)", size=7.2,
            color=ff.MIDGREY, ha="right")
 
 
 def main():
-    ff.setup()
-    fig, axes = plt.subplots(1, 2, figsize=(6.5, 2.35), dpi=300,
+    # canvas = printed size (0.98 textwidth), so every label prints at >= 7pt
+    ff.setup(truetype=True, tight=False)
+    fig, axes = plt.subplots(1, 2, figsize=(ff.TEXTWIDTH_IN * 0.98, 2.35), dpi=300,
                              gridspec_kw=dict(width_ratios=[1.05, 1], wspace=0.10))
     process(axes[0])
     response(axes[1])
-    fig.subplots_adjust(left=0.005, right=0.995, top=0.99, bottom=0.085)
+    fig.subplots_adjust(left=0.005, right=0.995, top=0.99, bottom=0.115)
     ff.save(fig, "ch02_nu_nucleus")
 
 

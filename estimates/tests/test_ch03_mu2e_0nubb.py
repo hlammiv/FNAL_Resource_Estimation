@@ -491,7 +491,7 @@ def test_2028_shots_and_wall_time(r28, tex):
     assert round(nlo / 60) == 6 and round(nhi / 60) == 33
     if tex is not None:
         assert "$\\sim 0.024$--$0.10\\,$s per Hadamard-test shot" in tex
-        assert "$\\sim 8$--$33$ min (Hadamard test) or $\\ge 68$ s (MLAE bound, $D=10^{2}$) on one machine" in tex
+        assert "$\\sim 8$--$33$ min (Hadamard test) or $\\ge 68$ s (MLAE bound, $D=10^{2}$);" in tex   # MD1117-20 2026-11-17: was '... $D=10^{2}$) on one machine' (stated once in Ch. 1)
         # restructure 2026-10-22: the timing convention parenthetical left the box row; the sentence after the box carries it
         # the 0.1 ms is sourced in the chapter (r17 verifier); the 1 ms bound is retired (r25)
         # CUT-pinned (H. Lamm 2026-11-11): the wall-time sentence restating the overview schedule was cut (anchor retired)
@@ -942,11 +942,13 @@ def test_2033_shots_as_printed(a, r33, tex):
     if tex is None:
         pytest.skip("chapter .tex not on disk")
     # style pass 2026-10-08: box rows hold quantity and value only (rule 10); numbers unchanged
-    assert ("$4.9\\times 10^{3}$ per Hamiltonian; "
-            "$9.8\\times 10^{3}$--$1.5\\times 10^{4}$ over the $2$--$3$ VS-IMSRG Hamiltonians") in tex
+    assert ("$4.9\\times 10^{3}$ per $\\hat H_k$; "
+            "$9.8\\times 10^{3}$--$1.5\\times 10^{4}$ over all $\\hat H_k$") in tex   # MD1117-8 2026-11-17: was 'per Hamiltonian; ... over the $2$--$3$ VS-IMSRG Hamiltonians'
     assert "$\\sim 19$--$78$ min per shot" in tex and "T-depth & $9.3\\times 10^{7}$--$3.9\\times 10^{8}$" in tex   # re-pinned 2026-11-13
     assert ch3.printed(a)["t_shot_min_2033:box"] in tex
-    assert "Flagship $^{27}$Al & $e_{\\max}{=}8$--$10$: $\\approx 700$--$1100$ system qubits, $\\times 2.3\\times 10^{5}$--$7.5\\times 10^{6}$ the 2033 target" in tex   # re-pinned 2026-11-12 (batch 6): the box row says 'system qubits', was 'LQ'; box row; multiple_flagship is in retired
+    assert "converged $^{27}$Al at $e_{\\max}{=}8$--$10$ $\\times 2.3\\times 10^{5}$--$7.5\\times 10^{6}$ \\\\" in tex   # re-pinned 2026-11-12 (batch 6): the box row says 'system qubits', was 'LQ'; box row; multiple_flagship is in retired
+    # MD1117-7 2026-11-17: was 'Flagship $^{27}$Al & $e_{\max}{=}8$--$10$: $\approx 700$--$1100$ system qubits, $\times ...$ the 2033 target'; the qubits stay in the prose
+    assert "at $e_{\\max}=8$--$10$ needs $\\approx 700$--$1100$ system qubits" in tex
     assert "(all six categories at the dipole's shot factor)" not in tex and "estimand;" not in tex
     assert "per basis scan" not in tex
     assert "2$--$8\\times 10^{3}$ across the survey" not in tex
@@ -985,8 +987,8 @@ def test_2033_tiers_depth_and_walls(a, r33, tex):
     assert tuple(round(x, 2) for x in i["factories_for_1yr"]) == (3.47, 21.70)    # re-pinned 2026-11-13; was 0.33, 2.05
     if tex is None:
         pytest.skip("chapter .tex not on disk")
-    for frag in ("one Hamiltonian, $5\\%$ on the spin-dependent element: $\\approx 63$--$260$ days on one machine",
-                 "$\\approx 130$ days--$2.2$ years on one machine ($2$--$3$ scans)",   # referee M2: SD element only
+    for frag in ("one $\\hat H_k$, $5\\%$ on the spin-dependent element: $\\approx 63$--$260$ days \\\\",   # MD1117-8/-20 2026-11-17: was 'one Hamiltonian, ... days on one machine'
+                 "$\\approx 130$ days--$2.2$ years ($2$--$3$ scans)",   # referee M2: SD element only  # MD1117-20 2026-11-17: was '... years on one machine (...)'
                  "takes at most $43\\%$ of the five-year window on one machine",     # style pass: rule 7 wording
                  "no number of factories brings the campaign below $3.5$--$22$ years"):   # re-pinned 2026-11-13
         assert frag in tex, frag
@@ -1039,9 +1041,9 @@ def test_simplified_0nubb_rows(a, r33, tex):
     # style pass 2026-10-08: the truncated-space gaps and the generic-band comparison are cut (rule 2); box rows
     # follow the vocabulary of rule 12 (readout -> estimate, resonant drive -> resonant transition); numbers unchanged
     for frag in ("are $5.17$ and $4.26$ MeV, against the measured $4.28$ and $3.00$ MeV~\\cite{ENSDF}",
-                 "so KB3G is the conservative choice", "\\cite{arxiv_nucl-th_0012077}",
+                 "KB3G is the conservative choice in the truncated spaces", "\\cite{arxiv_nucl-th_0012077}",   # MD1117-7 2026-11-17: was 'so KB3G is the conservative choice'
                  "$74$--$174$ LQ, $0.72$--$1.5\\times 10^{9}$ T, projection estimate: $2.5$--$5.1$ years",   # re-pinned 2026-11-13
-                 "($\\times 6.5$--$13$ at the model $0^+$ gaps)",
+                 "At the KB3G gaps the full $pf$ pair needs $\\times 6.5$--$13$ the 2033 target per shot",   # MD1117-7 2026-11-17: was the box '($\\times 6.5$--$13$ at the model $0^+$ gaps)'; the prose carries it
                  "with $\\lambda/|M|\\approx 197$ and an overlap of $0.98$",
                  "$\\lambda/|M|\\approx 1.4\\times 10^{3}$ and thus $30\\%$ on $|M|$ takes at least $5.5\\times 10^{6}$ shots, or $1100$--$2300$ years",
                  "With per-shot variance $0.45$ in the same ground state",   # 2026-10-09: computed in USDB
@@ -1093,7 +1095,7 @@ def test_single_machine_serial_campaign(a, r28, r33, tex):
     assert "The parallel Hadamard test~\\cite{arxiv_2607_12344}" in tex
     # 'machines' (plural) appears nowhere; 'machine' only as one machine / machine time / the RFI machine
     assert not re.search(r"\bmachines\b", low)
-    assert "shot-parallel" not in low and "VS-IMSRG Hamiltonians \\\\" in tex
+    assert "shot-parallel" not in low and "over all $\\hat H_k$ \\\\" in tex   # MD1117-8 2026-11-17: was 'VS-IMSRG Hamiltonians \\\\' (Shots row)
 
 
 
@@ -1151,7 +1153,8 @@ def test_codesign_flagship_fits_1000_lq_as_printed(rcd, tex):
     assert round(100 * (i["system_qubits"][1] / 1000 - 1)) == 14          # 1144 / 1000
     if tex is not None:
         assert "fits within approximately 1000 logical qubits" not in tex
-        assert "$\\sim 14\\%$ over at $e_{\\max}=10$ before ancilla" in tex
+        # MD1117-7 2026-11-17: tex check retired, the sentence now says only 'near the 1000-LQ target'; 14% stays pinned above
+        assert "Its register is near the 1000-LQ target" in tex
 
 
 def test_codesign_ge_converged_registers(rcd):
@@ -1289,7 +1292,10 @@ def test_printed_strings_are_in_the_tex(a, tex):
                "c_T_sd:90",
                # retired 2026-11-13: the lever sentence now quotes 27Al and 48Ca (al_after_lever, pf_after_lever)
                "lever_worst:168",
-               "f7p3p1_t:157,box", "f7p3p1_wall:157,box", "pf_rabi_multiple:157,box", "pf_rabi_wall:157,box", "rabi_factories:163", "eps_l_first_light:254"}
+               "f7p3p1_t:157,box", "f7p3p1_wall:157,box", "pf_rabi_multiple:157,box", "pf_rabi_wall:157,box", "rabi_factories:163", "eps_l_first_light:254",
+               # retired 2026-11-17 (MD1117-7): the above-target block of the 2033 box now points to Table 3.1 and
+               # dropped its Required eps_l row (values stay pinned on the model above)
+               "eps_l_pf_jj44:240", "eps_l_jj55:240", "eps_l_flagship:240", "eps_l_mo_ru_row:246"}
     assert retired <= set(p), retired - set(p)
     if tex is not None:
         for k, v in r25.items():
@@ -1395,9 +1401,10 @@ def test_insertion_share_and_moru_wording(a, tex):
         assert "thus make it a co-design target" in tex     # R16; R2-nuclear-3 2026-11-15 rewording (was "The pair is a co-design target")
         assert "near-miss cross-check" not in tex and "near-miss pairs" not in tex
         # re-pinned 2026-11-13: 48Ca/Ti joins the co-design row; Mo/Ru carries the measured-gap band
-        assert "& $^{76}$Ge/Se, $^{82}$Se/Kr: $\\times 9.9$--$41$" in tex
-        assert "$0\\nu\\beta\\beta$ co-design & $^{48}$Ca/Ti: $\\times 15$--$64$" in tex
-        assert ("$0\\nu\\beta\\beta$ reach target & $^{100}$Mo/Ru: $\\times 51$--$100$ on state prep at the measured $0^+$ gaps") in tex   # R2-nuclear-2 2026-11-15: the box drops the generic-gap band
+        # MD1117-7 2026-11-17: the box's co-design and reach-target rows ('$^{48}$Ca/Ti: $\\times 15$--$64$', '$^{76}$Ge/Se,
+        # $^{82}$Se/Kr: $\\times 9.9$--$41$', '$^{100}$Mo/Ru: $\\times 51$--$100$ ...') became one row pointing to Table 3.1;
+        # tex checks retired, the multiples stay pinned on the model (printed() above) and in the survey-table test
+        assert "Above the 2033 target & valence-space $0\\nu\\beta\\beta$ pairs $\\times 9.9$--$170$ on state prep (Table~\\ref{tab:ch03_survey})" in tex
         assert "measured $0^+$ gaps of $0.70$ and $1.13$ MeV~\\cite{ENSDF} put it at $\\times 51$--$100$" in tex
         assert "co-design target at every plausible spectral gap" not in tex and "$\\times 880$" not in tex
 
@@ -1582,7 +1589,7 @@ def test_referee_m3_al27_usdb_gap(a, r33, tex):
     assert tuple(ch3.round_sig(x) for x in r33.hard_ops) == (1.1e9, 4.7e9)          # was 1.1e8, 4.4e8
     if tex is None:
         pytest.skip("chapter .tex not on disk")
-    assert "in full $pf$ GXPF1A costs about $2\\%$ more" in tex
+    assert "in full $pf$ the GXPF1A interaction costs $2\\%$ more" in tex   # MD1117-7 2026-11-17: was 'in full $pf$ GXPF1A costs about $2\\%$ more'
     assert ("the $7/2^+$, is $2.33$ MeV above the ground state. That gap would lower the preparation to "
             "$0.95$--$1.9\\times 10^{9}$ T") in tex and "\\cite{Brown_Richter_USDB_2006}" in tex
 
@@ -1673,5 +1680,5 @@ def test_rn_p1_01_li7_second_instance(a, r28, tex):
                  "Fidelity $0.99$ needs $D=248$--$359$, which holds the six proton proxies to $1.3\\%$",   # R2-nuclear-7 2026-11-15 (proton)
                  "$0.999$ needs $2.0$--$2.8\\times 10^{3}$, above the 2028 target",
                  "six insertions, each at the dipole's $\\epsilon=0.1$ count; $3.1\\times 10^{5}$ on $^7$Li",
-                 "on one machine; $3$--$5$ h on $^7$Li"):
+                 "$D=10^{2}$); $3$--$5$ h on $^7$Li"):   # MD1117-20 2026-11-17: was 'on one machine; $3$--$5$ h on $^7$Li'
         assert frag in tex, frag

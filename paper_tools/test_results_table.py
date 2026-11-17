@@ -201,8 +201,10 @@ def test_registers_bullet():
     registers = [lq(ch, "2028") for ch in DIGITAL]
     assert f"All nine 2028 benchmarks fit the 250-LQ register, at {min(registers):.0f}--{max(registers):.0f} LQ." in top_line()
     assert max(registers) <= 250
-    large = [lq(ch, "2033") for ch in (6, 7, 9)]   # staggered ruling 2026-11-13: Ch. 5 dropped to 2^3 (436-536 LQ); was (5, 6, 7, 9)
-    assert f"reach ${min(large):.0f}$--${max(large):.0f}$ LQ in Chs." in top_line()
+    large = [lq(ch, "2033") for ch in (6, 7, 8, 9, 10)]   # staggered ruling 2026-11-13: Ch. 5 dropped to 2^3 (436-536 LQ); was (5, 6, 7, 9)
+    # NUM1117-1 2026-11-17: the bullet now names Chs. 6-10 (upper ends 964, 1050, 1000, 1235, 1014); was 'reach ... LQ in Chs.' 6, 7, 9
+    assert (f"The 2033 registers of Chs.~\\ref{{ch:collider}}--\\ref{{ch:finite_density}} reach "
+            f"${min(large):.0f}$--${max(large):.0f}$ LQ") in top_line()
 
 
 # PR-cross-1 2026-11-13: the bullet compares upper ends (5.6 to 41). Ch. 3 string-count Trotter step (2026-11-13):
@@ -235,7 +237,8 @@ def test_machine_time_bullet():
     assert "The other four miss at their upper ends" in text
     # 'every range but Ch. 10's': the depth floor at the upper end exceeds the window for every miss except Ch. 10
     assert [ch for ch in misses if x(ch, "2033", "floor_wall_s") <= WINDOW_S] == [10]
-    assert "At the upper end of every range but Ch.~\\ref{ch:finite_density}'s, the depth bound alone" in text   # VP2-ch1-a 2026-11-15 split;   # re-pinned 2026-11-12 (batch 6): the sentence now continues with Ch. 8's scan
+    assert ("More factories close only Ch.~\\ref{ch:finite_density}'s gap, since at the upper end of every other range "
+            "the depth bound alone") in text   # VP2-ch1-a 2026-11-15 split;   # re-pinned 2026-11-12 (batch 6): the sentence now continues with Ch. 8's scan  # NUM1117-1 2026-11-17: was 'At the upper end of every range but Ch.~\\ref{ch:finite_density}'s, ...'
     assert f"{float(f'{campaign_over_window(5):.2g}'):.0f}\\times$ (Ch." in text
     lo, hi = result(8, "2033").intermediates["nucleation_scan_yr_with_prep_band"]      # batch 6, 2026-11-12: new clause, Ch. 8 model (7.81-50.2 yr at 10 temperatures, card RF3-ch8-M3; 78.1-501.9 at 100 points)
     assert f"scan reaches ${lo:.2g}$--${hi:.2g}$ yr with Gibbs preparation" in text

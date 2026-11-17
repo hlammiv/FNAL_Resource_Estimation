@@ -16,6 +16,8 @@ import numpy as np
 import cartoon as ct
 import fnalfig as ff
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from matplotlib.transforms import ScaledTranslation
 
 import estimates
 from resources import ENVELOPES
@@ -36,13 +38,15 @@ def routes():
     assert np.isclose(t2_hi, i["t_deepest_campaign"][1])
     ref = i["t_per_shot_2033_mu0_evolution"]                        # 1.570e10: the 4 fm/c reference evolution (record)
     return [
-        (r"quench + Trotter, longest circuit ($a_s{=}0.2$ fm)", prep_lo, prep_hi, fit_lo, fit_hi, tot_lo, tot_hi),
-        (r"same, second spacing ($a_s{=}0.15$ fm) late circuit", p2_lo, p2_hi, f2_lo, f2_hi, t2_lo, t2_hi),
-        (r"quench + Trotter to 4 fm/$c$  (reference)", prep_lo, prep_hi, ref, ref, prep_lo + ref, prep_hi + ref),
+        ("quench + Trotter, longest circuit\n" r"($a_s{=}0.2$ fm)", prep_lo, prep_hi, fit_lo, fit_hi, tot_lo, tot_hi),
+        ("same, second spacing\n" r"($a_s{=}0.15$ fm) late circuit", p2_lo, p2_hi, f2_lo, f2_hi, t2_lo, t2_hi),
+        (r"quench + Trotter to 4 fm/$c$" "\n(reference)", prep_lo, prep_hi, ref, ref, prep_lo + ref, prep_hi + ref),
     ]
 
 
 TOT_X = 10.95         # log10 x of the per-shot total column (right of the 3.8e10 reference bar)
+INCLUDE = 0.96        # \includegraphics width in app03_qgp_transport.tex
+FS = 7.0              # smallest label: canvas is the printed size, so this prints at 7pt
 
 
 def sci(x):
@@ -65,11 +69,11 @@ def ratio_range(lo, hi):
 
 
 def main():
-    ff.setup()
+    ff.setup(truetype=True, tight=False)
     rows = routes()
     ceil28 = ENVELOPES["2028"]["t"][1]
     ceil33 = ENVELOPES["2033"]["t"][1]
-    fig, ax = plt.subplots(figsize=(6.5, 2.2), dpi=300)
+    fig, ax = plt.subplots(figsize=(ff.TEXTWIDTH_IN * INCLUDE, 1.79), dpi=300)
 
     h = 0.30
     for k, (lab, p_lo, p_hi, evo, evo_hi, tot, tot_hi) in enumerate(rows):
@@ -85,11 +89,11 @@ def main():
         if evo_hi > evo:
             ax.barh(y - 0.17, np.log10(evo_hi / evo), height=h, left=np.log10(evo),
                     color=ff.ORANGE, alpha=0.35, zorder=4, lw=0)
-        ct.txt(ax, (-0.25, y), lab, size=6.2, ha="right", color=ff.INK)
+        ct.txt(ax, (-0.25, y), lab, size=FS, ha="right", color=ff.INK, linespacing=1.0)
         # totals in one column right of every bar, clear of the target lines
-        ax.annotate(sci_range(tot, tot_hi) + rf"  ({ratio_range(tot / ceil33, tot_hi / ceil33)}$\times$)",
-                    xy=(TOT_X, y), fontsize=5.8,
-                    color=ff.DARKGREY, ha="left", va="center")
+        ax.annotate(sci_range(tot, tot_hi) + "\n" + rf"({ratio_range(tot / ceil33, tot_hi / ceil33)}$\times$)",
+                    xy=(TOT_X, y), fontsize=FS,
+                    color=ff.DARKGREY, ha="left", va="center", linespacing=1.0)
 
     for x, lab, col in ((np.log10(ceil28), r"2028 target ($10^{5}$)", ff.GREY),
                         (np.log10(ceil33), r"2033 target ($10^{9}$)", ff.INK)):
@@ -98,11 +102,11 @@ def main():
         ax.axvline(x, ymin=(-0.40 - y0) / (y1 - y0), color=col, lw=0.9,
                    ls=(0, (4, 2)), zorder=3)
         # label to the left of its line, so the 2033 one clears the totals column
-        ax.annotate(lab, xy=(x - 0.08, len(rows) - 0.34), fontsize=6.2, color=col,
+        ax.annotate(lab, xy=(x - 0.08, len(rows) - 0.34), fontsize=FS, color=col,
                     ha="right", va="bottom")
 
     ax.annotate("total per shot\n(" + r"$\times$ 2033 target)", xy=(TOT_X, len(rows) - 0.34),
-                fontsize=5.8, color=ff.DARKGREY, ha="left", va="bottom", linespacing=1.0)
+                fontsize=FS, color=ff.DARKGREY, ha="left", va="bottom", linespacing=1.0)
     ax.set_xlim(0, 13.3)
     ax.set_ylim(-0.72, len(rows) - 0.18)
     ax.set_yticks([])
@@ -113,19 +117,25 @@ def main():
     ax.tick_params(left=False, right=False, top=False)
     ax.tick_params(axis="x", direction="out")   # inward ticks cut the inline key
 
-    # inline key, no boxed legend
-    ax.annotate("quench preparation", xy=(0.30, -0.60), fontsize=6.2,
-                color=ff.BLUE, ha="left", va="center")
-    ax.annotate("fit evolution", xy=(3.30, -0.60), fontsize=6.2,
-                color=ff.ORANGE, ha="left", va="center")
+    # inline key, no boxed legend: [swatch] text  [swatch] text along the header row, from the canvas's left
+    # edge; the corner definitions sit on the key row under the bars
+    LEFT = 0.285
+    fig.subplots_adjust(left=LEFT, right=0.985, top=0.86, bottom=0.235)
+    ky = len(rows) - 0.34
+    head = ax.get_yaxis_transform()             # x: axes fraction, y: data
+    inch = fig.dpi_scale_trans + ScaledTranslation(0, ky, head)
+    x = 3.0 - LEFT * fig.get_figwidth() * 72     # points, measured from the axes' left edge
+    rend = fig.canvas.get_renderer()
+    for lab, col in (("quench preparation", ff.BLUE), ("fit evolution", ff.ORANGE)):
+        ax.add_patch(Rectangle((x / 72, 1.2 / 72), 5.5 / 72, 5.5 / 72, transform=inch, color=col,
+                               alpha=0.85, lw=0, clip_on=False))
+        t = ax.annotate(lab, xy=(0, ky), xycoords=head, xytext=(x + 8.0, 0), textcoords="offset points",
+                        fontsize=FS, color=col, ha="left", va="bottom", annotation_clip=False)
+        x += 8.0 + t.get_window_extent(rend).width * 72 / fig.dpi + 9.0
     ax.annotate(r"(solid: $T{=}300$ MeV, $\tau{=}1/k$, $t_{\rm th}{=}2/T$; light: to $225$ MeV, $1/2\pi T$, $2\pi/T$)",
-                xy=(5.05, -0.60), fontsize=5.6, color=ff.DARKGREY,
+                xy=(0.05, -0.60), fontsize=FS, color=ff.DARKGREY,
                 ha="left", va="center")
-    ax.barh(-0.60, 0.20, height=0.20, left=0.02, color=ff.BLUE, alpha=0.85, lw=0)
-    ax.barh(-0.60, 0.20, height=0.20, left=3.02, color=ff.ORANGE, alpha=0.85,
-            lw=0)
 
-    fig.subplots_adjust(left=0.335, right=0.985, top=0.86, bottom=0.22)
     ff.save(fig, "ch05_budget_split")
 
 

@@ -3,9 +3,17 @@
 
 Data: applications/ch08_baryogenesis/sint/sint_results.json (scatter.py). The chapter's comparator is the run with
 |y| phi = 0.5, width 2 a (= 1/m_phi), Delta theta_C = 0.1. f_eq is Fermi-Dirac at a T = 0.5 (T_c); 0.9 T_c is a T = 0.45.
+
+Usage: fig_ch08_asymmetry.py [OUTDIR]   writes OUTDIR/ch08_asymmetry.pdf (default: Figures/).
+The canvas is exactly 6.5 x 2.0 in (no tight bbox), so at \\textwidth every font prints at its nominal size.
 """
 import json
+import sys
 from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+REPO = HERE.parent
+sys.path[:0] = [str(REPO / "paper_tools"), str(REPO)]
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,8 +22,8 @@ from matplotlib.colors import LinearSegmentedColormap
 import estimates
 import fnalfig as ff
 
-DATA = Path(__file__).resolve().parent.parent / "applications/ch08_baryogenesis/sint/sint_results.json"
-DATA15 = Path(__file__).resolve().parent.parent / "applications/ch08_baryogenesis/sint/sint15_results.json"
+DATA = REPO / "applications/ch08_baryogenesis/sint/sint_results.json"
+DATA15 = REPO / "applications/ch08_baryogenesis/sint/sint15_results.json"
 
 
 def s_int(rows, aT):
@@ -34,8 +42,9 @@ def grid(rows, key):
     return np.r_[kz, kz[-1] + dz] - dz / 2, np.r_[ky, ky[-1] + dy] - dy / 2, z
 
 
-def main():
+def main(outdir=None):
     ff.setup()
+    plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42, "savefig.bbox": None})
     runs = json.loads(DATA.read_text())
     wanted = [r for r in runs if (r["wall"], r["width"], r["dtheta"]) == (0.5, 2.0, 0.1)]
     assert len(wanted) == 1
@@ -57,39 +66,50 @@ def main():
     lo, hi = i["s_int_band"]
     assert lo - 5e-4 <= min(vals) and max(vals) <= hi + 5e-4
 
-    fig = plt.figure(figsize=(6.5, 2.35))
-    y0, h = 0.19, 0.70
-    axa = fig.add_axes([0.065, y0, 0.235, h])
-    cax = fig.add_axes([0.307, y0, 0.012, h])
-    axb = fig.add_axes([0.505, y0, 0.175, h])
-    cbb = fig.add_axes([0.685, y0, 0.012, h])
-    axc = fig.add_axes([0.795, y0, 0.195, h])
+    W, H = 6.5 * 72, 2.0 * 72                        # canvas in points (old PDF printed 145 pt tall); axes placed in points
+
+    def rect(x0, w):
+        return [x0 / W, 31 / H, w / W, (H - 46) / H]
+
+    fs = 7.5                                         # in-panel annotation and colorbar size (prints at 7.5 pt)
+    fig = plt.figure(figsize=(W / 72, H / 72))
+    axa = fig.add_axes(rect(37, 98))
+    cax = fig.add_axes(rect(160, 6))
+    axb = fig.add_axes(rect(240, 74))
+    cbb = fig.add_axes(rect(318, 6))
+    axc = fig.add_axes(rect(366, 99))
+    for ax, title in ((axa, r"(a) $A_R(k)$"), (axb, r"(b) $f_{\rm eq}$ at $T_c$"), (axc, r"(c) $S_{\rm int}$")):
+        ax.set_title(title, loc="left", fontsize=8, pad=3)
 
     cmap = LinearSegmentedColormap.from_list("div", [ff.BLUE, "#ffffff", ff.ORANGE])
     edges = prior / p0
     x, y, z = grid(run["rows"], "A_R")
     pc = axa.pcolormesh(x, y, z, cmap=cmap, vmin=-edges, vmax=edges, edgecolors="#ffffff", linewidth=0.3)
     axa.set(xlabel=r"$ak_z$", ylabel=r"$ak_y$", yticks=[-np.pi, -np.pi / 2, 0, np.pi / 2], yticklabels=[r"$-\pi$", r"$-\pi/2$", "0", r"$\pi/2$"])
-    axa.text(0.97, 0.965, r"(a) $A_R(k)$", transform=axa.transAxes, ha="right", va="top", fontsize=8)
+    axa.xaxis.labelpad = 1; axa.yaxis.labelpad = 1
     cb = fig.colorbar(pc, cax=cax, ticks=[-0.05, 0, 0.05])
-    cb.ax.set_yticklabels(["-0.05", "0", "0.05"], fontsize=7)
-    cb.outline.set_linewidth(0.4); cax.tick_params(length=2, right=True, left=False)
+    cax.yaxis.set_ticks_position("left"); cax.yaxis.set_label_position("left")
+    cb.ax.set_yticklabels(["-0.05", "0", "0.05"], fontsize=fs)
+    cb.outline.set_linewidth(0.4); cax.tick_params(length=2, left=True, right=False, pad=2)
     for v in (edges, -edges):
         cax.axhline(v, color=ff.INK, lw=1.4)
     for v in (amax, -amax):
         cax.axhline(v, color=ff.INK, lw=0.7, ls=":")
     tr = cax.get_yaxis_transform()
-    for v, label, yt in ((edges, "depth prior\n" + r"$|p_0A_R|<0.048$", 0.070), (amax, "largest bin\n" + r"$p_0A_R=0.037$," + "\n" + r"$1.3$ times below", 0.026)):
-        cax.annotate(label, (1, v), xycoords=tr, xytext=(5.0, yt), textcoords=tr, fontsize=6.3, va="center", ha="left",
-                     annotation_clip=False, arrowprops=dict(arrowstyle="-", lw=0.4, color=ff.MIDGREY, shrinkA=1, shrinkB=0))
+    # the prior label sits level with the colorbar's top edge, the largest-bin label below its dotted line
+    for v, label, dy, va, rp in ((edges, "depth prior\n" + r"$|p_0A_R|<0.048$", 3, "center", (0, 0.5)),
+                                 (amax, "largest bin\n" + r"$p_0A_R=0.037$," + "\n" + r"$1.3$ times below", -12, "top", (0, 0.9))):
+        cax.annotate(label, (1, v), xycoords=tr, xytext=(7, dy), textcoords="offset points", fontsize=fs, va=va, ha="left",
+                     linespacing=1.15, annotation_clip=False,
+                     arrowprops=dict(arrowstyle="-", lw=0.4, color=ff.MIDGREY, shrinkA=1, shrinkB=0, relpos=rp))
 
     x, y, z = grid(run["rows"], "f_eq")
     pb = axb.pcolormesh(x, y, z, cmap="Greys", vmin=0, vmax=0.2, edgecolors="#ffffff", linewidth=0.3)
     axb.set(xlabel=r"$ak_z$", yticks=[-np.pi, -np.pi / 2, 0, np.pi / 2], yticklabels=[])
-    axb.text(0.97, 0.965, r"(b) $f_{\rm eq}$ at $T_c$", transform=axb.transAxes, ha="right", va="top", fontsize=8, color=ff.INK)
+    axb.xaxis.labelpad = 1
     cb2 = fig.colorbar(pb, cax=cbb, ticks=[0, 0.1, 0.2])
-    cb2.ax.set_yticklabels(["0", "0.1", "0.2"], fontsize=7)
-    cb2.outline.set_linewidth(0.4); cbb.tick_params(length=2, right=True, left=False)
+    cb2.ax.set_yticklabels(["0", "0.1", "0.2"], fontsize=fs)
+    cb2.outline.set_linewidth(0.4); cbb.tick_params(length=2, right=True, left=False, pad=2)
 
     order = [(0.3, 2.0), (0.5, 2.0), (1.0, 2.0), (0.5, 1.0)]
     labels = ["0.3,\n2", "0.5,\n2", "1,\n2", "0.5,\n1"]
@@ -101,19 +121,25 @@ def main():
     axc.plot(1, 100 * s_int(run["rows"], 0.5), "o", mfc="none", mec=ff.INK, ms=7, mew=0.7)
     axc.plot(1, 100 * s_int(run["rows"], 0.45), "o", mfc="none", mec=ff.INK, ms=7, mew=0.7)
     axc.plot(1, 100 * r15["S_int"], "D", color=ff.INK, ms=4)
-    axc.text(1.3, 100 * r15["S_int"], r"$1.6$, 15-site axis at $t_{\max}$", fontsize=6.3, va="center", color=ff.INK)
-    axc.set(xlim=(-0.6, 3.6), ylim=(1.3, 3.3), xticks=range(4), yticks=[1.5, 2, 2.5, 3], ylabel=r"$S_{\rm int}\;(10^{-2})$")
-    axc.set_xticklabels(labels, fontsize=6.5)
+    axc.text(1.35, 100 * r15["S_int"], r"$1.6$, 15-site" + "\n" + r"axis at $t_{\max}$", fontsize=fs, va="center", color=ff.INK,
+             linespacing=1.1)
+    axc.set(xlim=(-0.6, 3.6), ylim=(1.3, 3.5), xticks=range(4), yticks=[1.5, 2, 2.5, 3], ylabel=r"$S_{\rm int}\;(10^{-2})$")
+    axc.set_xticklabels(labels, fontsize=fs, linespacing=1.0)
     axc.set_xlabel(r"$|y|\phi$, width$/a$", labelpad=1)
     axc.yaxis.labelpad = 1
     axc.tick_params(axis="x", pad=2)
-    axc.text(0.03, 0.965, r"(c) $2.1$ at $T_c$", transform=axc.transAxes, va="top", fontsize=6.8, color=ff.BLUE)
-    axc.text(0.03, 0.875, r"$2.4$ at $0.9\,T_c$", transform=axc.transAxes, va="top", fontsize=6.8, color=ff.ORANGE)
-    axc.text(3.5, 1.35, "band $1.9$\u2013$2.7$", fontsize=6.5, ha="right", va="bottom", color=ff.DARKGREY)
+    # key above the band: marker, then the comparator's value at that temperature
+    for yk, mk, ms, c, txt in ((3.32, "o", 3.5, ff.BLUE, r"$2.1$ at $T_c$"), (3.06, "s", 3.2, ff.ORANGE, r"$2.4$ at $0.9\,T_c$")):
+        axc.plot(-0.35, yk, mk, color=c, ms=ms, clip_on=False)
+        axc.text(-0.12, yk, txt, fontsize=fs, va="center", color=c)
+    axc.text(3.5, 2.74, "band $1.9$–$2.7$", fontsize=fs, ha="right", va="bottom", color=ff.DARKGREY)
+
+    outdir = Path(outdir) if outdir else ff.FIGDIR; outdir.mkdir(parents=True, exist_ok=True)
+    out = outdir / "ch08_asymmetry.pdf"
+    fig.savefig(out)
+    print(f"wrote {out}")
     return fig
 
 
 if __name__ == "__main__":
-    import sys
-    fig = main()
-    fig.savefig(sys.argv[1] + ".pdf"); fig.savefig(sys.argv[1] + ".png", dpi=200)
+    main(sys.argv[1] if len(sys.argv) > 1 else None)

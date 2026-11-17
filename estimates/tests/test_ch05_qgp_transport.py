@@ -426,7 +426,7 @@ def test_temperature_is_1p5_tc_lat(a):
     assert r"\cite{arxiv_1903_04801}" in tex and r"\cite{arxiv_1812_08235}" in tex
     assert "160" not in tex.replace("$160$ T per site-step", "")      # no physical-QCD 160 MeV left in the chapter
     assert r"$LT\approx 0.5$--$0.6$" in tex   # 2^3; was 0.7--0.9
-    assert True and "With $LT<1$ the box is smaller than the thermal wavelength, so it is not a medium" in tex
+    assert True and "With $LT<1$ the box is smaller than the thermal wavelength, so it cannot hold a hydrodynamic medium" in tex   # MD1117-16 2026-11-17: was '... so it is not a medium'
     # re-pinned 2026-11-09 (referee cards, Q5-6): the decay-time sentence became Fig. (eta/s = 0.15 is in the plot label); T stays in the prose
     assert r"The counts are for $T=225$--$300$ MeV ($1.5\,T_c^{\rm lat}$ over that range)" in tex
 
@@ -750,11 +750,11 @@ def test_bad_inputs_rejected(a):
     r"Logical qubits & $178$ \\",
     r"Per-shot T & first result: $9.5\times 10^{4}$ (one step of $0.045$ fm/$c$)",   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"full benchmark: $5.9\times 10^{5}$ ($6$ Trotter steps of $a_t/4$ to $t_{\max} = 0.15$ fm/$c$)",   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"Shots & first result $2\times 10^{3}$ ($8.5\times 10^{4}$ for $30\%$); full benchmark $7\times 10^{3}$ ($7$ measurement times) \\",   # re-pinned 2026-11-12 (batch 6): the 30% count added (shots_first_result_2028_at_30pct = 8.458e4);   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"first result $1.6$ min; full benchmark $34$ min per $k$ on one machine; longest shot $\sim 0.6$ s \\",   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"Shots & first result $2\times 10^{3}$ ($8.5\times 10^{4}$ for $30\%$); full benchmark $7\times 10^{3}$ ($7$ measurements) \\",   # MD1117-19 2026-11-17: was '($7$ measurement times)';   # re-pinned 2026-11-12 (batch 6): the 30% count added (shots_first_result_2028_at_30pct = 8.458e4);   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"first result $1.6$ min; full benchmark $34$ min per $k$; longest shot $\sim 0.6$ s \\",   # MD1117-20b 2026-11-17: was 'per $k$ on one machine;';   # style pass 2026-10-08: box row reworded, numbers unchanged
     r"Logical qubits & $\sim 490$ ($436$--$536$), within the 2033 target \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     r"Per-shot T & $2.5\times 10^{9}$--$9.4\times 10^{9}$, mostly the quench (Fig.~\ref{fig:budget_split}); second spacing $1.3\times 10^{10}$ \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216: Sigma(216x3) hop row; was 6.7e9-2.4e10, 3.2e10);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
-    r"The hydrodynamic $\tau$ has no basis at this $k$",   # re-pinned 2026-11-09 (referee cards, Q5-6): sentence became the measurement figure; the caption keeps the claim
+    r"The hydrodynamic decay time (bar) has no basis at this $k$",   # MD1117-16 2026-11-17: was 'The hydrodynamic $\tau$ has no basis';   # re-pinned 2026-11-09 (referee cards, Q5-6): sentence became the measurement figure; the caption keeps the claim
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "with $3.4$--$3.6\times 10^{4}$ shots per point"
     r"$4$ points at $N_B=0$ and $12$ at $N_B=1$--$3$, at two spacings, each estimated at $T=1.5\,T_c^{\rm lat}$.",   # re-pinned 2026-11-09 (referee cards)
     r"Required $\epsilon_l$ & $\lesssim 1.1\times 10^{-11}$ ($8.0\times 10^{-12}$ at the second spacing) \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 4.2e-12, 3.2e-12);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
@@ -762,8 +762,8 @@ def test_bad_inputs_rejected(a):
     # verifier r25 items 1, 3, 8, 9, 10
     r"the eventual first-principles (continuum, larger-volume) $\eta/s$ and $\zeta/s$ at $20\%$",
     r"so it adds up to $1\times$ the $\eta/s$ campaign's shots, and the subtraction for $\zeta$ is not counted.",
-    r"\textbf{Wall time} & shot $0.7$--$2.6$ h, first result $1.6$--$4.8$ yr on one machine;",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 1.9-6.6 h, 3.3-11 yr);   # re-pinned 2026-11-12 (batch 6): per-shot wall added to the row;   # style pass 2026-10-08: box row reworded, numbers unchanged
-    r"campaign $130$--$420$ yr, $27$--$83\times$ the five-year window \\",   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 270-1000 yr, 54-200x);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
+    r"\textbf{Wall time} & shot $0.7$--$2.6$ h, first result $1.6$--$4.8$ yr;",   # MD1117-20b 2026-11-17: was '... yr on one machine;';   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 1.9-6.6 h, 3.3-11 yr);   # re-pinned 2026-11-12 (batch 6): per-shot wall added to the row;   # style pass 2026-10-08: box row reworded, numbers unchanged
+    r"campaign $130$--$420$ yr \\",   # MD1117-19 2026-11-17: was 'campaign $130$--$420$ yr, $27$--$83\times$ the five-year window'; the box check of 27-83x is retired, the prose pin below keeps it;   # staggered ruling 2026-11-13 (2^3): was the 3^3 numbers   # re-pinned 2026-11-12 (card RF3-ch5-s216; was 270-1000 yr, 54-200x);   # Q5-9 (markup board 2026-11-09): box trimmed to the other chapters' rows, numbers unchanged
     # R-TOL (H. Lamm 2026-09-29): the rule and each circuit's tolerance and T per rotation
     # card RF3-ch5-s216 (2026-11-12): the hop sentence, its share, the reference circuit, the BE line and the gap bullet
     r"The $\Sigma(216\times 3)$ hopping term uses unpublished gate counts~\cite{FermionPrimitives_unpub}.",
@@ -920,7 +920,9 @@ def test_tex_assumes_one_machine():
                 r"across machines", r"per machine", r"\d\s*\$?\s*machines"):
         assert not re.search(pat, tex), f"multi-machine wording: {pat}"
     assert not re.search(r"parallel(?! magic-state factories)", tex) and tex.count("parallel") <= 1   # CUT-pinned 2026-11-11: the schedule sentence with the factories went
-    assert tex.count("on one machine") >= 3   # Q5-9: the box campaign row no longer repeats it
+    assert tex.count("on one machine") >= 1   # Q5-9: the box campaign row no longer repeats it
+    # MD1117-20b 2026-11-17: the box wall rows dropped 'on one machine' (was >= 3 here); Ch. 1 states it once for all chapters
+    assert "Every wall time is serial on one machine" in (TEX.parents[1] / "main-overview.tex").read_text()
 
 
 def test_shots_from_fisher_not_the_old_gloss(a):
@@ -1085,7 +1087,7 @@ def test_g7_2033_step_numbers(r33):
     assert round(m.trotter_state_dependent((3, 3, 3), 8, 0.0, 1.0, 0.05, 0.1, "I")["lambda"], 1) == 45.8   # the 3^3 record
     lam0k = m.trotter_state_dependent((3, 3, 3), 8, 0.0, 1.0, 0.05, 0.1)["lambda"]
     assert round(lam0k, 1) == 32.8                                            # the H_KS default is unchanged (Ch. 6 uses it)
-    assert "with the estimate taken in the thermal state" in tex   # Q5-5: the rule is defined once in Ch. 1
+    assert "We estimate the Trotter error in the thermal state." in tex   # Q5-5: the rule is defined once in Ch. 1  # MD1117-15 2026-11-17: was 'with the estimate taken in the thermal state'
 
 
 def test_g7_improved_dispersion_matches_ch6():

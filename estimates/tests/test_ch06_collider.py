@@ -1227,7 +1227,9 @@ def test_no_machine_count_anywhere(a, r28, r33, r3d):
         text = TEX.read_text()
         assert "machines" not in text and "serialized" not in text
         assert not re.search(r"shot-parallel|machine-year|embarrassingly|fold parallel", text)
-        assert text.count("one machine") == 1                  # the campaign box row (the gap paragraph's restatement cut 2026-10-06)
+        assert text.count("one machine") == 0                  # the campaign box row (the gap paragraph's restatement cut 2026-10-06)
+        # MD1117-20b 2026-11-17: the campaign box row dropped 'on one machine' (was == 1); Ch. 1 states it once for all chapters
+        assert "Every wall time is serial on one machine" in (TEX.parents[1] / "main-overview.tex").read_text()
         rest = text.replace(r"L_\parallel", "").replace("parallel Hadamard test", "")
         assert "parallel" not in rest.lower()
 
@@ -1543,7 +1545,7 @@ PHRASES = [
     # R16 sweep: the 2033 step breakdown moved from the box to the plug-in prose
     # E27 (2026-10-02): one machine, shots in series; the horizon gap is a cost reduction, not a machine count
     r"First result & $\approx 240$ shots, $13$--$103$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"Campaign & trend $+\,L_\parallel{=}4$ check: $1.8$--$1.9\times 10^{4}$ shots, $2.3$--$18$ yr on one machine at $1\,\mu$s per T gate (Ch.~\ref{ch:overview}), the high end $3.7\times$ the five-year window \\",   # t2e (2026-11-13): two trend energies
+    r"Campaign & trend $+\,L_\parallel{=}4$ check: $1.8$--$1.9\times 10^{4}$ shots, $2.3$--$18$ yr, the high end $3.7\times$ the five-year window \\",   # MD1117-20b 2026-11-17: was '... $2.3$--$18$ yr on one machine at $1\,\mu$s per T gate (Ch.~\ref{ch:overview}), ...';   # t2e (2026-11-13): two trend energies
     # cut pass 2026-10-06: the gap paragraph's one-machine sentence restated the campaign box row (pinned above) and is cut
     # requirements
     r"Subroutine calls & $\sim 130$",
@@ -1558,8 +1560,8 @@ PHRASES = [
     # q1 (2026-10-05, rulings A/B): quench-prepared media, E-rho-OQ dropped
     r"$\Sigma(72\!\times\!3)$ for $2{+}1$D SU(3), $\Sigma(216\!\times\!3)$ for the static dipole and $2O$~\cite{arxiv_2312_10285} for SU(2) dipoles",   # re-pinned 2026-11-09 (referee cards): the 5% truncation-accuracy claim was dropped
     r"subgroup difference $5\%$ assumed at $\Sigma(72{\times}3)$",   # re-pinned 2026-11-09 (referee cards): the 5% now sits in the Systematics box row as an assumption
-    r"First: $\mathrm{Im}\,V$, one temperature & static dipole, $\Sigma(216{\times}3)$ $H_I$ $3^3$: $995$ LQ, $5.9\times 10^{9}$--$1.6\times 10^{10}$ T, $653$ shots, $62$--$106$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
-    r"First: $\hat q$, one temperature & light-like, $2O$ $3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots, $1.2$--$2.3$ d \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Static dipole $\mathrm{Im}\,V$ & $\Sigma(216{\times}3)$ $H_I$ $3^3$: $995$ LQ, $5.9\times 10^{9}$--$1.6\times 10^{10}$ T, $653$ shots, $62$--$106$ d \\",   # MD1117-21 2026-11-17: was 'First: $\mathrm{Im}\,V$, one temperature & static dipole, ...';   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
+    r"Light-like dipole $\hat q$ & $2O$ $3{\times}3{\times}5$: $912$ LQ, $2.0$--$5.5\times 10^{8}$ T, $405$ shots, $1.2$--$2.3$ d \\",   # MD1117-21 2026-11-17: was 'First: $\hat q$, one temperature & light-like, ...';
     r"$7.5\times 10^{4}$--$1.2\times 10^{6}$ shots, ${\geq}\,12$--$1400$ yr \\",   # style pass 2026-10-08: box row rewritten (rule 10); numbers unchanged
     r"$\sim 130$: $2$ sampling configurations ($2$ pair energies, one spacing); $120$ fragmentation ($10{\cdot}4{\cdot}3$); $2$ dipole rows $\times$ $3$ temperatures \\",
 ]
@@ -1855,10 +1857,11 @@ def test_tex_states_the_conventions():
     assert text.count(r"$1.15\log_2(1/\epsilon)$ T per rotation") == 0   # E20: no slope-only price anywhere
     assert text.count("papers' convention") == 0             # R16 sweep: the convention lives in the plug-in sentence
     assert "stated lower bound for one" in text   # r26: 'floor' -> 'lower bound' (editorial); the box tag moved to the omission sentence (style pass 2026-10-08)
-    assert text.count(r"$1\,\mu$s per T gate") == 2   # re-pinned 2026-11-12 (batch 6): 'T-gate' -> 'T gate' in the three pins here
+    assert text.count(r"$1\,\mu$s per T gate") == 1   # re-pinned 2026-11-12 (batch 6): 'T-gate' -> 'T gate' in the three pins here  # MD1117-20b 2026-11-17: was == 2, the campaign row dropped it
     assert text.count(r"\cite{arxiv_2409_17349}") == 1      # round-E ruling E1: the published structure
     assert r"at $1\,\mu$s per T gate; Ch.~\ref{ch:overview})" in text
-    assert r"on one machine at $1\,\mu$s per T gate (Ch.~\ref{ch:overview})," in text   # E27: serial, one machine; VP2-ch6 2026-11-15
+    # MD1117-20b 2026-11-17: retired r"on one machine at $1\,\mu$s per T gate (Ch.~\ref{ch:overview})," (campaign box row); E27 lives in Ch. 1
+    assert r"$2.3$--$18$ yr, the high end $3.7\times$ the five-year window" in text   # E27: serial, one machine; VP2-ch6 2026-11-15
     assert text.count(r"\cite{FermionPrimitives_unpub}") == 2   # r17: 2028 hop scope, 2033 hop (r25: box row cut for length)
     assert "our estimate" in text                           # the frame undo is labeled as ours
     assert text.count(r"\cite{arxiv_2108_13305}") == 1      # the basis sentence

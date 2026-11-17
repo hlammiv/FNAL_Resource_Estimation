@@ -23,8 +23,11 @@ def free_streaming(x):
     return out
 
 
+FS = 7.0     # smallest label; the canvas is the printed size (full text width), so this prints at 7pt
+
+
 def main():
-    ff.setup()
+    ff.setup(truetype=True, tight=False)
     m = estimates.load(5)
     a = m.Assumptions()
     i = m.model(a, "2033").intermediates
@@ -57,40 +60,40 @@ def main():
     c_fast, c_slow = np.exp(-t / tau_fast), np.exp(-t / tau_slow)
     e_inv = np.exp(-1.0)
 
-    fig, ax = plt.subplots(figsize=ff.WIDE)
+    fig, ax = plt.subplots(figsize=(ff.TEXTWIDTH_IN, 2.47))
 
     # dropped early transient: Gamma t < 0.5 is t < 0.5 tau, 0.048 fm/c at the fast end to 0.070 at the slow end
     ax.axvspan(0, x_cut * tau_fast, color=ff.PALEGREY, alpha=0.55, lw=0)
     ax.axvspan(x_cut * tau_fast, x_cut * tau_slow, color=ff.PALEGREY, alpha=0.25, lw=0)
-    ax.text(0.037, 0.02, "dropped from the fit\n($\\Gamma t<0.5$)", ha="center", va="bottom",
-            fontsize=6.5, color=ff.DARKGREY, linespacing=1.1)
+    ax.text(0.037, 0.012, "dropped from the fit\n($\\Gamma t<0.5$)", ha="center", va="bottom",
+            fontsize=FS, color=ff.DARKGREY, linespacing=1.1)
 
     # planning decay band and its two edges
     ax.fill_between(t, c_fast, c_slow, color=ff.BLUE, alpha=0.15, lw=0)
     ax.plot(t, c_fast, color=ff.BLUE, lw=0.9)
     ax.plot(t, c_slow, color=ff.BLUE, lw=0.9, ls=(0, (4, 2)))
-    ax.text(0.232, 0.205, "$\\tau=1/(2\\pi T)$, $T=225$ MeV", color=ff.BLUE, fontsize=6.5, ha="left", va="bottom",
+    ax.text(0.232, 0.17, "$\\tau=1/(2\\pi T)$, $T=225$ MeV", color=ff.BLUE, fontsize=FS, ha="left", va="bottom",
             rotation=-17)
-    ax.text(0.085, 0.03, "$\\tau=1/k$, $T=300$ MeV", color=ff.BLUE, fontsize=6.5, ha="left", va="bottom")
-    ax.text(0.135, 0.60, "planning band $e^{-t/\\tau}$", color=ff.BLUE, fontsize=6.5, ha="center", va="center")
+    ax.text(0.085, 0.03, "$\\tau=1/k$, $T=300$ MeV", color=ff.BLUE, fontsize=FS, ha="left", va="bottom")
+    ax.text(0.135, 0.60, "planning band $e^{-t/\\tau}$", color=ff.BLUE, fontsize=FS, ha="center", va="center")
 
     # free streaming, 1/e only at kt = 2.9
     c_fs = free_streaming(k_inv_fm * t)
     ax.plot(t, c_fs, color=ff.ORANGE, lw=0.9)
-    ax.text(0.168, 0.86, "free streaming\n$3(\\sin kt-kt\\cos kt)/(kt)^3$", color=ff.ORANGE, fontsize=6.5,
+    ax.text(0.168, 0.86, "free streaming\n$3(\\sin kt-kt\\cos kt)/(kt)^3$", color=ff.ORANGE, fontsize=FS,
             ha="left", va="bottom", linespacing=1.1)
     ax.plot([fs_fm], [e_inv], "o", color=ff.ORANGE, ms=3.5)
     ax.annotate(f"$kt={fs_kt:.1f}$\n(${fs_fm:.2f}$ fm/$c$)", xy=(fs_fm, e_inv), xytext=(4, 3),
-                textcoords="offset points", fontsize=6.5, color=ff.ORANGE, ha="left", va="bottom", linespacing=1.1)
+                textcoords="offset points", fontsize=FS, color=ff.ORANGE, ha="left", va="bottom", linespacing=1.1)
 
     # the 1/e line, with the hydrodynamic tau that has no basis at this k
     ax.axhline(e_inv, color=ff.GREY, lw=0.6, ls=":")
-    ax.text(0.318, e_inv + 0.012, "$1/e$", color=ff.GREY, fontsize=6.5, ha="right", va="bottom")
+    ax.text(0.318, e_inv + 0.012, "$1/e$", color=ff.GREY, fontsize=FS, ha="right", va="bottom")
     ax.plot([hyd_lo, hyd_hi], [e_inv, e_inv], color=ff.DARKGREY, lw=2.2, solid_capstyle="butt", zorder=4)
-    ax.text(0.002, 0.315,
+    ax.text(0.002, 0.335,
             f"$\\tau_{{\\rm hydro}}=T/((\\eta/s)k^2)$\n$\\eta/s={a.eta_s_assumed.lo}$: "
             f"${hyd_lo:.2f}$--${hyd_hi:.2f}$ fm/$c$\n(no basis at this $k$)",
-            fontsize=6.0, color=ff.DARKGREY, ha="left", va="top", linespacing=1.1)
+            fontsize=FS, color=ff.DARKGREY, ha="left", va="top", linespacing=1.0)
 
     # the two fit points on each edge, rounded up onto the 0.01 fm/c grid, with the first result's errors
     for steps, xs, errs, tau, filled in ((steps_fast, x_fast, err_fast, tau_fast, True),
@@ -101,12 +104,14 @@ def main():
         ax.errorbar(tt, cc, yerr=np.array(errs) * cc, fmt="o", color=ff.BLUE, ms=3.8, capsize=2, lw=0.8,
                     mfc=ff.BLUE if filled else "white", mec=ff.BLUE, zorder=5)
     ax.annotate(f"$\\Gamma t=0.5$\n({int(round(100 * frac_early))}% of shots)",
-                xy=(steps_slow[0] * dt, np.exp(-x_slow[0])), xytext=(0.084, 0.72), fontsize=6.5, color=ff.INK,
+                xy=(steps_slow[0] * dt, np.exp(-x_slow[0])), xytext=(0.084, 0.72), fontsize=FS, color=ff.INK,
                 ha="left", va="center", linespacing=1.1,
                 arrowprops=dict(arrowstyle="-", color=ff.GREY, lw=0.5, shrinkA=0, shrinkB=3))
-    ax.annotate(f"$\\Gamma t=1.8$\n({int(round(100 * (1 - frac_early)))}%)",
-                xy=(steps_slow[1] * dt, np.exp(-x_slow[1])), xytext=(-6, -3), textcoords="offset points",
-                fontsize=6.5, color=ff.INK, ha="right", va="top", linespacing=1.1)
+    # one line, inside the band left of the free-streaming curve, with a leader as for Gamma t = 0.5
+    ax.annotate(f"$\\Gamma t=1.8$ ({int(round(100 * (1 - frac_early)))}%)",
+                xy=(steps_slow[1] * dt, np.exp(-x_slow[1])), xytext=(0.226, 0.085),
+                fontsize=FS, color=ff.INK, ha="right", va="center",
+                arrowprops=dict(arrowstyle="-", color=ff.GREY, lw=0.5, shrinkA=0, shrinkB=3))
 
     ax.set_xlim(0, 0.32)
     ax.set_ylim(0, 1.04)
@@ -114,7 +119,7 @@ def main():
     ax.set_ylabel("$C_{k_{\\min}}(t)\\,/\\,C_{k_{\\min}}(0)$")
     ff.despine(ax)
     ax.tick_params(top=False, right=False)
-    fig.tight_layout()
+    fig.tight_layout(pad=0.2)
     ff.save(fig, "ch05_measurement")
 
 

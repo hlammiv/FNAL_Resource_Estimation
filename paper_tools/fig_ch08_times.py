@@ -11,7 +11,7 @@ import fnalfig as ff
 
 
 def main():
-    ff.setup()
+    ff.setup(truetype=True)
     m = estimates.load(8)
     i = m.model(m.Assumptions(), "2033").intermediates
     yr = i["wall_campaign_s"] / i["campaign_serial_yr"]

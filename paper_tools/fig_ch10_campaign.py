@@ -20,7 +20,7 @@ def sci(x):
 
 
 def main():
-    ff.setup()
+    ff.setup(truetype=True)
     m = estimates.load(10)
     i = m.model(m.Assumptions(), "2033").intermediates
     wall = i["wall_per_shot_s"]

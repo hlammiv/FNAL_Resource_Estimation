@@ -593,10 +593,10 @@ def test_2033_per_shot_t():
     assert near(R33.epsilon_l[0], 0.1 / R33.hard_ops[0], 1e-12)           # 4.695e-10, printed '<~ 4.7e-10'
     assert near(R33.epsilon_l[0], 4.7e-10, 0.002)
     # style pass 2026-10-08: box row is now the number only; '(derived here)' anchor retired
-    assert "$\\lesssim 4.7\\times 10^{-10}$ ($3.7\\times 10^{-10}$ for the Banks--Casher row; 0.1 expected faults per shot)" in TEX
+    assert "$\\lesssim 4.7\\times 10^{-10}$ ($3.7\\times 10^{-10}$ for the Banks--Casher row) \\\\" in TEX   # MD1117-9 2026-11-17: was '...row; 0.1 expected faults per shot)'
     # E29 verifier: the box eps_l covers the Banks-Casher row at d = 640 (INSTANCE_ROWS value)
     assert round(0.1 / I33["bc_t_per_shot"][1], 11) == 3.7e-10
-    assert "at $a\\!\\approx\\!0.15\\,$fm, five configurations at $30\\%$:" in TEX
+    assert "on a coarser $a\\!\\approx\\!0.15\\,$fm ensemble of the same $8^3{\\times}16$ size, five configurations at $30\\%$:" in TEX   # MD1117-13 2026-11-17: was 'at $a\\!\\approx\\!0.15\\,$fm, five ...'
     # E29 item 7: one round of amplitude amplification (k=1) = 3 QET applications per shot
     aa = 3 * R33.hard_ops[0]
     assert aa <= A.t_cap_2033.lo and round(aa, -7) == 6.4e8 and round(0.1 / aa, 11) == 1.6e-10
@@ -682,8 +682,8 @@ def test_2033_p_readout_two_tiers():
     for s in ("$P=2.7$--$8.0\\times 10^{-4}$", "$1.4$--$4.0\\times 10^{4}$ shots", "$310$--$910\\times$ more",
               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "would need $4.3\\times 10^{6}$--$3.7\\times 10^{7}$ shots"
               "A Hadamard test of the same trace would need $310$--$910\\times$ more shots for $30\\%$ on one configuration.",
-              "$0.94$--$2.7\\times 10^{5}$ shots, $2.0$--$5.8\\times 10^{13}$ T gates",   # re-pinned 2026-11-12 (batch 6): 'T-gates' -> 'T gates' here and in the next two pins
-              "$3.0$--$8.6\\times 10^{12}$ T gates", "$am\\!\\approx\\!0.04$"):
+              "$0.94$--$2.7\\times 10^{5}$ shots, $2.0$--$5.8\\times 10^{13}$ T;",   # re-pinned 2026-11-12 (batch 6): 'T-gates' -> 'T gates' here and in the next two pins
+              "$3.0$--$8.6\\times 10^{12}$ T;", "$am\\!\\approx\\!0.04$"):   # MD1117-9 2026-11-17: was '... T gates' in both rows
         assert s in TEX, s
 
 
@@ -715,7 +715,7 @@ def test_2033_depth_factories_and_walls():
     for k in ("f_star", "floor_wall_s", "factories_for_1yr"):
         assert I33[k] == dx[k]
     assert near(I33["floor_wall_s"][1], I33["wall_campaign_s"][1] - s2[1] * 1e-4, 1e-9)
-    for s in ("\\textbf{Wall time} & $530$--$2100\\,$s per shot \\\\", "$86\\,$d--$2.7$ yr on one machine", "$1.6$--$18$ yr on one machine",
+    for s in ("\\textbf{Wall time} & $530$--$2100\\,$s per shot \\\\", "$86\\,$d--$2.7$ yr \\\\", "$1.6$--$18$ yr \\\\",   # MD1117-20 2026-11-17: were '... yr on one machine'
               "instead of $213\\,$s"):
         assert s in TEX, s
     # the model follows its inputs: F* = 10 everywhere restores the baseline wall
@@ -741,7 +741,7 @@ def test_2033_banks_casher_demonstration():
     assert round(I33["bc_wall_band_days"][0]) == 29 and round(I33["bc_wall_band_yr"][1], 1) == 3.0
     rows = m.INSTANCE_ROWS(A, "2033", R33)
     assert rows[1][2] == t and "Banks-Casher" in rows[1][0]
-    assert ("$1.8$--$2.7\\times 10^{8}$ T gates per shot, $1.1$--$1.7\\times 10^{4}$ shots; $58\\,$d--$1.5$ yr "
+    assert ("$1.8$--$2.7\\times 10^{8}$ T per shot, $1.1$--$1.7\\times 10^{4}$ shots; $58\\,$d--$1.5$ yr "   # MD1117-9 2026-11-17: was 'T gates per shot'
             "($29\\,$d--$3.0$ yr within the $2\\times$ on $P$)") in TEX
     assert "we find 18--27 modes below $\\Lambda$" in TEX and "$\\sin(\\pi/16)=0.195$" in TEX
     assert abs(math.sin(math.pi / 16) - 0.195) < 5e-4
@@ -759,7 +759,7 @@ def test_e27_no_multiple_machines_in_tex_or_model():
     assert all(low[max(0, i.start() - 3):i.start()] == "lq " for i in re.finditer(r"\bmachines\b", low))
     assert low.count("machines") <= 1
     assert "The campaign runs serially on one machine and is depth-bound" in TEX   # re-pinned 2026-11-12 (batch 6): reworded, F* definition appended
-    assert "\\textbf{Wall time} & $74\\,$ms per shot; $6.5$ h on one machine for one configuration \\\\" in TEX                  # boxes carry final numbers only (E29)
+    assert "\\textbf{Wall time} & $74\\,$ms per shot; $6.5$ h for one configuration \\\\" in TEX                  # boxes carry final numbers only (E29)  # MD1117-20 2026-11-17: was '$6.5$ h on one machine for ...'
     # style pass 2026-10-08: 'horizon' sentence went (prose anchor retired)
     s = m.Assumptions()
     for name in ("n_machines", "parallel_machines", "machines_for_horizon", "n_devices"):
@@ -959,7 +959,7 @@ def test_assumptions_reject_nonsense():
 def test_r16_rms_shot_convention_in_tex():
     # R16: no confidence-1-delta language survives in the chapter; Eq. Nshot is sigma^2/eps^2.
     assert "\\delta" not in TEX and "confidence" not in TEX
-    assert "\\sigma^{2}/\\varepsilon^{2}\\cdot N_\\mathrm{cfg}" in TEX
+    assert "\\sigma^{2}/\\epsilon_{\\rm stat}^{2}\\cdot N_\\mathrm{cfg}" in TEX   # NOT-4 2026-11-17: was '\\sigma^{2}/\\varepsilon^{2}\\cdot N_\\mathrm{cfg}'
     assert "$\\sim 3.1\\!\\times\\!10^5$" in TEX and "even $10^7$ shots, too few to resolve the trace" in TEX   # re-pinned 2026-11-12 (batch 6): was '$\gtrsim 10^7$ shots' 
     for old in ("4.6\\times 10^{4}", "4.6\\times 10^7", "4\\times 10^{15}", "1.4\\!\\times\\!10^6",
                 "\\sim 9\\times 10^{14}", "85 LQ", "92-LQ", "sub-percent precision on the normalized trace"):

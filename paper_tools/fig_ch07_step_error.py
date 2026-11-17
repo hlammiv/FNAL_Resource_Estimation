@@ -48,7 +48,7 @@ def sweep(cache):
 
 
 def main(stem):
-    ff.setup()
+    ff.setup(truetype=True, tight=False)   # canvas = printed size (0.72 textwidth)
     d = sweep(Path(stem + ".json"))
     a = ch7.Assumptions()
     x = np.array(d["mdt"])
@@ -59,7 +59,7 @@ def main(stem):
     i05 = d["mdt"].index(a.accuracy_omega_dt.value)
     assert round(100 * errs[:, i05].max(), 1) == 100 * a.proxy_step_err_2033.value, errs[:, i05]
 
-    fig, ax = plt.subplots(figsize=(4.6, 2.9))
+    fig, ax = plt.subplots(figsize=(0.72 * ff.TEXTWIDTH_IN, 2.83))
     colors = [ff.BLUE, ff.ORANGE, ff.GREEN]
     for s, c in zip(d["sets"], colors):
         ax.plot(x, s["err"], "-o", color=c, ms=2.8, lw=1.0)
@@ -83,7 +83,7 @@ def main(stem):
                 arrowprops=dict(arrowstyle="-", lw=0.4, color=ff.MIDGREY, shrinkB=3.5))
     scaled = proxy * a.exact_over_proxy_step_2033.value
     ax.plot(dt * 1.0, scaled, "s", mfc="none", mec=ff.PURPLE, ms=4.5, mew=0.9, zorder=6)
-    ax.annotate(r"scaled to $5^3$ ($\times 1.2$), about $2\%$", (dt, scaled), xytext=(0.0088, 0.0305), fontsize=6.2, color=ff.PURPLE, va="center",
+    ax.annotate(r"scaled to $5^3$ ($\times 1.2$), about $2\%$", (dt, scaled), xytext=(0.0086, 0.032), fontsize=7, color=ff.PURPLE, va="center",
                 arrowprops=dict(arrowstyle="-", lw=0.4, color=ff.PURPLE, shrinkB=2.5))
     exact = a.exact_step_err_reduced_2033.value
     ax.plot(dt, exact, "D", color=ff.PURPLE, ms=4, zorder=6)
@@ -91,7 +91,7 @@ def main(stem):
                 arrowprops=dict(arrowstyle="-", lw=0.4, color=ff.PURPLE, shrinkB=2.5))
     ax.set(xscale="log", yscale="log", xlim=(0.008, 1.3), ylim=(1e-4, 1), xlabel=r"$m_\phi\Delta t$",
            ylabel=r"largest relative step error of $\langle n_k\rangle$")
-    fig.tight_layout()
+    fig.tight_layout(pad=0.2)
     return fig
 
 

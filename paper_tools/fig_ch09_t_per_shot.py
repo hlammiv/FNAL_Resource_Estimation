@@ -51,7 +51,7 @@ def label(v):
 
 
 def main():
-    ff.setup()
+    ff.setup(truetype=True)
     i, _, _, rows = data()
     fig, ax = plt.subplots(figsize=(6.5, 2.75))
     n = len(rows)

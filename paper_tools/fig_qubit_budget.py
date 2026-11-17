@@ -25,8 +25,9 @@ THEORIES = [
 
 
 def main():
-    ff.setup()
-    fig, ax = plt.subplots(figsize=(5.4, 3.5), dpi=300)
+    # Canvas = printed size (0.78 textwidth), so font sizes print as set (>= 7pt).
+    ff.setup(truetype=True, tight=False)
+    fig, ax = plt.subplots(figsize=(ff.TEXTWIDTH_IN * 0.78, 3.25), dpi=300)
 
     N = np.linspace(2, 10, 400)
 
@@ -43,7 +44,7 @@ def main():
     # qubits-per-site lines, and the largest lattice each admits
     for lab, q, col in THEORIES:
         ax.plot([2, 10], [q, q], color=col, lw=0.6, ls=":", zorder=3)
-        ct.txt(ax, (10.15, q), lab, size=6.2, color=ff.INK, ha="left")
+        ct.txt(ax, (10.15, q), lab, size=7, color=ff.INK, ha="left")
         for nlq, D, mcol in ((1e2, 2, ff.BLUE), (1e2, 3, ff.ORANGE)):
             n = (nlq / q) ** (1 / D)
             if 2 <= n <= 10:
@@ -61,7 +62,7 @@ def main():
     ax.minorticks_off()
 
     # Curve labels tangent to the contours, house style: no boxed legend.
-    fig.tight_layout(pad=0.35)
+    fig.tight_layout(pad=0.2)
     fig.canvas.draw()
     ff.label_along(ax, 4.2, lambda n: 1e2 / n ** 2, r"$n_{lq}=10^{2}$, 2D",
                    ff.BLUE, side=1, pad=6)
@@ -72,13 +73,13 @@ def main():
     ff.label_along(ax, 6.3, lambda n: 1e3 / n ** 3, r"$10^{3}$, 3D",
                    ff.ORANGE, side=-1, pad=6)
 
-    ct.txt(ax, (5.6, 1.28), "opens by 2028 (2D)", size=6.2, color=ff.BLUE)
+    ct.txt(ax, (5.6, 1.28), "opens by 2028 (2D)", size=7, color=ff.BLUE)
 
     # what another decade of logical qubits buys
     ax.annotate("", xy=(9.13, 12.0), xytext=(3.05, 12.0),
                 arrowprops=dict(arrowstyle="-|>", color=ff.DARKGREY, lw=0.9,
                                 mutation_scale=7), zorder=7)
-    ct.txt(ax, (5.05, 13.9), r"$\times 10$ logical qubits", size=6,
+    ct.txt(ax, (5.4, 13.9), r"$\times 10$ logical qubits", size=7,
            color=ff.DARKGREY)
 
     ff.save(fig, "qubit_budget")

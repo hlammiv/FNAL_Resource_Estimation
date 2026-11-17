@@ -2462,7 +2462,7 @@ def printed_r25(a: Assumptions) -> dict:
         "shots_campaign_2033:151,box": f"${g2(i33['shots_campaign'][0] / 1e3)}\\times 10^{{3}}$--"
                                        f"${g2(i33['shots_campaign'][1] / 1e4)}\\times 10^{{4}}$",
         "campaign_2033:151": f"${g2(wc[0] / day)}$ days to ${g2(wc[1] / yr)}$ years",
-        "campaign_box_2033": f"$\\approx {g2(wc[0] / day)}$ days--${g2(wc[1] / yr)}$ years on one machine",
+        "campaign_box_2033": f"$\\approx {g2(wc[0] / day)}$ days--${g2(wc[1] / yr)}$ years",   # MD1117-20 2026-11-17: was '... years on one machine'
         "t_shot_min_2033:box": f"$\\sim {g2(i33['t_shot_s'][0] / 60)}$--${g2(i33['t_shot_s'][1] / 60)}$ min per shot",
         "first_30pct_2033:151": f"${round_sig(w30[0] / 3600, 2):.1f}$--${g2(w30[1] / 3600)}$ hours",
         # R7 first light (app11:156-158 and the box)

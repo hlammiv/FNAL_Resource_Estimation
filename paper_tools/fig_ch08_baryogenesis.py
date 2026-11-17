@@ -39,33 +39,33 @@ def nucleation(ax):
 
     ax.plot([phi[left]], [V[left]], "o", ms=5.0, color=ff.ORANGE, mec="white",
             mew=0.6, zorder=6)
-    ct.txt(ax, (phi[left], V[left] + 0.30), "false\nvacuum", size=6,
+    ct.txt(ax, (phi[left], V[left] + 0.30), "false\nvacuum", size=7,
            color=ff.ORANGE)
     ax.plot([phi[right]], [V[right]], "o", ms=4.2, color=ff.GREY, mec="white",
             mew=0.5, zorder=5)
-    ct.txt(ax, (phi[right] + 0.06, V[right] + 0.20), "true", size=6,
+    ct.txt(ax, (phi[right] + 0.06, V[right] + 0.20), "true", size=7,
            color=ff.MIDGREY)
 
     ct.arrow(ax, (phi[left] + 0.14, V[left] + 0.04),
              (phi[right] - 0.20, V[right] + 0.03), color=ff.ORANGE, lw=0.8,
              ls=(0, (3, 2)), mut=6, z=5)
     ct.txt(ax, (0.5 * (phi[left] + phi[right]), V[top] + 0.14), "tunnel",
-           size=5.8, color=ff.ORANGE)
+           size=7, color=ff.ORANGE)
 
-    ct.txt(ax, (0.10, -0.50), r"$\phi$", size=6.5)
-    ct.txt(ax, (-1.10, 1.18), r"$V_{\rm eff}(\phi,T)$", size=7, ha="left")
+    ct.txt(ax, (0.10, -0.50), r"$\phi$", size=7.5)
+    ct.txt(ax, (-1.10, 1.18), r"$V_{\rm eff}(\phi,T)$", size=7.5, ha="left")
 
     # inset: survival probability
-    axi = ax.inset_axes([0.60, 0.62, 0.38, 0.34])
+    axi = ax.inset_axes([0.60, 0.57, 0.38, 0.33])
     t = np.linspace(0, 1, 200)
     axi.plot(t, np.exp(-2.6 * t), color=ff.BLUE, lw=1.1)
     axi.set_xticks([]); axi.set_yticks([])
     for s in axi.spines.values():
         s.set_linewidth(0.5); s.set_color(ff.GREY)
-    axi.set_title(r"$P_{\rm FV}(t)$", fontsize=5.8, color=ff.BLUE, pad=1.5)
+    axi.set_title(r"$P_{\rm FV}(t)$", fontsize=7, color=ff.BLUE, pad=1.5)
 
-    ax.annotate("(a)  nucleation", xy=(0.5, -0.145),
-                xycoords="axes fraction", ha="center", fontsize=6.8,
+    ax.annotate("(a)  nucleation", xy=(0.5, -0.115),
+                xycoords="axes fraction", ha="center", fontsize=7.5,
                 color=ff.INK, annotation_clip=False)
 
 
@@ -92,15 +92,15 @@ def wall(ax):
                             edgecolor="none", zorder=1))
     ax.add_patch(Circle((0, 0), 1.16, facecolor="none", edgecolor=ff.GREEN,
                         lw=1.3, zorder=4))
-    ct.txt(ax, (0, 0.30), "broken phase", size=6, color=ff.GREEN, z=6)
-    ct.txt(ax, (0, -0.02), "(true vacuum)", size=5.6, color=ff.GREEN, z=6)
+    ct.txt(ax, (0, 0.30), "broken phase", size=7, color=ff.GREEN, z=6)
+    ct.txt(ax, (0, -0.02), "(true vacuum)", size=7, color=ff.GREEN, z=6)
 
     # wall velocity
     for a in np.deg2rad([35, 145, 215, 325]):
         p0 = (1.22 * np.cos(a), 1.22 * np.sin(a))
         p1 = (1.62 * np.cos(a), 1.62 * np.sin(a))
         ct.arrow(ax, p0, p1, color=ff.GREEN, lw=0.9, mut=6, z=5)
-    ct.txt(ax, (1.42, 1.72), r"wall, $v_w$", size=6, color=ff.GREEN, z=6)
+    ct.txt(ax, (1.42, 1.72), r"wall, $v_w$", size=7, color=ff.GREEN, z=6)
 
     # A particle reflects weakly off the wall; an antiparticle reflects
     # strongly, because the Yukawa phase is complex. That difference is Delta n.
@@ -119,23 +119,23 @@ def wall(ax):
         ax.plot([r * np.cos(a)], [r * np.sin(a)], "o", ms=rng.uniform(1.6, 2.8),
                 color=ff.ORANGE, alpha=0.9, zorder=3)
     ct.txt(ax, (-1.52, 1.86), r"excess $\bar p$ ahead of the wall" "\n" r"$\Rightarrow\ \Delta n\neq0$",
-           size=6, color=ff.ORANGE, ha="center", z=6)
+           size=7, color=ff.ORANGE, ha="center", z=6)
 
-    ct.txt(ax, (1.58, -1.72), "symmetric phase", size=6, color=ff.MIDGREY)
+    ct.txt(ax, (1.58, -1.72), "symmetric phase", size=7, color=ff.MIDGREY)
 
     ax.annotate("(b)  wall scattering", xy=(0.5, -0.115),
-                xycoords="axes fraction", ha="center", fontsize=6.8,
+                xycoords="axes fraction", ha="center", fontsize=7.5,
                 color=ff.INK, annotation_clip=False)
 
 
 def main():
-    ff.setup()
-    fig, axes = plt.subplots(1, 2, figsize=(6.5, 2.35), dpi=300,
+    ff.setup(truetype=True, tight=False)   # canvas = printed size (0.98 textwidth)
+    fig, axes = plt.subplots(1, 2, figsize=(0.98 * ff.TEXTWIDTH_IN, 2.45), dpi=300,
                              gridspec_kw=dict(width_ratios=[1.02, 0.98],
                                               wspace=0.13))
     nucleation(axes[0])
     wall(axes[1])
-    fig.subplots_adjust(left=0.03, right=0.985, top=0.97, bottom=0.15)
+    fig.subplots_adjust(left=0.01, right=0.995, top=0.99, bottom=0.12)
     ff.save(fig, "ch08_baryogenesis")
 
 

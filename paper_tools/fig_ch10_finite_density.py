@@ -69,8 +69,8 @@ def packed(ax, xy, seed=3):
 
 
 def main():
-    ff.setup()
-    fig, ax = plt.subplots(figsize=(5.5, 3.15), dpi=300)
+    ff.setup(truetype=True, tight=False)   # canvas = printed size (0.8 textwidth)
+    fig, ax = plt.subplots(figsize=(0.8 * ff.TEXTWIDTH_IN, 2.88), dpi=300)
     ff.despine(ax, keep=("left", "bottom"))
     ax.set_aspect("auto")
 
@@ -87,30 +87,30 @@ def main():
                          zorder=1))
     ax.plot([0, slope * 1.24], [0, 1.24], color=ff.BLUE, lw=1.0,
             ls=(0, (4, 2)), zorder=3)
-    ct.txt(ax, (0.045, 1.10), "Euclidean MC\ncontrolled", size=6, color=ff.BLUE,
+    ct.txt(ax, (0.045, 1.10), "Euclidean MC\ncontrolled", size=7, color=ff.BLUE,
            ha="left")
     ct.txt(ax, (0.255, 0.155), r"$\mu_B/T$ grows $\to$ sign problem",
-           size=6, color=ff.ORANGE, ha="left")
+           size=7, color=ff.ORANGE, ha="left")
 
     # --- transition lines and the conjectured critical point --------------
     ax.plot(mu[:icp], Tc[:icp], color=ff.GREY, lw=1.4, ls=(0, (4, 2)), zorder=4)
     ax.plot(mu[icp:], Tc[icp:], color=ff.INK, lw=1.5, zorder=4)
     ax.plot([mu[icp]], [Tc[icp]], "o", ms=5.0, color=ff.ORANGE, mec="white",
             mew=0.6, zorder=6)
-    ct.txt(ax, (0.63, 0.92), "conjectured\ncritical point", size=6,
+    ct.txt(ax, (0.63, 0.92), "conjectured\ncritical point", size=7,
            color=ff.ORANGE, ha="left")
     ct.arrow(ax, (0.625, 0.895), (0.495, 0.805), color=ff.ORANGE, lw=0.7, mut=6)
 
     # --- what the matter is, in each region -------------------------------
     plasma(ax, (0.56, 1.06))
-    ct.txt(ax, (0.60, 1.20), "quark-gluon plasma", size=6, color=ff.MIDGREY)
+    ct.txt(ax, (0.60, 1.20), "quark-gluon plasma", size=7, color=ff.MIDGREY)
 
     hadron_gas(ax, (0.155, 0.28))
-    ct.txt(ax, (0.155, 0.075), "hadron gas", size=6, color=ff.MIDGREY)
+    ct.txt(ax, (0.155, 0.055), "hadron gas", size=7, color=ff.MIDGREY)
 
     packed(ax, (0.90, 0.26))
     ct.txt(ax, (0.90, 0.055), "dense nuclear matter\n(neutron-star interior)",
-           size=6, color=ff.MIDGREY)
+           size=7, color=ff.MIDGREY)
 
     # --- the grid this chapter prices -------------------------------------
     gm = np.linspace(0.34, 0.80, 5)
@@ -118,16 +118,16 @@ def main():
     G1, G2 = np.meshgrid(gm, gt)
     ax.plot(G1.ravel(), G2.ravel(), "+", ms=3.0, mew=0.7, color=ff.GREEN,
             zorder=5)
-    ct.txt(ax, (0.60, 0.36), r"$25$-point $(T,\mu_B)$ scan", size=6,
+    ct.txt(ax, (0.60, 0.36), r"$25$-point $(T,\mu_B)$ scan", size=7,
            color=ff.GREEN)
 
     ax.set_xlim(0, 1.12)
     ax.set_ylim(0, 1.30)
     ax.set_xticks([]); ax.set_yticks([])
-    ax.set_xlabel(r"baryon chemical potential $\mu_B$", fontsize=7)
-    ax.set_ylabel(r"temperature $T$", fontsize=7)
+    ax.set_xlabel(r"baryon chemical potential $\mu_B$", fontsize=7.5)
+    ax.set_ylabel(r"temperature $T$", fontsize=7.5)
 
-    fig.subplots_adjust(left=0.055, right=0.985, top=0.97, bottom=0.095)
+    fig.subplots_adjust(left=0.045, right=0.995, top=0.995, bottom=0.075)
     ff.save(fig, "ch10_finite_density")
 
 

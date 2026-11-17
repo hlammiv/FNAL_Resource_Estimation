@@ -51,9 +51,14 @@ LABEL_SLOTS = {
 }
 # Hand-placed first choices where the automatic order lands a label between two
 # marks (E21: Ch. 10's 2028 label sat between the Ch. 9 and Ch. 10 points).
-LABEL_PREFER = {(10, "2028"): NE}
-CHAR_PT = 3.9      # width of one label character at 6.5pt
-LINE_PT = 7.0      # label height
+# Keyed by (label text, era), so a merged label ("8,9") can be steered too: at
+# 7pt the inset's 2028 labels otherwise land between the Ch. 6 and 7 marks.
+LABEL_PREFER = {("10", "2028"): NE, ("8,9", "2028"): RIGHT, ("6", "2028"): ABOVE,
+                ("7", "2028"): LEFT}
+# The canvas is the printed size (full text width), so these sizes print as set.
+FS = 7.0           # every label on the figure: the smallest the report prints
+CHAR_PT = 4.2      # width of one label character at FS
+LINE_PT = 7.5      # label height
 
 # Upper bounds are drawn as a short fixed stub rather than a long trailing
 # arrow: two 2028 bounds sit ten logical qubits apart, and long arrows overlap.
@@ -272,8 +277,8 @@ def draw_labels(ax, instances, merge_pts=9.0, lines_block=True):
             # the point order (label above) rather than beside a neighbor
             g0 = "point"
         base = LABEL_SLOTS[g0]
-        key = (grp[0]["inst"]["ch"], grp[0]["inst"]["era"])
-        if len(grp) == 1 and key in LABEL_PREFER:
+        key = (text, grp[0]["inst"]["era"])
+        if key in LABEL_PREFER:
             base = [LABEL_PREFER[key]] + [b for b in base if b != LABEL_PREFER[key]]
         for scale in (1.0, 1.7, 2.4, 3.2, 4.2):
             for bx, by in base:
@@ -297,7 +302,7 @@ def draw_labels(ax, instances, merge_pts=9.0, lines_block=True):
                     (float(np.mean([g["anchor"][0] for g in grp])),
                      float(np.mean([g["anchor"][1] for g in grp]))),
                     xytext=(dx, dy), textcoords="offset points",
-                    ha=ha, va=va, fontsize=6.5, color=col, zorder=6)
+                    ha=ha, va=va, fontsize=FS, color=col, zorder=6)
 
 
 def envelopes(ax):
@@ -318,14 +323,14 @@ def envelopes(ax):
     # That strip is empty: the inset owns the upper left, the key the lower
     # right, and no instance except Ch. 4's 2028 point sits below 100 LQ.
     for era, t_hi in (("2028", 1e5), ("2033", 1e9)):
-        ax.annotate(f"{era} RFI target", xy=(t_hi * 1.16, 45), fontsize=6.5,
+        ax.annotate(f"{era} RFI target", xy=(t_hi * 1.16, 45), fontsize=FS,
                     color=ff.FNAL_BLUE, va="center", ha="left", rotation=90)
 
 
 def main():
-    ff.setup()
+    ff.setup(truetype=True, tight=False)
     fig, (ax, axc) = plt.subplots(
-        1, 2, figsize=(6.5, 4.0), dpi=300, sharey=True,
+        1, 2, figsize=(ff.TEXTWIDTH_IN, 3.74), dpi=300, sharey=True,
         gridspec_kw=dict(width_ratios=[5, 1], wspace=0.06),
     )
 
@@ -351,7 +356,7 @@ def main():
         if lq_lo < lq:
             axc.axhspan(lq_lo, lq, color=c, alpha=0.08, lw=0, zorder=2)
         axc.annotate(",".join(str(x) for x in chs) + "  register only",
-                     xy=(1.15e12, lq_lo / 1.06), fontsize=5.5, color=c,
+                     xy=(1.15e12, lq_lo / 1.06), fontsize=FS, color=c,
                      ha="left", va="top")
 
     for a, xlim in ((ax, XMAIN), (axc, XCODE)):
@@ -376,7 +381,7 @@ def main():
     ax.tick_params(right=False, which="both")
 
     axc.annotate("beyond RFI", xy=(0.5, 1.015), xycoords="axes fraction",
-                 ha="center", va="bottom", fontsize=6.5, color=ff.DARKGREY)
+                 ha="center", va="bottom", fontsize=FS, color=ff.DARKGREY)
 
     fig.supxlabel("T-gates (hard operations) per shot", fontsize=8, y=0.055)
 
@@ -387,7 +392,7 @@ def main():
                                      ("energy (5-6)", ff.ORANGE),
                                      ("cosmic (7-10)", ff.GREEN))):
         ax.annotate(name, xy=(0.245, 0.300 - 0.052 * i), xycoords="axes fraction",
-                    fontsize=6.5, color=col, ha="left", va="top")
+                    fontsize=FS, color=col, ha="left", va="top")
 
     # Geometry key, in the co-design panel's empty lower half. That panel
     # carries two marks and a rule, so it has room the main panel does not,
@@ -395,8 +400,8 @@ def main():
     # Swatches are drawn by the same code paths as the data marks, so the key
     # cannot describe a style the plot does not use.
     tr = axc.transAxes
-    gx, gy, dyr = 0.92, 0.235, 0.062
-    sx = gx - 0.70
+    gx, gy, dyr = 0.32, 0.235, 0.062     # text left-aligned after the swatch
+    sx = 0.16
     # Only styles the plot actually uses get a key row.
     used = {draw_geometry(i) for i in INSTANCES}
     rows = [("single value", "point"),
@@ -411,7 +416,7 @@ def main():
     for i, (lab, kind) in enumerate(rows):
         y = gy - i * dyr
         axc.annotate(lab, xy=(gx, y), xycoords="axes fraction",
-                     fontsize=5.5, color=ff.DARKGREY, ha="right", va="center")
+                     fontsize=FS, color=ff.DARKGREY, ha="left", va="center")
         if kind == "point":
             axc.plot([sx], [y], "o", ms=MARK_MS, color=ff.DARKGREY, transform=tr,
                      mec="white", mew=0.5, clip_on=False, zorder=6)
@@ -446,8 +451,9 @@ def main():
     # that; the register window runs past 250 so the envelope corner is
     # unambiguously inside the frame.
     # Upper T edge 1.1e6 so Ch. 5's 2028 row (5.94e5 T, E20) is inside the zoom with room for its label.
-    zx, zy = (4.0e3, 1.1e6), (105, 300)   # 4.0e3: just left of the Ch. 3 mark (5.4e3, R13 one query), inside the main axes;
+    zx, zy = (4.0e3, 1.2e6), (105, 300)   # 4.0e3: just left of the Ch. 3 mark (5.4e3, R13 one query), inside the main axes;
                                           # 1.1e6 (E19): Ch. 5 2028 at 5.9e5 is the largest 2028 mark (r19; Ch. 10 now 4.0e5, was 7.5e5)
+                                          # 1.2e6 since the 7pt pass: room for the "8,9" label right of its pair
     axz.add_patch(Rectangle((zx[0], zy[0]), 1e5 - zx[0], 250 - zy[0],
                             facecolor=ff.FNAL_BLUE, alpha=0.075,
                             edgecolor="none", zorder=1))
@@ -467,9 +473,9 @@ def main():
     # Log minor ticks would relabel these axes over the top of the fixed ticks.
     axz.minorticks_off()
     axz.set_xticks([1e4, 1e5, 1e6])
-    axz.set_xticklabels([r"$10^4$", r"$10^5$", r"$10^6$"], fontsize=5.5)
+    axz.set_xticklabels([r"$10^4$", r"$10^5$", r"$10^6$"], fontsize=FS)
     axz.set_yticks([120, 180, 250, 300])
-    axz.set_yticklabels(["120", "180", "250", "300"], fontsize=5.5)
+    axz.set_yticklabels(["120", "180", "250", "300"], fontsize=FS)
     axz.tick_params(length=2, width=0.5, pad=1.5)
     # The x tick labels hang below the frame, over the main panel's 2028
     # cluster; a white backing keeps them legible and hides nothing in the inset.
@@ -482,7 +488,7 @@ def main():
         s.set_linewidth(0.5)
         s.set_color(ff.GREY)
     axz.annotate("2028 rung, zoomed", xy=(0.5, 1.02), xycoords="axes fraction",
-                 ha="center", va="bottom", fontsize=6, color=ff.DARKGREY)
+                 ha="center", va="bottom", fontsize=FS, color=ff.DARKGREY)
     ax.indicate_inset_zoom(axz, edgecolor=ff.GREY, lw=0.5, alpha=0.9)
 
     fig.subplots_adjust(left=0.085, right=0.985, top=0.93, bottom=0.135)

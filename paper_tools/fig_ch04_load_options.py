@@ -11,7 +11,7 @@ import fnalfig as ff
 
 
 def main():
-    ff.setup()
+    ff.setup(truetype=True)
     m = estimates.load(4)
     i = m.model(m.Assumptions(), "2033").intermediates
     base = i["wall_campaign_baseline_yr"]

@@ -10,6 +10,7 @@ is 6.5in (letter, 1in margins, set in fnal-report.cls), so FULL/HALF below are
 sized for it while keeping the 8pt/0.6pt weights, so on-page text matches.
 """
 
+import os
 from pathlib import Path
 
 import matplotlib
@@ -43,11 +44,25 @@ HALF = (3.2, 2.6)      # half width, two side by side
 WIDE = (6.5, 2.6)      # full width, short
 TALL = (6.5, 4.6)      # full width, tall
 
-FIGDIR = Path(__file__).resolve().parent.parent / "Figures"
+# FNALFIG_DIR overrides the output directory, e.g. to write straight into the
+# paper's Figures/ when the scripts run from the resource repo.
+FIGDIR = Path(os.environ.get("FNALFIG_DIR",
+                             Path(__file__).resolve().parent.parent / "Figures"))
+
+# LaTeX text block of the report. A figure drawn on a canvas exactly as wide
+# as it is printed (TEXTWIDTH_IN x include fraction), saved with tight=False,
+# prints its fonts at their nominal sizes. 7pt is the smallest printed label.
+TEXTWIDTH_IN = 6.5
+MIN_PT = 7.0
 
 
-def setup():
-    """Apply the house rcParams. Call once at the top of each figure script."""
+def setup(truetype=False, tight=True):
+    """Apply the house rcParams. Call once at the top of each figure script.
+
+    truetype=True embeds TrueType (Type 42) fonts instead of Type 3.
+    tight=False keeps the canvas size on save (no bbox cropping), so a canvas
+    set to the printed width prints its fonts at nominal size.
+    """
     plt.rcParams.update(
         {
             "font.size": 8,
@@ -68,6 +83,10 @@ def setup():
             "savefig.pad_inches": 0.02,
         }
     )
+    if truetype:
+        plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42})
+    if not tight:
+        plt.rcParams["savefig.bbox"] = None
 
 
 def save(fig, name):
