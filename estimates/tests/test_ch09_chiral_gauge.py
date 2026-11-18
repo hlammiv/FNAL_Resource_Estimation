@@ -2462,11 +2462,11 @@ def test_r25_2028_schedule_tiers_and_exports(a, r28):
 def test_r25_chapter_prints_the_model(r28, r33):
     """The r25 prints in app06 (boxes and prose) are the model's numbers, rounded once."""
     tex = (Path(m.__file__).resolve().parents[2] / "applications" / "app06_chiral_gauge.tex").read_text()
-    for frag in (r"$1235 = 432$ fermion ($216$ doublet, $216$ singlet) $+\,486$ gauge $+\,270$ Higgs $+\,47$ ancilla",
+    for frag in (r"$1235$ ($432$ fermion, $486$ gauge, $270$ Higgs, $47$ ancilla)",   # MD1117-26 2026-11-18: was "1235 = 432 fermion (216 doublet, 216 singlet) + 486 gauge ..."
                  r"$250 = 192$ fermion $+\,16$ gauge $+\,42$ ancilla",
                  # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "An application is thus $417$ queries"
                  r"so an application is $1.9\times 10^{6}$ T, twice the count with the Yukawa term outside the sign function",
-                 r"$N_{CS}$ test $\gtrsim 4.4\times 10^{10}$ at $t=10a$ ($3.6$--$5.3\times 10^{10}$ over the Yukawa-weight band); $2.2\times 10^{10}$ at $t=5a$",   # rn_est v2 (was 4.1, 3.4-5.1)
+                 r"$N_{CS}$ test $\gtrsim 4.4\times 10^{10}$ at $10a$ ($3.6$--$5.3\times 10^{10}$ band), $2.2\times 10^{10}$ at $5a$",   # rn_est v2 (was 4.1, 3.4-5.1)
                  r"first result $36$~s; campaign $13$~min",
                  # rn_est v2 2026-11-14: counting-field readout, four settings, counting term counted (was 5.2 yr,
                  # 5.8-6.5 yr, 1.1e3 + 5.5e3 shots, the 1.2e15 Hadamard item)
@@ -2488,7 +2488,7 @@ def test_r25_chapter_prints_the_model(r28, r33):
                  r"$\lambda=Q(2+y\rho_{\max})=1296$", r"$\lambda t=1.3\times 10^{4}$ applications",
                  # style pass 2026-10-08: the filter-scope sentence moved to the omission sentence after the 2033 box,
                  # the Hilbert-Schmidt-norm formula went (described in words), "budget" -> "2033 target"
-                 r"$4.9$ times the 2033 target", r"thermal-state systematic not bounded",
+                 r"$4.9$ times the 2033 target", r"thermal state not bounded",
                  r"state-dependent estimate $\Lambda_{\rm sd}$ of Ch.~\ref{ch:overview}~\cite{AlvesLammLiu_inprep}"):   # Q5-5; re-pinned 2026-11-12 (batch 6): word order, and '($430$--$2400\times$)' above moved inside the preceding parenthesis
         assert frag in tex, frag
     assert "in preparation" not in tex and "N_{\\rm coupling}" not in tex
