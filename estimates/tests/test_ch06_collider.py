@@ -1997,9 +1997,10 @@ def test_g7_2033_step_numbers(r33):
     tex = TEX.read_text()
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "The worst-case bound at $g^2=1$, $6.3\\times 10^{2}$--$1.0\\times 10^{3}$"
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "the $4.65$ GeV point runs $575$ steps there"
-    assert ("By $50\\,a$ a gluon at $3.1$ GeV picks up a phase of $0.06$, while the worst-case bound "
-            "at $g^2=1$ is uninformative") in tex                        # t2e (2026-11-13): the 4.65 GeV clause cut
-    assert "an eigenstate whose error does not grow ($0.04$--$0.05$ for free fields)" in tex
+    assert ("By $50\\,a$ a gluon at $3.1$ GeV picks up a phase of $0.06$, a weak-coupling check not tested at "
+            "$a\\approx 0.1$ fm, while the worst-case bound at $g^2=1$ is uninformative") in tex   # RV1118-6b (2026-11-18)
+    assert "against an exact free-field error of $0.04$--$0.05$" in tex           # RV1118-6b: was '(0.04--0.05 for free fields)'
+    assert "an eigenstate whose error does not grow" in tex
 
 
 # --- r27 (chapter-open pass 2026-10-05): J1, J2, J3 derivations ---------------------------------------------
