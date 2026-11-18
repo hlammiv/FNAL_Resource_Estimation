@@ -43,11 +43,11 @@
     1000
    ],
    "t": [
-    1694252578823.0613,
-    5507408616755.647
+    9532000258526.762,
+    28297525975891.152
    ],
    "codesign": true,
-   "src": "app01:longer-term carbon EVOLUTION scaling comparison",
+   "src": "app01:longer-term carbon EVOLUTION scaling comparison (Ch. 3 string count, RV1118-2b)",
    "route": "chiral scaling",
    "nucleus": "12C",
    "t_note": "Evolution scaling, not complete response; no step-error validation"
@@ -215,14 +215,14 @@
     18
    ],
    "t": [
-    18978.416050431075,
-    35442.41605043107
+    18878.380709360492,
+    35342.380709360485
    ],
    "codesign": false,
    "src": "app12:2028 box lines 119-122: 'Logical qubits 18: 8 site + 4 column index + 1 block-encoding flag + 1 QET signal + 3 multi-control workspace + 1 Hadamard-test ancilla' (QME upgrade path 34); 'Per-shot 1.9--3.5e4 T-gates, derived here' (ruling SYN-BUDGET 2026-09-29, eps_syn = 0.1 x 1.784e-3, eps_rot = sqrt(eps_syn/N_rot); was 1.8--3.4e4 under R-TOL at eps_syn = 1e-2, Clifford+T-exact R_y(theta_0 = 0) not synthesized; 2.0--4.1e4 at the fixed 1e-4 under 'SHIFT + 1%', d = 84; 2.7--5.4e4 at d = 112 under R7; '~30 LQ, ~3e4 T' at V=2^4 before it). Model 1.898e4-3.544e4: 0.1%, 1.3%",
    "volume": "4^4",
    "observable": "Tr log W",
-   "eps_l": 2.8214780803235832e-06,
+   "eps_l": 2.8294641728398012e-06,
    "shots": 314075.14743187855,
    "lq_qme_route": 34,
    "degree": 84
@@ -504,14 +504,14 @@
     242
    ],
    "t": [
-    94753.39077837099,
-    94753.39077837099
+    98702.71316711669,
+    98702.71316711669
    ],
    "codesign": false,
    "src": "app04:2028 box ('222--242', '9.5e4 T-gates', wall '43 s'; was the rounded '220--240' until 2026-11-09, referee SR-ch7-4); requirements summary. Smaller ruling (b) (2026-10-05), option (c): one macro-step at K = 8 (6.475e4 T) + 3e4 prep = 9.475e4 (was four steps at K = 4, 9.437e4, 160-180 LQ).",
    "shots": 450,
-   "wall_time_s": 42.68402585026694,
-   "t_evolution": 64753.39077837099,
+   "wall_time_s": 44.461220925202504,
+   "t_evolution": 68702.71316711669,
    "t_prep": 30000.0
   },
   {

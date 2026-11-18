@@ -114,7 +114,7 @@ def model(a,era):
 PUBLISHED={
     '2028':Published((36,36),(3.89e4,3.89e4),'app01:2028 complete four-nucleon correlator box (report synthesis convention, ruling 2026-10-12; study convention 8.03e4)',rel_tol=.005),
     '2033':Published((908,908),(2.07e8,2.07e8),'app01:2033 complete mobile-triton correlator box (report synthesis convention, ruling 2026-10-12; study convention 7.23e8)',rel_tol=.005),
-    'codesign':Published((800,1000),(1.7e12,5.5e12),'app01:longer-term carbon EVOLUTION scaling comparison',rel_tol=.1),
+    'codesign':Published((800,1000),(9.5e12,2.8e13),'app01:longer-term carbon EVOLUTION scaling comparison (Ch. 3 string count, RV1118-2b)',rel_tol=.1),
 }
 
 def INSTANCE_ROWS(a,era,r):

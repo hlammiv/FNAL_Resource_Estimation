@@ -1,0 +1,1330 @@
+{
+ "instance": {
+  "dims": [
+   4,
+   4,
+   4
+  ],
+  "n_q": 3,
+  "K": 8,
+  "m_over_Hinf": 1.0,
+  "h_Hinf": 0.5,
+  "n_steps": 1,
+  "lattice_spacing_b": 2.0,
+  "generator": "build.build_step(build.BENCHMARK_2028)"
+ },
+ "conventions": {
+  "t_per_toffoli": 7,
+  "eps_syn": 0.01,
+  "rotation_cost": "estimates.common.t_per_rotation(eps_rot_for(N_rot))",
+  "depth": "longest non-Clifford path; t_depth_report weights rotations by T per rotation"
+ },
+ "model": {
+  "source": "estimates/ch07_curved_space.py: shot_counts(Assumptions(), '2028', 1), register(), model(a, '2028')",
+  "system_qubits": 192,
+  "n_anc": [
+   30,
+   50
+  ],
+  "lq": [
+   222,
+   242
+  ],
+  "rot_diag": 1920,
+  "rot_pi2": 384,
+  "rot_qft": 768,
+  "rot_centering": 128,
+  "rot_outer_shear": 0,
+  "t_controlled_s": 1536,
+  "t_centering": 128,
+  "n_rot": 3200,
+  "n_t_fixed": 1664,
+  "n_toffoli": 0,
+  "eps_rot": 0.0017677669529663688,
+  "t_per_rotation": 19.715434618240934,
+  "t_step": 64753.39077837099,
+  "t_evolution": 64753.39077837099,
+  "t_prep_stated": 30000.0,
+  "t_per_shot": 94753.39077837099,
+  "hard_op_cap": 100000.0,
+  "t_depth_per_shot": [
+   346,
+   1308
+  ],
+  "t_depth_source": "factory.json ch 7"
+ },
+ "variants": {
+  "full": {
+   "note": "headline: the exact digitized one-step map, textbook gate decompositions",
+   "qubits": 192,
+   "ancilla": 0,
+   "n_toffoli": 0,
+   "n_rot": 3584,
+   "n_t_fixed": 1664,
+   "cx": 6912,
+   "gates": 13056,
+   "eps_rot": 0.0016703827619526524,
+   "t_per_rotation": 19.809446389303588,
+   "t_total": 72661.05585926406,
+   "t_total_over_model_step": 1.122119706564222,
+   "t_total_plus_stated_prep": 102661.05585926406,
+   "fits_hard_op_cap_with_stated_prep": false,
+   "depth": {
+    "nonclifford_layers": 59.0,
+    "rotation_layers": 42.0,
+    "peak_rotations_in_one_layer": 128,
+    "t_depth_report": 846.9967483507515,
+    "rotation_layers_width_capped": {
+     "10": 360,
+     "30": 122,
+     "50": 74
+    }
+   },
+   "t_depth_width_capped_estimate": {
+    "10": 7131.400700149292,
+    "30": 2416.752459495038,
+    "50": 1465.8990328084656
+   },
+   "rotation_strings_on_busiest_qubit": 38,
+   "blocks": {
+    "shear_in": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3803.413706746289
+    },
+    "centering_in": {
+     "gates": 192,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 64,
+     "n_t_fixed": 64,
+     "n_toffoli": 0,
+     "t_report": 1331.8045689154296
+    },
+    "k1_qft_inv": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4187.413706746289
+    },
+    "k1_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3803.413706746289
+    },
+    "k1_qft": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4187.413706746289
+    },
+    "d1_site": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3803.413706746289
+    },
+    "d1_link": {
+     "gates": 5184,
+     "clifford": 3456,
+     "cx": 3456,
+     "n_rot": 1728,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 34230.7233607166
+    },
+    "k2_qft_inv": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4187.413706746289
+    },
+    "k2_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3803.413706746289
+    },
+    "k2_qft": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4187.413706746289
+    },
+    "centering_out": {
+     "gates": 192,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 64,
+     "n_t_fixed": 64,
+     "n_toffoli": 0,
+     "t_report": 1331.8045689154296
+    },
+    "shear_out": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3803.413706746289
+    }
+   },
+   "line_items": [
+    {
+     "item": "logical qubits used by the circuit (data + ancilla)",
+     "circuit": 192,
+     "model": 192,
+     "ratio": 1.0,
+     "model_source": "model: system qubits, register()['system_qubits']"
+    },
+    {
+     "item": "logical qubits, model total with N_anc = 30-50",
+     "circuit": 192,
+     "model": 222,
+     "ratio": 0.8648648648648649,
+     "model_source": "model: register()['lq'] low end; high end 242"
+    },
+    {
+     "item": "rotations: diagonal block D (site x^2 + link)",
+     "circuit": 1920,
+     "model": 1920,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['diag']"
+    },
+    {
+     "item": "rotations: pi^2 phases (two kinetic blocks)",
+     "circuit": 384,
+     "model": 384,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['pi2']"
+    },
+    {
+     "item": "rotations: QFT controlled-R_3 (4 QFTs)",
+     "circuit": 768,
+     "model": 768,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['qft']"
+    },
+    {
+     "item": "rotations: centering layers",
+     "circuit": 128,
+     "model": 128,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['centering']"
+    },
+    {
+     "item": "rotations: frame shear at the two ends of the shot",
+     "circuit": 384,
+     "model": 0,
+     "ratio": null,
+     "model_source": "not a model line item"
+    },
+    {
+     "item": "N_rot (arbitrary rotations)",
+     "circuit": 3584,
+     "model": 3200,
+     "ratio": 1.12,
+     "model_source": "shot_counts()['n_rot']"
+    },
+    {
+     "item": "T: QFT controlled-S",
+     "circuit": 1536,
+     "model": 1536,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['t_exact']['qft_cs']"
+    },
+    {
+     "item": "T: centering layers",
+     "circuit": 128,
+     "model": 128,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['t_exact']['centering']"
+    },
+    {
+     "item": "N_T_fixed (exact T gates)",
+     "circuit": 1664,
+     "model": 1664,
+     "ratio": 1.0,
+     "model_source": "sum of shot_counts()['t_exact']"
+    },
+    {
+     "item": "N_Toff",
+     "circuit": 0,
+     "model": 0,
+     "ratio": null,
+     "model_source": "the model has no Toffoli"
+    },
+    {
+     "item": "eps_rot",
+     "circuit": 0.0016703827619526524,
+     "model": 0.0017677669529663688,
+     "ratio": 0.944911182523068,
+     "model_source": "shot_counts()['eps_rot']"
+    },
+    {
+     "item": "T per rotation",
+     "circuit": 19.809446389303588,
+     "model": 19.715434618240934,
+     "ratio": 1.0047684351313093,
+     "model_source": "shot_counts()['t_per_rot']"
+    },
+    {
+     "item": "T, one step (report convention)",
+     "circuit": 72661.05585926406,
+     "model": 64753.39077837099,
+     "ratio": 1.122119706564222,
+     "model_source": "shot_counts()['t_total']"
+    }
+   ]
+  },
+  "in_shear_only": {
+   "note": "last shear layer dropped (diagonal before a field-basis readout), first kept",
+   "qubits": 192,
+   "ancilla": 0,
+   "n_toffoli": 0,
+   "n_rot": 3392,
+   "n_t_fixed": 1664,
+   "cx": 6528,
+   "gates": 12480,
+   "eps_rot": 0.0017170070493586127,
+   "t_per_rotation": 19.763771570494306,
+   "t_total": 68702.71316711669,
+   "t_total_over_model_step": 1.0609902020770294,
+   "t_total_plus_stated_prep": 98702.71316711669,
+   "fits_hard_op_cap_with_stated_prep": true,
+   "depth": {
+    "nonclifford_layers": 56.0,
+    "rotation_layers": 39.0,
+    "peak_rotations_in_one_layer": 128,
+    "t_depth_report": 785.7870912492784,
+    "rotation_layers_width_capped": {
+     "10": 340,
+     "30": 114,
+     "50": 69
+    }
+   },
+   "t_depth_width_capped_estimate": {
+    "10": 6719.682333968064,
+    "30": 2253.069959036351,
+    "50": 1363.7002383641072
+   },
+   "rotation_strings_on_busiest_qubit": 36,
+   "blocks": {
+    "shear_in": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3794.644141534907
+    },
+    "centering_in": {
+     "gates": 192,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 64,
+     "n_t_fixed": 64,
+     "n_toffoli": 0,
+     "t_report": 1328.8813805116356
+    },
+    "k1_qft_inv": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4178.644141534907
+    },
+    "k1_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3794.644141534907
+    },
+    "k1_qft": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4178.644141534907
+    },
+    "d1_site": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3794.644141534907
+    },
+    "d1_link": {
+     "gates": 5184,
+     "clifford": 3456,
+     "cx": 3456,
+     "n_rot": 1728,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 34151.79727381416
+    },
+    "k2_qft_inv": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4178.644141534907
+    },
+    "k2_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3794.644141534907
+    },
+    "k2_qft": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4178.644141534907
+    },
+    "centering_out": {
+     "gates": 192,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 64,
+     "n_t_fixed": 64,
+     "n_toffoli": 0,
+     "t_report": 1328.8813805116356
+    }
+   },
+   "line_items": [
+    {
+     "item": "logical qubits used by the circuit (data + ancilla)",
+     "circuit": 192,
+     "model": 192,
+     "ratio": 1.0,
+     "model_source": "model: system qubits, register()['system_qubits']"
+    },
+    {
+     "item": "logical qubits, model total with N_anc = 30-50",
+     "circuit": 192,
+     "model": 222,
+     "ratio": 0.8648648648648649,
+     "model_source": "model: register()['lq'] low end; high end 242"
+    },
+    {
+     "item": "rotations: diagonal block D (site x^2 + link)",
+     "circuit": 1920,
+     "model": 1920,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['diag']"
+    },
+    {
+     "item": "rotations: pi^2 phases (two kinetic blocks)",
+     "circuit": 384,
+     "model": 384,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['pi2']"
+    },
+    {
+     "item": "rotations: QFT controlled-R_3 (4 QFTs)",
+     "circuit": 768,
+     "model": 768,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['qft']"
+    },
+    {
+     "item": "rotations: centering layers",
+     "circuit": 128,
+     "model": 128,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['centering']"
+    },
+    {
+     "item": "rotations: frame shear at the two ends of the shot",
+     "circuit": 192,
+     "model": 0,
+     "ratio": null,
+     "model_source": "not a model line item"
+    },
+    {
+     "item": "N_rot (arbitrary rotations)",
+     "circuit": 3392,
+     "model": 3200,
+     "ratio": 1.06,
+     "model_source": "shot_counts()['n_rot']"
+    },
+    {
+     "item": "T: QFT controlled-S",
+     "circuit": 1536,
+     "model": 1536,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['t_exact']['qft_cs']"
+    },
+    {
+     "item": "T: centering layers",
+     "circuit": 128,
+     "model": 128,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['t_exact']['centering']"
+    },
+    {
+     "item": "N_T_fixed (exact T gates)",
+     "circuit": 1664,
+     "model": 1664,
+     "ratio": 1.0,
+     "model_source": "sum of shot_counts()['t_exact']"
+    },
+    {
+     "item": "N_Toff",
+     "circuit": 0,
+     "model": 0,
+     "ratio": null,
+     "model_source": "the model has no Toffoli"
+    },
+    {
+     "item": "eps_rot",
+     "circuit": 0.0017170070493586127,
+     "model": 0.0017677669529663688,
+     "ratio": 0.9712858623572641,
+     "model_source": "shot_counts()['eps_rot']"
+    },
+    {
+     "item": "T per rotation",
+     "circuit": 19.763771570494306,
+     "model": 19.715434618240934,
+     "ratio": 1.0024517315083001,
+     "model_source": "shot_counts()['t_per_rot']"
+    },
+    {
+     "item": "T, one step (report convention)",
+     "circuit": 68702.71316711669,
+     "model": 64753.39077837099,
+     "ratio": 1.0609902020770294,
+     "model_source": "shot_counts()['t_total']"
+    }
+   ]
+  },
+  "no_outer_shear": {
+   "note": "frame shear at the two ends left out (the model's accounting)",
+   "qubits": 192,
+   "ancilla": 0,
+   "n_toffoli": 0,
+   "n_rot": 3200,
+   "n_t_fixed": 1664,
+   "cx": 6144,
+   "gates": 11904,
+   "eps_rot": 0.0017677669529663688,
+   "t_per_rotation": 19.715434618240934,
+   "t_total": 64753.39077837099,
+   "t_total_over_model_step": 1.0,
+   "t_total_plus_stated_prep": 94753.39077837099,
+   "fits_hard_op_cap_with_stated_prep": true,
+   "depth": {
+    "nonclifford_layers": 53.0,
+    "rotation_layers": 37.0,
+    "peak_rotations_in_one_layer": 128,
+    "t_depth_report": 741.4710808749142,
+    "rotation_layers_width_capped": {
+     "10": 320,
+     "30": 107,
+     "50": 65
+    }
+   },
+   "t_depth_width_capped_estimate": {
+    "10": 6308.939077837099,
+    "30": 2109.55150415178,
+    "50": 1281.5032501856608
+   },
+   "rotation_strings_on_busiest_qubit": 34,
+   "blocks": {
+    "centering_in": {
+     "gates": 192,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 64,
+     "n_t_fixed": 64,
+     "n_toffoli": 0,
+     "t_report": 1325.7878155674198
+    },
+    "k1_qft_inv": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4169.363446702259
+    },
+    "k1_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3785.3634467022594
+    },
+    "k1_qft": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4169.363446702259
+    },
+    "d1_site": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3785.3634467022594
+    },
+    "d1_link": {
+     "gates": 5184,
+     "clifford": 3456,
+     "cx": 3456,
+     "n_rot": 1728,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 34068.27102032033
+    },
+    "k2_qft_inv": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4169.363446702259
+    },
+    "k2_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3785.3634467022594
+    },
+    "k2_qft": {
+     "gates": 1152,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 384,
+     "n_toffoli": 0,
+     "t_report": 4169.363446702259
+    },
+    "centering_out": {
+     "gates": 192,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 64,
+     "n_t_fixed": 64,
+     "n_toffoli": 0,
+     "t_report": 1325.7878155674198
+    }
+   },
+   "line_items": [
+    {
+     "item": "logical qubits used by the circuit (data + ancilla)",
+     "circuit": 192,
+     "model": 192,
+     "ratio": 1.0,
+     "model_source": "model: system qubits, register()['system_qubits']"
+    },
+    {
+     "item": "logical qubits, model total with N_anc = 30-50",
+     "circuit": 192,
+     "model": 222,
+     "ratio": 0.8648648648648649,
+     "model_source": "model: register()['lq'] low end; high end 242"
+    },
+    {
+     "item": "rotations: diagonal block D (site x^2 + link)",
+     "circuit": 1920,
+     "model": 1920,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['diag']"
+    },
+    {
+     "item": "rotations: pi^2 phases (two kinetic blocks)",
+     "circuit": 384,
+     "model": 384,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['pi2']"
+    },
+    {
+     "item": "rotations: QFT controlled-R_3 (4 QFTs)",
+     "circuit": 768,
+     "model": 768,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['qft']"
+    },
+    {
+     "item": "rotations: centering layers",
+     "circuit": 128,
+     "model": 128,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['centering']"
+    },
+    {
+     "item": "rotations: frame shear at the two ends of the shot",
+     "circuit": 0,
+     "model": 0,
+     "ratio": null,
+     "model_source": "not a model line item"
+    },
+    {
+     "item": "N_rot (arbitrary rotations)",
+     "circuit": 3200,
+     "model": 3200,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['n_rot']"
+    },
+    {
+     "item": "T: QFT controlled-S",
+     "circuit": 1536,
+     "model": 1536,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['t_exact']['qft_cs']"
+    },
+    {
+     "item": "T: centering layers",
+     "circuit": 128,
+     "model": 128,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['t_exact']['centering']"
+    },
+    {
+     "item": "N_T_fixed (exact T gates)",
+     "circuit": 1664,
+     "model": 1664,
+     "ratio": 1.0,
+     "model_source": "sum of shot_counts()['t_exact']"
+    },
+    {
+     "item": "N_Toff",
+     "circuit": 0,
+     "model": 0,
+     "ratio": null,
+     "model_source": "the model has no Toffoli"
+    },
+    {
+     "item": "eps_rot",
+     "circuit": 0.0017677669529663688,
+     "model": 0.0017677669529663688,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['eps_rot']"
+    },
+    {
+     "item": "T per rotation",
+     "circuit": 19.715434618240934,
+     "model": 19.715434618240934,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['t_per_rot']"
+    },
+    {
+     "item": "T, one step (report convention)",
+     "circuit": 64753.39077837099,
+     "model": 64753.39077837099,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['t_total']"
+    }
+   ]
+  },
+  "full_merged_rz": {
+   "note": "headline circuit after the Rz merge pass build.merge_rz",
+   "qubits": 192,
+   "ancilla": 0,
+   "n_toffoli": 0,
+   "n_rot": 3456,
+   "n_t_fixed": 1344,
+   "cx": 6912,
+   "gates": 12736,
+   "eps_rot": 0.0017010345435994293,
+   "t_per_rotation": 19.77927762286446,
+   "t_total": 69701.18346461956,
+   "t_total_over_model_step": 1.0764097852911394,
+   "t_total_plus_stated_prep": 99701.18346461956,
+   "fits_hard_op_cap_with_stated_prep": true,
+   "depth": {
+    "nonclifford_layers": 53.0,
+    "rotation_layers": 40.0,
+    "peak_rotations_in_one_layer": 128,
+    "t_depth_report": 803.1711049145787,
+    "rotation_layers_width_capped": {
+     "10": 346,
+     "30": 116,
+     "50": 70
+    }
+   },
+   "t_depth_width_capped_estimate": {
+    "10": 6843.630057511103,
+    "30": 2294.396204252277,
+    "50": 1384.5494336005122
+   },
+   "rotation_strings_on_busiest_qubit": 36,
+   "blocks": {
+    "shear_in": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3797.6213035899764
+    },
+    "centering_in": {
+     "gates": 64,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 0.0
+    },
+    "k1_qft_inv": {
+     "gates": 1152,
+     "clifford": 704,
+     "cx": 384,
+     "n_rot": 128,
+     "n_t_fixed": 320,
+     "n_toffoli": 0,
+     "t_report": 2851.7475357266508
+    },
+    "k1_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3797.6213035899764
+    },
+    "k1_qft": {
+     "gates": 1088,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 320,
+     "n_toffoli": 0,
+     "t_report": 4117.621303589976
+    },
+    "d1_site": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3797.6213035899764
+    },
+    "d1_link": {
+     "gates": 5184,
+     "clifford": 3456,
+     "cx": 3456,
+     "n_rot": 1728,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 34178.59173230978
+    },
+    "k2_qft_inv": {
+     "gates": 1088,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 320,
+     "n_toffoli": 0,
+     "t_report": 4117.621303589976
+    },
+    "k2_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3797.6213035899764
+    },
+    "k2_qft": {
+     "gates": 1088,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 320,
+     "n_toffoli": 0,
+     "t_report": 4117.621303589976
+    },
+    "centering_out": {
+     "gates": 192,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 64,
+     "n_t_fixed": 64,
+     "n_toffoli": 0,
+     "t_report": 1329.8737678633254
+    },
+    "shear_out": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3797.6213035899764
+    }
+   },
+   "line_items": [
+    {
+     "item": "logical qubits used by the circuit (data + ancilla)",
+     "circuit": 192,
+     "model": 192,
+     "ratio": 1.0,
+     "model_source": "model: system qubits, register()['system_qubits']"
+    },
+    {
+     "item": "logical qubits, model total with N_anc = 30-50",
+     "circuit": 192,
+     "model": 222,
+     "ratio": 0.8648648648648649,
+     "model_source": "model: register()['lq'] low end; high end 242"
+    },
+    {
+     "item": "rotations: diagonal block D (site x^2 + link)",
+     "circuit": 1920,
+     "model": 1920,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['diag']"
+    },
+    {
+     "item": "rotations: pi^2 phases (two kinetic blocks)",
+     "circuit": 384,
+     "model": 384,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['pi2']"
+    },
+    {
+     "item": "rotations: QFT controlled-R_3 (4 QFTs)",
+     "circuit": 704,
+     "model": 768,
+     "ratio": 0.9166666666666666,
+     "model_source": "shot_counts()['rot']['qft']"
+    },
+    {
+     "item": "rotations: centering layers",
+     "circuit": 64,
+     "model": 128,
+     "ratio": 0.5,
+     "model_source": "shot_counts()['rot']['centering']"
+    },
+    {
+     "item": "rotations: frame shear at the two ends of the shot",
+     "circuit": 384,
+     "model": 0,
+     "ratio": null,
+     "model_source": "not a model line item"
+    },
+    {
+     "item": "N_rot (arbitrary rotations)",
+     "circuit": 3456,
+     "model": 3200,
+     "ratio": 1.08,
+     "model_source": "shot_counts()['n_rot']"
+    },
+    {
+     "item": "T: QFT controlled-S",
+     "circuit": 1280,
+     "model": 1536,
+     "ratio": 0.8333333333333334,
+     "model_source": "shot_counts()['t_exact']['qft_cs']"
+    },
+    {
+     "item": "T: centering layers",
+     "circuit": 64,
+     "model": 128,
+     "ratio": 0.5,
+     "model_source": "shot_counts()['t_exact']['centering']"
+    },
+    {
+     "item": "N_T_fixed (exact T gates)",
+     "circuit": 1344,
+     "model": 1664,
+     "ratio": 0.8076923076923077,
+     "model_source": "sum of shot_counts()['t_exact']"
+    },
+    {
+     "item": "N_Toff",
+     "circuit": 0,
+     "model": 0,
+     "ratio": null,
+     "model_source": "the model has no Toffoli"
+    },
+    {
+     "item": "eps_rot",
+     "circuit": 0.0017010345435994293,
+     "model": 0.0017677669529663688,
+     "ratio": 0.9622504486493763,
+     "model_source": "shot_counts()['eps_rot']"
+    },
+    {
+     "item": "T per rotation",
+     "circuit": 19.77927762286446,
+     "model": 19.715434618240934,
+     "ratio": 1.003238224561606,
+     "model_source": "shot_counts()['t_per_rot']"
+    },
+    {
+     "item": "T, one step (report convention)",
+     "circuit": 69701.18346461956,
+     "model": 64753.39077837099,
+     "ratio": 1.0764097852911394,
+     "model_source": "shot_counts()['t_total']"
+    }
+   ]
+  },
+  "no_outer_shear_merged_rz": {
+   "note": "no outer shear, after the Rz merge pass",
+   "qubits": 192,
+   "ancilla": 0,
+   "n_toffoli": 0,
+   "n_rot": 3072,
+   "n_t_fixed": 1344,
+   "cx": 6144,
+   "gates": 11584,
+   "eps_rot": 0.0018042195912175807,
+   "t_per_rotation": 19.68157074703513,
+   "t_total": 61805.78533489192,
+   "t_total_over_model_step": 0.9544795197896628,
+   "t_total_plus_stated_prep": 91805.78533489193,
+   "fits_hard_op_cap_with_stated_prep": true,
+   "depth": {
+    "nonclifford_layers": 47.0,
+    "rotation_layers": 35.0,
+    "peak_rotations_in_one_layer": 128,
+    "t_depth_report": 699.85497614623,
+    "rotation_layers_width_capped": {
+     "10": 308,
+     "30": 103,
+     "50": 62
+    }
+   },
+   "t_depth_width_capped_estimate": {
+    "10": 6061.92379008682,
+    "30": 2027.2017869446186,
+    "50": 1220.257386316178
+   },
+   "rotation_strings_on_busiest_qubit": 32,
+   "blocks": {
+    "centering_in": {
+     "gates": 64,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 0.0
+    },
+    "k1_qft_inv": {
+     "gates": 1152,
+     "clifford": 704,
+     "cx": 384,
+     "n_rot": 128,
+     "n_t_fixed": 320,
+     "n_toffoli": 0,
+     "t_report": 2839.241055620497
+    },
+    "k1_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3778.861583430745
+    },
+    "k1_qft": {
+     "gates": 1088,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 320,
+     "n_toffoli": 0,
+     "t_report": 4098.861583430746
+    },
+    "d1_site": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3778.861583430745
+    },
+    "d1_link": {
+     "gates": 5184,
+     "clifford": 3456,
+     "cx": 3456,
+     "n_rot": 1728,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 34009.75425087671
+    },
+    "k2_qft_inv": {
+     "gates": 1088,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 320,
+     "n_toffoli": 0,
+     "t_report": 4098.861583430746
+    },
+    "k2_pi2": {
+     "gates": 576,
+     "clifford": 384,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 0,
+     "n_toffoli": 0,
+     "t_report": 3778.861583430745
+    },
+    "k2_qft": {
+     "gates": 1088,
+     "clifford": 576,
+     "cx": 384,
+     "n_rot": 192,
+     "n_t_fixed": 320,
+     "n_toffoli": 0,
+     "t_report": 4098.861583430746
+    },
+    "centering_out": {
+     "gates": 192,
+     "clifford": 64,
+     "cx": 0,
+     "n_rot": 64,
+     "n_t_fixed": 64,
+     "n_toffoli": 0,
+     "t_report": 1323.6205278102484
+    }
+   },
+   "line_items": [
+    {
+     "item": "logical qubits used by the circuit (data + ancilla)",
+     "circuit": 192,
+     "model": 192,
+     "ratio": 1.0,
+     "model_source": "model: system qubits, register()['system_qubits']"
+    },
+    {
+     "item": "logical qubits, model total with N_anc = 30-50",
+     "circuit": 192,
+     "model": 222,
+     "ratio": 0.8648648648648649,
+     "model_source": "model: register()['lq'] low end; high end 242"
+    },
+    {
+     "item": "rotations: diagonal block D (site x^2 + link)",
+     "circuit": 1920,
+     "model": 1920,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['diag']"
+    },
+    {
+     "item": "rotations: pi^2 phases (two kinetic blocks)",
+     "circuit": 384,
+     "model": 384,
+     "ratio": 1.0,
+     "model_source": "shot_counts()['rot']['pi2']"
+    },
+    {
+     "item": "rotations: QFT controlled-R_3 (4 QFTs)",
+     "circuit": 704,
+     "model": 768,
+     "ratio": 0.9166666666666666,
+     "model_source": "shot_counts()['rot']['qft']"
+    },
+    {
+     "item": "rotations: centering layers",
+     "circuit": 64,
+     "model": 128,
+     "ratio": 0.5,
+     "model_source": "shot_counts()['rot']['centering']"
+    },
+    {
+     "item": "rotations: frame shear at the two ends of the shot",
+     "circuit": 0,
+     "model": 0,
+     "ratio": null,
+     "model_source": "not a model line item"
+    },
+    {
+     "item": "N_rot (arbitrary rotations)",
+     "circuit": 3072,
+     "model": 3200,
+     "ratio": 0.96,
+     "model_source": "shot_counts()['n_rot']"
+    },
+    {
+     "item": "T: QFT controlled-S",
+     "circuit": 1280,
+     "model": 1536,
+     "ratio": 0.8333333333333334,
+     "model_source": "shot_counts()['t_exact']['qft_cs']"
+    },
+    {
+     "item": "T: centering layers",
+     "circuit": 64,
+     "model": 128,
+     "ratio": 0.5,
+     "model_source": "shot_counts()['t_exact']['centering']"
+    },
+    {
+     "item": "N_T_fixed (exact T gates)",
+     "circuit": 1344,
+     "model": 1664,
+     "ratio": 0.8076923076923077,
+     "model_source": "sum of shot_counts()['t_exact']"
+    },
+    {
+     "item": "N_Toff",
+     "circuit": 0,
+     "model": 0,
+     "ratio": null,
+     "model_source": "the model has no Toffoli"
+    },
+    {
+     "item": "eps_rot",
+     "circuit": 0.0018042195912175807,
+     "model": 0.0017677669529663688,
+     "ratio": 1.0206207261596576,
+     "model_source": "shot_counts()['eps_rot']"
+    },
+    {
+     "item": "T per rotation",
+     "circuit": 19.68157074703513,
+     "model": 19.715434618240934,
+     "ratio": 0.9982823675023389,
+     "model_source": "shot_counts()['t_per_rot']"
+    },
+    {
+     "item": "T, one step (report convention)",
+     "circuit": 61805.78533489192,
+     "model": 64753.39077837099,
+     "ratio": 0.9544795197896628,
+     "model_source": "shot_counts()['t_total']"
+    }
+   ]
+  }
+ },
+ "block_ranges_full": [
+  {
+   "label": "shear_in",
+   "start": 0,
+   "stop": 576
+  },
+  {
+   "label": "centering_in",
+   "start": 576,
+   "stop": 768
+  },
+  {
+   "label": "k1_qft_inv",
+   "start": 768,
+   "stop": 1920
+  },
+  {
+   "label": "k1_pi2",
+   "start": 1920,
+   "stop": 2496
+  },
+  {
+   "label": "k1_qft",
+   "start": 2496,
+   "stop": 3648
+  },
+  {
+   "label": "d1_site",
+   "start": 3648,
+   "stop": 4224
+  },
+  {
+   "label": "d1_link",
+   "start": 4224,
+   "stop": 9408
+  },
+  {
+   "label": "k2_qft_inv",
+   "start": 9408,
+   "stop": 10560
+  },
+  {
+   "label": "k2_pi2",
+   "start": 10560,
+   "stop": 11136
+  },
+  {
+   "label": "k2_qft",
+   "start": 11136,
+   "stop": 12288
+  },
+  {
+   "label": "centering_out",
+   "start": 12288,
+   "stop": 12480
+  },
+  {
+   "label": "shear_out",
+   "start": 12480,
+   "stop": 13056
+  }
+ ],
+ "qasm": {
+  "file": "ch07_scalar_ds_step_4x4x4_K8.qasm",
+  "bytes": 250477,
+  "instructions": 13056
+ }
+}

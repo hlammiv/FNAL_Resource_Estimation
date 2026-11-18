@@ -1,0 +1,344 @@
+{
+ "tolerance": 1e-09,
+ "machine": "one machine, 4 threads",
+ "counts": {
+  "baseline": {
+   "file": "ch02_3x3x3_steps6_re_p0p0.qasm3",
+   "qubits_declared": 36,
+   "qubits_touched": 36,
+   "gates_excluding_measure": 15670,
+   "gate_names": [
+    "ccx",
+    "cx",
+    "h",
+    "measure",
+    "rz",
+    "s",
+    "sdg",
+    "t",
+    "tdg",
+    "x"
+   ],
+   "largest_gate_arity": 3,
+   "rotations": 1192,
+   "toffoli": 2240,
+   "fixed_T": 744,
+   "clifford": 11494,
+   "eps_rot": 0.0028964222318174616,
+   "t_per_rotation": 18.896239208386206,
+   "t_total_report": 38948.317136396356,
+   "depth": {
+    "non_clifford_layers": 2657.0,
+    "t_layers_rz_cT_toffoli_7T": 15757.35431464683,
+    "t_layers_rz_cT_toffoli_one_layer": 10077.73174989704
+   },
+   "rotations_with_no_idle_workspace": {
+    "total": 104,
+    "workspace": 80,
+    "ancilla": 24,
+    "position": 0
+   }
+  },
+  "merged": {
+   "file": "ch02_3x3x3_steps6_re_p0p0_merged.qasm3",
+   "qubits_declared": 36,
+   "qubits_touched": 36,
+   "gates_excluding_measure": 15515,
+   "gate_names": [
+    "ccx",
+    "cx",
+    "h",
+    "measure",
+    "rz",
+    "s",
+    "sdg",
+    "t",
+    "tdg",
+    "x"
+   ],
+   "largest_gate_arity": 3,
+   "rotations": 1037,
+   "toffoli": 2240,
+   "fixed_T": 744,
+   "clifford": 11494,
+   "eps_rot": 0.0031053504702226844,
+   "t_per_rotation": 18.78068241193807,
+   "t_total_report": 35899.56766117978,
+   "depth": {
+    "non_clifford_layers": 2654.0,
+    "t_layers_rz_cT_toffoli_7T": 15634.737741658751,
+    "t_layers_rz_cT_toffoli_one_layer": 9877.737741658755
+   },
+   "rotations_with_no_idle_workspace": {
+    "total": 80,
+    "workspace": 80,
+    "ancilla": 0,
+    "position": 0
+   }
+  },
+  "model": {
+   "rotations": 1192,
+   "toffoli": 2240,
+   "fixed_T": 744,
+   "t_total": 38948.317136396356,
+   "lq": 36,
+   "shots": 164424,
+   "wall_campaign_s": 6420.4804968348335,
+   "depth_status": "serial_t_count_bound",
+   "source": "estimates/ch02_nu_nucleus.py: counts('2028', 6), circuit(Assumptions(), '2028', 6), model(a, '2028')"
+  },
+  "circuit_over_model": {
+   "rotations": 1.0,
+   "toffoli": 1.0,
+   "fixed_T": 1.0,
+   "t_total": 1.0,
+   "qubits": 1.0
+  },
+  "depth_floor_every_shot_at_the_deepest_circuit": {
+   "source": "estimates.common.depth_exports, reaction time 1e-05 s per layer, one machine",
+   "t_layers_rz_cT_toffoli_7T": {
+    "t_depth": 15757.35431464683,
+    "f_star": 2.4717548618039884,
+    "floor_wall_s": 25908.872258314903,
+    "floor_over_model_wall": 4.035347863931282
+   },
+   "t_layers_rz_cT_toffoli_one_layer": {
+    "t_depth": 10077.73174989704,
+    "f_star": 3.864790024480883,
+    "floor_wall_s": 16570.20965245071,
+    "floor_over_model_wall": 2.580836381423398
+   }
+  }
+ },
+ "reference": {
+  "E0_MeV": -52.67220268742091,
+  "E0_minus_study_file": 3.339550858072471e-13,
+  "prepared_energy_MeV": -52.45932865289193,
+  "overlap_squared": 0.9979428690429942,
+  "static_strength": 0.6594217139522361,
+  "C_product_formula_prepared": [
+   0.6378907485779071,
+   -0.12948126183044167
+  ],
+  "C_exact_evolution_prepared": [
+   0.6388852884953387,
+   -0.125002055068116
+  ],
+  "C_exact_ground_state": [
+   0.6406308140526349,
+   -0.12403954392190818
+  ],
+  "bias_total": 0.006092639214810738,
+  "bias_over_abs_C": 0.009336968037004262,
+  "bias_preparation_only": 0.0019933106074439713,
+  "bias_product_formula_only": 0.004588289754040035,
+  "study_file_circuit": [
+   0.6378907485779511,
+   -0.1294812618304515
+  ],
+  "study_file_exact": [
+   0.640630814052647,
+   -0.12403954392193053
+  ],
+  "tau_MeV_inv": 0.01,
+  "steps": 2,
+  "chapter_prints": {
+   "E0": -52.6722,
+   "prepared_energy": -52.45933,
+   "overlap_squared": 0.997943,
+   "bias": 0.00609,
+   "static_strength": 0.65942
+  }
+ },
+ "whole_instance": {
+  "method": "ancilla branches, grouped exact simulation on 2^24 amplitudes",
+  "files": [
+   {
+    "file": "generated_steps2_re_p0p0.qasm3",
+    "component": "re",
+    "current_pair": [
+     0,
+     0
+    ],
+    "counts": [
+     828,
+     1552,
+     552
+    ],
+    "model_counts": [
+     828,
+     1552,
+     552
+    ],
+    "t_total_report": 26811.809072417174,
+    "model_t_total": 26811.809072417174,
+    "qubits_touched": 36,
+    "depth": {
+     "non_clifford_layers": 1793.0,
+     "t_layers_rz_cT_toffoli_7T": 9864.583492775362,
+     "t_layers_rz_cT_toffoli_one_layer": 5940.771437394778
+    },
+    "weight_outside_legal_coordinates": 3.219646771412954e-15,
+    "prepared_state_max_amplitude_error": 1.413187558098153e-15,
+    "prepared_energy_from_circuit_MeV": -52.45932865287759,
+    "overlap_squared_from_circuit": 0.9979428690429829,
+    "ancilla0_branch_max_amplitude_error": 1.920334382634561e-15,
+    "ancilla1_branch_max_amplitude_error": 1.783772381064872e-15,
+    "ancilla1_branch_error_against_nearest_other_pair": 0.0023375446949058663,
+    "C_ab_circuit": [
+     0.9509962907178476,
+     -0.25530161759793923
+    ],
+    "C_ab_reference": [
+     0.9509962907181038,
+     -0.25530161759799985
+    ],
+    "C_ab_error": 2.6320400303200213e-13,
+    "ancilla_expectation": 0.9509962907178476,
+    "passes": true
+   },
+   {
+    "file": "generated_steps2_re_p0p1.qasm3",
+    "component": "re",
+    "current_pair": [
+     0,
+     1
+    ],
+    "counts": [
+     828,
+     1552,
+     552
+    ],
+    "model_counts": [
+     828,
+     1552,
+     552
+    ],
+    "t_total_report": 26811.809072417174,
+    "model_t_total": 26811.809072417174,
+    "qubits_touched": 36,
+    "depth": {
+     "non_clifford_layers": 1802.0,
+     "t_layers_rz_cT_toffoli_7T": 9938.58349277536,
+     "t_layers_rz_cT_toffoli_one_layer": 5961.771437394778
+    },
+    "weight_outside_legal_coordinates": 3.219646771412954e-15,
+    "prepared_state_max_amplitude_error": 1.413187558098153e-15,
+    "prepared_energy_from_circuit_MeV": -52.45932865287759,
+    "overlap_squared_from_circuit": 0.9979428690429829,
+    "ancilla0_branch_max_amplitude_error": 1.9248592058001014e-15,
+    "ancilla1_branch_max_amplitude_error": 1.7862472144330187e-15,
+    "ancilla1_branch_error_against_nearest_other_pair": 0.020791870947648727,
+    "C_ab_circuit": [
+     0.3247852064376211,
+     -0.0036609060628836412
+    ],
+    "C_ab_reference": [
+     0.3247852064377098,
+     -0.003660906062883435
+    ],
+    "C_ab_error": 8.870705986414228e-14,
+    "ancilla_expectation": 0.3247852064376211,
+    "passes": true
+   },
+   {
+    "file": "generated_steps2_im_p1p0.qasm3",
+    "component": "im",
+    "current_pair": [
+     1,
+     0
+    ],
+    "counts": [
+     828,
+     1552,
+     552
+    ],
+    "model_counts": [
+     828,
+     1552,
+     552
+    ],
+    "t_total_report": 26811.809072417174,
+    "model_t_total": 26811.809072417174,
+    "qubits_touched": 36,
+    "depth": {
+     "non_clifford_layers": 1793.0,
+     "t_layers_rz_cT_toffoli_7T": 9864.583492775362,
+     "t_layers_rz_cT_toffoli_one_layer": 5940.771437394778
+    },
+    "weight_outside_legal_coordinates": 3.219646771412954e-15,
+    "prepared_state_max_amplitude_error": 1.413187558098153e-15,
+    "prepared_energy_from_circuit_MeV": -52.45932865287759,
+    "overlap_squared_from_circuit": 0.9979428690429829,
+    "ancilla0_branch_max_amplitude_error": 1.920334382634561e-15,
+    "ancilla1_branch_max_amplitude_error": 1.790525405106273e-15,
+    "ancilla1_branch_error_against_nearest_other_pair": 0.020791870947648734,
+    "C_ab_circuit": [
+     0.3247852064376208,
+     -0.00366090606288361
+    ],
+    "C_ab_reference": [
+     0.32478520643771114,
+     -0.00366090606288353
+    ],
+    "C_ab_error": 9.031667830481379e-14,
+    "ancilla_expectation": -0.00366090606288361,
+    "passes": true
+   },
+   {
+    "file": "generated_steps2_im_p1p1.qasm3",
+    "component": "im",
+    "current_pair": [
+     1,
+     1
+    ],
+    "counts": [
+     828,
+     1552,
+     552
+    ],
+    "model_counts": [
+     828,
+     1552,
+     552
+    ],
+    "t_total_report": 26811.809072417174,
+    "model_t_total": 26811.809072417174,
+    "qubits_touched": 36,
+    "depth": {
+     "non_clifford_layers": 1802.0,
+     "t_layers_rz_cT_toffoli_7T": 9938.58349277536,
+     "t_layers_rz_cT_toffoli_one_layer": 5961.771437394778
+    },
+    "weight_outside_legal_coordinates": 3.219646771412954e-15,
+    "prepared_state_max_amplitude_error": 1.413187558098153e-15,
+    "prepared_energy_from_circuit_MeV": -52.45932865287759,
+    "overlap_squared_from_circuit": 0.9979428690429829,
+    "ancilla0_branch_max_amplitude_error": 1.9248592058001014e-15,
+    "ancilla1_branch_max_amplitude_error": 1.789310085110814e-15,
+    "ancilla1_branch_error_against_nearest_other_pair": 0.0023375446949058724,
+    "C_ab_circuit": [
+     0.9509962907178484,
+     -0.2553016175979396
+    ],
+    "C_ab_reference": [
+     0.9509962907181033,
+     -0.2553016175979998
+    ],
+    "C_ab_error": 2.61913353536853e-13,
+    "ancilla_expectation": -0.2553016175979396,
+    "passes": true
+   }
+  ],
+  "all_pass": true,
+  "four_pair_average_from_circuits": {
+   "C": [
+    0.6378907485777345,
+    -0.12948126183041153
+   ],
+   "bias_against_exact": 0.006092639214861408,
+   "difference_from_study_file": 2.202611132202956e-13
+  }
+ },
+ "seconds": 139
+}

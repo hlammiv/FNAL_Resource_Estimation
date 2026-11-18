@@ -1,0 +1,928 @@
+{
+ "instance": "Ch. 5 2028 benchmark: 2+1D SU(2) -> 2T, 4x4 periodic lattice, H_KS, pure gauge; first = one step, full = six steps; order-1 step (one electric + one magnetic layer), plaquette uncompute as arXiv:1903.08807 Fig. 1, 16 workspace qubits",
+ "convention": {
+  "t_per_toffoli": 7,
+  "eps_syn": 0.01,
+  "c_t": "estimates.common.t_per_rotation(eps_rot_for(N_rot))",
+  "t_depth": "Toffoli 1 layer, T 1 layer, rotation c_T layers, ASAP on the circuit's qubits"
+ },
+ "model": {
+  "source": "estimates/ch05_qgp_transport.py (Assumptions, evolution_2028, step_depth_2028, model(a,'2028').intermediates) and estimates/groups.py (GROUPS['2T'].primitives, PRIMCOST['KS'])",
+  "L": 4,
+  "dim": 2,
+  "n_links": 32,
+  "n_plaquettes": 16,
+  "dt_first_fm": 0.045,
+  "dt_full_fm": 0.025,
+  "a_s_fm": 0.2,
+  "lq": [
+   177,
+   178
+  ],
+  "gauge_qubits": 160,
+  "workspace": 16,
+  "hadamard_ancilla": [
+   1,
+   2
+  ],
+  "primitives": {
+   "U_mul": {
+    "n_toffoli": 22.0,
+    "n_rot": 0.0,
+    "ancilla": 1,
+    "calls_per_link_step": 6,
+    "src": "arxiv_2208_12309 tab:tgatecost"
+   },
+   "U_inv": {
+    "n_toffoli": 4.0,
+    "n_rot": 0.0,
+    "ancilla": 0,
+    "calls_per_link_step": 3,
+    "src": "arxiv_2208_12309 tab:tgatecost :526-544"
+   },
+   "U_Tr": {
+    "n_toffoli": 0.0,
+    "n_rot": 11.0,
+    "ancilla": 0,
+    "calls_per_link_step": 0.5,
+    "src": "arxiv_2208_12309 tab:tgatecost"
+   },
+   "U_F": {
+    "n_toffoli": 14.0,
+    "n_rot": 42.0,
+    "ancilla": 2,
+    "calls_per_link_step": 2,
+    "src": "arxiv_2408_00075 tab:tgatecostbt :871-893"
+   }
+  },
+  "n_rot_per_link_step": 89.5,
+  "box_t_per_rotation": 21.109764818962077,
+  "box_magnetic_t_per_link_step": 1124.1037065042915,
+  "box_electric_t_per_link_step": 1969.2202447928144,
+  "box_t_per_link_step": 3093.323951297106,
+  "n_toffoli_per_link_step": 172.0,
+  "first": {
+   "steps": 1,
+   "n_rot": 2864.0,
+   "eps_rot": 0.0018685877318798396,
+   "c_t": 19.62341138104741,
+   "t_total": 94729.45019531979,
+   "n_toffoli": 5504.0,
+   "t_per_link_step": 2960.2953186037435,
+   "t_magnetic_per_link_step": 1115.9287625957609,
+   "t_electric_per_link_step": 1844.3665560079826,
+   "t_depth_low": 1625.7670464260038,
+   "t_depth_high": 8720.896324798017
+  },
+  "full": {
+   "steps": 6,
+   "n_rot": 17184.0,
+   "eps_rot": 0.0007628477471216918,
+   "c_t": 21.109764818962077,
+   "t_total": 593918.1986490444,
+   "n_toffoli": 33024.0,
+   "t_per_link_step": 3093.323951297106,
+   "t_magnetic_per_link_step": 1124.1037065042915,
+   "t_electric_per_link_step": 1969.2202447928144,
+   "t_depth_low": 10407.408708488145,
+   "t_depth_high": 55714.26378723353
+  }
+ },
+ "circuit": {
+  "first": {
+   "qubits_declared": 176,
+   "logical_qubits": 176,
+   "data_qubits": 160,
+   "ancilla_qubits": 16,
+   "n_links": 32,
+   "steps": 1,
+   "n_gates": 10080,
+   "n_toffoli": 1408,
+   "n_rot": 416,
+   "n_t_fixed": 640,
+   "n_clifford": 7616,
+   "eps_rot": 0.004902903378454601,
+   "c_t": 18.022970147051595,
+   "t_total": 17993.555581173463,
+   "t_per_link_step": 562.2986119116707,
+   "t_magnetic_per_link_step": 324.0918805882064,
+   "t_electric_per_link_step": 238.20673132346434,
+   "n_toffoli_per_link_step": 44.0,
+   "n_rot_per_link_step": 13.0,
+   "n_t_fixed_per_link_step": 20.0,
+   "t_depth": 936.0106864702708,
+   "non_clifford_layers_unit_rotation": 187.0,
+   "blocks": {
+    "U_F": {
+     "calls": 64,
+     "n_toffoli": 128,
+     "n_rot": 128,
+     "n_t_fixed": 640,
+     "clifford": 4928,
+     "per_call": {
+      "n_toffoli": 2.0,
+      "n_rot": 2.0,
+      "n_t_fixed": 10.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 3842.940178822604
+    },
+    "U_phase": {
+     "calls": 32,
+     "n_toffoli": 128,
+     "n_rot": 160,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 5.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 1.0,
+     "t": 3779.675223528255
+    },
+    "U_inv": {
+     "calls": 96,
+     "n_toffoli": 384,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 480,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 2688.0
+    },
+    "U_mul": {
+     "calls": 96,
+     "n_toffoli": 768,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 1056,
+     "per_call": {
+      "n_toffoli": 8.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 5376.0
+    },
+    "U_Tr": {
+     "calls": 16,
+     "n_toffoli": 0,
+     "n_rot": 128,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 0.0,
+      "n_rot": 8.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 0.5,
+     "t": 2306.940178822604
+    }
+   }
+  },
+  "full": {
+   "qubits_declared": 176,
+   "logical_qubits": 176,
+   "data_qubits": 160,
+   "ancilla_qubits": 16,
+   "n_links": 32,
+   "steps": 6,
+   "n_gates": 60480,
+   "n_toffoli": 8448,
+   "n_rot": 2496,
+   "n_t_fixed": 3840,
+   "n_clifford": 45696,
+   "eps_rot": 0.0020016019225635893,
+   "c_t": 19.509323584966257,
+   "t_total": 111671.27166807579,
+   "t_per_link_step": 581.6212066045614,
+   "t_magnetic_per_link_step": 330.037294339865,
+   "t_electric_per_link_step": 251.58391226469632,
+   "n_toffoli_per_link_step": 44.0,
+   "n_rot_per_link_step": 13.0,
+   "n_t_fixed_per_link_step": 20.0,
+   "t_depth": 5963.4614264311,
+   "non_clifford_layers_unit_rotation": 1077.0,
+   "blocks": {
+    "U_F": {
+     "calls": 384,
+     "n_toffoli": 768,
+     "n_rot": 768,
+     "n_t_fixed": 3840,
+     "clifford": 29568,
+     "per_call": {
+      "n_toffoli": 2.0,
+      "n_rot": 2.0,
+      "n_t_fixed": 10.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 24199.160513254086
+    },
+    "U_phase": {
+     "calls": 192,
+     "n_toffoli": 768,
+     "n_rot": 960,
+     "n_t_fixed": 0,
+     "clifford": 3456,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 5.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 1.0,
+     "t": 24104.950641567608
+    },
+    "U_inv": {
+     "calls": 576,
+     "n_toffoli": 2304,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 2880,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 16128.0
+    },
+    "U_mul": {
+     "calls": 576,
+     "n_toffoli": 4608,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 6336,
+     "per_call": {
+      "n_toffoli": 8.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 32256.0
+    },
+    "U_Tr": {
+     "calls": 96,
+     "n_toffoli": 0,
+     "n_rot": 768,
+     "n_t_fixed": 0,
+     "clifford": 3456,
+     "per_call": {
+      "n_toffoli": 0.0,
+      "n_rot": 8.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 0.5,
+     "t": 14983.160513254086
+    }
+   }
+  }
+ },
+ "circuit_at_model_c_t": {
+  "first": {
+   "c_t": 19.62341138104741,
+   "t_total": 18659.339134515725,
+   "t_magnetic_per_link_step": 330.4936455241897,
+   "t_electric_per_link_step": 252.6107024294267
+  },
+  "full": {
+   "c_t": 21.109764818962077,
+   "t_total": 115665.97298812935,
+   "t_magnetic_per_link_step": 336.4390592758483,
+   "t_electric_per_link_step": 265.9878833706587
+  }
+ },
+ "ratios_circuit_over_model": {
+  "first": {
+   "t_total": 0.18994679631385059,
+   "t_per_link_step": 0.18994679631385059,
+   "t_magnetic_per_link_step": 0.2904234494631508,
+   "t_electric_per_link_step": 0.12915368181423117,
+   "n_toffoli": 0.2558139534883721,
+   "n_rot": 0.1452513966480447,
+   "c_t": 0.9184422523220633,
+   "t_total_at_model_c_t": 0.19697505998443565,
+   "t_depth_vs_model_low": 0.5757348130090008,
+   "t_depth_vs_model_high": 0.1073296426892163,
+   "logical_qubits_vs_model_lq_hi": 0.9887640449438202
+  },
+  "full": {
+   "t_total": 0.18802466723883654,
+   "t_per_link_step": 0.18802466723883657,
+   "t_magnetic_per_link_step": 0.2936003968585838,
+   "t_electric_per_link_step": 0.12775813824276724,
+   "n_toffoli": 0.2558139534883721,
+   "n_rot": 0.1452513966480447,
+   "c_t": 0.9241847908907916,
+   "t_total_at_model_c_t": 0.19475067989367706,
+   "t_depth_vs_model_low": 0.5730015600874193,
+   "t_depth_vs_model_high": 0.10703652926663242,
+   "logical_qubits_vs_model_lq_hi": 0.9887640449438202
+  }
+ },
+ "primitive_ratios_circuit_over_model": {
+  "U_mul": {
+   "n_toffoli": 0.36363636363636365,
+   "n_rot": null,
+   "calls_per_link_step": 0.5
+  },
+  "U_inv": {
+   "n_toffoli": 1.0,
+   "n_rot": null,
+   "calls_per_link_step": 1.0
+  },
+  "U_Tr": {
+   "n_toffoli": null,
+   "n_rot": 0.7272727272727273,
+   "calls_per_link_step": 1.0
+  },
+  "U_F": {
+   "n_toffoli": 0.14285714285714285,
+   "n_rot": 0.047619047619047616,
+   "calls_per_link_step": 1.0
+  }
+ },
+ "variants": {
+  "first, uncompute=dagger": {
+   "qubits_declared": 176,
+   "logical_qubits": 176,
+   "data_qubits": 160,
+   "ancilla_qubits": 16,
+   "n_links": 32,
+   "steps": 1,
+   "n_gates": 9792,
+   "n_toffoli": 1280,
+   "n_rot": 416,
+   "n_t_fixed": 640,
+   "n_clifford": 7456,
+   "eps_rot": 0.004902903378454601,
+   "c_t": 18.022970147051595,
+   "t_total": 17097.555581173463,
+   "t_per_link_step": 534.2986119116707,
+   "t_magnetic_per_link_step": 296.0918805882064,
+   "t_electric_per_link_step": 238.20673132346434,
+   "n_toffoli_per_link_step": 40.0,
+   "n_rot_per_link_step": 13.0,
+   "n_t_fixed_per_link_step": 20.0,
+   "t_depth": 932.0106864702708,
+   "non_clifford_layers_unit_rotation": 183.0,
+   "blocks": {
+    "U_F": {
+     "calls": 64,
+     "n_toffoli": 128,
+     "n_rot": 128,
+     "n_t_fixed": 640,
+     "clifford": 4928,
+     "per_call": {
+      "n_toffoli": 2.0,
+      "n_rot": 2.0,
+      "n_t_fixed": 10.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 3842.940178822604
+    },
+    "U_phase": {
+     "calls": 32,
+     "n_toffoli": 128,
+     "n_rot": 160,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 5.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 1.0,
+     "t": 3779.675223528255
+    },
+    "U_inv": {
+     "calls": 64,
+     "n_toffoli": 256,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 320,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 1792.0
+    },
+    "U_mul": {
+     "calls": 96,
+     "n_toffoli": 768,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 1056,
+     "per_call": {
+      "n_toffoli": 8.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 5376.0
+    },
+    "U_Tr": {
+     "calls": 16,
+     "n_toffoli": 0,
+     "n_rot": 128,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 0.0,
+      "n_rot": 8.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 0.5,
+     "t": 2306.940178822604
+    }
+   }
+  },
+  "first, order=2 (two magnetic half layers)": {
+   "qubits_declared": 176,
+   "logical_qubits": 176,
+   "data_qubits": 160,
+   "ancilla_qubits": 16,
+   "n_links": 32,
+   "steps": 1,
+   "n_gates": 13472,
+   "n_toffoli": 2560,
+   "n_rot": 544,
+   "n_t_fixed": 640,
+   "n_clifford": 9728,
+   "eps_rot": 0.004287464628562721,
+   "c_t": 18.24550844283941,
+   "t_total": 28485.55659290464,
+   "t_per_link_step": 890.17364352827,
+   "t_magnetic_per_link_step": 649.9640675427153,
+   "t_electric_per_link_step": 240.2095759855547,
+   "n_toffoli_per_link_step": 80.0,
+   "n_rot_per_link_step": 17.0,
+   "n_t_fixed_per_link_step": 20.0,
+   "t_depth": 1300.7305065703638,
+   "non_clifford_layers_unit_rotation": 266.0,
+   "blocks": {
+    "U_inv": {
+     "calls": 192,
+     "n_toffoli": 768,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 960,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 6.0,
+     "t": 5376.0
+    },
+    "U_mul": {
+     "calls": 192,
+     "n_toffoli": 1536,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 2112,
+     "per_call": {
+      "n_toffoli": 8.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 6.0,
+     "t": 10752.0
+    },
+    "U_Tr": {
+     "calls": 32,
+     "n_toffoli": 0,
+     "n_rot": 256,
+     "n_t_fixed": 0,
+     "clifford": 1152,
+     "per_call": {
+      "n_toffoli": 0.0,
+      "n_rot": 8.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 1.0,
+     "t": 4670.850161366889
+    },
+    "U_F": {
+     "calls": 64,
+     "n_toffoli": 128,
+     "n_rot": 128,
+     "n_t_fixed": 640,
+     "clifford": 4928,
+     "per_call": {
+      "n_toffoli": 2.0,
+      "n_rot": 2.0,
+      "n_t_fixed": 10.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 3871.4250806834443
+    },
+    "U_phase": {
+     "calls": 32,
+     "n_toffoli": 128,
+     "n_rot": 160,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 5.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 1.0,
+     "t": 3815.2813508543054
+    }
+   }
+  },
+  "first, 2 workspace qubits": {
+   "qubits_declared": 162,
+   "logical_qubits": 162,
+   "data_qubits": 160,
+   "ancilla_qubits": 2,
+   "n_links": 32,
+   "steps": 1,
+   "n_gates": 10080,
+   "n_toffoli": 1408,
+   "n_rot": 416,
+   "n_t_fixed": 640,
+   "n_clifford": 7616,
+   "eps_rot": 0.004902903378454601,
+   "c_t": 18.022970147051595,
+   "t_total": 17993.555581173463,
+   "t_per_link_step": 562.2986119116707,
+   "t_magnetic_per_link_step": 324.0918805882064,
+   "t_electric_per_link_step": 238.20673132346434,
+   "n_toffoli_per_link_step": 44.0,
+   "n_rot_per_link_step": 13.0,
+   "n_t_fixed_per_link_step": 20.0,
+   "t_depth": 5027.512835292391,
+   "non_clifford_layers_unit_rotation": 942.0,
+   "blocks": {
+    "U_F": {
+     "calls": 64,
+     "n_toffoli": 128,
+     "n_rot": 128,
+     "n_t_fixed": 640,
+     "clifford": 4928,
+     "per_call": {
+      "n_toffoli": 2.0,
+      "n_rot": 2.0,
+      "n_t_fixed": 10.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 3842.940178822604
+    },
+    "U_phase": {
+     "calls": 32,
+     "n_toffoli": 128,
+     "n_rot": 160,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 5.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 1.0,
+     "t": 3779.675223528255
+    },
+    "U_inv": {
+     "calls": 96,
+     "n_toffoli": 384,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 480,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 2688.0
+    },
+    "U_mul": {
+     "calls": 96,
+     "n_toffoli": 768,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 1056,
+     "per_call": {
+      "n_toffoli": 8.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 5376.0
+    },
+    "U_Tr": {
+     "calls": 16,
+     "n_toffoli": 0,
+     "n_rot": 128,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 0.0,
+      "n_rot": 8.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 0.5,
+     "t": 2306.940178822604
+    }
+   }
+  },
+  "first, 64 workspace qubits": {
+   "qubits_declared": 224,
+   "logical_qubits": 224,
+   "data_qubits": 160,
+   "ancilla_qubits": 64,
+   "n_links": 32,
+   "steps": 1,
+   "n_gates": 10080,
+   "n_toffoli": 1408,
+   "n_rot": 416,
+   "n_t_fixed": 640,
+   "n_clifford": 7616,
+   "eps_rot": 0.004902903378454601,
+   "c_t": 18.022970147051595,
+   "t_total": 17993.555581173463,
+   "t_per_link_step": 562.2986119116707,
+   "t_magnetic_per_link_step": 324.0918805882064,
+   "t_electric_per_link_step": 238.20673132346434,
+   "n_toffoli_per_link_step": 44.0,
+   "n_rot_per_link_step": 13.0,
+   "n_t_fixed_per_link_step": 20.0,
+   "t_depth": 497.52831338218647,
+   "non_clifford_layers_unit_rotation": 106.0,
+   "blocks": {
+    "U_F": {
+     "calls": 64,
+     "n_toffoli": 128,
+     "n_rot": 128,
+     "n_t_fixed": 640,
+     "clifford": 4928,
+     "per_call": {
+      "n_toffoli": 2.0,
+      "n_rot": 2.0,
+      "n_t_fixed": 10.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 3842.940178822604
+    },
+    "U_phase": {
+     "calls": 32,
+     "n_toffoli": 128,
+     "n_rot": 160,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 5.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 1.0,
+     "t": 3779.675223528255
+    },
+    "U_inv": {
+     "calls": 96,
+     "n_toffoli": 384,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 480,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 2688.0
+    },
+    "U_mul": {
+     "calls": 96,
+     "n_toffoli": 768,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 1056,
+     "per_call": {
+      "n_toffoli": 8.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 5376.0
+    },
+    "U_Tr": {
+     "calls": 16,
+     "n_toffoli": 0,
+     "n_rot": 128,
+     "n_t_fixed": 0,
+     "clifford": 576,
+     "per_call": {
+      "n_toffoli": 0.0,
+      "n_rot": 8.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 0.5,
+     "t": 2306.940178822604
+    }
+   }
+  },
+  "full, uncompute=dagger": {
+   "qubits_declared": 176,
+   "logical_qubits": 176,
+   "data_qubits": 160,
+   "ancilla_qubits": 16,
+   "n_links": 32,
+   "steps": 6,
+   "n_gates": 58752,
+   "n_toffoli": 7680,
+   "n_rot": 2496,
+   "n_t_fixed": 3840,
+   "n_clifford": 44736,
+   "eps_rot": 0.0020016019225635893,
+   "c_t": 19.509323584966257,
+   "t_total": 106295.27166807579,
+   "t_per_link_step": 553.6212066045614,
+   "t_magnetic_per_link_step": 302.037294339865,
+   "t_electric_per_link_step": 251.58391226469632,
+   "n_toffoli_per_link_step": 40.0,
+   "n_rot_per_link_step": 13.0,
+   "n_t_fixed_per_link_step": 20.0,
+   "t_depth": 5949.4614264311,
+   "non_clifford_layers_unit_rotation": 1063.0,
+   "blocks": {
+    "U_F": {
+     "calls": 384,
+     "n_toffoli": 768,
+     "n_rot": 768,
+     "n_t_fixed": 3840,
+     "clifford": 29568,
+     "per_call": {
+      "n_toffoli": 2.0,
+      "n_rot": 2.0,
+      "n_t_fixed": 10.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 24199.160513254086
+    },
+    "U_phase": {
+     "calls": 192,
+     "n_toffoli": 768,
+     "n_rot": 960,
+     "n_t_fixed": 0,
+     "clifford": 3456,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 5.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 1.0,
+     "t": 24104.950641567608
+    },
+    "U_inv": {
+     "calls": 384,
+     "n_toffoli": 1536,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 1920,
+     "per_call": {
+      "n_toffoli": 4.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 2.0,
+     "t": 10752.0
+    },
+    "U_mul": {
+     "calls": 576,
+     "n_toffoli": 4608,
+     "n_rot": 0,
+     "n_t_fixed": 0,
+     "clifford": 6336,
+     "per_call": {
+      "n_toffoli": 8.0,
+      "n_rot": 0.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 3.0,
+     "t": 32256.0
+    },
+    "U_Tr": {
+     "calls": 96,
+     "n_toffoli": 0,
+     "n_rot": 768,
+     "n_t_fixed": 0,
+     "clifford": 3456,
+     "per_call": {
+      "n_toffoli": 0.0,
+      "n_rot": 8.0,
+      "n_t_fixed": 0.0
+     },
+     "calls_per_link_step": 0.5,
+     "t": 14983.160513254086
+    }
+   }
+  }
+ },
+ "single_plaquette_step": {
+  "qubits_declared": 22,
+  "logical_qubits": 22,
+  "data_qubits": 20,
+  "ancilla_qubits": 2,
+  "n_links": 4,
+  "steps": 1,
+  "n_gates": 1048,
+  "n_toffoli": 104,
+  "n_rot": 44,
+  "n_t_fixed": 80,
+  "n_clifford": 820,
+  "eps_rot": 0.01507556722888818,
+  "c_t": 16.159390489836913,
+  "t_total": 1519.013181552824,
+  "t_per_link_step": 379.753295388206,
+  "t_magnetic_per_link_step": 158.31878097967382,
+  "t_electric_per_link_step": 221.4345144085322,
+  "n_toffoli_per_link_step": 26.0,
+  "n_rot_per_link_step": 11.0,
+  "n_t_fixed_per_link_step": 20.0,
+  "t_depth": 694.7380576341294,
+  "non_clifford_layers_unit_rotation": 149.0,
+  "blocks": {
+   "U_F": {
+    "calls": 8,
+    "n_toffoli": 16,
+    "n_rot": 16,
+    "n_t_fixed": 80,
+    "clifford": 616,
+    "per_call": {
+     "n_toffoli": 2.0,
+     "n_rot": 2.0,
+     "n_t_fixed": 10.0
+    },
+    "calls_per_link_step": 2.0,
+    "t": 450.5502478373906
+   },
+   "U_phase": {
+    "calls": 4,
+    "n_toffoli": 16,
+    "n_rot": 20,
+    "n_t_fixed": 0,
+    "clifford": 72,
+    "per_call": {
+     "n_toffoli": 4.0,
+     "n_rot": 5.0,
+     "n_t_fixed": 0.0
+    },
+    "calls_per_link_step": 1.0,
+    "t": 435.18780979673824
+   },
+   "U_inv": {
+    "calls": 6,
+    "n_toffoli": 24,
+    "n_rot": 0,
+    "n_t_fixed": 0,
+    "clifford": 30,
+    "per_call": {
+     "n_toffoli": 4.0,
+     "n_rot": 0.0,
+     "n_t_fixed": 0.0
+    },
+    "calls_per_link_step": 1.5,
+    "t": 168.0
+   },
+   "U_mul": {
+    "calls": 6,
+    "n_toffoli": 48,
+    "n_rot": 0,
+    "n_t_fixed": 0,
+    "clifford": 66,
+    "per_call": {
+     "n_toffoli": 8.0,
+     "n_rot": 0.0,
+     "n_t_fixed": 0.0
+    },
+    "calls_per_link_step": 1.5,
+    "t": 336.0
+   },
+   "U_Tr": {
+    "calls": 1,
+    "n_toffoli": 0,
+    "n_rot": 8,
+    "n_t_fixed": 0,
+    "clifford": 36,
+    "per_call": {
+     "n_toffoli": 0.0,
+     "n_rot": 8.0,
+     "n_t_fixed": 0.0
+    },
+    "calls_per_link_step": 0.25,
+    "t": 129.2751239186953
+   }
+  }
+ },
+ "g2_placeholder": 1.0
+}

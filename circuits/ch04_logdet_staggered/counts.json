@@ -1,0 +1,684 @@
+{
+ "chapter": "Ch. 4, hybrid lattice QCD, 2028 benchmark",
+ "instance": {
+  "L": 4,
+  "D": 4,
+  "m0": 0.4,
+  "K": 1.0,
+  "V": 256,
+  "s": 4.32,
+  "theta_0": 0.0,
+  "theta_1": 5.50855210540228,
+  "d": 84,
+  "shift": 0.5,
+  "lp_error": 0.0016993148925447121,
+  "qsp_residual": 5.88418203051333e-15
+ },
+ "conventions": {
+  "toffoli": "7 T, common.toffoli_t(n, 'textbook')",
+  "rotation": "common.t_per_rotation(common.eps_rot_for(N_rot, eps_syn)), N_rot counted from the circuit",
+  "eps_syn_model": 0.00017843630188106908,
+  "eps_syn_default": 0.01,
+  "t_depth": "weighted longest path: 1 per Toffoli, t_per_rotation per arbitrary rz, 1 per exact T. 'commuting' lets gates that share only same-type qubits overlap (the model's convention), 'as_written' orders every pair of gates that share a qubit",
+  "single_machine": "all counts are per shot of one circuit on one machine"
+ },
+ "model": {
+  "ends": {
+   "merged": {
+    "logical_qubits": [
+     18,
+     "estimates.ch04_hybrid_lqcd.model(Assumptions(), '2028').lq"
+    ],
+    "O_c_toffoli": [
+     1008,
+     "intermediates be_queries x oc_toffolis_per_query"
+    ],
+    "O_A_rotations": [
+     168,
+     "intermediates be_queries x oa_rotations_per_query"
+    ],
+    "projector_toffoli": [
+     680,
+     "intermediates projector_phases x projector_toffolis_each"
+    ],
+    "projector_rotations": [
+     170,
+     "intermediates projector_phases x projector_rotations_each"
+    ],
+    "n_toffoli": [
+     1688,
+     "sum of the two Toffoli items"
+    ],
+    "n_rot": [
+     338,
+     "intermediates rotations_per_shot"
+    ],
+    "t_per_rotation": [
+     21.19058003086117,
+     "intermediates t_per_rotation"
+    ],
+    "t_total": [
+     18978.416050431075,
+     "estimates.ch04_hybrid_lqcd.model(Assumptions(), '2028').hard_ops"
+    ],
+    "t_depth": [
+     7417.416050431075,
+     "intermediates t_depth_per_shot"
+    ]
+   },
+   "literal": {
+    "logical_qubits": [
+     18,
+     "estimates.ch04_hybrid_lqcd.model(Assumptions(), '2028').lq"
+    ],
+    "O_c_toffoli": [
+     3360,
+     "intermediates be_queries x oc_toffolis_per_query"
+    ],
+    "O_A_rotations": [
+     168,
+     "intermediates be_queries x oa_rotations_per_query"
+    ],
+    "projector_toffoli": [
+     680,
+     "intermediates projector_phases x projector_toffolis_each"
+    ],
+    "projector_rotations": [
+     170,
+     "intermediates projector_phases x projector_rotations_each"
+    ],
+    "n_toffoli": [
+     4040,
+     "sum of the two Toffoli items"
+    ],
+    "n_rot": [
+     338,
+     "intermediates rotations_per_shot"
+    ],
+    "t_per_rotation": [
+     21.19058003086117,
+     "intermediates t_per_rotation"
+    ],
+    "t_total": [
+     35442.41605043107,
+     "estimates.ch04_hybrid_lqcd.model(Assumptions(), '2028').hard_ops"
+    ],
+    "t_depth": [
+     7417.416050431075,
+     "intermediates t_depth_per_shot"
+    ]
+   }
+  },
+  "eps_syn": 0.00017843630188106908,
+  "d": 84,
+  "projector_phases": 85,
+  "published_lq": [
+   18,
+   18
+  ],
+  "published_hard_ops": [
+   19000.0,
+   35000.0
+  ],
+  "poly_tolerance": 0.0017843630188106906,
+  "logdet_W": 150.5528171451149,
+  "normalized_trace_shifted": 0.23446547997871559,
+  "breakdown_literal": [
+   {
+    "name": "O_c_controlled_shift_toffolis",
+    "count": 3360,
+    "t_each": 7,
+    "t_total": 23520,
+    "status": "COMPILED"
+   },
+   {
+    "name": "O_A_entry_rotations",
+    "count": 168,
+    "t_each": 21.19058003086117,
+    "t_total": 3560.0174451846765,
+    "status": "COMPILED"
+   },
+   {
+    "name": "projector_phase_toffolis",
+    "count": 680,
+    "t_each": 7,
+    "t_total": 4760,
+    "status": "SCALING"
+   },
+   {
+    "name": "projector_phase_rotations",
+    "count": 170,
+    "t_each": 21.19058003086117,
+    "t_total": 3602.398605246399,
+    "status": "SCALING"
+   }
+  ]
+ },
+ "variants": {
+  "literal": {
+   "gates": 8234,
+   "ops": {
+    "ccx": 4032,
+    "x": 2184,
+    "h": 1010,
+    "rz": 336,
+    "cx": 336,
+    "sdg": 168,
+    "s": 168
+   },
+   "logical_qubits": 18,
+   "qubits_touched_by_a_gate": 14,
+   "registers": {
+    "site": {
+     "allocated": 8,
+     "touched_by_a_gate": 4
+    },
+    "col": {
+     "allocated": 4,
+     "touched_by_a_gate": 4
+    },
+    "flag": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    },
+    "sig": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    },
+    "work": {
+     "allocated": 3,
+     "touched_by_a_gate": 3
+    },
+    "had": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    }
+   },
+   "n_toffoli": 4032,
+   "n_rot": 336,
+   "n_t_fixed": 0,
+   "n_cx": 336,
+   "n_clifford_1q": 3530,
+   "t_report_convention_model_eps_syn": {
+    "eps_syn": 0.00017843630188106908,
+    "eps_rot": 0.0007287389259982525,
+    "t_per_rotation": 21.185656873096697,
+    "t_toffoli": 28224,
+    "t_rotations": 7118.38070936049,
+    "t_fixed": 0,
+    "t_total": 35342.38070936049
+   },
+   "t_report_convention_default_eps_syn": {
+    "eps_syn": 0.01,
+    "eps_rot": 0.00545544725589981,
+    "t_per_rotation": 17.84579982721825,
+    "t_toffoli": 28224,
+    "t_rotations": 5996.188741945332,
+    "t_fixed": 0,
+    "t_total": 34220.188741945334
+   },
+   "t_depth": {
+    "commuting": {
+     "t_depth": 7455.380709360451,
+     "toffoli_layers_on_path": 337,
+     "rotations_on_path": 336,
+     "exact_t_on_path": 0
+    },
+    "as_written": {
+     "t_depth": 10899.38070936043,
+     "toffoli_layers_on_path": 3781,
+     "rotations_on_path": 336,
+     "exact_t_on_path": 0
+    }
+   },
+   "blocks": {
+    "had": {
+     "toffoli": 0,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 2,
+     "marked_segments": 2
+    },
+    "D_s": {
+     "toffoli": 0,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 840,
+     "marked_segments": 168
+    },
+    "O_A": {
+     "toffoli": 0,
+     "rot": 168,
+     "t": 0,
+     "cx": 168,
+     "clifford_1q": 672,
+     "marked_segments": 84
+    },
+    "O_c": {
+     "toffoli": 3360,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 1176,
+     "marked_segments": 84
+    },
+    "proj_and": {
+     "toffoli": 672,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 840,
+     "marked_segments": 168
+    },
+    "proj_rot": {
+     "toffoli": 0,
+     "rot": 168,
+     "t": 0,
+     "cx": 168,
+     "clifford_1q": 0,
+     "marked_segments": 84
+    }
+   },
+   "comparison": [
+    {
+     "item": "logical_qubits",
+     "circuit": 18,
+     "model": 18,
+     "ratio": 1.0,
+     "model_source": "estimates.ch04_hybrid_lqcd.model(Assumptions(), '2028').lq"
+    },
+    {
+     "item": "O_c_toffoli",
+     "circuit": 3360,
+     "model": 3360,
+     "ratio": 1.0,
+     "model_source": "intermediates be_queries x oc_toffolis_per_query"
+    },
+    {
+     "item": "O_A_rotations",
+     "circuit": 168,
+     "model": 168,
+     "ratio": 1.0,
+     "model_source": "intermediates be_queries x oa_rotations_per_query"
+    },
+    {
+     "item": "projector_toffoli",
+     "circuit": 672,
+     "model": 680,
+     "ratio": 0.9882352941176471,
+     "model_source": "intermediates projector_phases x projector_toffolis_each"
+    },
+    {
+     "item": "projector_rotations",
+     "circuit": 168,
+     "model": 170,
+     "ratio": 0.9882352941176471,
+     "model_source": "intermediates projector_phases x projector_rotations_each"
+    },
+    {
+     "item": "n_toffoli",
+     "circuit": 4032,
+     "model": 4040,
+     "ratio": 0.998019801980198,
+     "model_source": "sum of the two Toffoli items"
+    },
+    {
+     "item": "n_rot",
+     "circuit": 336,
+     "model": 338,
+     "ratio": 0.9940828402366864,
+     "model_source": "intermediates rotations_per_shot"
+    },
+    {
+     "item": "t_per_rotation",
+     "circuit": 21.185656873096697,
+     "model": 21.19058003086117,
+     "ratio": 0.9997676723451032,
+     "model_source": "intermediates t_per_rotation"
+    },
+    {
+     "item": "t_total",
+     "circuit": 35342.38070936049,
+     "model": 35442.41605043107,
+     "ratio": 0.9971775247791167,
+     "model_source": "estimates.ch04_hybrid_lqcd.model(Assumptions(), '2028').hard_ops"
+    },
+    {
+     "item": "t_depth",
+     "circuit": 7455.380709360451,
+     "model": 7417.416050431075,
+     "ratio": 1.0051183132604742,
+     "model_source": "intermediates t_depth_per_shot"
+    }
+   ]
+  },
+  "merged": {
+   "gates": 5210,
+   "ops": {
+    "ccx": 1680,
+    "x": 1512,
+    "h": 1010,
+    "cx": 336,
+    "rz": 336,
+    "sdg": 168,
+    "s": 168
+   },
+   "logical_qubits": 18,
+   "qubits_touched_by_a_gate": 14,
+   "registers": {
+    "site": {
+     "allocated": 8,
+     "touched_by_a_gate": 4
+    },
+    "col": {
+     "allocated": 4,
+     "touched_by_a_gate": 4
+    },
+    "flag": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    },
+    "sig": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    },
+    "work": {
+     "allocated": 3,
+     "touched_by_a_gate": 3
+    },
+    "had": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    }
+   },
+   "n_toffoli": 1680,
+   "n_rot": 336,
+   "n_t_fixed": 0,
+   "n_cx": 336,
+   "n_clifford_1q": 2858,
+   "t_report_convention_model_eps_syn": {
+    "eps_syn": 0.00017843630188106908,
+    "eps_rot": 0.0007287389259982525,
+    "t_per_rotation": 21.185656873096697,
+    "t_toffoli": 11760,
+    "t_rotations": 7118.38070936049,
+    "t_fixed": 0,
+    "t_total": 18878.380709360492
+   },
+   "t_report_convention_default_eps_syn": {
+    "eps_syn": 0.01,
+    "eps_rot": 0.00545544725589981,
+    "t_per_rotation": 17.84579982721825,
+    "t_toffoli": 11760,
+    "t_rotations": 5996.188741945332,
+    "t_fixed": 0,
+    "t_total": 17756.188741945334
+   },
+   "t_depth": {
+    "commuting": {
+     "t_depth": 7455.380709360451,
+     "toffoli_layers_on_path": 337,
+     "rotations_on_path": 336,
+     "exact_t_on_path": 0
+    },
+    "as_written": {
+     "t_depth": 7455.380709360451,
+     "toffoli_layers_on_path": 337,
+     "rotations_on_path": 336,
+     "exact_t_on_path": 0
+    }
+   },
+   "blocks": {
+    "had": {
+     "toffoli": 0,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 2,
+     "marked_segments": 2
+    },
+    "D_s": {
+     "toffoli": 0,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 840,
+     "marked_segments": 168
+    },
+    "O_A": {
+     "toffoli": 0,
+     "rot": 168,
+     "t": 0,
+     "cx": 168,
+     "clifford_1q": 672,
+     "marked_segments": 84
+    },
+    "O_c": {
+     "toffoli": 1008,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 504,
+     "marked_segments": 84
+    },
+    "proj_and": {
+     "toffoli": 672,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 840,
+     "marked_segments": 168
+    },
+    "proj_rot": {
+     "toffoli": 0,
+     "rot": 168,
+     "t": 0,
+     "cx": 168,
+     "clifford_1q": 0,
+     "marked_segments": 84
+    }
+   },
+   "comparison": [
+    {
+     "item": "logical_qubits",
+     "circuit": 18,
+     "model": 18,
+     "ratio": 1.0,
+     "model_source": "estimates.ch04_hybrid_lqcd.model(Assumptions(), '2028').lq"
+    },
+    {
+     "item": "O_c_toffoli",
+     "circuit": 1008,
+     "model": 1008,
+     "ratio": 1.0,
+     "model_source": "intermediates be_queries x oc_toffolis_per_query"
+    },
+    {
+     "item": "O_A_rotations",
+     "circuit": 168,
+     "model": 168,
+     "ratio": 1.0,
+     "model_source": "intermediates be_queries x oa_rotations_per_query"
+    },
+    {
+     "item": "projector_toffoli",
+     "circuit": 672,
+     "model": 680,
+     "ratio": 0.9882352941176471,
+     "model_source": "intermediates projector_phases x projector_toffolis_each"
+    },
+    {
+     "item": "projector_rotations",
+     "circuit": 168,
+     "model": 170,
+     "ratio": 0.9882352941176471,
+     "model_source": "intermediates projector_phases x projector_rotations_each"
+    },
+    {
+     "item": "n_toffoli",
+     "circuit": 1680,
+     "model": 1688,
+     "ratio": 0.995260663507109,
+     "model_source": "sum of the two Toffoli items"
+    },
+    {
+     "item": "n_rot",
+     "circuit": 336,
+     "model": 338,
+     "ratio": 0.9940828402366864,
+     "model_source": "intermediates rotations_per_shot"
+    },
+    {
+     "item": "t_per_rotation",
+     "circuit": 21.185656873096697,
+     "model": 21.19058003086117,
+     "ratio": 0.9997676723451032,
+     "model_source": "intermediates t_per_rotation"
+    },
+    {
+     "item": "t_total",
+     "circuit": 18878.380709360492,
+     "model": 18978.416050431075,
+     "ratio": 0.9947289942003189,
+     "model_source": "estimates.ch04_hybrid_lqcd.model(Assumptions(), '2028').hard_ops"
+    },
+    {
+     "item": "t_depth",
+     "circuit": 7455.380709360451,
+     "model": 7417.416050431075,
+     "ratio": 1.0051183132604742,
+     "model_source": "intermediates t_depth_per_shot"
+    }
+   ]
+  },
+  "compact": {
+   "gates": 4517,
+   "ops": {
+    "ccx": 1168,
+    "x": 1166,
+    "h": 1010,
+    "cx": 502,
+    "rz": 335,
+    "sdg": 168,
+    "s": 168
+   },
+   "logical_qubits": 18,
+   "qubits_touched_by_a_gate": 14,
+   "registers": {
+    "site": {
+     "allocated": 8,
+     "touched_by_a_gate": 4
+    },
+    "col": {
+     "allocated": 4,
+     "touched_by_a_gate": 4
+    },
+    "flag": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    },
+    "sig": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    },
+    "work": {
+     "allocated": 3,
+     "touched_by_a_gate": 3
+    },
+    "had": {
+     "allocated": 1,
+     "touched_by_a_gate": 1
+    }
+   },
+   "n_toffoli": 1168,
+   "n_rot": 335,
+   "n_t_fixed": 0,
+   "n_cx": 502,
+   "n_clifford_1q": 2512,
+   "t_report_convention_model_eps_syn": {
+    "eps_syn": 0.00017843630188106908,
+    "eps_rot": 0.0007298257855522252,
+    "t_per_rotation": 21.183184294072365,
+    "t_toffoli": 8176,
+    "t_rotations": 7096.366738514243,
+    "t_fixed": 0,
+    "t_total": 15272.366738514243
+   },
+   "t_report_convention_default_eps_syn": {
+    "eps_syn": 0.01,
+    "eps_rot": 0.005463583647081531,
+    "t_per_rotation": 17.843327248193916,
+    "t_toffoli": 8176,
+    "t_rotations": 5977.5146281449615,
+    "t_fixed": 0,
+    "t_total": 14153.514628144962
+   },
+   "t_depth": {
+    "commuting": {
+     "t_depth": 7407.183554220237,
+     "toffoli_layers_on_path": 332,
+     "rotations_on_path": 334,
+     "exact_t_on_path": 0
+    },
+    "as_written": {
+     "t_depth": 7407.183554220237,
+     "toffoli_layers_on_path": 332,
+     "rotations_on_path": 334,
+     "exact_t_on_path": 0
+    }
+   },
+   "blocks": {
+    "had": {
+     "toffoli": 0,
+     "rot": 1,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 2,
+     "marked_segments": 3
+    },
+    "D_s": {
+     "toffoli": 0,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 840,
+     "marked_segments": 168
+    },
+    "O_A": {
+     "toffoli": 0,
+     "rot": 168,
+     "t": 0,
+     "cx": 168,
+     "clifford_1q": 672,
+     "marked_segments": 84
+    },
+    "O_c": {
+     "toffoli": 504,
+     "rot": 0,
+     "t": 0,
+     "cx": 168,
+     "clifford_1q": 168,
+     "marked_segments": 84
+    },
+    "proj_and": {
+     "toffoli": 664,
+     "rot": 0,
+     "t": 0,
+     "cx": 0,
+     "clifford_1q": 830,
+     "marked_segments": 166
+    },
+    "proj_rot": {
+     "toffoli": 0,
+     "rot": 166,
+     "t": 0,
+     "cx": 166,
+     "clifford_1q": 0,
+     "marked_segments": 83
+    }
+   }
+  }
+ }
+}

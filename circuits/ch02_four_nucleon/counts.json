@@ -1,0 +1,660 @@
+{
+ "conventions": {
+  "t_per_toffoli": 7,
+  "eps_synth": 0.01,
+  "rotation_cost": "estimates.common.t_per_rotation(eps_rot_for(N_rot), 'rus')",
+  "fixed_T": "t, tdg and rz at odd multiples of pi/4",
+  "angle_tolerance": 1e-09,
+  "depth": "non_clifford_layers: each T, Toffoli or arbitrary rz is one layer. t_depth_report: T layers with each arbitrary rz counted as c_T sequential T and each Toffoli replaced by Qiskit's 7-T circuit. The chapter model defines no T-depth (depth_status = serial_t_count_bound)."
+ },
+ "model": {
+  "lq": 36,
+  "hard_ops": 38948.317136396356,
+  "breakdown": [
+   {
+    "name": "rotations",
+    "count": 1192,
+    "t_each": 18.896239208386206,
+    "t_total": 22524.317136396356
+   },
+   {
+    "name": "Toffoli",
+    "count": 2240,
+    "t_each": 7,
+    "t_total": 15680
+   },
+   {
+    "name": "fixed_T",
+    "count": 744,
+    "t_each": 1,
+    "t_total": 744
+   }
+  ],
+  "counts_formula": "counts('2028', n) = (646 + 91 n, 1208 + 172 n, 456 + 48 n)",
+  "per_step": {
+   "rotations": 91,
+   "toffoli": 172,
+   "fixed_T": 48
+  },
+  "source": "estimates/ch02_nu_nucleus.py model(Assumptions(), '2028'), counts, circuit"
+ },
+ "by_steps": {
+  "2": {
+   "circuit": {
+    "rotations": 828,
+    "toffoli": 1552,
+    "fixed_T": 552,
+    "clifford": 8342,
+    "t_total": 26811.809072417174,
+    "t_per_rotation": 18.593972309682577,
+    "qubits": 36
+   },
+   "model": {
+    "rotations": 828,
+    "toffoli": 1552,
+    "fixed_T": 552,
+    "t_total": 26811.809072417174,
+    "t_per_rotation": 18.593972309682577,
+    "source": "estimates/ch02_nu_nucleus.py counts('2028', steps) and circuit(a, '2028', steps)"
+   },
+   "ratio_circuit_over_model": {
+    "rotations": 1.0,
+    "toffoli": 1.0,
+    "fixed_T": 1.0,
+    "t_total": 1.0,
+    "qubits": 1.0
+   }
+  },
+  "4": {
+   "circuit": {
+    "rotations": 1010,
+    "toffoli": 1896,
+    "fixed_T": 648,
+    "clifford": 9918,
+    "t_total": 32866.38554192561,
+    "t_per_rotation": 18.758797566262977,
+    "qubits": 36
+   },
+   "model": {
+    "rotations": 1010,
+    "toffoli": 1896,
+    "fixed_T": 648,
+    "t_total": 32866.38554192561,
+    "t_per_rotation": 18.758797566262977,
+    "source": "estimates/ch02_nu_nucleus.py counts('2028', steps) and circuit(a, '2028', steps)"
+   },
+   "ratio_circuit_over_model": {
+    "rotations": 1.0,
+    "toffoli": 1.0,
+    "fixed_T": 1.0,
+    "t_total": 1.0,
+    "qubits": 1.0
+   }
+  },
+  "6": {
+   "circuit": {
+    "rotations": 1192,
+    "toffoli": 2240,
+    "fixed_T": 744,
+    "clifford": 11494,
+    "t_total": 38948.317136396356,
+    "t_per_rotation": 18.896239208386206,
+    "qubits": 36
+   },
+   "model": {
+    "rotations": 1192,
+    "toffoli": 2240,
+    "fixed_T": 744,
+    "t_total": 38948.317136396356,
+    "t_per_rotation": 18.896239208386206,
+    "source": "estimates/ch02_nu_nucleus.py counts('2028', steps) and circuit(a, '2028', steps)"
+   },
+   "ratio_circuit_over_model": {
+    "rotations": 1.0,
+    "toffoli": 1.0,
+    "fixed_T": 1.0,
+    "t_total": 1.0,
+    "qubits": 1.0
+   }
+  }
+ },
+ "benchmark": {
+  "qubits": {
+   "total": 36,
+   "used": 36,
+   "position": 24,
+   "workspace": 11,
+   "ancilla": 1
+  },
+  "counts": {
+   "rotations": 1192,
+   "toffoli": 2240,
+   "fixed_T": 744,
+   "clifford": 11494
+  },
+  "t_total_report": 38948.317136396356,
+  "t_per_rotation": 18.896239208386206,
+  "eps_rot": 0.0028964222318174616,
+  "depth": {
+   "non_clifford_layers": 2657.0,
+   "t_depth_report": 15757.35431464683,
+   "t_depth_toffoli_one_layer": 10077.73174989704,
+   "toffoli_t_depth_used": 4.0
+  },
+  "rus_workspace": {
+   "rus_ancilla": 1,
+   "min_idle_workspace_at_a_rotation": 0,
+   "rotations_with_too_few_idle": 104,
+   "of_which_on_workspace_flag": 80,
+   "of_which_on_hadamard_ancilla": 24,
+   "qubits_if_rus_needs_its_own_ancilla": 37
+  },
+  "families": {
+   "init/uniform": {
+    "blocks": 1,
+    "rotations": 12,
+    "toffoli": 0,
+    "fixed_T": 24,
+    "clifford": 180,
+    "t_report": 250.75487050063447
+   },
+   "prep/potential": {
+    "blocks": 8,
+    "rotations": 80,
+    "toffoli": 1184,
+    "fixed_T": 0,
+    "clifford": 2688,
+    "t_report": 9799.699136670897
+   },
+   "prep/kinetic": {
+    "blocks": 8,
+    "rotations": 480,
+    "toffoli": 0,
+    "fixed_T": 384,
+    "clifford": 3456,
+    "t_report": 9454.19482002538
+   },
+   "test/open": {
+    "blocks": 1,
+    "rotations": 0,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 1,
+    "t_report": 0.0
+   },
+   "current/in": {
+    "blocks": 1,
+    "rotations": 6,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 4,
+    "t_report": 113.37743525031723
+   },
+   "evolve/kinetic": {
+    "blocks": 7,
+    "rotations": 427,
+    "toffoli": 168,
+    "fixed_T": 336,
+    "clifford": 3024,
+    "t_report": 9580.69414198091
+   },
+   "evolve/potential": {
+    "blocks": 6,
+    "rotations": 180,
+    "toffoli": 888,
+    "fixed_T": 0,
+    "clifford": 2136,
+    "t_report": 9617.323057509517
+   },
+   "current/out": {
+    "blocks": 1,
+    "rotations": 6,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 4,
+    "t_report": 113.37743525031723
+   },
+   "energy_phase": {
+    "blocks": 1,
+    "rotations": 1,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 0,
+    "t_report": 18.896239208386206
+   },
+   "test/close": {
+    "blocks": 1,
+    "rotations": 0,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 1,
+    "t_report": 0.0
+   }
+  },
+  "blocks": [
+   {
+    "block": "init/uniform",
+    "rotations": 12,
+    "toffoli": 0,
+    "fixed_T": 24,
+    "clifford": 180
+   },
+   {
+    "block": "prep/0/potential",
+    "rotations": 10,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 336
+   },
+   {
+    "block": "prep/0/kinetic",
+    "rotations": 60,
+    "toffoli": 0,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "prep/1/potential",
+    "rotations": 10,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 336
+   },
+   {
+    "block": "prep/1/kinetic",
+    "rotations": 60,
+    "toffoli": 0,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "prep/2/potential",
+    "rotations": 10,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 336
+   },
+   {
+    "block": "prep/2/kinetic",
+    "rotations": 60,
+    "toffoli": 0,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "prep/3/potential",
+    "rotations": 10,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 336
+   },
+   {
+    "block": "prep/3/kinetic",
+    "rotations": 60,
+    "toffoli": 0,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "prep/4/potential",
+    "rotations": 10,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 336
+   },
+   {
+    "block": "prep/4/kinetic",
+    "rotations": 60,
+    "toffoli": 0,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "prep/5/potential",
+    "rotations": 10,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 336
+   },
+   {
+    "block": "prep/5/kinetic",
+    "rotations": 60,
+    "toffoli": 0,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "prep/6/potential",
+    "rotations": 10,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 336
+   },
+   {
+    "block": "prep/6/kinetic",
+    "rotations": 60,
+    "toffoli": 0,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "prep/7/potential",
+    "rotations": 10,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 336
+   },
+   {
+    "block": "prep/7/kinetic",
+    "rotations": 60,
+    "toffoli": 0,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "test/open",
+    "rotations": 0,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 1
+   },
+   {
+    "block": "current/in",
+    "rotations": 6,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 4
+   },
+   {
+    "block": "evolve/first_half/kinetic",
+    "rotations": 61,
+    "toffoli": 24,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "evolve/0/potential",
+    "rotations": 30,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 356
+   },
+   {
+    "block": "evolve/0/kinetic",
+    "rotations": 61,
+    "toffoli": 24,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "evolve/1/potential",
+    "rotations": 30,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 356
+   },
+   {
+    "block": "evolve/1/kinetic",
+    "rotations": 61,
+    "toffoli": 24,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "evolve/2/potential",
+    "rotations": 30,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 356
+   },
+   {
+    "block": "evolve/2/kinetic",
+    "rotations": 61,
+    "toffoli": 24,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "evolve/3/potential",
+    "rotations": 30,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 356
+   },
+   {
+    "block": "evolve/3/kinetic",
+    "rotations": 61,
+    "toffoli": 24,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "evolve/4/potential",
+    "rotations": 30,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 356
+   },
+   {
+    "block": "evolve/4/kinetic",
+    "rotations": 61,
+    "toffoli": 24,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "evolve/5/potential",
+    "rotations": 30,
+    "toffoli": 148,
+    "fixed_T": 0,
+    "clifford": 356
+   },
+   {
+    "block": "evolve/5/kinetic",
+    "rotations": 61,
+    "toffoli": 24,
+    "fixed_T": 48,
+    "clifford": 432
+   },
+   {
+    "block": "current/out",
+    "rotations": 6,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 4
+   },
+   {
+    "block": "energy_phase",
+    "rotations": 1,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 0
+   },
+   {
+    "block": "test/close",
+    "rotations": 0,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 1
+   }
+  ],
+  "gates_total": 15671
+ },
+ "per_step_from_circuit": {
+  "rotations": 91.0,
+  "toffoli": 172.0,
+  "fixed_T": 48.0
+ },
+ "study_line_items": {
+  "source": "applications/ch02_neutrino_nucleus/neutrino_feasibility/larger_circuit_counts_steps6.json",
+  "initial": {
+   "circuit": {
+    "rotations": 12,
+    "toffoli": 0,
+    "fixed_T": 24
+   },
+   "study": {
+    "rotations": 12,
+    "toffoli": 0,
+    "fixed_T": 24
+   }
+  },
+  "after_preparation": {
+   "circuit": {
+    "rotations": 572,
+    "toffoli": 1184,
+    "fixed_T": 408
+   },
+   "study": {
+    "rotations": 572,
+    "toffoli": 1184,
+    "fixed_T": 408
+   }
+  },
+  "complete": {
+   "circuit": {
+    "rotations": 1192,
+    "toffoli": 2240,
+    "fixed_T": 744
+   },
+   "study": {
+    "rotations": 1192,
+    "toffoli": 2240,
+    "fixed_T": 744
+   }
+  }
+ },
+ "all_eight_tests_same_count": true,
+ "variant_merged_ancilla_phases": {
+  "counts": {
+   "rotations": 1037,
+   "toffoli": 2240,
+   "fixed_T": 744,
+   "clifford": 11494
+  },
+  "t_total_report": 35899.56766117978,
+  "t_per_rotation": 18.78068241193807,
+  "eps_rot": 0.0031053504702226844,
+  "depth": {
+   "non_clifford_layers": 2654.0,
+   "t_depth_report": 15634.737741658751,
+   "t_depth_toffoli_one_layer": 9877.737741658755,
+   "toffoli_t_depth_used": 4.0
+  },
+  "qubits": 36,
+  "rus_workspace": {
+   "rus_ancilla": 1,
+   "min_idle_workspace_at_a_rotation": 0,
+   "rotations_with_too_few_idle": 80,
+   "of_which_on_workspace_flag": 80,
+   "of_which_on_hadamard_ancilla": 0,
+   "qubits_if_rus_needs_its_own_ancilla": 37
+  },
+  "families": {
+   "init/uniform": {
+    "blocks": 1,
+    "rotations": 12,
+    "toffoli": 0,
+    "fixed_T": 24,
+    "clifford": 180,
+    "t_report": 249.36818894325683
+   },
+   "prep/potential": {
+    "blocks": 8,
+    "rotations": 80,
+    "toffoli": 1184,
+    "fixed_T": 0,
+    "clifford": 2688,
+    "t_report": 9790.454592955046
+   },
+   "prep/kinetic": {
+    "blocks": 8,
+    "rotations": 480,
+    "toffoli": 0,
+    "fixed_T": 384,
+    "clifford": 3456,
+    "t_report": 9398.727557730273
+   },
+   "test/open": {
+    "blocks": 1,
+    "rotations": 0,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 1,
+    "t_report": 0.0
+   },
+   "current/in": {
+    "blocks": 1,
+    "rotations": 4,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 4,
+    "t_report": 75.12272964775228
+   },
+   "evolve/kinetic": {
+    "blocks": 7,
+    "rotations": 336,
+    "toffoli": 168,
+    "fixed_T": 336,
+    "clifford": 3024,
+    "t_report": 7822.309290411192
+   },
+   "evolve/potential": {
+    "blocks": 6,
+    "rotations": 120,
+    "toffoli": 888,
+    "fixed_T": 0,
+    "clifford": 2136,
+    "t_report": 8469.681889432568
+   },
+   "current/out": {
+    "blocks": 1,
+    "rotations": 4,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 4,
+    "t_report": 75.12272964775228
+   },
+   "energy_phase": {
+    "blocks": 1,
+    "rotations": 0,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 0,
+    "t_report": 0.0
+   },
+   "test/close": {
+    "blocks": 1,
+    "rotations": 1,
+    "toffoli": 0,
+    "fixed_T": 0,
+    "clifford": 1,
+    "t_report": 18.78068241193807
+   }
+  },
+  "ratio_to_model": {
+   "rotations": 0.8699664429530202,
+   "toffoli": 1.0,
+   "fixed_T": 1.0,
+   "t_total": 0.9217232039951841
+  }
+ },
+ "depth_exports": {
+  "source": "estimates.common.depth_exports(t_total_report, T-depth, campaign shots, t_gate_s, shot_overhead_s); campaign shots and the two times from estimates/ch02_nu_nucleus.py; every shot at the deepest circuit",
+  "shots": 164424,
+  "model_wall_campaign_s": 6420.4804968348335,
+  "t_depth_report": {
+   "t_depth": 15757.35431464683,
+   "f_star": 2.4717548618039884,
+   "floor_wall_s": 25908.872258314903,
+   "wall_serial_s": 6420.480496834834,
+   "baseline_ok": false
+  },
+  "t_depth_toffoli_one_layer": {
+   "t_depth": 10077.73174989704,
+   "f_star": 3.864790024480883,
+   "floor_wall_s": 16570.20965245071,
+   "baseline_ok": false
+  }
+ }
+}

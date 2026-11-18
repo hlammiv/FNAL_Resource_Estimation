@@ -1,0 +1,87 @@
+{
+ "tolerance": 1e-09,
+ "simulator": "qiskit-aer statevector, double precision, 4 threads, one machine",
+ "reference": "numpy product of exponentials built from the Hamiltonian definition (class Ref)",
+ "complete_circuits": [
+  {
+   "instance": "4 nucleons, 3^1",
+   "qubits": 12,
+   "prep_layers": 8,
+   "steps": 6,
+   "gates": 5310,
+   "rotations": 584,
+   "toffoli": 560,
+   "fixed_T": 248,
+   "current_pair": [
+    0,
+    0
+   ],
+   "component": "re",
+   "max_amplitude_error": 6.7014197776453314e-15,
+   "ancilla_expectation": 0.6719310166732982,
+   "reference_value": 0.6719310166733206,
+   "expectation_error": 2.2315482794965646e-14,
+   "seconds": 0.1
+  },
+  {
+   "instance": "2 nucleons, 3^3",
+   "qubits": 18,
+   "prep_layers": 8,
+   "steps": 6,
+   "gates": 4787,
+   "rotations": 502,
+   "toffoli": 224,
+   "fixed_T": 372,
+   "current_pair": [
+    1,
+    0
+   ],
+   "component": "im",
+   "max_amplitude_error": 4.958256059050261e-15,
+   "ancilla_expectation": 0.06694712005378217,
+   "reference_value": 0.06694712005378634,
+   "expectation_error": 4.163336342344337e-15,
+   "seconds": 0.2
+  },
+  {
+   "instance": "3 nucleons, 3^2",
+   "qubits": 20,
+   "prep_layers": 8,
+   "steps": 6,
+   "gates": 5992,
+   "rotations": 580,
+   "toffoli": 532,
+   "fixed_T": 372,
+   "current_pair": [
+    0,
+    1
+   ],
+   "component": "re",
+   "max_amplitude_error": 1.4370474403750332e-14,
+   "ancilla_expectation": -0.19679295900305427,
+   "reference_value": -0.19679295900306676,
+   "expectation_error": 1.2490009027033011e-14,
+   "seconds": 1.2
+  },
+  {
+   "instance": "4 nucleons, 3^2",
+   "qubits": 24,
+   "prep_layers": 8,
+   "steps": 6,
+   "gates": 10491,
+   "rotations": 888,
+   "toffoli": 1400,
+   "fixed_T": 496,
+   "current_pair": [
+    0,
+    1
+   ],
+   "component": "im",
+   "max_amplitude_error": 4.415701062301351e-15,
+   "ancilla_expectation": 0.14421808698631322,
+   "reference_value": 0.14421808698632235,
+   "expectation_error": 9.131584377541913e-15,
+   "seconds": 49.9
+  }
+ ]
+}

@@ -717,19 +717,19 @@ def _model_2028(a: Assumptions) -> Result:
     oa_rot = oa_synthesized_rotations(theta0, theta1)                     # (2, 2): R_y(theta_0) is the identity
     assert all(r <= g for r, g in zip(oa_rot, oa_generic))
     p_tof, p_rot = int(a.projector_toffolis_2028.lo), int(a.projector_rotations_2028.lo)
-    n_phase = d + 1
+    n_phase = d                                                          # CIRC1118-5: an even-degree-d QSVT applies d projector phases, not d + 1
 
     def circuit(deg: int, end: int) -> dict:
         """One end of the band is one circuit (0: merged shifts + multiplexed O_A; 1: literal). R-TOL:
         its tolerance comes from ITS rotation count, sqrt(eps_syn / N_rot); N_rot does not depend on eps."""
         r = oa_rot[end]
-        n = deg * r + (deg + 1) * p_rot                                    # synthesized rotations per shot
+        n = deg * r + deg * p_rot                                          # synthesized rotations per shot
         e = eps_rot_for(n, eps_syn)
         t = t_per_rotation(e)                                              # full RUS fit, unchanged
         q = toffoli_t(oc_tof[end], conv) + r * t
         ph = toffoli_t(p_tof, conv) + p_rot * t
         return {"n_rot": n, "eps_rot": e, "t_rot": t, "t_query": q, "t_phase": ph,
-                "t_shot": deg * q + (deg + 1) * ph}
+                "t_shot": deg * q + deg * ph}
 
     def per_shot(deg: int) -> tuple[float, float]:
         return tuple(circuit(deg, end)["t_shot"] for end in (0, 1))

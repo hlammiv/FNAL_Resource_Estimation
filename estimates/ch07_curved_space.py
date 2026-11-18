@@ -377,10 +377,10 @@ class Assumptions:
         1e-4, "per-shot overhead ~0.1 ms (register init, final readout, decode), report rule", src="main-overview.tex:175")
     # R9 (r25): T-depth per shot from factory.json, low / high
     t_depth_2028: Tagged = Assumed(
-        (346, 1308), "factory.json ch 7 2028 (K = 4, four steps): low (parity ancilla per string) / high (13 disjoint "
-                     "layers, parallel prep). Kept for the K = 8 one-step circuit (option (c)): it has 36 rotation "
-                     "layers on its busiest qubit (D 20, two pi^2 halves 2 x 2, two QFT pairs 2 x 6) against 57 "
-                     "(4 x 13 + 5); factory.json not rerun", src="factory.json ch 7")
+        (1364, 2253), "CIRC1118-6: greedy schedule of the explicit K = 8 one-step circuit with the first frame "
+                      "shear, at most 50 / 30 rotations in flight (the N_anc allowance); 786 with no limit. Replaces "
+                      "346-1308 from the retired K = 4 factory.json file",
+        src="circuits/ch07_scalar_ds_step/counts.json variants.in_shear_only.t_depth_width_capped_estimate")
     t_depth_layers_per_step_2033: Tagged = Assumed(
         (27, 92), "factory.json ch 7 2033: low 27 / high 92 rotation layers per step (r25; 1.11e6-3.79e6 at the "
                   "retired 1500 steps); naive JW tail blocking 8.47e7 then", src="factory.json ch 7")
@@ -557,8 +557,12 @@ def shot_counts(a: Assumptions, era: str, n_steps: float, extra_rot: int = 0) ->
         nD, nB, nC = n_steps + 1, n_steps, 2 * n_steps
     else:
         nD, nB, nC = n_steps, n_steps + 1, 0
+    # CIRC1118-6: the 2028 shot keeps the frame shear into the first step (one ZZ per site pair,
+    # circuits/ch07_scalar_ds_step variant in_shear_only). The shear after the last step is a
+    # diagonal phase before the field-basis readout and is dropped. 2033 has no frame shear.
+    in_shear = s["pi2_block"] if (not s["hop_block"] and int(a.K_2028.lo) == 8) else 0   # K = 8 circuit only; the retired K = 4 record had none
     rot = dict(diag=nD * s["diag_block"], pi2=nB * s["pi2_block"], hop=nC * s["hop_block"],
-               qft=nB * s["qft_pair_rot"], centering=2 * s["layer_rot"], boost=extra_rot)
+               qft=nB * s["qft_pair_rot"], centering=2 * s["layer_rot"], boost=extra_rot, in_shear=in_shear)
     n_rot = sum(rot.values())
     t_exact = dict(qft_cs=nB * s["qft_pair_cs"] * a.t_per_controlled_s.lo, centering=2 * s["layer_t"])
     eps = eps_rot_for(n_rot, a.eps_syn.lo)
@@ -602,6 +606,10 @@ def _primitives(a: Assumptions, sc: dict, era: str) -> tuple:
         prims.append(Primitive("condensate_boost_rotations", rot["boost"], tr, CircuitStatus.COMPILED,
                                "derived here (U1)", f"exp(i pibar sum_x phi_x): {s['V']} sites x {s['n_q']} single-Z, "
                                "once after the ramp; " + note))
+    if rot.get("in_shear"):
+        prims.append(Primitive("frame_shear_rotations", rot["in_shear"], tr, CircuitStatus.COMPILED,
+                               "derived here (circuits/ch07_scalar_ds_step, CIRC1118-6)",
+                               f"first frame shear: {s['V']} sites x {s['pi2_site_strings']} ZZ, once per shot; " + note))
     if rot["hop"]:
         prims.append(Primitive("wilson_hop_pauli_strings", rot["hop"], tr, CircuitStatus.COMPILED, DERIVED,
                                f"{nC:g} x {s['links']} links x {s['hop_link_strings']} strings "
@@ -1638,7 +1646,7 @@ def twopi_lo(lam: float, g: float, rec=(1000.0,), L: int = 3, b: float = 3.46, P
 
 
 PUBLISHED = {
-    "2028": Published(lq=(222, 242), hard_ops=(9.5e4, 9.5e4),
+    "2028": Published(lq=(222, 242), hard_ops=(9.9e4, 9.9e4),   # CIRC1118-6: first frame shear counted (was 9.5e4)
                       src="app04:2028 box ('222--242', '9.5e4 T-gates', wall '43 s'; was the rounded '220--240' until "
                           "2026-11-09, referee SR-ch7-4); requirements "
                           "summary. Smaller ruling (b) (2026-10-05), option (c): one macro-step at K = 8 "

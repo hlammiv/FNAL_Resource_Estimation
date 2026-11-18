@@ -169,25 +169,25 @@ def test_2028_hard_ops_derived(r28):
     i = r28.intermediates
     assert i["diag_block_rotations"] == 64 * 3 + 192 * 9 == 1920
     assert i["pi2_block_rotations"] == 64 * 3 and i["qft_pair_rotations"] == 64 * 2 * 1 * 3
-    assert i["n_rot_per_shot"] == 1920 + 2 * 192 + 2 * 384 + 128 == 3200   # "3200 rotations" (128 centering)
+    assert i["n_rot_per_shot"] == 1920 + 2 * 192 + 2 * 384 + 128 + 192 == 3392   # 128 centering, 192 first frame shear (CIRC1118-6)
     _is(i["t_exact_per_shot"], 1664)                      # 1536 cS + 128 centering
     _is(i["t_controlled_s"], 1536)
-    _is(i["eps_rot"], math.sqrt(1e-2 / 3200))             # 1.77e-3 -> "1.8e-3"
-    assert round(i["eps_rot"], 4) == 1.8e-3
-    _is(i["t_per_rotation"], 1.15 * math.log2(1 / math.sqrt(1e-2 / 3200)) + 9.2)
-    assert 19.65 <= i["t_per_rotation"] < 19.75           # "19.7 T per rotation"
-    _is(i["t_evolution"], 3200 * i["t_per_rotation"] + 1664)
-    assert 6.45e4 <= i["t_evolution"] < 6.55e4            # 64,753 -> "6.5e4"
+    _is(i["eps_rot"], math.sqrt(1e-2 / 3392))             # 1.72e-3
+    assert round(i["eps_rot"], 4) == 1.7e-3
+    _is(i["t_per_rotation"], 1.15 * math.log2(1 / math.sqrt(1e-2 / 3392)) + 9.2)
+    assert 19.7 <= i["t_per_rotation"] < 19.8            # 19.76 T per rotation
+    _is(i["t_evolution"], 3392 * i["t_per_rotation"] + 1664)
+    assert 6.85e4 <= i["t_evolution"] < 6.95e4            # 68,703 -> "6.9e4" (with the frame shear)
     _is(i["t_per_step"], i["t_evolution"])
     _is(i["t_single_step_alone"], i["t_evolution"])
     _is(i["t_prep"], 3e4)                                 # Stated 2e4 scaled to 192 system qubits
     _is(i["t_prep_per_system_qubit"], 156.25)             # "~150 T per system qubit"
     _is(i["t_per_shot"][0], i["t_evolution"] + 3e4)
-    assert 9.45e4 <= i["t_per_shot"][0] < 9.5e4           # 94,753 -> "9.5e4"   box
-    assert 0.945 <= i["ratio_to_cap"] < 0.955             # "0.95 of the cap"
+    assert 9.85e4 <= i["t_per_shot"][0] < 9.9e4           # 98,703 -> "9.9e4"   box
+    assert 0.985 <= i["ratio_to_cap"] < 0.99              # 0.99 of the cap
     assert i["macro_steps_that_fit"] == 1                 # "At K=8 that is one"
     _is(i["shot_t_at_n_steps"][1], i["t_per_shot"][0])
-    assert 1.45e5 <= i["shot_t_at_n_steps"][2] < 1.5e5    # "a second would bring the shot to 1.5e5 T"
+    assert 1.5e5 <= i["shot_t_at_n_steps"][2] < 1.55e5    # a second step: 1.5e5 T
     with pytest.raises(ValueError, match="exceed"):
         ch7.model(ch7.Assumptions(n_steps_2028=c.Assumed(2, "test")), "2028")
     _is(r28.breakdown_total(), i["t_per_shot"][0])
@@ -214,8 +214,8 @@ def test_2028_shots_and_wall_time(r28):
     _is(i["t_gate_s"], 1e-6)
     _is(i["shot_overhead_s"], 1e-4)
     _is(i["t_shot_s"], i["t_per_shot"][0] * 1e-6 + 1e-4)
-    _is(i["wall_time_s"], 450 * (i["t_per_shot"][0] * 1e-6 + 1e-4))   # 42.68 s
-    assert 42.5 <= i["wall_time_s"] < 43.5                # "43 s"
+    _is(i["wall_time_s"], 450 * (i["t_per_shot"][0] * 1e-6 + 1e-4))   # 44.46 s
+    assert 43.5 <= i["wall_time_s"] < 44.5                # "44 s"
     assert i["wall_first_result_s"] is None               # one tier
     _is(i["wall_campaign_s"], i["wall_time_s"])
     with pytest.raises(ValueError, match="worst-shell"):
@@ -223,12 +223,12 @@ def test_2028_shots_and_wall_time(r28):
 
 
 def test_2028_depth_exports(r28):
-    # R9 (r25): T-depth from factory.json (346 low, 1308 high with parallel prep)
+    # CIRC1118-6: T-depth from the explicit K = 8 circuit's greedy schedule at 50 / 30 rotations in flight
     i = r28.intermediates
-    assert i["t_depth_per_shot"] == (346.0, 1308.0)
-    assert 72 <= i["f_star"][0] < 73 and 273 <= i["f_star"][1] < 275   # K = 4 depth kept for option (c)
-    assert all(i["baseline_ok"])
-    _is(i["floor_wall_s"][1], 450 * 1308 * 1e-5)
+    assert i["t_depth_per_shot"] == (1364.0, 2253.0)
+    assert 43 <= i["f_star"][0] < 44.5 and 72 <= i["f_star"][1] < 73
+    assert all(i["baseline_ok"])                          # still T-count-limited: no printed time moves
+    _is(i["floor_wall_s"][1], 450 * 2253 * 1e-5)
 
 
 def test_2028_envelope_claim_and_rfi_survival(r28):
@@ -236,14 +236,14 @@ def test_2028_envelope_claim_and_rfi_survival(r28):
     # app04:90 "O(10)-step preheating run within the same hard-op envelope": what that needs
     assert i["envelope_steps"] == 10
     _is(i["t_per_step_for_envelope"], 7e3)           # (1e5 - 3e4) / 10 at K = 8
-    assert 9.0 <= i["step_reduction_for_envelope"] < 9.5     # "from 6.5e4 to <~ 7e3 T at K=8, about 9x"
+    assert 9.5 <= i["step_reduction_for_envelope"] < 10.0    # 6.9e4 to <~ 7e3 T at K=8, about 10x
     assert i["shot_t_at_envelope_steps"] > 1e5
     # the 2028 box states no eps_l requirement, only that the RFI 1e-8 suffices (app04:122)
     assert r28.epsilon_l is None
     t = i["t_per_shot"][0]
     _is(i["expected_faults_at_rfi"], t * 1e-8)
-    assert 9.45e-4 <= i["expected_faults_at_rfi"] < 9.55e-4   # "9.5e-4 expected faults"
-    assert 0.99905 <= i["shot_survival_at_rfi"] < 0.99915     # "99.91% shot survival"
+    assert 9.85e-4 <= i["expected_faults_at_rfi"] < 9.95e-4   # "9.9e-4 expected faults"
+    assert 0.99895 <= i["shot_survival_at_rfi"] < 0.99905     # 99.90% shot survival
     _is(i["fault_budget_per_shot"], 0.1)
     _is(i["eps_l_for_fault_budget"], 0.1 / t)
     _is(i["eps_l_for_survival_target"], -math.log(0.9) / t)
@@ -522,15 +522,15 @@ def test_2033_prep_label_is_checked(a):
 # ------------------------------------------------------------- cross-checks
 
 def test_headline_ratio_2033_over_2028(r28, r33):
-    # requirements summary: 2028 9.5e4 T, 2033 1.5e10 T (both headlines include prep)
-    assert 1.55e5 <= r33.hard_ops[0] / r28.hard_ops[0] < 1.6e5
+    # 2028 9.9e4 T (CIRC1118-6, was 9.5e4), 2033 1.5e10 T (both headlines include prep)
+    assert 1.5e5 <= r33.hard_ops[0] / r28.hard_ops[0] < 1.55e5
 
 
 def test_published_is_the_box_as_printed():
     # 2028 option (c), one step at K = 8: 222-242 LQ (exact since 2026-11-09, SR-ch7-4; was the rounded 220-240),
     # 9.5e4 (smaller ruling (b), 2026-10-05; was 160-180, 9.4e4)
     assert ch7.PUBLISHED["2028"].lq == (222, 242)
-    assert ch7.PUBLISHED["2028"].hard_ops == (9.5e4, 9.5e4)
+    assert ch7.PUBLISHED["2028"].hard_ops == (9.9e4, 9.9e4)
     assert ch7.PUBLISHED["2033"].lq == (1050, 1050)
     assert ch7.PUBLISHED["2033"].hard_ops == (1.5e10, 1.5e10)
     assert "codesign" not in ch7.PUBLISHED

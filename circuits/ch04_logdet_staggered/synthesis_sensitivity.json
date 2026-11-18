@@ -1,0 +1,16 @@
+{
+ "variant": "merged",
+ "n_rot": 336,
+ "eps_rot": 0.0007287389259982525,
+ "angle_shift": 0.001457477851996505,
+ "sign_patterns": 24,
+ "seed": 1,
+ "z_exact_angles": 0.23402052061974277,
+ "first_order_rms": 0.004626909056722782,
+ "second_order_mean": -3.948933089121855e-05,
+ "second_order_stderr": 4.911548801831764e-06,
+ "model_eps_syn": 0.00017843630188106908,
+ "model_poly_tolerance": 0.0017843630188106906,
+ "first_order_rms_over_poly_tolerance": 2.5930312430520437,
+ "second_order_mean_over_eps_syn": 0.22130771863641785
+}

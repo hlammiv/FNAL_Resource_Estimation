@@ -67,7 +67,7 @@ HEADLINE = {
     (4, "2028"): H(cell_range=True),                 # box '18', '1.9-3.5e4' (1.898e4-3.544e4)
     (5, "2028"): H(lq="lq_2028_hi"),                 # box '178', first result '9.5e4' / full benchmark '5.9e5' (r25: 16 workspace LQ, R10; each timeslice at its own depth, R4; was 162, '5.9e5')
     (6, "2028"): H(lq="lq_2028"),                    # box '230' (64 + 144 + 22; r25 R10, was 216 = 64 + 144 + 8), '1.3e5' (E20, 1 ramp + 2 evo: 132,174.9)
-    (7, "2028"): H(),                                # box '220-240' (222-242), '9.5e4' (94,753; option (c): one step at K = 8, smaller ruling (b) 2026-10-05; was '160-180', '9.4e4')
+    (7, "2028"): H(cell_digits=1),                   # CIRC1118-6: '9.9e4' (98,703 with the first frame shear) prints two digits so it does not round to 1e5; box '220-240' (222-242), was '9.5e4' (94,753; option (c): one step at K = 8, smaller ruling (b) 2026-10-05; was '160-180', '9.4e4')
     (8, "2028"): H(t_rel=r"\gtrsim"),                # box '174', '>~2.8e5' (2.756e5 at 20 steps, ruling 2026-10-11; preparation unpriced, assumed 3.3x cut; referee B3 2026-10-05)
     (9, "2028"): H(),                                # box '250' (r25 R10: 42 ancilla, was 240), '2.7-2.9e5'; the cell prints the band (268,995-288,535)
     (10, "2028"): H(keep_zeros=True, t_rel=r"\gtrsim"),  # box '~180' (176), '>~4.0e5' (r19 E20+E21: 399,956.8; one Trotter step, a lower bound on the ramp, referee G2)
@@ -268,7 +268,7 @@ def test_every_cell_is_specified():
     assert set(HEADLINE) == {(ch, era) for ch in ROW_KEY for era in ERAS}
     assert not NO_T
     # the exceptions to one-digit rounding are exactly the two accepted on card RF3-ch1-tbl (2026-11-12)
-    assert {k for k, h in HEADLINE.items() if h.cell_range or h.cell_digits} == {(4, "2028"), (7, "2033")}
+    assert {k for k, h in HEADLINE.items() if h.cell_range or h.cell_digits} == {(4, "2028"), (7, "2028"), (7, "2033")}
     assert {k[:2] for k in XFAIL} <= set(HEADLINE)
 
 

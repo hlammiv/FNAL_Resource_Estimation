@@ -445,11 +445,24 @@ class Assumptions:
 # Route (i) cost model, shared by 2028 and codesign
 # --------------------------------------------------------------------------- #
 
-def _route_i(a: Assumptions, n_orb: float, n_trotter: float, gain: float = 1.0) -> dict:
+# RV1118-2b (2026-11-18): converged-basis 12C counts two-body Pauli strings as Ch. 3 does, from Ch. 3's
+# structured counts in the e_max = 8 (165 orbitals) and e_max = 10 (286 orbitals) oscillator spaces,
+# interpolated as a power of N_orb. N_orb^4/2 was four to five times too low there.
+CH03_STRINGS = ((165, 1944122242), (286, 14842974100))   # applications/ch03_mu2e_0nubb/pauli/strings_emax{8,10}.json 'gamma'
+
+
+def converged_strings(n_orb: float) -> float:
+    (n1, g1), (n2, g2) = CH03_STRINGS
+    p = math.log(g2 / g1) / math.log(n2 / n1)
+    return g1 * (n_orb / n1) ** p
+
+
+def _route_i(a: Assumptions, n_orb: float, n_trotter: float, gain: float = 1.0, strings: float | None = None) -> dict:
     """One route-(i) circuit under R-TOL: N_orb^4/2 Pauli strings per step (divided by a per-step
     gain for the pionless variant), N_rot = strings x N_Trotter rotations per shot, eps_rot from
     that N_rot, T per rotation from the chapter's RUS fit. Returns every quantity by name."""
-    strings = a.pauli_fraction.lo * n_orb ** 4 / gain
+    if strings is None:
+        strings = a.pauli_fraction.lo * n_orb ** 4 / gain
     n_rot = strings * n_trotter
     eps = eps_rot_for(n_rot, a.eps_syn.lo)
     t_rot = t_per_rotation(eps, SYNTH_MODEL)
@@ -1230,12 +1243,13 @@ def _model_codesign(a: Assumptions) -> Result:
     n_lo, n_hi = a.n_orb_conv.lo, a.n_orb_conv.hi
     nt = a.n_trotter_codesign.lo
     tau_max = _tau_max_from_sigma(a.sigma_dune_MeV.lo)       # 100 GeV^-1, from sigma
-    c_lo, c_hi = _route_i(a, n_lo, nt), _route_i(a, n_hi, nt)   # each end its own eps (R-TOL)
+    sc_lo, sc_hi = converged_strings(n_lo), converged_strings(n_hi)   # RV1118-2b: Ch. 3 string count
+    c_lo, c_hi = _route_i(a, n_lo, nt, strings=sc_lo), _route_i(a, n_hi, nt, strings=sc_hi)   # each end its own eps (R-TOL)
     s_lo, ts_lo, t_lo = c_lo["strings"], c_lo["t_step"], c_lo["t_shot"]   # 2.53e8, 8.47e9, 1.694e12
     s_hi, ts_hi, t_hi = c_hi["strings"], c_hi["t_step"], c_hi["t_shot"]   # 8e8, 2.75e10, 5.507e12
     # the 2/sigma window doubles N_Trotter: a different circuit, so its own eps
     w = a.window_trunc_factor.lo
-    t2_lo, t2_hi = _route_i(a, n_lo, nt * w)["t_shot"], _route_i(a, n_hi, nt * w)["t_shot"]   # 3.45e12, 1.12e13
+    t2_lo, t2_hi = _route_i(a, n_lo, nt * w, strings=sc_lo)["t_shot"], _route_i(a, n_hi, nt * w, strings=sc_hi)["t_shot"]   # 3.45e12, 1.12e13
     eps_l_cd = (a.fault_budget.lo / t_hi, a.fault_budget.lo / t_lo)   # 1.82e-14, 5.90e-14 -> '2-6e-14'
     cx = _route_i(a, a.n_orb_explore.lo, nt)                 # 1.6e7 rotations, eps 2.5e-5, 26.78 T
     s_x, ts_x, t_x = cx["strings"], cx["t_step"], cx["t_shot"]   # 8e4, 2.14e6, 4.28e8
@@ -1276,7 +1290,7 @@ def _model_codesign(a: Assumptions) -> Result:
                a.n_comp.lo * a.configs_momentum_transfers.hi * a.n_nuclei.lo)
     rot = Primitive("rot_synth", c_lo["n_rot"], c_lo["t_rot"], CircuitStatus.SCALING,
                     "arxiv_2312_05344;" + SYNTHESIS_SRC,
-                    f"N_orb={n_lo}: N_orb^4/2 strings x N_Trotter={nt}; R-TOL eps_rot={c_lo['eps_rot']:.4g}, "
+                    f"N_orb={n_lo}: Ch. 3 two-body Pauli strings ({sc_lo:.3g}) x N_Trotter={nt}; R-TOL eps_rot={c_lo['eps_rot']:.4g}, "
                     f"RUS fit {c_lo['t_rot']:.3f} T; lo end of 150-200")
     inter = {
         "rotations_per_shot": (c_lo["n_rot"], c_hi["n_rot"]),

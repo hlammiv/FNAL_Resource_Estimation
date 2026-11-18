@@ -9,7 +9,7 @@ Since ruling 'SHIFT + 1%' (2026-09-28) the QET target is the paper's shifted one
 is the one that guarantees 1% on log det W: d = 84, 2.0e4-4.1e4 T per shot (at the fixed 1e-4), 1.4e6 shots.
 Since ruling R-TOL (2026-09-29) the synthesis error is 1e-2 per shot and each end of the band sets
 eps_rot = sqrt(1e-2/N_rot) from its own rotations. R-TOL does not count Clifford+T-exact rotations; at
-s = 2(m0^2+2K^2) the O_A angle theta_0 = 0, so both ends hold 338 rotations: 1.8e4-3.4e4 T per shot.
+s = 2(m0^2+2K^2) the O_A angle theta_0 = 0, so both ends hold 336 rotations: 1.8e4-3.4e4 T per shot.
 Since ruling SYN-BUDGET (2026-09-29) EPS_SYN = 1e-2 stays the report-wide default, but the 2028 circuit
 sets eps_syn = 0.1 x the polynomial tolerance 1.784e-3 = 1.784e-4 per shot: eps_rot = 7.3e-4, 21.2 T per
 rotation, 1.9e4-3.5e4 T per shot; synthesis adds 0.1% of log det W to the 2% combined worst case.
@@ -216,11 +216,11 @@ def test_2028_register_18_and_34():
 
 # R-TOL (H. Lamm, 2026-09-29): each end of the band is its own circuit and takes eps_rot = sqrt(1e-2/N_rot)
 # and O_A holds 2 synthesized rotations at both ends: R_y(theta_0 = 0) is the identity (see test below)
-N_LO, N_HI = 84 * 2 + 85 * 2, 84 * 2 + 85 * 2                          # 338, 338
+N_LO, N_HI = 84 * 2 + 84 * 2, 84 * 2 + 84 * 2                          # 336, 336 (CIRC1118-5: d phases)
 TOL28 = 0.01 * 150.5528171451149 / (256 * math.log(27))                  # 1.784e-3, polynomial tolerance
 EPS_SYN28 = 0.1 * TOL28                                                  # 1.784e-4 (SYN-BUDGET)
-E_LO, E_HI = c.eps_rot_for(N_LO, EPS_SYN28), c.eps_rot_for(N_HI, EPS_SYN28)   # 7.266e-4 both
-T_LO, T_HI = c.t_per_rotation(E_LO), c.t_per_rotation(E_HI)             # 21.191 both (full RUS fit)
+E_LO, E_HI = c.eps_rot_for(N_LO, EPS_SYN28), c.eps_rot_for(N_HI, EPS_SYN28)   # 7.287e-4 both
+T_LO, T_HI = c.t_per_rotation(E_LO), c.t_per_rotation(E_HI)             # 21.186 both (full RUS fit)
 
 
 def test_2028_oa_theta0_is_identity():
@@ -249,12 +249,12 @@ def test_2028_rtol_tolerance_per_circuit():
     assert not hasattr(A, "eps_syn_2028")
     assert near(I28["eps_syn"], EPS_SYN28, 1e-12) and near(I28["eps_syn"], 0.1 * I28["poly_tolerance"], 1e-12)
     assert near(I28["eps_syn"], 1.784e-4, 3e-4) and near(I28["eps_syn"], 1.8e-4, 0.01)
-    assert I28["rotations_per_shot"] == (N_LO, N_HI) == (338, 338)
+    assert I28["rotations_per_shot"] == (N_LO, N_HI) == (336, 336)
     assert all(near(x, y, 1e-12) for x, y in zip(I28["eps_rot"], (E_LO, E_HI)))
-    assert near(E_LO, 7.266e-4, 1e-3) and E_HI == E_LO
+    assert near(E_LO, 7.287e-4, 1e-3) and E_HI == E_LO
     assert near(E_LO, 7.3e-4, 0.005)
     assert all(near(x, y, 1e-12) for x, y in zip(I28["t_per_rotation"], (T_LO, T_HI)))
-    assert near(T_LO, 21.191, 1e-4) and T_HI == T_LO
+    assert near(T_LO, 21.186, 1e-4) and T_HI == T_LO
     assert round(T_LO, 1) == 21.2
     assert near(T_LO, 1.15 * math.log2(1 / E_LO) + 9.2, 1e-12)          # the chapter keeps the full RUS fit
     # no fixed tolerance is left in the 2028 model
@@ -271,8 +271,8 @@ def test_2028_per_query_t():
     lo, hi = I28["t_per_query"]
     assert near(lo, 84 + 2 * T_LO, 1e-12) and round(lo) == 126
     assert near(hi, 280 + 2 * T_HI, 1e-12) and round(hi) == 322
-    # app12:125: '85 controlled projector phases at 98 T: 8 Toffolis + 2 synthesized rotations'
-    assert I28["projector_phases"] == 85
+    # CIRC1118-5: a degree-84 QSVT applies 84 controlled projector phases (was 85), 8 Toffolis + 2 rotations each
+    assert I28["projector_phases"] == 84
     plo, phi = I28["t_per_projector_phase"]
     assert near(plo, 56 + 2 * T_LO, 1e-12) and near(phi, 56 + 2 * T_HI, 1e-12)
     assert round(plo) == round(phi) == 98
@@ -280,12 +280,12 @@ def test_2028_per_query_t():
 
 def test_2028_per_shot_range():
     # app12:27,123,127: '1.9--3.5e4 T-gates', '2.8--5.3x margin' against the 1e5 cap (SYN-BUDGET)
-    lo = 84 * (84 + 2 * T_LO) + 85 * (56 + 2 * T_LO)                 # 18978.4
-    hi = 84 * (280 + 2 * T_HI) + 85 * (56 + 2 * T_HI)                # 35442.4
+    lo = 84 * (84 + 2 * T_LO) + 84 * (56 + 2 * T_LO)                 # 18878.4
+    hi = 84 * (280 + 2 * T_HI) + 84 * (56 + 2 * T_HI)                # 35342.4
     assert I28["be_queries"] == 84 == I28["d"]
     assert near(R28.hard_ops[0], lo, 1e-12) and near(R28.hard_ops[1], hi, 1e-12)
-    assert near(R28.hard_ops[0], 18978.4, 1e-5) and near(R28.hard_ops[1], 35442.4, 1e-5)
-    assert near(R28.hard_ops[0], 1.9e4, 0.002) and near(R28.hard_ops[1], 3.5e4, 0.013)
+    assert near(R28.hard_ops[0], 18878.4, 1e-5) and near(R28.hard_ops[1], 35342.4, 1e-5)
+    assert near(R28.hard_ops[0], 1.9e4, 0.01) and near(R28.hard_ops[1], 3.5e4, 0.013)
     assert I28["t_per_shot"] == R28.hard_ops
     assert round(I28["margin_vs_cap"][0], 1) == 2.8 and round(I28["margin_vs_cap"][1], 1) == 5.3
     assert R28.hard_ops[1] < A.t_cap_2028.lo
@@ -293,7 +293,7 @@ def test_2028_per_shot_range():
     assert near(R28.breakdown_total(), R28.hard_ops[1], 1e-12)
     assert [p.name for p in R28.breakdown] == ["O_c_controlled_shift_toffolis", "O_A_entry_rotations",
                                                "projector_phase_toffolis", "projector_phase_rotations"]
-    assert [p.count for p in R28.breakdown] == [84 * 40, 84 * 2, 85 * 8, 85 * 2]
+    assert [p.count for p in R28.breakdown] == [84 * 40, 84 * 2, 84 * 8, 84 * 2]
     assert [p.status for p in R28.breakdown] == [c.CircuitStatus.COMPILED, c.CircuitStatus.COMPILED,
                                                  c.CircuitStatus.SCALING, c.CircuitStatus.SCALING]
     assert all("ASSUMED" in p.note or "does not draw" in p.note or "Not drawn" in p.note for p in R28.breakdown)
@@ -305,10 +305,10 @@ def test_2028_rotations_and_synthesis_error():
     # at ~2%.' app12:118-119: 'synthesis error: <= 1.8e-4 on the normalized trace, 0.1x the polynomial
     # tolerance (0.15 absolute, 0.1% of log det W)'; 'combined worst case ~2% (1%+1%+0.1%)'.
     # Report convention (T4; common.eps_per_rotation, "incoherent"): N eps^2.
-    assert I28["rotations_per_shot"] == (84 * 2 + 85 * 2,) * 2 == (338, 338)
+    assert I28["rotations_per_shot"] == (84 * 2 + 84 * 2,) * 2 == (336, 336)
     lo, hi = I28["synthesis_error_randomized"]
     assert near(lo, EPS_SYN28, 1e-12) and near(hi, EPS_SYN28, 1e-12)
-    assert near(c.eps_per_rotation(hi, 338, "incoherent"), E_HI, 1e-12)
+    assert near(c.eps_per_rotation(hi, 336, "incoherent"), E_HI, 1e-12)
     assert near(I28["synthesis_error_over_poly_tolerance"], 0.1, 1e-12)
     assert lo < I28["poly_tolerance"]                                # set below the polynomial tolerance
     # same units as the polynomial bound: x V log(s/lambda_min) on log det W
@@ -319,7 +319,7 @@ def test_2028_rotations_and_synthesis_error():
     assert near(I28["combined_worst_case_with_synthesis_rel_error"], 0.021, 1e-12)
     assert round(100 * I28["combined_worst_case_with_synthesis_rel_error"]) == 2      # printed '~2%'
     # coherent errors would add to N eps = 0.25: randomized synthesis is still the model
-    assert near(I28["synthesis_error_if_coherent"][1], 338 * E_HI, 1e-12)
+    assert near(I28["synthesis_error_if_coherent"][1], 336 * E_HI, 1e-12)
     assert I28["synthesis_error_if_coherent"][0] > I28["poly_tolerance"]
     assert "synthesis_error_quadrature" not in I28                   # one convention only
 
@@ -360,16 +360,16 @@ def test_2028_accuracy_statement():
     assert I28["lp_error_at_d"] <= I28["poly_tolerance"] < I28["lp_error_at_d_minus_2"]
     assert I28["d_is_for_this_instance"]
     # app12:100,136: what the shift saves. 'Without the shift the same tolerance needs d=314' and
-    # '0.72--1.3e5 T per shot' (SYN-BUDGET: its own circuit, 1258 rotations at both ends, same eps_syn);
+    # '0.72--1.3e5 T per shot' (SYN-BUDGET: its own circuit, 1256 rotations at both ends (84 phases rule, CIRC1118-5), same eps_syn);
     # 'at a tolerance of 1e-2 the degrees are 48 with the shift and 112 without'
     assert I28["d_unshifted"] == 314
-    assert I28["rotations_per_shot_unshifted"] == (314 * 2 + 315 * 2,) * 2 == (1258, 1258)
-    assert all(near(x, c.eps_rot_for(1258, EPS_SYN28), 1e-12) for x in I28["eps_rot_unshifted"])
+    assert I28["rotations_per_shot_unshifted"] == (314 * 2 + 314 * 2,) * 2 == (1256, 1256)
+    assert all(near(x, c.eps_rot_for(1256, EPS_SYN28), 1e-12) for x in I28["eps_rot_unshifted"])
     lo, hi = I28["t_per_shot_unshifted"]
-    tl = th = c.t_per_rotation(c.eps_rot_for(1258, EPS_SYN28))
-    assert near(lo, 314 * (84 + 2 * tl) + 315 * (56 + 2 * tl), 1e-12)
-    assert near(hi, 314 * (280 + 2 * th) + 315 * (56 + 2 * th), 1e-12)
-    assert near(lo, 0.72e5, 0.001) and near(hi, 1.3e5, 0.03)            # 7.20e4, 1.336e5
+    tl = th = c.t_per_rotation(c.eps_rot_for(1256, EPS_SYN28))
+    assert near(lo, 314 * (84 + 2 * tl) + 314 * (56 + 2 * tl), 1e-12)
+    assert near(hi, 314 * (280 + 2 * th) + 314 * (56 + 2 * th), 1e-12)
+    assert near(lo, 0.72e5, 0.003) and near(hi, 1.3e5, 0.03)            # 7.19e4, 1.335e5
     assert hi > A.t_cap_2028.lo > R28.hard_ops[1]                    # the shift is what brings it inside
     assert I28["d_shifted_at_tolerance_1e-2"] == 48 and I28["d_unshifted_at_tolerance_1e-2"] == 112
     # LP degrees carried for the record
@@ -435,16 +435,16 @@ def test_2028_shots_wall_time_and_eps_l():
     assert I28["shot_overhead_s"] == 1e-4                            # report rule: ~0.1 ms per shot
     for w, t in zip(I28["wall_per_shot_s"], R28.hard_ops):
         assert near(w, t * 1e-6 + 1e-4, 1e-12)                       # T x 1 us + t0, one machine
-    assert round(1e3 * I28["wall_per_shot_s"][0]) == 19 and round(1e3 * I28["wall_per_shot_s"][1]) == 36
+    assert round(1e3 * I28["wall_per_shot_s"][0]) == 19 and round(1e3 * I28["wall_per_shot_s"][1]) == 35
     lo, hi = I28["wall_total_h"]
-    assert near(lo, 1.6645, 1e-3) and round(lo, 1) == 1.7            # printed '1.7' (1.6557 without t0)
-    assert near(hi, 3.1008, 1e-3) and round(hi, 1) == 3.1            # printed '3.1' (3.0921 without t0)
+    assert near(lo, 1.6557, 1e-3) and round(lo, 1) == 1.7            # 84 phases (CIRC1118-5); was 1.6645
+    assert near(hi, 3.0921, 1e-3) and round(hi, 1) == 3.1            # 84 phases (CIRC1118-5); was 3.1008
     for w, ws in zip(I28["wall_total_s"], I28["wall_per_shot_s"]):
         assert near(w, I28["shots"] * ws, 1e-12)                     # serial: shots x per-shot time
     assert R28.wall_time_s == I28["wall_total_corrected_s"]          # R10: the box quotes the depth-bound wall
-    assert near(I28["t_total"][0], 6.0e9, 0.01) and near(I28["t_total"][1], 1.1e10, 0.013)
+    assert near(I28["t_total"][0], 5.9e9, 0.01) and near(I28["t_total"][1], 1.1e10, 0.013)
     assert near(R28.epsilon_l[0], 0.1 / R28.hard_ops[1], 1e-12)      # the literal, 3.5e4-T end binds
-    assert near(R28.epsilon_l[0], 2.8e-6, 0.008)                     # 2.821e-6 printed '<~ 2.8e-6'
+    assert near(R28.epsilon_l[0], 2.8e-6, 0.011)                     # 2.829e-6 printed '<~ 2.8e-6' (84 phases)
     assert R28.epsilon_l[0] > A.eps_l_2028.lo                        # looser than the RFI's 1e-8
 
 
@@ -491,11 +491,11 @@ def test_2028_model_moves_under_perturbation():
     # moving the mass moves lambda_min/s, and the carried LP degree is flagged as stale
     r = m.model(replace(A, m0_2028=c.Stated(0.2, "x")), "2028")
     assert not r.intermediates["d_is_for_this_instance"]
-    # R-TOL: a lower degree is a smaller circuit, so its own tolerance loosens (N_rot = 36 x 2 + 37 x 2 = 146)
+    # R-TOL: a lower degree is a smaller circuit, so its own tolerance loosens (N_rot = 36 x 2 + 36 x 2 = 144)
     r = m.model(replace(A, d_log_2028=c.Assumed(36, "x")), "2028")
-    t = c.t_per_rotation(c.eps_rot_for(36 * 2 + 37 * 2, EPS_SYN28))
-    assert r.intermediates["rotations_per_shot"][1] == 146
-    assert near(r.hard_ops[1], 36 * (280 + 2 * t) + 37 * (56 + 2 * t), 1e-12)
+    t = c.t_per_rotation(c.eps_rot_for(36 * 2 + 36 * 2, EPS_SYN28))
+    assert r.intermediates["rotations_per_shot"][1] == 144
+    assert near(r.hard_ops[1], 36 * (280 + 2 * t) + 36 * (56 + 2 * t), 1e-12)
     assert t < T_HI
     # and a looser budget fraction loosens every tolerance (4x the budget doubles eps_rot)
     r = m.model(replace(A, synth_to_poly_2028=c.Stated(0.4, "x")), "2028")
@@ -511,25 +511,26 @@ def test_2028_depth_and_factories():
     tr = I28["t_per_rotation"][0]
     assert near(I28["t_depth_per_query"], 2 * tr, 1e-12) and round(I28["t_depth_per_query"], 1) == 42.4
     assert near(I28["t_depth_per_phase"], 3 + 2 * tr, 1e-12) and round(I28["t_depth_per_phase"], 1) == 45.4
-    d = 84 * 2 * tr + 85 * (3 + 2 * tr)
-    assert I28["t_depth_per_shot"] == (d, d) and near(d, 7.42e3, 0.001)
+    d = 84 * 2 * tr + 84 * (3 + 2 * tr)
+    assert I28["t_depth_per_shot"] == (d, d) and near(d, 7.37e3, 0.001)
     f = I28["f_star"]
     assert round(f[0], 1) == 2.6 and round(f[1], 1) == 4.8 and I28["baseline_ok"] == (False, False)
     w = I28["wall_per_shot_corrected_s"]
     assert all(near(x, d * 1e-5 + 1e-4, 1e-12) for x in w) and round(1e3 * w[0]) == 74
     h = I28["wall_total_corrected_h"]
-    assert round(h[0], 1) == round(h[1], 1) == 6.5
+    assert round(h[0], 1) == round(h[1], 1) == 6.4
     assert I28["wall_campaign_s"] == I28["wall_total_corrected_s"] == R28.wall_time_s
     assert I28["wall_first_result_s"] is None
     assert max(I28["factories_for_1yr"]) < 1                        # one factory suffices for a year
     # E29 verifier: on one factory a shot is N_T x 10 us, 0.19-0.35 s, and the demo 17-31 h
     one = [t * 1e-5 * I28["shots"] / 3600 for t in R28.hard_ops]
-    assert round(one[0]) == 17 and round(one[1]) == 31
+    assert round(one[0]) == 16 and round(one[1]) == 31
     tex = (Path(__file__).resolve().parents[3] / "applications" / "app12_hybrid_lqcd.tex").read_text()
     # style pass 2026-10-08: the T-depth arithmetic and the box's 'single-config demo' wording went (prose anchors retired)
     # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "A shot can thus feed at most $2.6$--$4.8$ factories"
-    for s_ in ("A shot thus cannot feed the ten factories behind the report's $1\\,\\mu$s per T gate",
-               "$6.5$ h with three to five factories and $17$--$31$ h with one"):   # re-pinned 2026-11-12 (batch 6): sentence reworded, numbers unchanged
+    # retired 2026-11-18: 'A shot thus cannot feed the ten factories ...' cut by RV1118-4c (depth-bound pointer instead)
+    for s_ in ("a shot is depth-bound at $74\\,$ms",
+               "$6.4$ h with three to five factories and $16$--$31$ h with one"):   # re-pinned 2026-11-12 (batch 6): sentence reworded, numbers unchanged
         assert s_ in tex, s_
 
 
@@ -759,7 +760,7 @@ def test_e27_no_multiple_machines_in_tex_or_model():
     assert all(low[max(0, i.start() - 3):i.start()] == "lq " for i in re.finditer(r"\bmachines\b", low))
     assert low.count("machines") <= 1
     assert "The campaign runs serially on one machine and is depth-bound" in TEX   # re-pinned 2026-11-12 (batch 6): reworded, F* definition appended
-    assert "\\textbf{Wall time} & $74\\,$ms per shot; $6.5$ h for one configuration \\\\" in TEX                  # boxes carry final numbers only (E29)  # MD1117-20 2026-11-17: was '$6.5$ h on one machine for ...'
+    assert "\\textbf{Wall time} & $74\\,$ms per shot; $6.4$ h for one configuration \\\\" in TEX                  # boxes carry final numbers only (E29)  # MD1117-20 2026-11-17: was '$6.5$ h on one machine for ...'
     # style pass 2026-10-08: 'horizon' sentence went (prose anchor retired)
     s = m.Assumptions()
     for name in ("n_machines", "parallel_machines", "machines_for_horizon", "n_devices"):
