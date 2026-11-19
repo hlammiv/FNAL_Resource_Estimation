@@ -23,7 +23,7 @@ INPUTS AND SOURCES
   L_2028=4, dim=2, a_t=0.1 fm/c, a_s=0.2 fm            app03:111 (box)
   Tc = 1.12 sqrt(sigma), sqrt(sigma)=440 MeV, T=1.5Tc     app03:112; arxiv_0803_2128
   2T: |G|=24, 5 qubits/link                              GROUPS["2T"].link_qubits (arxiv_2208_12309)
-  2T magnetic term per link-step (H_KS, d=2)             groups.magnetic_per_link: 6 U_mul + 3 U_inv + U_Tr/2
+  2T magnetic term per link-step (H_KS, d=2)             groups.magnetic_per_link: 3 U_mul + 3 U_inv + U_Tr/2
                                                           = 1.124e3 T at eps=7.63e-4 (arxiv_2208_12309 tab:tgatecost)
   2T electric term per link-step                         2 x U_FFT (arxiv_2408_00075, Murairi et al.) = 1.969e3 T
   6 second-order Trotter steps at dt = a_t                app03:74,122
@@ -35,7 +35,7 @@ INPUTS AND SOURCES
                                                           result's 94.9 s, 115 s of the 2033 campaign at tau = 1/k
   L_2033=2 (was 3), a_s=0.2 fm, a_t=0.1 fm/c             app03:135; staggered ruling 2026-11-13 (even side)
   Sigma(72x3): |G|=216, 9 qubits/link                    GROUPS["S72x3"].link_qubits (arxiv_2511_17437 :150)
-  Sigma(72x3) magnetic term per link-step (H_KS, d=3)    groups.magnetic_per_link: 12 U_mul + 6 U_inv + U_Tr
+  Sigma(72x3) magnetic term per link-step (H_KS, d=3)    groups.magnetic_per_link: 6 U_mul + 6 U_inv + U_Tr
                                                           = 1.888e4 T at eps=8.68e-6 (arxiv_2511_17437 tab:tgatecost)
   Sigma(72x3) electric term per link-step                2 x U_FFT LOWER BOUND (532 + 448 rot, arxiv_2511_17437 :905)
                                                           + U_phi (256 rot) = 3.39e4 T at the full fit; no FFT exists, a floor
@@ -747,15 +747,17 @@ def evolution_2033(a: Assumptions, steps: int) -> dict:
 # T-depth schedules from factory.json (Ch. 5; scratchpad factories/ch05_depth_v2.py). A Toffoli is one T layer (its
 # seven pi/8 rotations commute); a synthesized rotation is t_rot layers. Toffoli and rotation counts come from groups.py;
 # the numbers below are the schedule (tree depth, packing width, color classes / hop rounds) of that analysis.
-SCHED_2028 = dict(classes_lo=2, classes_hi=4, mul_tree=8, tof_width=3, inv_layers=2, tr_rot_layers=3,
+# mul_tree: factory.json's 8 sequential U_mul was a tree over 12 U_mul per plaquette (the printed table, d = 2 and 3);
+# at the circuits' 6 per plaquette (card CIRC1118-1) the same tree is 4 sequential. DERIVED HERE.
+SCHED_2028 = dict(classes_lo=2, classes_hi=4, mul_tree=4, tof_width=3, inv_layers=2, tr_rot_layers=3,
                   fft_tof_width=2, fft_rot_width=5)
-SCHED_2033 = dict(classes_lo=5, classes_hi=11, hop_rounds_lo=7, hop_rounds_hi=17, mul_tree=8, tof_width=7,
+SCHED_2033 = dict(classes_lo=5, classes_hi=11, hop_rounds_lo=7, hop_rounds_hi=17, mul_tree=4, tof_width=7,
                   inv_width=4, tr_rot_layers_lo=2, fft_tof_width=3, rot_width=9, n_fields_parallel=3)
 
 
 def step_depth_2028(a: Assumptions, t_rot: float) -> tuple[float, float]:
     """T-depth of one 2028 Trotter step, (low, high), with `workspace_2028` qubits for the U_FFT ancillas.
-    low: plaquettes in 2 classes with tree products (12 -> 8 sequential U_mul) and packed Toffolis/rotations;
+    low: plaquettes in 2 classes with tree products (6 -> 4 sequential U_mul; 12 -> 8 before card CIRC1118-1) and packed Toffolis/rotations;
     high: 4 classes of serial plaquette chains. Both run ceil(64 / (w / 2)) rounds of U_FFT (2 ancilla each).
     At w = 64 this is factory.json's low 628 / 'mid' 3882 per step. factory.json's printed-LQ case (w = 2, one
     primitive at a time, F* = 1.5) is its own schedule and is not reproduced here."""
@@ -767,7 +769,7 @@ def step_depth_2028(a: Assumptions, t_rot: float) -> tuple[float, float]:
     S = SCHED_2028
     plaq_lo = S["mul_tree"] * mul.toffoli / S["tof_width"] + S["inv_layers"] * inv.toffoli + S["tr_rot_layers"] * t_rot
     fft_lo = fft.toffoli / S["fft_tof_width"] + fft.n_rot / S["fft_rot_width"] * t_rot
-    plaq_hi = 12 * mul.toffoli + 6 * inv.toffoli + tr.n_rot * t_rot
+    plaq_hi = 6 * mul.toffoli + 6 * inv.toffoli + tr.n_rot * t_rot   # one plaquette chain: 6 U_mul, 6 U_inv, 1 U_Tr
     fft_hi = fft.toffoli + fft.n_rot * t_rot
     return (S["classes_lo"] * plaq_lo + rounds * fft_lo, S["classes_hi"] * plaq_hi + rounds * fft_hi)
 
@@ -781,7 +783,8 @@ def step_depth_2033(a: Assumptions, t_rot: float) -> tuple[float, float]:
     gk = a.group_2033.value
     g = GROUPS[gk].primitives
     mul, inv, tr, fft, phi = (g[k] for k in ("U_mul", "U_inv", "U_Tr", "U_FFT", "U_phi"))
-    # s648: the factory.json schedule was built for H_KS (12 U_mul, 6 U_inv, 1 U_Tr, 2 U_F, 1 U_phi per link at d = 3);
+    # s648: the factory.json schedule was built for H_KS (12 U_mul, 6 U_inv, 1 U_Tr, 2 U_F, 1 U_phi per link at d = 3;
+    # 6 U_mul since card CIRC1118-1, mul_tree and the serial chain halved);
     # at H_I each primitive's layers are scaled by its multiplicity ratio (DERIVED HERE, not a factory.json schedule)
     ham, d3 = ham_for(a, gk), int(a.dim_2033.lo)
     m, mk = PRIMCOST[ham], PRIMCOST["KS"]
@@ -802,7 +805,7 @@ def step_depth_2033(a: Assumptions, t_rot: float) -> tuple[float, float]:
     hop_lo = ((sq["toffoli"] + fl["toffoli"]) / nf + (2 * rot_per_frame / nf) * t_rot
               + n_diag / (3 * nf) * (2 + 2 * t_rot) + (5 + t_rot))
     mass_lo = 4 + t_rot
-    plaq_hi = r_mul * 12 * mul.toffoli + r_inv * 6 * inv.toffoli + r_tr * (tr.toffoli + tr.n_rot * t_rot)
+    plaq_hi = r_mul * 6 * mul.toffoli + r_inv * 6 * inv.toffoli + r_tr * (tr.toffoli + tr.n_rot * t_rot)
     elec_hi = n_f * (fft.toffoli + fft.n_rot * t_rot) + n_ph * (phi.toffoli + phi.n_rot * t_rot)
     hop_hi = (sq["toffoli"] + fl["toffoli"] + ph["toffoli"] + 4 * rot_per_frame * t_rot
               + n_diag / nf * (2 + 4 * t_rot) + ph["n_rot"] * t_rot)
@@ -1841,12 +1844,12 @@ def model(a: Assumptions, era: str) -> Result:
 
 
 PUBLISHED = {
-    "2028": Published(lq=(178, 178), hard_ops=(9.5e4, 5.9e5),
+    "2028": Published(lq=(178, 178), hard_ops=(8.0e4, 5.1e5),   # CIRC1118-1: was (9.5e4, 5.9e5)
                       src="app03:2028 box (r25 apply, 2026-10-02): '178 = 32 links x 5 + 1-2 Hadamard + 16 workspace' (R10); "
                           "per-shot T 'first result 9.5e4 (one step, inside 1e5); full benchmark 5.9e5 (six steps)', each "
                           "timeslice at its own depth (R4). Exact 9.473e4 / 5.939e5; tol 0.05 covers the rounding and 177-178.",
                       rel_tol=0.05),
-    "2033": Published(lq=(436, 536), hard_ops=(2.5e9, 9.4e9),
+    "2033": Published(lq=(436, 536), hard_ops=(2.3e9, 8.4e9),   # CIRC1118-1: was (2.5e9, 9.4e9)
                       src="app03:2033 box (staggered ruling 2026-11-13: periodic staggered fields need an even side, "
                           "4^3 is 2788-2888 LQ, so the box drops to 2^3: '~490 (436-536)', '2.5e9-9.4e9', exact "
                           "(2.547e9, 9.407e9); the 3^3 box below was (1234, 1334), (9.1e9, 3.2e10). "
@@ -1859,7 +1862,7 @@ PUBLISHED = {
                           "'6.7e9-2.4e10', with the Sigma(72x3) placeholder). Was (1.051e10, 3.142e10) at T = 160 MeV. "
                           "tol 0.05: two figures.",
                       rel_tol=0.05),
-    "codesign": Published(lq=(436, 536), hard_ops=(6.1e8, 6.1e8),
+    "codesign": Published(lq=(436, 536), hard_ops=(5.5e8, 5.5e8),   # CIRC1118-1: was 6.1e8
                           src="NOT A BOX. 2^3 since the staggered ruling 2026-11-13 ('~6.1e8'; was 2.1e9 on 3^3). "
                               "app03 route (a) '~2.1e9 T/shot ... if it is 10x cheaper than Trotter' on the "
                               "400-step reference shot (s648: Sigma(216x3) / H_I; 1.5e9 with the Sigma(72x3) placeholder "

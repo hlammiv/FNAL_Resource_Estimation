@@ -196,14 +196,14 @@ def test_per_link_costs_are_the_papers_numbers(a, r28, r33):
     assert i["magnetic_t_per_link"] == magnetic_per_link(g, h, 2, e)
     assert i["electric_t_per_link"] == electric_per_link(g, h, 2, e)
     # E20 (r19 apply): every gauge rotation at the full fit 1.15 log2(1/eps) + 9.2
-    assert _close(i["magnetic_t_per_link"], 2.5e3, rel=0.02)      # app07:96 "~2.5e3 T per link at d=2" (2,466.6)
+    assert _close(i["magnetic_t_per_link"], 1.54e3, rel=0.02)      # app07:96 "~2.5e3 T per link at d=2" (2,466.6)   # CIRC1118-1: was 2.5e3
     assert _close(i["electric_t_per_link"], 1.1e4, rel=0.04)      # "~1.1e4 T per link" (2028 eps, 10,601.1)
-    assert _close(i["electric_share"], 0.81, rel=0.01)            # app07:103 "~81%"
+    assert _close(i["electric_share"], 0.873, rel=0.01)            # app07:103 "~81%"   # CIRC1118-1: was 0.81
     assert i["electric_t_per_link"] > i["magnetic_t_per_link"]    # "the electric term, not the plaquette, dominates"
     assert round(i["naive_over_fft"], -1) == 630                 # "~630-650x more" without the FFT (632.8)
     assert round(j["naive_over_fft"], -1) == 650                 # (650.8)
     assert j["magnetic_t_per_link"] == magnetic_per_link(g, h, 3, j["eps_rot"])
-    assert _close(j["magnetic_t_per_link"], 5.0e3, rel=0.01)      # "5.0e3 at d=3" (2033 eps, 4,988.5)
+    assert _close(j["magnetic_t_per_link"], 3.14e3, rel=0.01)      # "5.0e3 at d=3" (2033 eps, 4,988.5)   # CIRC1118-1: was 5.0e3
     assert _close(j["electric_t_per_link"], 1.4e4, rel=0.02)      # "1.4e4" (2033 eps, 14,241.6)
     # the printed full-fit forms: FFT 532 + 102 x 9.2 = 1470 constant, U_phi 256 x 9.2 = 2355 constant
     pr = GROUPS[g].primitives
@@ -265,10 +265,10 @@ def test_2028_ancilla_budget_accounting(r28):
 
 def test_2028_per_step_cost_derived_from_the_papers(r28):
     i = r28.intermediates
-    assert _close(i["c_be_gauge_t_per_step"], 104541.03412795652, rel=1e-12)  # "1.0e5 T for the gauge terms" (E20)
+    assert _close(i["c_be_gauge_t_per_step"], 97149.03412795652, rel=1e-12)  # "1.0e5 T for the gauge terms" (E20)   # CIRC1118-1: was 104541.03412795652
     assert _close(i["c_be_gauge_t_per_step"], 8 * i["gauge_t_per_link"], rel=1e-12)
-    assert _close(i["c_be_gauge_t_per_step_at_paper_fiducial_eps"], 1.8e5, rel=0.03)   # "1.8e5 at eps=1e-8" (175,100.5)
-    assert _close(i["c_be_gauge_t_per_step_papers_convention"], 7.0e4, rel=0.01)       # "the papers' own convention 7.0e4"
+    assert _close(i["c_be_gauge_t_per_step_at_paper_fiducial_eps"], 1.68e5, rel=0.03)   # "1.8e5 at eps=1e-8" (175,100.5)   # CIRC1118-1: was 1.8e5
+    assert _close(i["c_be_gauge_t_per_step_papers_convention"], 6.3e4, rel=0.01)       # "the papers' own convention 7.0e4"   # CIRC1118-1: was 7.0e4
     assert _close(i["c_be_gauge_t_per_step_report_convention"], i["c_be_gauge_t_per_step"], rel=1e-12)
     # r19 hop: Sigma(36x3), 1 field, share="link" + undo: 2,592 Toffoli + 120 T + 899 rotations at 20.733 T
     # = 36,902.7 T/link ("3.7e4")
@@ -280,29 +280,29 @@ def test_2028_per_step_cost_derived_from_the_papers(r28):
     assert _close(i["hop_t_per_step"], 3.0e5, rel=0.02)                         # "the 8 hops are 3.0e5"
     assert _close(i["hop_t_per_link_fp_printed"], 3.2e4, rel=0.01)              # "the draft's own formula 3.2e4"
     assert _close(i["hop_t_per_link_share_draft"], 85118.74155367662, rel=1e-12)   # sensitivity "8.5e4" (r17 value)
-    assert _close(i["c_be_t_per_step_share_draft"], 785684.828551173, rel=1e-12)
+    assert _close(i["c_be_t_per_step_share_draft"], 778292.828551173, rel=1e-12)   # CIRC1118-1: was 785684.828551173
     assert _close(i["hop_t_per_link_rhop_legacy"], 676.13, rel=1e-4)            # the retired R-HOP price
     # mass: HWP(3) per site, 2 rotations + 1 Toffoli at the full fit ("48 T per site")
     assert i["mass_hwp_k"] == 3 and i["n_rot_mass_per_step"] == 8
     assert _close(i["mass_t_per_site"], 48.465498450893485, rel=1e-12)
     assert _close(i["mass_t_per_step"], 1.9e2, rel=0.03)                        # "1.9e2 for the mass"
-    assert _close(i["c_be_t_per_step"], 399956.82855117304, rel=1e-12)         # "4.0e5 T/step"
+    assert _close(i["c_be_t_per_step"], 392564.82855117304, rel=1e-12)         # "4.0e5 T/step"   # CIRC1118-1: was 399956.82855117304
     assert _close(i["c_be_t_per_step"],
                   i["c_be_gauge_t_per_step"] + i["hop_t_per_step"] + i["mass_t_per_step"], rel=1e-12)
-    assert round(i["cap_fraction"], 1) == 4.0 and i["fits_cap"] is False      # "4.0x the cap"
+    assert round(i["cap_fraction"], 1) == 3.9 and i["fits_cap"] is False      # "4.0x the cap"   # CIRC1118-1: was 4.0
     assert i["t_cap"] == 1e5 and i["n_trotter"] == 1 and i["steps_under_cap"] == 0   # no step fits
     assert i["ramp_original_steps"] == 10
     # R-TOL: the ramp is its own circuit, N_rot = 10 x 10,908, eps_rot = sqrt(1e-2/109,080) = 3.028e-4
     assert i["ramp_original_n_rot"] == 109080
     assert _close(i["ramp_original_eps_rot"], (1e-2 / 109080) ** 0.5, rel=1e-12)
-    assert _close(i["ramp_original_t"], 4.207922937551e6, rel=1e-9)     # "a ten-step ramp costs 4.2e6 T"
-    assert round(i["ramp_original_t"], -5) == 4.2e6
+    assert _close(i["ramp_original_t"], 4134002.9375511603, rel=1e-9)     # "a ten-step ramp costs 4.2e6 T"   # CIRC1118-1: was 4.207922937551e6
+    assert round(i["ramp_original_t"], -5) == 4.1e6   # CIRC1118-1: was 4.2e6
     assert i["ramp_over_cap"] > 1
 
 
 def test_2028_hard_ops_band_and_breakdown(r28):
     lo, hi = r28.hard_ops
-    assert lo == hi and _close(lo, 399956.82855117304, rel=1e-12)     # one priced step; box "~4.0e5"
+    assert lo == hi and _close(lo, 392564.82855117304, rel=1e-12)     # one priced step; box "~4.0e5"   # CIRC1118-1: was 399956.82855117304
     assert _close(r28.breakdown_total(), lo, rel=1e-9)                # gauge + hop + mass, no allowance
     by = {p.name: p for p in r28.breakdown}
     assert set(by) == {"magnetic_U_inv", "magnetic_U_mul", "magnetic_U_Tr", "electric_U_FFT", "electric_U_phi",
@@ -311,7 +311,7 @@ def test_2028_hard_ops_band_and_breakdown(r28):
     assert by["hop_colour_squish_and_parity"].count == 8 and by["hop_colour_squish_and_parity"].t_each == 7 * 2296
     assert by["hop_colour_squish_and_parity"].status is c.CircuitStatus.SCALING        # undo estimated
     assert by["mass_hwp_rotations"].count == 8 and by["mass_hwp_toffolis"].count == 4
-    assert by["magnetic_U_mul"].count == 48 and by["magnetic_U_mul"].t_each == 308     # 6 per link x 8 links
+    assert by["magnetic_U_mul"].count == 24 and by["magnetic_U_mul"].t_each == 308     # 3 per link x 8 links (CIRC1118-1: was 6, 48)
     assert by["magnetic_U_inv"].count == 24 and by["magnetic_U_inv"].t_each == 119
     assert by["magnetic_U_Tr"].count == 4                                              # (d-1)/2 per link
     assert by["electric_U_FFT"].count == 16 and by["electric_U_phi"].count == 8
@@ -325,14 +325,14 @@ def test_2028_shots_wall_and_eps_l(r28):
     i = r28.intermediates
     assert i["shots"] == (2e3, 2e3)                           # "~2e3 (single point)"
     assert i["shot_overhead_s"] == 1e-4                       # ~0.1 ms per shot (report rule)
-    assert round(i["wall_per_shot_s"], 2) == 0.40             # "~0.40 s (at 1 us/T-gate)"
+    assert round(i["wall_per_shot_s"], 2) == 0.39             # "~0.39 s (at 1 us/T-gate)" (CIRC1118-1: was 0.40)
     assert round(i["wall_total_s"][0] / 60) == 13             # serial record, 800.1 s
     # r25 (R9): F* = 9.9 at the as-compiled depth, so the box quotes the depth-limited 810.0 s = 13.5 min ("~13.5 min")
     assert r28.shots == (2e3, 2e3) and _close(r28.wall_time_s[0], 809.9780410335, rel=1e-9)
     assert round(r28.wall_time_s[0] / 60, 1) == 13.5 and round(i["wall_per_shot_baseline_s"], 2) == 0.40
     # R3: 0.1 expected faults in 4.0e5 ops -> eps_l <~ 2.5e-7; the RFI floor suffices
     assert i["faults_per_shot_budget"] == 0.1
-    assert _close(i["eps_l_required"], 2.50027e-7, rel=1e-5)
+    assert _close(i["eps_l_required"], 2.54735e-7, rel=1e-5)   # CIRC1118-1: was 2.50027e-7
     assert r28.epsilon_l == (i["eps_l_required"], i["eps_l_required"])
     assert i["eps_l_required"] > 1e-8
 
@@ -359,7 +359,7 @@ def test_f2_sampler_step_derivation(a, r33):
     assert _close(g["eps_u"], 1e-2 / 5760, rel=1e-12)
     assert _close(g["h_beta"], 8 * math.sqrt(lu) + 2 * lu / math.pi, rel=1e-12) and round(g["h_beta"]) == 38
     assert round(g["control_factor"], 2) == 1.16 and g["aux_share"] < 1e-4
-    assert _close(i["gibbs_t_per_shot"], 8.390685037940064e13, rel=1e-9)
+    assert _close(i["gibbs_t_per_shot"], 82946810930834.47, rel=1e-9)   # CIRC1118-1: was 8.390685037940064e13
     lo, hi = i["gibbs_t_per_shot_range"]
     assert (round(lo, -13), round(hi, -14)) == (8e13, 4e14)                 # "~8e13--4e14 T per shot"
     olo, ohi = i["gibbs_over_qsvt"]
@@ -396,8 +396,8 @@ def test_2033_hard_ops_product(r33):
     """Author ruling 2026-10-05: the QSVT/TPQ thermal state, Ch. 9's construction."""
     i = r33.intermediates
     assert i["beta_h"] == 1e2                      # "beta||H|| = 1e2"
-    assert _close(i["c_be_t_per_step"], 2760459.402694799, rel=1e-12)  # "2.8e6 T/step" at the 2e3-step tolerance
-    assert _close(i["t_hsim_lower_bound"], 5.520918805e9, rel=1e-9)   # record (pre-F2 '>~5.5e9')
+    assert _close(i["c_be_t_per_step"], 2716107.402694799, rel=1e-12)  # "2.8e6 T/step" at the 2e3-step tolerance   # CIRC1118-1: was 2760459.402694799
+    assert _close(i["t_hsim_lower_bound"], 5.432214805e9, rel=1e-9)   # record (pre-F2 '>~5.5e9')   # CIRC1118-1: was 5.520918805e9
     assert i["thermal_route"] == "QSVT/TPQ" and i["hard_ops_is_conditional"] is True
     assert i["delta_beta"] == 1e-4 and _close(i["d_beta_exact"], math.sqrt(1e2 * math.log(1e4)), rel=1e-12)
     assert i["d_beta"] == 30                                            # "d_beta = 30"
@@ -408,23 +408,23 @@ def test_2033_hard_ops_product(r33):
     elo, ehi = i["qsvt_eps_rot"]
     assert (round(elo, 6), round(ehi, 7)) == (1.1e-5, 8.0e-6)          # "1.1e-5--8.0e-6"
     lo, hi = i["t_per_shot_range"]
-    assert _close(lo, 2.7726e9, rel=1e-4) and _close(hi, 5.6340e9, rel=1e-4)
-    assert (round(lo, -8), round(hi, -8)) == (2.8e9, 5.6e9)            # "2.8--5.6e9"
+    assert _close(lo, 2.7274e9, rel=1e-4) and _close(hi, 5.5436e9, rel=1e-4)   # CIRC1118-1: was 2.7726e9
+    assert (round(lo, -8), round(hi, -8)) == (2.7e9, 5.5e9)            # "2.7--5.5e9" (CIRC1118-1: was 2.8--5.6e9)
     assert r33.hard_ops == (lo, hi) and c.close(r33.hard_ops, m.PUBLISHED["2033"].hard_ops, 0.10)
     assert all(x < 1e-4 for x in i["qsvt_overhead_share"])            # "less than 1e-4 of the shot"
     assert i["qsvt"]["low"]["reflection_toffolis"] == 1014 and i["qsvt_t_readout"] == 0.0  # "at most 1014 Toffolis each"
     rlo, rhi = i["reference_fraction"]
-    assert (round(rlo, 1), round(rhi, 1)) == (2.8, 5.6)                # "2.8--5.6 times the 1e9 reference"
+    assert (round(rlo, 1), round(rhi, 1)) == (2.7, 5.5)                # "2.7--5.5 times the 1e9 reference" (CIRC1118-1: was 2.8--5.6)
     assert _close(r33.breakdown_total(), lo, rel=1e-9)                 # breakdown = the low end
     # the pre-ruling rail (R = 10 x 2 queries x d 26.3 at eps 1e-3, no reference / phases / reflections) is a record
     olo, ohi = i["qsvt_old_t_per_shot"]
-    assert _close(olo, 2.8595e9, rel=1e-3) and _close(ohi, 5.8108e9, rel=1e-3)
+    assert _close(olo, 2.8129e9, rel=1e-3) and _close(ohi, 5.7175e9, rel=1e-3)   # CIRC1118-1: were 2.8595e9, 5.8108e9
     assert i["qsvt_t_per_shot_stated"] == (3e9, 6e9) and i["d_qsp_stated"] == 26 and i["R_warm_stated"] == 10
 
 
 def test_2033_c_be_consistent_with_compiled_floor(r33):
     i = r33.intermediates
-    assert _close(i["c_be_gauge_t_per_step"], 4.6e5, rel=0.01)       # app07:96 "4.6e5 at V=2^3" (E20, 461,524)
+    assert _close(i["c_be_gauge_t_per_step"], 4.17e5, rel=0.01)       # app07:96 "4.6e5 at V=2^3" (E20, 461,524)   # CIRC1118-1: was 4.6e5
     assert i["hops"] == 72
     # r19 hop: Sigma(36x3), 3 fields, share="link" + undo: 2,604 Toffoli + 360 T + 2,693 rotations at 28.647 T
     # = 95,734 T/link ("9.6e4")
@@ -433,7 +433,7 @@ def test_2033_c_be_consistent_with_compiled_floor(r33):
     assert _close(i["hop_t_per_link"], 9.6e4, rel=0.01)
     assert _close(i["hop_colour_frame_share"], 0.76, rel=0.01)                  # "76%"
     assert _close(i["hop_t_per_step"], 2.3e6, rel=0.01)                         # "the 72 hops ... 2.3e6"
-    assert round(100 * i["hop_share_of_c_be"]) == 83                           # "(83%)"
+    assert round(100 * i["hop_share_of_c_be"]) == 85                           # "(85%)" (CIRC1118-1: was 83)
     assert _close(i["hop_t_per_link_fp_printed"], 5.4e4, rel=0.01)              # draft formula, 2 C^G + 3 C^hop
     assert _close(i["hop_t_per_link_fp_printed"],
                   2 * fp_printed("S36x3", "C_G", i["eps_rot"]) + 3 * fp_printed("S36x3", "C_hop_text", i["eps_rot"]),
@@ -441,20 +441,20 @@ def test_2033_c_be_consistent_with_compiled_floor(r33):
     # sensitivity share="draft" (r17 value): "1.5e5" per link, "an 8.0e9-T shot at 2033"
     assert _close(i["hop_t_per_link_share_draft"], 148038.44975033074, rel=1e-12)
     assert _close(i["hop_t_per_link_share_draft"], 1.5e5, rel=0.02)
-    assert round(2e3 * i["c_be_share_draft"] / 1e9, 1) == 8.0
+    assert round(2e3 * i["c_be_share_draft"] / 1e9, 1) == 7.9   # CIRC1118-1: was 8.0
     assert i["mass_hwp_k"] == 9 and i["n_rot_mass_per_step"] == 32
     assert _close(i["mass_t_per_site"], 164, rel=0.01)                          # "164 T at 3"
     assert _close(i["mass_t_per_step"], 1.3e3, rel=0.01)                        # "1.3e3 for the mass"
     assert _close(i["c_be_gauge_t_per_step"] + i["hop_t_per_step"] + i["mass_t_per_step"], i["c_be_t_per_step"],
                   rel=1e-12)
     assert i["c_be_stated_superseded"] == 5e5
-    assert round(i["c_be_over_superseded"], 1) == 5.5                          # the derived value replaces 5e5
+    assert round(i["c_be_over_superseded"], 1) == 5.4    # CIRC1118-1: was 5.5;                         # the derived value replaces 5e5
     by = {p.name: p for p in r33.breakdown}
     assert all(p.status is not c.CircuitStatus.UNSOURCED for p in r33.breakdown)
     n_tr = i["qsvt_step_equivalents"][0]                             # the QSVT shot's step equivalents (low end)
     assert _close(by["hop_colour_rotations"].count, n_tr * 24, rel=1e-12)
     assert _close(by["mass_hwp_rotations"].count, n_tr * 8 * 4, rel=1e-12)
-    assert _close(by["magnetic_U_mul"].count, n_tr * 24 * 12, rel=1e-12)   # 6(d-1) = 12 per link at d=3
+    assert _close(by["magnetic_U_mul"].count, n_tr * 24 * 6, rel=1e-12)   # 3(d-1) = 6 per link at d=3 (CIRC1118-1: was 6(d-1) = 12)
     assert _close(by["electric_U_FFT"].count, n_tr * 24 * 2, rel=1e-12)
 
 
@@ -546,20 +546,20 @@ def test_2033_wall_time_chain(r33):
     w = i["wall_per_shot_s"]
     assert _close(w[0], i["t_per_shot_range"][0] * 1e-6 + 1e-4, rel=1e-12)   # serial at both ends (F* >= 17.5)
     assert _close(w[1], i["t_per_shot_range"][1] * 1e-6 + 1e-4, rel=1e-12)
-    assert (round(w[0], -2), round(w[1], -2)) == (2.8e3, 5.6e3)          # "2.8--5.6e3 s"
-    assert [round(x) for x in i["wall_per_shot_min"]] == [46, 94]        # "(46--94 min)"
+    assert (round(w[0], -2), round(w[1], -2)) == (2.7e3, 5.5e3)          # "2.7--5.5e3 s" (CIRC1118-1: was 2.8--5.6e3)
+    assert [round(x) for x in i["wall_per_shot_min"]] == [45, 92]        # "(45--92 min)" (CIRC1118-1: was 46--94)
     lo, hi = i["wall_campaign_yr"]
-    assert (round(lo, 1), round(hi, 1)) == (4.1, 8.3)                    # "4.1--8.3 yr of serial running" (2026-10-10; Skellam 23-46)
+    assert (round(lo, 1), round(hi, 1)) == (4.0, 8.2)                    # "4.0--8.2 yr of serial running" (CIRC1118-1: was 4.1--8.3) (2026-10-10; Skellam 23-46)
     assert _close(r33.wall_time_s[0], i["shots_total"] * w[0], rel=1e-12)
     dlo, dhi = i["wall_campaign_direct_yr"]
     assert (round(dlo), round(dhi)) == (10, 21)                          # every point sampled
     plo, phi = i["wall_single_point_yr"]
-    assert (round(plo, 2), round(phi, 2)) == (0.42, 0.85)                # "0.42--0.85 yr per directly sampled point"
+    assert (round(plo, 2), round(phi, 2)) == (0.41, 0.83)                # "0.41--0.83 yr per directly sampled point" (CIRC1118-1: was 0.42--0.85)
     flo, fhi = i["floor_wall_campaign_yr"]
     assert (round(flo, 2), round(fhi, 1)) == (0.73, 4.7)                 # "depth limit 0.73--4.7 yr"
     assert i["campaign_horizon_yr"] == 5
     hlo, hhi = i["horizon_reduction_needed"]
-    assert hlo < 1 < hhi and round(hhi, 1) == 1.7                        # "at the high end ... a 1.7x cut"
+    assert hlo < 1 < hhi and round(hhi, 1) == 1.6                        # "at the high end ... a 1.6x cut" (CIRC1118-1: was 1.7)
     assert _close(i["t_per_shot_to_fit_horizon"], 3.4e9, rel=0.01)       # "3.4e9-T shot at the same shot count"
     assert i["fr_fits_horizon"] is True                                  # "Five years hold the first result"
 
@@ -587,11 +587,11 @@ def test_2033_logical_error_row(r33):
     i = r33.intermediates
     assert i["faults_per_shot_budget"] == 0.1
     lo, hi = i["eps_l_required"]
-    assert (round(lo, 12), round(hi, 12)) == (1.8e-11, 3.6e-11)
+    assert (round(lo, 12), round(hi, 12)) == (1.8e-11, 3.7e-11)   # CIRC1118-1: was 3.6e-11
     rlo, rhi = i["rfi_over_eps_l"]
-    assert (round(rlo, -1), round(rhi, -1)) == (280, 560)
+    assert (round(rlo, -1), round(rhi, -1)) == (270, 550)   # CIRC1118-1: was (280, 560)
     flo, fhi = i["faults_at_rfi_floor"]
-    assert (round(flo), round(fhi)) == (28, 56)                         # "would accrue 28--56 faults"
+    assert (round(flo), round(fhi)) == (27, 55)                         # "would accrue 27--55 faults" (CIRC1118-1: was 28--56)
     assert r33.epsilon_l == (lo, hi)
 
 
@@ -629,7 +629,7 @@ def test_2033_v4cubed_volume_row(r33):
     assert i["v4cubed_beta_h"] == 800.0 and i["v4cubed_d_beta"] == 86
     assert round(i["v4cubed_c_step"], -6) == 2.3e7
     lo, hi = i["v4cubed_t_per_shot"]
-    assert (round(lo, -9), round(hi, -10)) == (6.8e10, 1.4e11)
+    assert (round(lo, -9), round(hi, -10)) == (6.7e10, 1.4e11)   # CIRC1118-1: was 6.8e10
     # records
     assert i["v4cubed_steps"] == 1600 and i["v4cubed_n_jumps"] == 2304
     assert i["v4cubed_eps_rot"] == c.eps_rot_for(i["v4cubed_n_rot_per_shot"])
@@ -670,7 +670,7 @@ def test_requirements_summary_row(r33):
     # requirements: 1.2e5 over the 25 grid points sampled directly (2026-10-10; Skellam 2.6e5); "2.8--5.6e3 s (46--94 min) per QSVT shot"
     i = r33.intermediates
     assert round(i["n_grid_points"] * i["shots_per_point"], -4) == 1.2e5
-    assert [round(x, -2) for x in i["wall_per_shot_s"]] == [2.8e3, 5.6e3]
+    assert [round(x, -2) for x in i["wall_per_shot_s"]] == [2.7e3, 5.5e3]   # CIRC1118-1: was 2.8e3, 5.6e3
 
 
 # --- r17: the hop and mass through the shared functions -----------------------
@@ -689,7 +689,7 @@ def test_hop_and_mass_are_the_shared_functions(a, r28, r33):
 def test_published_matches_the_boxes_as_printed():
     assert m.PUBLISHED["2028"].lq == (180, 180)
     assert m.PUBLISHED["2033"].lq == (500, 1000)
-    assert m.PUBLISHED["2028"].hard_ops == (4.0e5, 4.0e5) and m.PUBLISHED["2033"].hard_ops == (2.8e9, 5.6e9)
+    assert m.PUBLISHED["2028"].hard_ops == (3.9e5, 3.9e5) and m.PUBLISHED["2033"].hard_ops == (2.7e9, 5.5e9)   # CIRC1118-1
     assert m.PUBLISHED["codesign"].lq == (2554, 3054)
 
 
@@ -738,10 +738,10 @@ def test_r19_hop_reading_is_e21(a, r28, r33):
 
 def test_r25_2028_exports_and_sectors(a, r28):
     i = r28.intermediates
-    assert i["t_per_shot"] == (399956.82855117304,) * 2
+    assert i["t_per_shot"] == (392564.82855117304,) * 2   # CIRC1118-1: was 399956.82855117304
     assert i["t_depth_per_shot"] == a.t_depth_2028.value == (26719.289742577264, 40488.90205167576)
     lo, hi = i["f_star"]
-    assert round(lo, 1) == 9.9 and round(hi) == 15                       # "9.9--15 factories"
+    assert round(lo, 1) == 9.7 and round(hi) == 15                       # "9.7--15 factories" (CIRC1118-1: was 9.9)
     assert i["baseline_ok"] == (False, True)                              # depth-limited at the as-compiled end
     assert i["wall_first_result_s"] is None                               # one-tier 2028 benchmark
     assert i["n_sectors"] == (2, 3)
@@ -761,9 +761,9 @@ def test_r25_2033_exports(a, r33):
     assert _close(i["t_depth_per_shot"][0], a.t_depth_2033.value[0] * s_lo, rel=1e-12)
     assert _close(i["t_depth_per_shot"][1], a.t_depth_2033.value[1] * s_hi, rel=1e-12)
     flo, fhi = i["f_star_matched"]
-    assert round(flo) == 17 and round(fhi) == 56                          # "17--56 factories"
+    assert round(flo) == 17 and round(fhi) == 55                          # "17--55 factories" (CIRC1118-1: was 56)
     xlo, xhi = i["f_star"]                                                # cross-paired export (record)
-    assert round(xlo, 1) == 8.6 and round(xhi) == 114
+    assert round(xlo, 1) == 8.5 and round(xhi) == 112   # CIRC1118-1: was 8.6, 114
     assert i["wall_campaign_s"] == r33.wall_time_s
     assert i["fits_1yr"] == (False, True)                                 # 4.6e4 shots: the low end fits a year (2026-10-10)
     # matched ends (what the chapter quotes): the 10-factory baseline holds at both ends
@@ -782,7 +782,7 @@ def test_r25_2033_first_result(a, r33):
     assert by[("baryon", 0.01)]["best"] == by[("baryon", 0.01)]["reweighted"]
     assert by[("baryon", 0.1)]["best"] == by[("baryon", 0.1)]["direct"]
     d_lo, d_hi = i["wall_first_result_d"]
-    assert (round(d_lo), round(d_hi)) == (32, 66)                        # "32--66 d on one machine"
+    assert (round(d_lo), round(d_hi)) == (32, 65)                        # "32--65 d on one machine" (CIRC1118-1: was 66)
     assert _close(i["wall_first_result_s"][0], 1007 * i["wall_per_shot_s"][0], rel=1e-12)
     assert _close(i["wall_first_result_s"][1], 1007 * i["wall_per_shot_s"][1], rel=1e-12)
     assert i["wall_first_result_yr"][1] < 5
@@ -794,17 +794,17 @@ def test_r25_tex_prints_the_new_numbers():
               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "can keep $9.9$--$15$ magic-state factories busy"
               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "The step's T-depth of $2.7$--$4.0\times 10^{4}$"
               r"At its largest T-depth the step can keep just under the 10 baseline magic-state factories busy, so there the shot is depth-limited.", r"$4.6\times 10^{4}$", r"$1.2\times 10^{5}$",
-              r"$2.9\times 10^{3}$--$5.7\times 10^{3}$ per grid point", r"the shot reduced by $1.7\times$, to $3.4\times 10^{9}$ T at the same shot count",
+              r"$2.9\times 10^{3}$--$5.7\times 10^{3}$ per grid point", r"the shot reduced by $1.6\times$, to $3.4\times 10^{9}$ T at the same shot count",
               r"$m_q=313$~MeV", r"$m_B=940$~MeV", r"$61\%$ fewer", 
               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "a ten-step adiabatic evolution needs $4.2\times 10^{6}$ T"
-              r"$\gtrsim 4.0\times 10^{5}$", r"a ten-step evolution with $42\times$", r"$3.2\%$",
+              r"$\gtrsim 3.9\times 10^{5}$", r"a ten-step evolution with $41\times$", r"$3.2\%$",
               # author ruling 2026-10-05: the QSVT/TPQ headline
-              r"$2.8$--$5.6\times 10^{9}$", r"$d_\beta=30$", r"$2m+1=17$",
+              r"$2.7$--$5.5\times 10^{9}$", r"$d_\beta=30$", r"$2m+1=17$",
               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "or $510$ block-encoding queries"
-              r"first result: $\gtrsim 32$--$66$~d", r"campaign: $\gtrsim 4.1$--$8.3$~yr", r"$0.42$--$0.85$~yr", r"$0.73$--$4.7$~yr", r"reduced by $1.7\times$",
-              r"$17$--$56$", r"$46$--$94$~min", r"\lesssim 1.8\times 10^{-11}$",
-              r"$3.6\times 10^{-11}$", r"$280$--$560", r"$28$--$56$ faults",
-              r"$6.8\times 10^{10}$--$1.4\times 10^{11}$", r"2362--2862",   # V=4^3 row (staggered ruling 2026-11-13; was the V=3^3 '1.8--3.7e10')
+              r"first result: $\gtrsim 32$--$65$~d", r"campaign: $\gtrsim 4.0$--$8.2$~yr", r"$0.41$--$0.83$~yr", r"$0.73$--$4.7$~yr", r"reduced by $1.6\times$",
+              r"$17$--$55$", r"$45$--$92$~min", r"\lesssim 1.8\times 10^{-11}$",
+              r"$3.7\times 10^{-11}$", r"$270$--$550", r"$27$--$55$ faults",
+              r"$6.7\times 10^{10}$--$1.4\times 10^{11}$", r"2362--2862",   # V=4^3 row (staggered ruling 2026-11-13; was the V=3^3 '1.8--3.7e10')
               # retired 2026-11-13: sentence cut in the accepted cut pass (CUT3) -- "costs $\sim 8\times 10^{13}$--$4\times 10^{14}$ T per shot" (Gibbs sampler; "four to five orders of magnitude" stays)
               r"At $20$ assumed sweeps it costs four to five orders of magnitude more T per shot here",
               r"\cite{arxiv_2311_09207,arxiv_2405_20322}", r"lattice cutoff"):
@@ -825,7 +825,7 @@ def test_r25_chain_reuse_record(r33):
     i = r33.intermediates
     assert i["chain_reuse_gain"] == (3, 30) and i["chain_reuse_steps_per_tau"] == 200
     assert _close(i["chain_reuse_eps_l_required"], 1.2e-14, rel=0.01)
-    assert _close(i["chain_reuse_eps_l_required_hsim_superseded"], 1.8e-10, rel=0.01)
+    assert _close(i["chain_reuse_eps_l_required_hsim_superseded"], 1.84e-10, rel=0.01)   # CIRC1118-1: was 1.8e-10
     assert _close(i["chain_reuse_eps_l_required"], 10 * i["gibbs_eps_l_required"], rel=1e-9)
 
 
@@ -850,4 +850,4 @@ def test_e29_tex_wording_fixes():
 
 
 def test_e29_chain_reuse_ratio_to_floor(r33):
-    assert round(1e-8 / r33.intermediates["chain_reuse_eps_l_required"], -4) == 8.4e5   # record
+    assert round(1e-8 / r33.intermediates["chain_reuse_eps_l_required"], -4) == 8.3e5   # record (CIRC1118-1: was 8.4e5)

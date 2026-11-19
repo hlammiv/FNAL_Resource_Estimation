@@ -265,7 +265,9 @@ def test_e20_per_link_terms_and_papers_switch():
 # ---- legacy reproduction: one per paper, the papers' own slope-only convention (rule R2, superseded) ----
 
 def _compose_papers(group, ham, d, eps, with_phi):
-    grp, m = G.GROUPS[group], G.PRIMCOST[ham]
+    # the papers' closed forms use the printed tab:primcost U_mul (CIRC1118-1: twice the model's PRIMCOST)
+    grp, m = G.GROUPS[group], dict(G.PRIMCOST[ham])
+    m["U_mul"] = G.PRIMCOST_TABLE_U_MUL[ham]
     t = sum(m[p](d) * grp.primitives[p].t_papers(eps) for p in G.MAGNETIC) + m["U_F"](d) * grp.primitives["U_F"].t_papers(eps)
     return t + (grp.primitives["U_phi"].t_papers(eps) if with_phi else 0.0)
 

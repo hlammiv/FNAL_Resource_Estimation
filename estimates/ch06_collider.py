@@ -2419,15 +2419,15 @@ def model(a: Assumptions, era: str) -> Result:
 
 
 PUBLISHED = {
-    "2028": Published(lq=(230, 230), hard_ops=(1.3e5, 1.3e5),
+    "2028": Published(lq=(230, 230), hard_ops=(1.2e5, 1.2e5),   # CIRC1118-1: was 1.3e5 (132,174.9); now 124,110.5
                       src="app10:2028 box: '230 (150--250 envelope)' (exact: 64 + 144 + 22; r25 R10: two hop links at once "
                           "for F* >= 10, was 216 = 64 + 144 + 8 at r22 E26); "
                           "'Per-shot T 1.3e5 (1 ramp + 2 evolution "
                           "steps; derived here), 1.3x the 1e5 limit' (exact 132,174.9; r18: every rotation at the full fit "
                           "(E20), R-TOL eps = 1.6e-3, the overshoot accepted by ruling 2026-10-01). tol 0.02 covers "
-                          "132,175 -> 1.3e5",
-                      rel_tol=0.02),
-    "2033": Published(lq=(964, 964), hard_ops=(4.9e9, 2.5e10),
+                          "132,175 -> 1.3e5; CIRC1118-1: 124,110.5 -> 1.2e5, tol 0.035",
+                      rel_tol=0.035),
+    "2033": Published(lq=(964, 964), hard_ops=(4.8e9, 2.5e10),   # CIRC1118-1: was (4.9e9, 2.5e10)
                       src="app10:2033 box: '964 (at the 1000-LQ marker)'; 'Per-shot T 4.9e9--2.5e10 (window + 2 x 1e2--1e3 "
                           "ramp steps; electric term a lower bound)' (t2e 2026-11-13: the top trend point is pa = pi/2, "
                           "500 steps under the step rule, exact 4.9014e9 and 2.5381e10; 2026-10-04 to t2e the 4.65 GeV "
@@ -2435,7 +2435,7 @@ PUBLISHED = {
                           "map runs the ramp backwards on every shot; r25 was 3.9e9--1.5e10 without it; r25 R4: window "
                           "30--50 a). Two-figure prints: tol 0.035",
                       rel_tol=0.035),
-    "codesign": Published(lq=(2400, 2400), hard_ops=(3.2e10, 3.2e10),
+    "codesign": Published(lq=(2400, 2400), hard_ops=(3.1e10, 3.1e10),   # CIRC1118-1: was 3.2e10
                           src="NOT A BOX. app10:95 plug-in prose: '1728+576+100 ~ 2400 LQ' (exact 2404), '3.2e10 T over 10^3 "
                               "steps with no ramp priced' (exact 3.238e10; r19 E21, E20 full fit, eps = 3.6e-6). The 3+1D extension "
                               "reserved for the heavy-ion / q-hat stretch. tol 0.02",

@@ -43,13 +43,31 @@ Not stated anywhere: a controlled or multiplexed group action; "190 T"; that the
 
 ## 3. Per link per Trotter step — stated
 
-Multiplicities (`tab:primcost`, identical in BO :797-810, P36 :647-658, P72 :934-947;
-BT :548-561 gives the H_I row):
+Multiplicities (`tab:primcost`, identical in BO :797-810, P36 :647-658, P72 :934-947, S648 Table 13;
+BT :548-561 gives the H_I row). All reprint Table I (`tab:gateperlink`) of arxiv_2203_02823, which
+lists the KS column and the K_2L + V_rect increment separately:
 
-| Hamiltonian | U_F | U_Tr | U_inv | U_mult |
-|---|---|---|---|---|
-| H_KS | 2 | (d-1)/2 | 3(d-1) | 6(d-1) |
-| H_I (improved) | 4 | 3(d-1)/2 | 2 + 11(d-1) | 4 + 26(d-1) |
+| Hamiltonian | U_F | U_Tr | U_inv | U_mult (as printed) | U_mult (model since CIRC1118-1) |
+|---|---|---|---|---|---|
+| H_KS | 2 | (d-1)/2 | 3(d-1) | 6(d-1) | 3(d-1) |
+| H_I (improved) | 4 | 3(d-1)/2 | 2 + 11(d-1) | 4 + 26(d-1) | 2 + 13(d-1) |
+
+U_mult is the one row that disagrees with the circuits the table is built from (card CIRC1118-1,
+2026-11-18). Gate labels read from the figure files of arxiv_2203_02823 (circuitP_ij, circuitR_ij, UK_12)
+and arxiv_1903_08807 (fig1-crop):
+
+| circuit | count per | U_mult | U_inv | U_Tr | table per link | figure per link |
+|---|---|---|---|---|---|---|
+| plaquette, 2203.02823 Fig. 2a | plaquette, (d-1)/2 per link | 6 | 6 | 1 | U_mult 6(d-1) | 3(d-1) |
+| plaquette, 1903.08807 Fig. 1, Table I (6 N_P) | plaquette | 6 | 6 | 1 | -- | 3(d-1) |
+| rectangle, 2203.02823 Fig. 2b | rectangle, (d-1) per link (beta_V2 = 0, no bent loops) | 10 | 8 | 1 | U_mult 20(d-1) | 10(d-1) |
+| two-link K_2L, 2203.02823 Fig. 2d | link | 2 | 2 | 0 (+2 U_F, 1 U_phase) | U_mult 4 | 2 |
+
+U_inv, U_Tr, U_F and U_phase agree with the figures in every column; U_mult is twice the figures in all
+three circuits. The factor equals counting each two-register multiplication once on each register it
+touches; the caption ("per link register") does not say so. The closed forms below multiply the table
+by the d L^d links, so they carry the doubled U_mult. The explicit 2T circuit (circuits/ch05_bt_link_step)
+uses 6 U_mult per plaquette and is exact on all 24^4 plaquette configurations.
 
 Closed forms, N_T = C_T x d L^d N_t (T per link per step):
 
@@ -100,8 +118,8 @@ tables in the report's convention; the papers' own price is kept as a legacy rec
   internal inconsistency at FFT :834-835); 2O U_F 9887; 2T U_Tr 11.
 - A naive "4 U_mult + U_Tr" magnetic plaquette would be 1.6e3 + 8 log (Sigma(36x3))
   and 5.9e3 + 8 log (Sigma(72x3)). The papers do not compose it that way: the
-  magnetic term is priced per link via `tab:primcost` (3(d-1) U_inv, 6(d-1) U_mult,
-  (d-1)/2 U_Tr for H_KS).
+  magnetic term is priced per link via `tab:primcost` (3(d-1) U_inv, 6(d-1) U_mult as printed,
+  3(d-1) in the model since CIRC1118-1, (d-1)/2 U_Tr for H_KS).
 - P36 and FFT disagree on Sigma(36x3)'s C_T^I constant (9884d - 8414 vs 9632d - 8192)
   and on the with-FFT total (5.7e9 estimated in P36 vs 1.2e10 in FFT).
 

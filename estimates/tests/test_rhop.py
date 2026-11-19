@@ -159,17 +159,17 @@ def test_ch6_headlines_unchanged():
     r28, r33 = ch6.model(a, "2028"), ch6.model(a, "2033")
     assert r28.intermediates["t_hop_per_link_2028_round_e"] * 32 == pytest.approx(24279.71, abs=0.01)
     assert r28.intermediates["t_hop_per_link_2028_at_1e-4"] * 32 == pytest.approx(28191.61, abs=0.01)
-    assert r28.intermediates["t_per_step_2028_pre_r17"] == pytest.approx(32429.49, abs=0.01)
-    assert r28.intermediates["t_total_2028_pre_r17"] == pytest.approx(97288.48, abs=0.1)
-    assert r28.intermediates["t_per_step_2028_round_e"] == pytest.approx(33446.26, abs=0.01)
-    assert r28.intermediates["t_total_2028_round_e"] == pytest.approx(100338.79, abs=0.1)
-    assert r28.intermediates["twosteps_t_total_2028"] == pytest.approx(99509.45, abs=0.1)
-    assert r33.intermediates["pre_r17_t_total_2033"][0] == pytest.approx(2.767815e9, rel=1e-6)
+    assert r28.intermediates["t_per_step_2028_pre_r17"] == pytest.approx(29741.493, abs=0.01)   # CIRC1118-1: was 32429.49
+    assert r28.intermediates["t_total_2028_pre_r17"] == pytest.approx(89224.48, abs=0.1)   # CIRC1118-1: was 97288.48
+    assert r28.intermediates["t_per_step_2028_round_e"] == pytest.approx(30758.264, abs=0.01)   # CIRC1118-1: was 33446.26
+    assert r28.intermediates["t_total_2028_round_e"] == pytest.approx(92274.792, abs=0.1)   # CIRC1118-1: was 100338.79
+    assert r28.intermediates["twosteps_t_total_2028"] == pytest.approx(94133.45, abs=0.1)   # CIRC1118-1: was 99509.45
+    assert r33.intermediates["pre_r17_t_total_2033"][0] == pytest.approx(2.531271e9, rel=1e-6)   # CIRC1118-1: was 2.767815e9
     # r18 headlines (E20, 1 ramp + 2 evolution steps, R-TOL eps 1.6e-3): Z3 hop 8 x HWP(9) at the full fit,
     # Sigma(72x3) hop from the draft. r17 was 32,532.37 / 84,027.89 (1 ramp + 1 evolution step).
     assert r28.intermediates["t_hop_per_step_2028"] == pytest.approx(32876.79, abs=0.01)
-    assert r28.hard_ops[0] == pytest.approx(132174.88, abs=0.1)
-    assert r28.intermediates["t_total_2028_two_steps"] == pytest.approx(87266.29, abs=0.1)
+    assert r28.hard_ops[0] == pytest.approx(124110.88, abs=0.1)   # CIRC1118-1: was 132174.88
+    assert r28.intermediates["t_total_2028_two_steps"] == pytest.approx(81890.29, abs=0.1)   # CIRC1118-1: was 87266.29
     # r19 headlines (E21: Sigma(72x3) squish held once per link; r18 share="draft" was 1.1912865e7).
     # r25 (R4, window 30-50 a): the tolerance moves with the shorter shot; r19-r24 pin was 7.1452493e6.
     # r26 (J1, backward readout ramp): more rotations per shot, tighter R-TOL eps; r25 pin was 6.9877264e6.

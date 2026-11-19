@@ -128,13 +128,20 @@ def _pc(const, log, anc, src, note="", status=CircuitStatus.COMPILED, t_gates=0.
     return PrimitiveCost(const, log, anc, status, src, note, t_gates)
 
 
-# Multiplicities per link per Trotter step (tab:primcost; identical in
-# arxiv_2312_10285:797-810, arxiv_2405_05973:647-658, arxiv_2511_17437:934-947;
-# the 2T paper :548-561 gives the H_I row). Callables of the spatial dimension d.
+# Multiplicities per link per Trotter step. Source: arxiv_2203_02823 Table I (tab:gateperlink), reprinted as
+# tab:primcost in arxiv_2208_12309:548-561 (H_I only), arxiv_2312_10285:797-810, arxiv_2405_05973:647-658,
+# arxiv_2511_17437:934-947 and arxiv_2611_08161 Table 13. Callables of the spatial dimension d.
+# U_mul (card CIRC1118-1, 2026-11-18): the table prints 6(d-1) (KS) and 4+26(d-1) (I), twice the multiplications in
+# the circuits it is built from: arxiv_2203_02823 Fig. 2a (plaquette, 6 U_x), Fig. 2b (rectangle, 10 U_x), Fig. 2d
+# (K_2L, 2 U_x) and arxiv_1903_08807 Fig. 1 and Table I (6 N_P). Every other row agrees with those figures. Counted
+# from the figures: KS 6 x (d-1)/2 = 3(d-1); I adds 2 (K_2L) + 10 x (d-1) rectangles, 2 + 13(d-1). The explicit 2T
+# circuit (circuits/ch05_bt_link_step) needs 6 per plaquette and is exact on all 24^4 configurations. The table value
+# is kept in PRIMCOST_TABLE for the papers' closed forms (GROUPS[...].c_t), which use it.
 PRIMCOST = {
-    "KS": {"U_F": lambda d: 2,       "U_Tr": lambda d: 0.5 * (d - 1),  "U_inv": lambda d: 3 * (d - 1),      "U_mul": lambda d: 6 * (d - 1)},
-    "I":  {"U_F": lambda d: 4,       "U_Tr": lambda d: 1.5 * (d - 1),  "U_inv": lambda d: 2 + 11 * (d - 1), "U_mul": lambda d: 4 + 26 * (d - 1)},
+    "KS": {"U_F": lambda d: 2,       "U_Tr": lambda d: 0.5 * (d - 1),  "U_inv": lambda d: 3 * (d - 1),      "U_mul": lambda d: 3 * (d - 1)},
+    "I":  {"U_F": lambda d: 4,       "U_Tr": lambda d: 1.5 * (d - 1),  "U_inv": lambda d: 2 + 11 * (d - 1), "U_mul": lambda d: 2 + 13 * (d - 1)},
 }
+PRIMCOST_TABLE_U_MUL = {"KS": lambda d: 6 * (d - 1), "I": lambda d: 4 + 26 * (d - 1)}   # as printed, record only
 MAGNETIC = ("U_inv", "U_mul", "U_Tr")   # the plaquette (Wilson-loop) term
 ELECTRIC = ("U_F",)                      # plus U_phi where the paper lists it separately
 

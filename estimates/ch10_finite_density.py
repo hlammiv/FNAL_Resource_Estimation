@@ -1551,12 +1551,12 @@ def model(a: Assumptions, era: str) -> Result:
 
 
 PUBLISHED = {
-    "2028": Published(lq=(180, 180), hard_ops=(4.0e5, 4.0e5),
+    "2028": Published(lq=(180, 180), hard_ops=(3.9e5, 3.9e5),   # CIRC1118-1: was 4.0e5
                       src="app07:2028 box ('~180' rounds 176; 'Per-shot T >~4.0e5': one Trotter step, a lower bound, 4.0x the cap; "
                           "gauge 1.0e5 (E20 full fit) + hops 3.0e5 (share='link' + undo, E21) + mass 1.9e2 = 399,957 "
                           "at the R-TOL eps_rot 9.6e-4, r19); rel_tol 0.10",
                       rel_tol=0.10),
-    "2033": Published(lq=(500, 1000), hard_ops=(2.8e9, 5.6e9),
+    "2033": Published(lq=(500, 1000), hard_ops=(2.7e9, 5.5e9),   # CIRC1118-1: was (2.8e9, 5.6e9)
                       src="app07:2033 box ('~500-1000' rounds 514-1014; '2.8e9-5.6e9': the QSVT/TPQ thermal state, author "
                           "ruling 2026-10-05, Ch. 9's construction: 17 filter calls of degree 30, 2-4 c_step per query, "
                           "2.7726e9-5.6340e9; conditional on the reference state; was '8.4e13-4.4e14', the priced "

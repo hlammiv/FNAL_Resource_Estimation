@@ -42,8 +42,12 @@ def test_table_11_as_printed(eps):
     assert p["U_phi"].t(eps) == pytest.approx(330 + 11.5 * L, rel=1e-12)
 
 
-def _compose(ham, d, eps, papers):
-    g, m = G.GROUPS[S], G.PRIMCOST[ham]
+def _compose(ham, d, eps, papers, table=True):
+    """table=True composes with the printed U_mul multiplicity (Table 13), which the closed forms use; table=False
+    with the model's (PRIMCOST, half the printed value since card CIRC1118-1)."""
+    g, m = G.GROUPS[S], dict(G.PRIMCOST[ham])
+    if table:
+        m["U_mul"] = G.PRIMCOST_TABLE_U_MUL[ham]
     price = (lambda pc: pc.t_papers(eps)) if papers else (lambda pc: pc.t(eps))
     t = sum(m[k](d) * price(g.primitives[k]) for k in G.MAGNETIC)
     t += m["U_F"](d) * price(g.primitives["U_FFT"]) + g.phi_mult[ham] * price(g.primitives["U_phi"])
@@ -53,15 +57,19 @@ def _compose(ham, d, eps, papers):
 @pytest.mark.parametrize("ham", ["KS", "I"])
 @pytest.mark.parametrize("d", [2, 3])
 def test_closed_form_is_the_composition(ham, d):
-    """Table 14 = Table 13 x Table 11, exactly, in the slope-only record and at the report convention."""
+    """Table 14 = Table 13 x Table 11, exactly, in the slope-only record and at the report convention. The model
+    counts half the printed U_mul (card CIRC1118-1), so its per-link cost is the closed form less that half."""
+    mul = G.GROUPS[S].primitives["U_mul"]
+    dm = G.PRIMCOST_TABLE_U_MUL[ham](d) - G.PRIMCOST[ham]["U_mul"](d)
+    assert dm == pytest.approx(G.PRIMCOST[ham]["U_mul"](d))
     for eps in EPS:
         assert _compose(ham, d, eps, papers=True) == pytest.approx(G.c_t_stated(S, ham, d, eps), rel=1e-12)
         split = G.magnetic_per_link(S, ham, d, eps, papers=True) + G.electric_per_link(S, ham, d, eps, papers=True)
-        assert split == pytest.approx(G.c_t_stated(S, ham, d, eps), rel=1e-12)
+        assert split + dm * mul.t_papers(eps) == pytest.approx(G.c_t_stated(S, ham, d, eps), rel=1e-12)
         # report convention (E20): the same plus 9.2 T per rotation
         full = G.magnetic_per_link(S, ham, d, eps) + G.electric_per_link(S, ham, d, eps)
-        assert full == pytest.approx(G.c_t_full(S, ham, d, eps), rel=1e-12)
-        assert full == pytest.approx(_compose(ham, d, eps, papers=False), rel=1e-12)
+        assert full + dm * mul.t(eps) == pytest.approx(G.c_t_full(S, ham, d, eps), rel=1e-12)
+        assert full == pytest.approx(_compose(ham, d, eps, papers=False, table=False), rel=1e-12)
 
 
 @pytest.mark.parametrize("eps", EPS)
